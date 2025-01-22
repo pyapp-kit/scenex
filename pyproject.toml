@@ -33,17 +33,18 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Typing :: Typed",
 ]
-dependencies = []
+dependencies = ["cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10"]
 
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
 [project.optional-dependencies]
-test = ["pytest", "pytest-cov"]
+test = ["pytest>=8", "pytest-cov>=6"]
 dev = [
+    "scenex[test]",
     "ipython",
     "mypy",
-    "pdbpp",  # https://github.com/pdbpp/pdbpp
+    "pdbpp; sys_platform != 'win32'",
     "pre-commit",
-    "rich",  # https://github.com/Textualize/rich
+    "rich",
     "ruff",
 ]
 
@@ -55,6 +56,7 @@ repository = "https://github.com/tlambert03/scenex"
 [tool.ruff]
 line-length = 88
 target-version = "py39"
+fix = true
 src = ["src"]
 
 # https://docs.astral.sh/ruff/rules
@@ -72,11 +74,13 @@ select = [
     "B",    # flake8-bugbear
     "A001", # flake8-builtins
     "RUF",  # ruff-specific rules
-    "TCH",  # flake8-type-checking
+    "TC",   # flake8-type-checking
     "TID",  # flake8-tidy-imports
 ]
 ignore = [
-    "D401", # First line should be in imperative mood (remove to opt in)
+    "D401", # First line should be in imperative mood
+    "D100", # Missing docstring in public module
+    "D105", # Missing docstring in magic method
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -85,7 +89,7 @@ ignore = [
 # https://docs.astral.sh/ruff/formatter/
 [tool.ruff.format]
 docstring-code-format = true
-skip-magic-trailing-comma = false  # default is false
+skip-magic-trailing-comma = false # default is false
 
 # https://mypy.readthedocs.io/en/stable/config_file.html
 [tool.mypy]
@@ -119,8 +123,7 @@ exclude_lines = [
 source = ["scenex"]
 
 [tool.check-manifest]
-ignore = [
-    ".pre-commit-config.yaml",
-    ".ruff_cache/**/*",
-    "tests/**/*",
-]
+ignore = [".pre-commit-config.yaml", ".ruff_cache/**/*", "tests/**/*"]
+
+[tool.typos.default]
+extend-ignore-identifiers-re = ["(?i)nd?.*", "ser_schema"]
