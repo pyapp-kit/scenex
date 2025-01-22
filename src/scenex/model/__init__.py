@@ -1,7 +1,7 @@
 """Model module for SceneX."""
 
-from .nodes import Camera, Image, Node, Points, Scene  # noqa: I001
 from .canvas import Canvas
+from .nodes import Camera, Image, Node, Points, Scene
 from .transform import Transform
 from .view import View
 
