@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Literal, TypeVar
 from cmap import Color
 from pydantic import Field
 
-from .node import Node, NodeController
+from .node import Node, NodeAdaptor
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
@@ -63,7 +63,7 @@ class Points(Node):
 _PT = TypeVar("_PT", bound=Points, covariant=True)
 
 
-class PointsController(NodeController[_PT]):
+class PointsController(NodeAdaptor[_PT]):
     """Protocol for a backend Image adaptor object."""
 
     @abstractmethod

@@ -79,7 +79,7 @@ _VT = TypeVar("_VT", bound="View", covariant=True)
 # TODO: decide whether all the layout stuff goes here...
 
 
-class ViewController(SupportsVisibility[_VT]):
+class ViewAdaptor(SupportsVisibility[_VT]):
     """Protocol defining the interface for a View adaptor."""
 
     @abstractmethod

@@ -189,7 +189,7 @@ class Node(EventedModel):
 _NT = TypeVar("_NT", bound="Node", covariant=True)
 
 
-class NodeController(SupportsVisibility[_NT]):
+class NodeAdaptor(SupportsVisibility[_NT]):
     """Backend interface for a Node."""
 
     @abstractmethod

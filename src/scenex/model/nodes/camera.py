@@ -5,7 +5,7 @@ from typing import Literal, TypeVar
 
 from pydantic import Field
 
-from .node import Node, NodeController
+from .node import Node, NodeAdaptor
 
 CameraType = Literal["panzoom", "perspective"]
 
@@ -32,7 +32,7 @@ class Camera(Node):
 _CT = TypeVar("_CT", bound=Camera, covariant=True)
 
 
-class CameraAdaptorProtocol(NodeController[_CT]):
+class CameraAdaptor(NodeAdaptor[_CT]):
     """Protocol for a backend camera adaptor object."""
 
     @abstractmethod
