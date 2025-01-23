@@ -92,14 +92,15 @@ class Node(EventedBase):
         # 3. parent also as @computed_field ... but want it directly on the model?
         # ... (still not sure, maybe 3 is better)
         def __setattr__(self, name: str, value: Any):
+            if is_parent := name == "parent":
+                if removing := (value is None and self.parent is not None):
+                    par = self.parent
             super().__setattr__(name, value)
-            if name == "parent":
-                if value is None:
-                    if self in self._children:
-                        self._children.remove(self)
-                else:
-                    if self not in value._children:
-                        value._children.append(cast("AnyNode", self))
+            if is_parent:
+                if removing:
+                    par._children.remove(self)
+                elif self not in value._children:
+                    value._children.append(cast("AnyNode", self))
 
     @computed_field  # type: ignore [prop-decorator]
     @property
@@ -227,18 +228,18 @@ class NodeAdaptor(SupportsVisibility[_NT, _AT]):
     @abstractmethod
     def _snx_set_transform(self, arg: Transform) -> None: ...
     @abstractmethod
-    def _vis_add_node(self, node: Node) -> None: ...
+    def _snx_add_node(self, node: Node) -> None: ...
 
     @abstractmethod
-    def _vis_block_updates(self) -> None:
+    def _snx_block_updates(self) -> None:
         """Block future updates until `unblock_updates` is called."""
 
     @abstractmethod
-    def _vis_unblock_updates(self) -> None:
+    def _snx_unblock_updates(self) -> None:
         """Unblock updates after `block_updates` was called."""
 
     @abstractmethod
-    def _vis_force_update(self) -> None:
+    def _snx_force_update(self) -> None:
         """Force an update to the node."""
 
     def _snx_set_node_type(self, arg: str) -> None:

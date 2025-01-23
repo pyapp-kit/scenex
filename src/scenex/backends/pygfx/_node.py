@@ -57,16 +57,16 @@ class Node(core_node.NodeAdaptor):
         # pygfx uses a transposed matrix relative to the model
         self._pygfx_node.local.matrix = arg.root.T
 
-    def _vis_add_node(self, node: core_node.Node) -> None:
+    def _snx_add_node(self, node: core_node.Node) -> None:
         # create if it doesn't exist
         adaptor = cast("Node", get_adaptor(node))
         self._pygfx_node.add(adaptor._snx_get_native())
 
-    def _vis_force_update(self) -> None:
+    def _snx_force_update(self) -> None:
         pass
 
-    def _vis_block_updates(self) -> None:
+    def _snx_block_updates(self) -> None:
         pass
 
-    def _vis_unblock_updates(self) -> None:
+    def _snx_unblock_updates(self) -> None:
         pass

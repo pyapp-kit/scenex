@@ -45,7 +45,7 @@ class Canvas(adaptor_base.CanvasAdaptor):
             adaptor = cast("View", adaptors.get_adaptor(view))
             adaptor._draw()
 
-    def _vis_add_view(self, view: model.View) -> None:
+    def _snx_add_view(self, view: model.View) -> None:
         pass
         # adaptor = cast("View", view.backend_adaptor())
         # adaptor._pygfx_cam.set_viewport(self._viewport)
@@ -66,11 +66,11 @@ class Canvas(adaptor_base.CanvasAdaptor):
     def _snx_set_title(self, arg: str) -> None:
         self._wgpu_canvas.set_title(arg)
 
-    def _vis_close(self) -> None:
+    def _snx_close(self) -> None:
         """Close canvas."""
         self._wgpu_canvas.close()
 
-    def _vis_render(
+    def _snx_render(
         self,
         region: tuple[int, int, int, int] | None = None,
         size: tuple[int, int] | None = None,

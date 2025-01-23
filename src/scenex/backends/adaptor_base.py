@@ -100,11 +100,11 @@ def _update_blocker(adaptor: adpt.Adaptor) -> contextlib.AbstractContextManager:
 
         @contextlib.contextmanager
         def blocker() -> Iterator[None]:
-            adaptor._vis_block_updates()
+            adaptor._snx_block_updates()
             try:
                 yield
             finally:
-                adaptor._vis_unblock_updates()
+                adaptor._snx_unblock_updates()
 
         return blocker()
     return contextlib.nullcontext()
@@ -123,7 +123,7 @@ def sync_adaptor(adaptor: adpt.Adaptor, model: EventedBase) -> None:
                 logging.warning(
                     "Failed to set field %r on adaptor %r: %s", field_name, adaptor, e
                 )
-    force_update = getattr(adaptor, "_vis_force_update", lambda: None)
+    force_update = getattr(adaptor, "_snx_force_update", lambda: None)
     force_update()
 
 
