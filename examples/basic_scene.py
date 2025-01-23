@@ -24,7 +24,7 @@ points = snx.Points(
     opacity=0.8,
     order=1,
 )
-scene = snx.Scene(children=[img1, img2, points])
+scene = snx.Scene(children=[points, img1, img2])
 view = snx.View(scene=scene)
 
 

@@ -4,14 +4,19 @@ import logging
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Annotated, Any, TypeVar, Union, cast
 
-from pydantic import Field, SerializerFunctionWrapHandler, model_serializer
+from pydantic import (
+    Field,
+    PrivateAttr,
+    SerializerFunctionWrapHandler,
+    computed_field,
+    model_serializer,
+)
 
 from scenex.model._base import _AT, EventedBase, SupportsVisibility
-from scenex.model._evented_list import EventedList
 from scenex.model.transform import Transform
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterator, Sequence
 
 
 logger = logging.getLogger(__name__)
@@ -39,7 +44,7 @@ class Node(EventedBase):
         # TODO: maybe make children the derived field?
     )
 
-    children: EventedList[AnyNode] = Field(default_factory=EventedList, frozen=True)
+    # children: EventedList[AnyNode] = Field(default_factory=EventedList, frozen=True)
     visible: bool = Field(default=True, description="Whether this node is visible.")
     interactive: bool = Field(
         default=False, description="Whether this node accepts mouse and touch events"
@@ -57,6 +62,8 @@ class Node(EventedBase):
         "frame of the parent.",
     )
 
+    _children: list[AnyNode] = PrivateAttr(default_factory=list)
+
     # -----------------------------
 
     @model_serializer(mode="wrap")
@@ -70,34 +77,47 @@ class Node(EventedBase):
 
     # prevent direct instantiation.
     # makes it easier to use NodeUnion without having to deal with self-reference.
-    def __init__(self, /, **data: Any) -> None:
+    def __init__(self, /, children: Sequence[AnyNode] = (), **data: Any) -> None:
         if type(self) is Node:
             raise TypeError("Node cannot be instantiated directly. Use a subclass.")
         super().__init__(**data)
+        if children:
+            for child in children:
+                child.parent = cast("AnyNode", self)
+
+    if not TYPE_CHECKING:
+        # considered:
+        # 1. field_validator(mode='after') -> don't have access to self
+        # 2. model_validator(mode='after') -> triggered on every field
+        # 3. parent also as @computed_field ... but want it directly on the model?
+        # ... (still not sure, maybe 3 is better)
+        def __setattr__(self, name: str, value: Any):
+            super().__setattr__(name, value)
+            if name == "parent":
+                if value is None:
+                    if self in self._children:
+                        self._children.remove(self)
+                else:
+                    if self not in value._children:
+                        value._children.append(cast("AnyNode", self))
+
+    @computed_field  # type: ignore [prop-decorator]
+    @property
+    def children(self) -> tuple[AnyNode, ...]:
+        """Return a tuple of the children of this node."""
+        return tuple(self._children)
 
     def model_post_init(self, __context: Any) -> None:
         """Post-initialization hook for the model."""
         super().model_post_init(__context)
         # ensure parent is set on children
-        for child in self.children:
-            child.parent = cast("AnyNode", self)
-        self.children.item_inserted.connect(self._on_child_inserted)
-
-    def _on_child_inserted(self, index: int, obj: Node) -> None:
-        # ensure parent is set
-        self.add(obj)
+        # for child in self.children:
+        # child.parent = cast("AnyNode", self)
+        # self.children.item_inserted.connect(self._on_child_inserted)
 
     def __contains__(self, item: object) -> bool:
         """Return True if this node is an ancestor of item."""
         return item in self.children
-
-    def add(self, node: Node) -> None:
-        """Add a child node."""
-        node = cast("AnyNode", node)
-        node.parent = cast("AnyNode", self)
-        if node not in self.children:
-            logger.debug("Adding node %r to %r", node, self)
-            self.children.append(node)
 
     # below borrowed from vispy.scene.Node
 
@@ -196,8 +216,8 @@ class NodeAdaptor(SupportsVisibility[_NT, _AT]):
     def _snx_set_name(self, arg: str) -> None: ...
     @abstractmethod
     def _snx_set_parent(self, arg: Node | None) -> None: ...
-    @abstractmethod
-    def _snx_set_children(self, arg: list[Node]) -> None: ...
+    # @abstractmethod
+    # def _snx_set_children(self, arg: list[Node]) -> None: ...
     @abstractmethod
     def _snx_set_opacity(self, arg: float) -> None: ...
     @abstractmethod

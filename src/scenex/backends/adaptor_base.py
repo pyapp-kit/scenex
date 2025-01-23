@@ -3,19 +3,17 @@ from __future__ import annotations
 import contextlib
 import logging
 import sys
-from collections.abc import Sequence
 from functools import cache
 from typing import TYPE_CHECKING, Any, TypeVar, overload
 
-from scenex.model import adaptor_base as adpt
-from scenex.model._base import EventedBase
 from scenex import model as models
+from scenex.model import adaptor_base as adpt
 
 if TYPE_CHECKING:
-    import uuid
     from collections.abc import Iterator
 
     from scenex import model
+    from scenex.model._base import EventedBase
 
 _M = TypeVar("_M", bound="model.EventedBase")
 

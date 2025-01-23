@@ -104,6 +104,10 @@ class Transform(RootModel):
         """Return string representation of the transform."""
         return repr(self.root).replace("array", "Transform")
 
+    def __rich_repr__(self) -> Iterable[Any]:  # type: ignore
+        """Return representation of the transform for richs."""
+        yield self.root.tolist()
+
     def is_null(self) -> bool:
         """Return True if the transform is the identity matrix."""
         return np.allclose(self.root, np.eye(4))

@@ -59,7 +59,7 @@ class Canvas(adaptor_base.CanvasAdaptor):
         width, _ = self._wgpu_canvas.get_logical_size()
         self._wgpu_canvas.set_logical_size(width, arg)
 
-    def _snx_set_background_color(self, arg: Color) -> None:
+    def _snx_set_background_color(self, arg: Color | None) -> None:
         # not sure if pygfx has both a canavs and view background color...
         pass
 

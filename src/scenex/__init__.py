@@ -47,3 +47,5 @@ def show(obj: Node | View) -> None:
 
     adaptors.get_adaptor(canvas)
     canvas.show()
+    cam = adaptors.get_adaptor(view.camera)
+    cam._snx_set_range(0.1)

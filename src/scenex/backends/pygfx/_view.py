@@ -5,17 +5,19 @@ from typing import TYPE_CHECKING, Any, cast
 
 import pygfx
 
-from scenex.model import view as core_view
+from scenex.model import adaptor_base
 
 from ._adaptor_registry import get_adaptor
 
 if TYPE_CHECKING:
     from cmap import Color
 
+    from scenex import model
+
     from . import _camera, _canvas, _scene
 
 
-class View(core_view.ViewAdaptor):
+class View(adaptor_base.ViewAdaptor):
     """View interface for pygfx Backend.
 
     A view combines a scene and a camera to render a scene (onto a canvas).
@@ -24,7 +26,7 @@ class View(core_view.ViewAdaptor):
     _pygfx_scene: pygfx.Scene
     _pygfx_cam: pygfx.Camera
 
-    def __init__(self, view: core_view.View, **backend_kwargs: Any) -> None:
+    def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
         canvas_adaptor = cast("_canvas.Canvas", get_adaptor(view.canvas))
         wgpu_canvas = canvas_adaptor._snx_get_native()
         self._renderer = pygfx.renderers.WgpuRenderer(wgpu_canvas)
@@ -38,11 +40,11 @@ class View(core_view.ViewAdaptor):
     def _snx_set_visible(self, arg: bool) -> None:
         pass
 
-    def _snx_set_scene(self, scene: core_view.Scene) -> None:
+    def _snx_set_scene(self, scene: model.Scene) -> None:
         self._scene_adaptor = cast("_scene.Scene", get_adaptor(scene))
         self._pygfx_scene = self._scene_adaptor._pygfx_node
 
-    def _snx_set_camera(self, cam: core_view.Camera) -> None:
+    def _snx_set_camera(self, cam: model.Camera) -> None:
         self._cam_adaptor = cast("_camera.Camera", get_adaptor(cam))
         self._pygfx_cam = self._cam_adaptor._pygfx_node
         self._cam_adaptor.pygfx_controller.register_events(self._renderer)
