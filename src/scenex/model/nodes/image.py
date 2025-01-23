@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Literal, TypeVar
 
@@ -52,7 +50,7 @@ class ImageAdaptor(NodeAdaptor[_IT, _AT]):
     """Protocol for a backend Image adaptor object."""
 
     @abstractmethod
-    def _snx_set_data(self, arg: NDArray) -> None: ...
+    def _snx_set_data(self, arg: "NDArray") -> None: ...
     @abstractmethod
     def _snx_set_cmap(self, arg: Colormap) -> None: ...
     @abstractmethod

@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 import logging
 from abc import abstractmethod
+from collections.abc import Iterator, Sequence
 from typing import TYPE_CHECKING, Annotated, Any, TypeVar, Union, cast
 
 from pydantic import (
@@ -16,7 +15,10 @@ from scenex.model._base import _AT, EventedBase, SupportsVisibility
 from scenex.model.transform import Transform
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, Sequence
+    from .camera import Camera
+    from .image import Image
+    from .points import Points
+    from .scene import Scene
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 # improve me... Read up on: https://docs.pydantic.dev/latest/concepts/unions/
 AnyNode = Annotated[
-    Union["Image", "Scene", "Points", "Camera"], Field(discriminator="node_type")
+    Union["Image", "Points", "Camera", "Scene"], Field(discriminator="node_type")
 ]
 
 
@@ -36,14 +38,7 @@ class Node(EventedBase):
     """
 
     name: str | None = Field(default=None, description="Name of the node.")
-    parent: AnyNode | None = Field(
-        default=None,
-        description="Parent node. If None, this node is a root node.",
-        exclude=True,  # prevents recursion in serialization.
-        repr=False,  # recursion is just confusing
-        # TODO: maybe make children the derived field?
-    )
-
+    parent: AnyNode | None = None
     # children: EventedList[AnyNode] = Field(default_factory=EventedList, frozen=True)
     visible: bool = Field(default=True, description="Whether this node is visible.")
     interactive: bool = Field(
@@ -122,7 +117,7 @@ class Node(EventedBase):
 
     # below borrowed from vispy.scene.Node
 
-    def transform_to_node(self, other: Node) -> Transform:
+    def transform_to_node(self, other: "Node") -> Transform:
         """Return Transform that maps from coordinate frame of `self` to `other`.
 
         Note that there must be a _single_ path in the scenegraph that connects
@@ -142,7 +137,7 @@ class Node(EventedBase):
         tforms = [n.transform for n in a[:-1]] + [n.transform.inv() for n in b]
         return Transform.chain(*tforms[::-1])
 
-    def path_to_node(self, other: Node) -> tuple[list[Node], list[Node]]:
+    def path_to_node(self, other: "Node") -> tuple[list["Node"], list["Node"]]:
         """Return two lists describing the path from this node to another.
 
         Parameters
@@ -186,7 +181,7 @@ class Node(EventedBase):
         down = their_parents[: their_parents.index(common_parent)][::-1]
         return (up, down)
 
-    def iter_parents(self) -> Iterator[Node]:
+    def iter_parents(self) -> Iterator["Node"]:
         """Return list of parents starting from this node.
 
         The chain ends at the first node with no parents.
@@ -246,12 +241,3 @@ class NodeAdaptor(SupportsVisibility[_NT, _AT]):
         """Set the node type."""
         # this is a no-op, but is required for the serializer
         pass
-
-
-# imports needed to resolve recursive AnyNode type
-from .camera import Camera  # noqa: E402, TC001
-from .image import Image  # noqa: E402, TC001
-from .points import Points  # noqa: E402, TC001
-from .scene import Scene  # noqa: E402, TC001
-
-Node.model_rebuild()

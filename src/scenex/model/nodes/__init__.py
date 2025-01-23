@@ -9,5 +9,6 @@ from .image import Image
 from .points import Points
 from .scene import Scene
 
+Node.model_rebuild()
 
 __all__ = ["Camera", "Image", "Node", "Points", "Scene"]

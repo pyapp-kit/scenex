@@ -101,7 +101,16 @@ disallow_any_generics = false
 disallow_subclassing_any = false
 show_error_codes = true
 pretty = true
-# plugins = ["pydantic.mypy"]
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["rendercanvas.*"]
+follow_untyped_imports = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = false
+init_typed = false
+warn_required_dynamic_aliases = true
 
 # https://docs.pytest.org/
 [tool.pytest.ini_options]
