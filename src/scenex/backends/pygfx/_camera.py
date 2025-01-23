@@ -10,7 +10,7 @@ from scenex.model.nodes import camera
 from ._node import Node
 
 
-class CameraAdaptor(Node, camera.CameraAdaptor):
+class Camera(Node, camera.CameraAdaptor):
     """Adaptor for pygfx camera."""
 
     _pygfx_node: pygfx.PerspectiveCamera
@@ -27,13 +27,13 @@ class CameraAdaptor(Node, camera.CameraAdaptor):
 
         self._pygfx_node.local.scale_y = -1  # don't think this is working...
 
-    def _vis_set_zoom(self, zoom: float) -> None:
+    def _snx_set_zoom(self, zoom: float) -> None:
         raise NotImplementedError
 
-    def _vis_set_center(self, arg: tuple[float, ...]) -> None:
+    def _snx_set_center(self, arg: tuple[float, ...]) -> None:
         raise NotImplementedError
 
-    def _vis_set_type(self, arg: CameraType) -> None:
+    def _snx_set_type(self, arg: camera.CameraType) -> None:
         raise NotImplementedError
 
     def _view_size(self) -> tuple[float, float] | None:
@@ -51,13 +51,13 @@ class CameraAdaptor(Node, camera.CameraAdaptor):
         # and should perhaps be moved to the View Adaptor
         self.pygfx_controller.add_default_event_handlers(viewport, self._pygfx_node)
 
-    def _vis_set_range(self, margin: float) -> None:
+    def _snx_set_range(self, margin: float) -> None:
         # reset camera to fit all objects
         if not (scene := self._camera_model.parent):
             print("No scene found for camera")
             return
 
-        py_scene = cast("pygfx.Scene", scene.backend_adaptor("pygfx")._vis_get_native())
+        py_scene = cast("pygfx.Scene", scene.backend_adaptor("pygfx")._snx_get_native())
         cam = self._pygfx_node
         cam.show_object(py_scene)
 

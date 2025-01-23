@@ -5,12 +5,12 @@ import logging
 from cmap import Color
 from pydantic import Field, computed_field
 
-from ._base import EventedModel
+from ._base import EventedBase
 
 logger = logging.getLogger(__name__)
 
 
-class Layout(EventedModel):
+class Layout(EventedBase):
     """Rectangular layout model.
 
         y

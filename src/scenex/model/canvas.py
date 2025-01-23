@@ -6,7 +6,9 @@ from typing import TYPE_CHECKING, Any, TypeVar
 from cmap import Color
 from pydantic import Field
 
-from ._base import EventedModel, SupportsVisibility
+from scenex.model._base import _AT
+
+from ._base import EventedBase, SupportsVisibility
 from ._evented_list import EventedList
 from .view import View  # noqa: TC001
 
@@ -14,7 +16,7 @@ if TYPE_CHECKING:
     import numpy as np
 
 
-class Canvas(EventedModel):
+class Canvas(EventedBase):
     """Canvas onto which views are rendered.
 
     In desktop applications, this will be a window. In web applications, this will be a
@@ -30,6 +32,11 @@ class Canvas(EventedModel):
     visible: bool = Field(default=False, description="Whether the canvas is visible.")
     title: str = Field(default="", description="The title of the canvas.")
     views: EventedList[View] = Field(default_factory=EventedList, frozen=True)
+
+    def model_post_init(self, __context: Any) -> None:
+        """Post-initialization hook for the model."""
+        for view in self.views:
+            view._canvas = self
 
     @property
     def size(self) -> tuple[int, int]:
@@ -57,17 +64,17 @@ class Canvas(EventedModel):
 _CT = TypeVar("_CT", bound="Canvas", covariant=True)
 
 
-class CanvasController(SupportsVisibility[_CT]):
+class CanvasAdaptor(SupportsVisibility[_CT, _AT]):
     """Protocol defining the interface for a Canvas adaptor."""
 
     @abstractmethod
-    def _vis_set_width(self, arg: int) -> None: ...
+    def _snx_set_width(self, arg: int) -> None: ...
     @abstractmethod
-    def _vis_set_height(self, arg: int) -> None: ...
+    def _snx_set_height(self, arg: int) -> None: ...
     @abstractmethod
-    def _vis_set_background_color(self, arg: Color | None) -> None: ...
+    def _snx_set_background_color(self, arg: Color | None) -> None: ...
     @abstractmethod
-    def _vis_set_title(self, arg: str) -> None: ...
+    def _snx_set_title(self, arg: str) -> None: ...
     @abstractmethod
     def _vis_close(self) -> None: ...
     @abstractmethod
@@ -75,10 +82,10 @@ class CanvasController(SupportsVisibility[_CT]):
     @abstractmethod
     def _vis_add_view(self, view: View) -> None: ...
 
-    def _vis_set_views(self, views: list[View]) -> None:
+    def _snx_set_views(self, views: list[View]) -> None:
         pass
 
-    def _vis_get_ipython_mimebundle(
+    def _snx_get_ipython_mimebundle(
         self, *args: Any, **kwargs: Any
     ) -> dict | tuple[dict, dict] | Any:
         return NotImplemented

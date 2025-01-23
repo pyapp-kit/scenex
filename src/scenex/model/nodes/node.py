@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Annotated, Any, TypeVar, Union, cast
 
 from pydantic import Field, SerializerFunctionWrapHandler, model_serializer
 
-from scenex.model._base import EventedModel, SupportsVisibility
+from scenex.model._base import _AT, EventedBase, SupportsVisibility
 from scenex.model._evented_list import EventedList
 from scenex.model.transform import Transform
 
@@ -23,7 +23,7 @@ AnyNode = Annotated[
 ]
 
 
-class Node(EventedModel):
+class Node(EventedBase):
     """Base class for all nodes.  Also a `Container[Node]`.
 
     Do not instantiate this class directly. Use a subclass.  GenericNode may
@@ -189,23 +189,23 @@ class Node(EventedModel):
 _NT = TypeVar("_NT", bound="Node", covariant=True)
 
 
-class NodeAdaptor(SupportsVisibility[_NT]):
+class NodeAdaptor(SupportsVisibility[_NT, _AT]):
     """Backend interface for a Node."""
 
     @abstractmethod
-    def _vis_set_name(self, arg: str) -> None: ...
+    def _snx_set_name(self, arg: str) -> None: ...
     @abstractmethod
-    def _vis_set_parent(self, arg: Node | None) -> None: ...
+    def _snx_set_parent(self, arg: Node | None) -> None: ...
     @abstractmethod
-    def _vis_set_children(self, arg: list[Node]) -> None: ...
+    def _snx_set_children(self, arg: list[Node]) -> None: ...
     @abstractmethod
-    def _vis_set_opacity(self, arg: float) -> None: ...
+    def _snx_set_opacity(self, arg: float) -> None: ...
     @abstractmethod
-    def _vis_set_order(self, arg: int) -> None: ...
+    def _snx_set_order(self, arg: int) -> None: ...
     @abstractmethod
-    def _vis_set_interactive(self, arg: bool) -> None: ...
+    def _snx_set_interactive(self, arg: bool) -> None: ...
     @abstractmethod
-    def _vis_set_transform(self, arg: Transform) -> None: ...
+    def _snx_set_transform(self, arg: Transform) -> None: ...
     @abstractmethod
     def _vis_add_node(self, node: Node) -> None: ...
 
@@ -220,6 +220,11 @@ class NodeAdaptor(SupportsVisibility[_NT]):
     @abstractmethod
     def _vis_force_update(self) -> None:
         """Force an update to the node."""
+
+    def _snx_set_node_type(self, arg: str) -> None:
+        """Set the node type."""
+        # this is a no-op, but is required for the serializer
+        pass
 
 
 # imports needed to resolve recursive AnyNode type

@@ -7,6 +7,8 @@ import pygfx
 
 from scenex.model import view as core_view
 
+from ._adaptor_registry import get_adaptor
+
 if TYPE_CHECKING:
     from cmap import Color
 
@@ -23,25 +25,25 @@ class View(core_view.ViewAdaptor):
     _pygfx_cam: pygfx.Camera
 
     def __init__(self, view: core_view.View, **backend_kwargs: Any) -> None:
-        canvas_adaptor = cast("_canvas.Canvas", view.canvas.backend_adaptor("pygfx"))
-        wgpu_canvas = canvas_adaptor._vis_get_native()
+        canvas_adaptor = cast("_canvas.Canvas", get_adaptor(view.canvas))
+        wgpu_canvas = canvas_adaptor._snx_get_native()
         self._renderer = pygfx.renderers.WgpuRenderer(wgpu_canvas)
 
-        self._vis_set_scene(view.scene)
-        self._vis_set_camera(view.camera)
+        self._snx_set_scene(view.scene)
+        self._snx_set_camera(view.camera)
 
-    def _vis_get_native(self) -> pygfx.Viewport:
+    def _snx_get_native(self) -> pygfx.Viewport:
         return pygfx.Viewport(self._renderer)
 
-    def _vis_set_visible(self, arg: bool) -> None:
+    def _snx_set_visible(self, arg: bool) -> None:
         pass
 
-    def _vis_set_scene(self, scene: core_view.Scene) -> None:
-        self._scene_adaptor = cast("_scene.Scene", scene.backend_adaptor("pygfx"))
+    def _snx_set_scene(self, scene: core_view.Scene) -> None:
+        self._scene_adaptor = cast("_scene.Scene", get_adaptor(scene))
         self._pygfx_scene = self._scene_adaptor._pygfx_node
 
-    def _vis_set_camera(self, cam: core_view.Camera) -> None:
-        self._cam_adaptor = cast("_camera.Camera", cam.backend_adaptor("pygfx"))
+    def _snx_set_camera(self, cam: core_view.Camera) -> None:
+        self._cam_adaptor = cast("_camera.Camera", get_adaptor(cam))
         self._pygfx_cam = self._cam_adaptor._pygfx_node
         self._cam_adaptor.pygfx_controller.register_events(self._renderer)
 
@@ -50,37 +52,37 @@ class View(core_view.ViewAdaptor):
         renderer.render(self._pygfx_scene, self._pygfx_cam)
         renderer.request_draw()
 
-    def _vis_set_position(self, arg: tuple[float, float]) -> None:
+    def _snx_set_position(self, arg: tuple[float, float]) -> None:
         warnings.warn(
             "set_position not implemented for pygfx", RuntimeWarning, stacklevel=2
         )
 
-    def _vis_set_size(self, arg: tuple[float, float] | None) -> None:
+    def _snx_set_size(self, arg: tuple[float, float] | None) -> None:
         warnings.warn(
             "set_size not implemented for pygfx", RuntimeWarning, stacklevel=2
         )
 
-    def _vis_set_background_color(self, color: Color | None) -> None:
+    def _snx_set_background_color(self, color: Color | None) -> None:
         colors = (color.rgba,) if color is not None else ()
         background = pygfx.Background(None, material=pygfx.BackgroundMaterial(*colors))
         self._pygfx_scene.add(background)
 
-    def _vis_set_border_width(self, arg: float) -> None:
+    def _snx_set_border_width(self, arg: float) -> None:
         warnings.warn(
             "set_border_width not implemented for pygfx", RuntimeWarning, stacklevel=2
         )
 
-    def _vis_set_border_color(self, arg: Color | None) -> None:
+    def _snx_set_border_color(self, arg: Color | None) -> None:
         warnings.warn(
             "set_border_color not implemented for pygfx", RuntimeWarning, stacklevel=2
         )
 
-    def _vis_set_padding(self, arg: int) -> None:
+    def _snx_set_padding(self, arg: int) -> None:
         warnings.warn(
             "set_padding not implemented for pygfx", RuntimeWarning, stacklevel=2
         )
 
-    def _vis_set_margin(self, arg: int) -> None:
+    def _snx_set_margin(self, arg: int) -> None:
         warnings.warn(
             "set_margin not implemented for pygfx", RuntimeWarning, stacklevel=2
         )

@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING, Any, TypeVar
 
 from pydantic import Field, PrivateAttr, computed_field
 
-from ._base import EventedModel, SupportsVisibility
+from scenex.model._base import _AT
+
+from ._base import EventedBase, SupportsVisibility
 from .layout import Layout
 from .nodes.camera import Camera
 from .nodes.scene import Scene
@@ -21,7 +23,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class View(EventedModel):
+class View(EventedBase):
     """A rectangular area on a canvas that displays a scene, with a camera.
 
     A canvas can have one or more views. Each view has a single scene (i.e. a
@@ -61,16 +63,6 @@ class View(EventedModel):
         self._canvas = value
         self._canvas.views.append(self)
 
-    def show(self) -> Canvas:
-        """Show the view.
-
-        Convenience method for showing the canvas that the view is on.
-        If no canvas exists, a new one is created.
-        """
-        canvas = self.canvas
-        canvas.show()
-        return self.canvas
-
 
 # -------------------- Controller ABC --------------------
 
@@ -79,27 +71,27 @@ _VT = TypeVar("_VT", bound="View", covariant=True)
 # TODO: decide whether all the layout stuff goes here...
 
 
-class ViewAdaptor(SupportsVisibility[_VT]):
+class ViewAdaptor(SupportsVisibility[_VT, _AT]):
     """Protocol defining the interface for a View adaptor."""
 
     @abstractmethod
-    def _vis_set_camera(self, arg: Camera) -> None: ...
+    def _snx_set_camera(self, arg: Camera) -> None: ...
     @abstractmethod
-    def _vis_set_scene(self, arg: Scene) -> None: ...
+    def _snx_set_scene(self, arg: Scene) -> None: ...
     @abstractmethod
-    def _vis_set_position(self, arg: tuple[float, float]) -> None: ...
+    def _snx_set_position(self, arg: tuple[float, float]) -> None: ...
     @abstractmethod
-    def _vis_set_size(self, arg: tuple[float, float] | None) -> None: ...
+    def _snx_set_size(self, arg: tuple[float, float] | None) -> None: ...
     @abstractmethod
-    def _vis_set_background_color(self, arg: Color | None) -> None: ...
+    def _snx_set_background_color(self, arg: Color | None) -> None: ...
     @abstractmethod
-    def _vis_set_border_width(self, arg: float) -> None: ...
+    def _snx_set_border_width(self, arg: float) -> None: ...
     @abstractmethod
-    def _vis_set_border_color(self, arg: Color | None) -> None: ...
+    def _snx_set_border_color(self, arg: Color | None) -> None: ...
     @abstractmethod
-    def _vis_set_padding(self, arg: int) -> None: ...
+    def _snx_set_padding(self, arg: int) -> None: ...
     @abstractmethod
-    def _vis_set_margin(self, arg: int) -> None: ...
+    def _snx_set_margin(self, arg: int) -> None: ...
 
-    def _vis_set_layout(self, arg: Layout) -> None:
+    def _snx_set_layout(self, arg: Layout) -> None:
         pass

@@ -2,20 +2,24 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, cast
 
-from scenex.model import _scene as core
+from scenex.model import adaptor_base
+
+from ._adaptor_registry import adaptors
 
 if TYPE_CHECKING:
     import numpy as np
     from cmap import Color
     from rendercanvas.auto import RenderCanvas
 
+    from scenex import model
+
     from ._view import View
 
 
-class Canvas(core.canvas.CanvasAdaptorProtocol):
+class Canvas(adaptor_base.CanvasAdaptor):
     """Canvas interface for pygfx Backend."""
 
-    def __init__(self, canvas: core.Canvas, **backend_kwargs: Any) -> None:
+    def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
         from rendercanvas.auto import RenderCanvas
 
         self._wgpu_canvas = RenderCanvas()
@@ -27,10 +31,10 @@ class Canvas(core.canvas.CanvasAdaptorProtocol):
         self._wgpu_canvas.set_title(canvas.title)
         self._views = canvas.views
 
-    def _vis_get_native(self) -> RenderCanvas:
+    def _snx_get_native(self) -> RenderCanvas:
         return self._wgpu_canvas
 
-    def _vis_set_visible(self, arg: bool) -> None:
+    def _snx_set_visible(self, arg: bool) -> None:
         # show the qt canvas we patched earlier in __init__
         if hasattr(self._wgpu_canvas, "show"):
             self._wgpu_canvas.show()
@@ -38,28 +42,28 @@ class Canvas(core.canvas.CanvasAdaptorProtocol):
 
     def _draw(self) -> None:
         for view in self._views:
-            adaptor = cast("View", view.backend_adaptor("pygfx"))
+            adaptor = cast("View", adaptors.get_adaptor(view))
             adaptor._draw()
 
-    def _vis_add_view(self, view: core.View) -> None:
+    def _vis_add_view(self, view: model.View) -> None:
         pass
         # adaptor = cast("View", view.backend_adaptor())
         # adaptor._pygfx_cam.set_viewport(self._viewport)
         # self._views.append(adaptor)
 
-    def _vis_set_width(self, arg: int) -> None:
+    def _snx_set_width(self, arg: int) -> None:
         _, height = self._wgpu_canvas.get_logical_size()
         self._wgpu_canvas.set_logical_size(arg, height)
 
-    def _vis_set_height(self, arg: int) -> None:
+    def _snx_set_height(self, arg: int) -> None:
         width, _ = self._wgpu_canvas.get_logical_size()
         self._wgpu_canvas.set_logical_size(width, arg)
 
-    def _vis_set_background_color(self, arg: Color) -> None:
+    def _snx_set_background_color(self, arg: Color) -> None:
         # not sure if pygfx has both a canavs and view background color...
         pass
 
-    def _vis_set_title(self, arg: str) -> None:
+    def _snx_set_title(self, arg: str) -> None:
         self._wgpu_canvas.set_title(arg)
 
     def _vis_close(self) -> None:
