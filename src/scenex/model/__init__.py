@@ -8,10 +8,11 @@ from .nodes.node import AnyNode, Node
 from .nodes.points import Points, ScalingMode, SymbolName
 from .nodes.scene import Scene
 from .transform import Transform
-from .view import View
+from .view import BlendMode, View
 
 __all__ = [
     "AnyNode",
+    "BlendMode",
     "Camera",
     "CameraType",
     "Canvas",

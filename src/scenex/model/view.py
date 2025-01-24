@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, Literal, TypeVar
 
 from pydantic import ConfigDict, Field, PrivateAttr, computed_field
 
@@ -23,6 +23,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+# just a random/basic selection of blend modes for now
+BlendMode = Literal["default", "opaque", "alpha", "additive"]
+
+
 class View(EventedBase):
     """A rectangular area on a canvas that displays a scene, with a camera.
 
@@ -35,7 +39,11 @@ class View(EventedBase):
     scene: Scene = Field(default_factory=Scene)
     camera: Camera = Field(default_factory=Camera)
     layout: Layout = Field(default_factory=Layout, frozen=True)
-
+    blending: BlendMode = Field(
+        default="default",
+        description="The blending mode to use when rendering the view. "
+        "Must be one of 'default', 'opaque', 'alpha', or 'additive'.",
+    )
     visible: bool = Field(default=True, description="Whether the view is visible.")
 
     _canvas: Canvas | None = PrivateAttr(None)
@@ -76,6 +84,8 @@ _VT = TypeVar("_VT", bound="View", covariant=True)
 class ViewAdaptor(SupportsVisibility[_VT, _AT]):
     """Protocol defining the interface for a View adaptor."""
 
+    @abstractmethod
+    def _snx_set_blending(self, arg: BlendMode) -> None: ...
     @abstractmethod
     def _snx_set_camera(self, arg: Camera) -> None: ...
     @abstractmethod
