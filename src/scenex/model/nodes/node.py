@@ -4,6 +4,7 @@ from collections.abc import Iterator, Sequence
 from typing import TYPE_CHECKING, Annotated, Any, TypeVar, Union, cast
 
 from pydantic import (
+    ConfigDict,
     Field,
     PrivateAttr,
     SerializerFunctionWrapHandler,
@@ -58,6 +59,8 @@ class Node(EventedBase):
     )
 
     _children: list[AnyNode] = PrivateAttr(default_factory=list)
+
+    model_config = ConfigDict(extra="forbid")
 
     # -----------------------------
 

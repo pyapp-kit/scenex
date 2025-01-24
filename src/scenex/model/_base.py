@@ -38,8 +38,11 @@ class EventedBase(BaseModel):
     _model_id: uuid.UUID = PrivateAttr(default_factory=uuid.uuid1)
 
     events: ClassVar[SignalGroupDescriptor] = SignalGroupDescriptor()
+
+    # note, strangely, for mypy reasons,
+    # this configDict should not include extra="forbid"
+    # it's a long story: https://github.com/pydantic/pydantic/issues/11329
     model_config: ClassVar[ConfigDict] = ExtendedConfig(
-        extra="forbid",
         validate_default=True,
         validate_assignment=True,
         repr_exclude_defaults=True,

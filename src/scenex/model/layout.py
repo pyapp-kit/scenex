@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 
 from cmap import Color
-from pydantic import Field, computed_field
+from pydantic import ConfigDict, Field, computed_field
 
 from ._base import EventedBase
 
@@ -60,6 +60,8 @@ class Layout(EventedBase):
     margin: int = Field(
         default=0, description="he margin to keep outside the widget's border"
     )
+
+    model_config = ConfigDict(extra="forbid")
 
     @computed_field  # type: ignore [prop-decorator]
     @property

@@ -6,7 +6,7 @@ import logging
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, TypeVar
 
-from pydantic import Field, PrivateAttr, computed_field
+from pydantic import ConfigDict, Field, PrivateAttr, computed_field
 
 from scenex.model._base import _AT
 
@@ -39,6 +39,8 @@ class View(EventedBase):
     visible: bool = Field(default=True, description="Whether the view is visible.")
 
     _canvas: Canvas | None = PrivateAttr(None)
+
+    model_config = ConfigDict(extra="forbid")
 
     def model_post_init(self, __context: Any) -> None:
         """Post-initialization hook for the model."""

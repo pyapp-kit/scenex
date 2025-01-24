@@ -4,7 +4,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, TypeVar
 
 from cmap import Color
-from pydantic import Field
+from pydantic import ConfigDict, Field
 
 from scenex.model._base import _AT
 
@@ -32,6 +32,8 @@ class Canvas(EventedBase):
     visible: bool = Field(default=False, description="Whether the canvas is visible.")
     title: str = Field(default="", description="The title of the canvas.")
     views: EventedList[View] = Field(default_factory=EventedList, frozen=True)
+
+    model_config = ConfigDict(extra="forbid")
 
     def model_post_init(self, __context: Any) -> None:
         """Post-initialization hook for the model."""
