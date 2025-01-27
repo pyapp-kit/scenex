@@ -37,11 +37,11 @@ dependencies = ["cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10"]
 
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
 [project.optional-dependencies]
-test = ["pytest>=8", "pytest-cov>=6"]
 pygfx = ["pygfx>=0.7.0"]
+test = ["pytest>=8", "pytest-cov>=6", "scenex[pygfx]"]
 
 dev = [
-    "scenex[test,pygfx]",
+    "scenex[test]",
     "ipython",
     "mypy",
     "pdbpp; sys_platform != 'win32'",
