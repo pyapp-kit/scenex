@@ -1,13 +1,11 @@
 import uuid
 from collections.abc import Iterable, Iterator
 from contextlib import suppress
-from typing import Any, ClassVar, TypeVar
+from typing import Any, ClassVar
 from weakref import WeakValueDictionary
 
 from psygnal import SignalGroupDescriptor
 from pydantic import BaseModel, ConfigDict, PrivateAttr
-
-_EM = TypeVar("_EM", covariant=True, bound="EventedBase")
 
 
 class ExtendedConfig(ConfigDict, total=False):

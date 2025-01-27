@@ -1,3 +1,10 @@
+"""A pydantic-optimized version of psygnal.containers.EventedList.
+
+The rationale is that we directly use pydantic's TypeAdapter to validate
+data on insertion, while psygnal needs to be a bit more agnostic about
+pydantic.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, MutableSequence

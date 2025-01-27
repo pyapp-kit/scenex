@@ -11,6 +11,3 @@ class Scene(Node):
     """
 
     node_type: Literal["scene"] = "scene"
-
-
-# (SceneController ABC is just NodeController)

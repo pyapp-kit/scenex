@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, Union
 
 from pydantic import Field
 
 from .node import Node
 
 CameraType = Literal["panzoom", "perspective"]
+Position2D = tuple[float, float]
+Position3D = tuple[float, float, float]
+Position = Union[Position2D, Position3D]
 
 
 class Camera(Node):
@@ -21,6 +24,6 @@ class Camera(Node):
         "such as mouse and keyboard events.",
     )
     zoom: float = Field(default=1.0, description="Zoom factor of the camera.")
-    center: tuple[float, float, float] | tuple[float, float] = Field(
+    center: Position = Field(
         default=(0, 0, 0), description="Center position of the view."
     )
