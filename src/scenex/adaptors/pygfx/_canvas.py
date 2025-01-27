@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
 from scenex.adaptors.base import CanvasAdaptor
 
@@ -10,10 +10,19 @@ if TYPE_CHECKING:
     import numpy as np
     from cmap import Color
     from rendercanvas.auto import RenderCanvas
+    from rendercanvas.base import BaseRenderCanvas
 
     from scenex import model
 
     from ._view import View
+
+    class SupportsHideShow(BaseRenderCanvas):
+        def show(self) -> None: ...
+        def hide(self) -> None: ...
+
+
+def supports_hide_show(obj: Any) -> TypeGuard[SupportsHideShow]:
+    return hasattr(obj, "show") and hasattr(obj, "hide")
 
 
 class Canvas(CanvasAdaptor):
@@ -24,7 +33,7 @@ class Canvas(CanvasAdaptor):
 
         self._wgpu_canvas = RenderCanvas()
         # Qt RenderCanvas calls show() in its __init__ method, so we need to hide it
-        if hasattr(self._wgpu_canvas, "hide"):
+        if supports_hide_show(self._wgpu_canvas):
             self._wgpu_canvas.hide()
 
         self._wgpu_canvas.set_logical_size(canvas.width, canvas.height)
@@ -36,7 +45,7 @@ class Canvas(CanvasAdaptor):
 
     def _snx_set_visible(self, arg: bool) -> None:
         # show the qt canvas we patched earlier in __init__
-        if hasattr(self._wgpu_canvas, "show"):
+        if supports_hide_show(self._wgpu_canvas):
             self._wgpu_canvas.show()
         self._wgpu_canvas.request_draw(self._draw)
 

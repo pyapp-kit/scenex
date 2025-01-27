@@ -51,7 +51,7 @@ class Points(Node):
             **geo_kwargs,
         )
         self._material = pygfx.PointsMaterial(
-            size=points.size,
+            size=points.size,  # pyright: ignore[reportArgumentType]
             size_space=SPACE_MAP[points.scaling],
             aa=points.antialias > 0,
             opacity=points.opacity,
@@ -76,4 +76,4 @@ class Points(Node):
 
     def _snx_set_antialias(self, antialias: float) -> None: ...
 
-    def _snx_set_opacity(self, opacity: float) -> None: ...
+    def _snx_set_opacity(self, arg: float) -> None: ...

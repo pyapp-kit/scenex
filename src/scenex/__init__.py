@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from importlib.metadata import PackageNotFoundError, version
+from typing import no_type_check
 
 try:
     __version__ = version("scenex")
@@ -30,6 +31,9 @@ __all__ = [
 ]
 
 
+# FIXME: this is a temporary solution to deal with pyright and pydantic validation
+# not yet sure what the equivalent of pydantic.mypy is for pyright
+@no_type_check
 def show(obj: Node | View) -> None:
     """Show the scene."""
     from .adaptors.auto import get_adaptor_registry
