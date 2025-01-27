@@ -19,14 +19,13 @@ name = "scenex"
 dynamic = ["version"]
 description = "Declarative scene graph model"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "BSD-3-Clause" }
 authors = [{ name = "Talley Lambert", email = "talley.lambert@gmail.com" }]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -37,11 +36,11 @@ dependencies = ["cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10"]
 
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
 [project.optional-dependencies]
+test = ["pytest>=8", "pytest-cov>=6"]
 pygfx = ["pygfx>=0.7.0"]
-test = ["pytest>=8", "pytest-cov>=6", "scenex[pygfx]"]
 
 dev = [
-    "scenex[test]",
+    "scenex[test,pygfx]",
     "ipython",
     "mypy",
     "pdbpp; sys_platform != 'win32'",
@@ -59,7 +58,7 @@ repository = "https://github.com/tlambert03/scenex"
 # https://docs.astral.sh/ruff
 [tool.ruff]
 line-length = 88
-target-version = "py39"
+target-version = "py310"
 fix = true
 src = ["src"]
 
