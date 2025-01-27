@@ -48,6 +48,7 @@ dev = [
     "pre-commit",
     "rich",
     "ruff",
+    "pyright>=1.1.392",
     "PyQt6",
 ]
 
@@ -112,6 +113,13 @@ follow_untyped_imports = true
 init_forbid_extra = false
 init_typed = false
 warn_required_dynamic_aliases = true
+
+[tool.pyright]
+include = ["src"]
+pythonVersion = "3.10"
+enableExperimentalFeatures = true
+verboseOutput = true
+venv = ".venv"
 
 # https://docs.pytest.org/
 [tool.pytest.ini_options]

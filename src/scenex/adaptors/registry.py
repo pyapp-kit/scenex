@@ -50,6 +50,8 @@ class AdaptorRegistry:
     def get_adaptor(self, obj: model.Canvas) -> base.CanvasAdaptor: ...
     @overload
     def get_adaptor(self, obj: model.EventedBase) -> base.Adaptor: ...
+    @overload
+    def get_adaptor(self, obj: _M, create: bool = True) -> base.Adaptor[_M, Any]: ...
     def get_adaptor(self, obj: _M, create: bool = True) -> base.Adaptor[_M, Any]:
         """Get the adaptor for the given model object, create if `create` is True."""
         if obj._model_id.hex not in self._objects:
@@ -59,7 +61,9 @@ class AdaptorRegistry:
             self.initialize_adaptor(obj, adaptor)
         return self._objects[obj._model_id.hex]
 
-    def initialize_adaptor(self, model: _M, adaptor: base.Adaptor) -> None:
+    def initialize_adaptor(
+        self, model: model.EventedBase, adaptor: base.Adaptor
+    ) -> None:
         """Initialize the adaptor for the given model object."""
         sync_adaptor(adaptor, model)
         model.events.connect(adaptor.handle_event)
@@ -73,7 +77,7 @@ class AdaptorRegistry:
             for child in model.children:
                 self.get_adaptor(child)
 
-    def get_adaptor_class(self, obj: _M) -> type[base.Adaptor]:
+    def get_adaptor_class(self, obj: model.EventedBase) -> type[base.Adaptor]:
         """Return the adaptor class for the given model object."""
         cls = type(self)
         cls_module = sys.modules[cls.__module__]
@@ -83,7 +87,9 @@ class AdaptorRegistry:
         )
 
     @classmethod
-    def validate_adaptor_class(cls, obj: _M, adaptor_cls: type[base.Adaptor]) -> None:
+    def validate_adaptor_class(
+        cls, obj: model.EventedBase, adaptor_cls: type[base.Adaptor]
+    ) -> None:
         """Validate that the given class is a valid adaptor for the given object."""
         return _validate_adaptor_class(type(obj), adaptor_cls)
 

@@ -1,26 +1,29 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
-from scenex.adaptors.base import NodeAdaptor
+from scenex.adaptors.base import NodeAdaptor, TNode
 
 from ._adaptor_registry import get_adaptor
 
 if TYPE_CHECKING:
-    from pygfx.geometries import Geometry
-    from pygfx.materials import Material
-    from pygfx.objects import WorldObject
+    import pygfx
 
     from scenex import model
     from scenex.model import Transform
 
 
-class Node(NodeAdaptor):
+TObj = TypeVar("TObj", bound="pygfx.WorldObject")
+TMat = TypeVar("TMat", bound="pygfx.Material")
+TGeo = TypeVar("TGeo", bound="pygfx.Geometry")
+
+
+class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj, TMat, TGeo]):
     """Node adaptor for pygfx Backend."""
 
-    _pygfx_node: WorldObject
-    _material: Material
-    _geometry: Geometry
+    _pygfx_node: TObj
+    _material: TMat
+    _geometry: TGeo
     _name: str
 
     def _snx_get_native(self) -> Any:

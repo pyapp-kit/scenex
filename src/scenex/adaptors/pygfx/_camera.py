@@ -26,7 +26,8 @@ class Camera(Node, CameraAdaptor):
             self._pygfx_node = pygfx.OrthographicCamera()
             self.pygfx_controller = pygfx.PanZoomController(self._pygfx_node)
         elif camera.type == "perspective":
-            self._pygfx_node = pygfx.PerspectiveCamera(70, 4 / 3)
+            # this type ignore is because PerspectiveCamera lacks hints
+            self._pygfx_node = pygfx.PerspectiveCamera(70, 4 / 3)  # pyright: ignore reportArgumentType]
             self.pygfx_controller = pygfx.OrbitController(self._pygfx_node)
 
         self._pygfx_node.local.scale_y = -1  # don't think this is working...
