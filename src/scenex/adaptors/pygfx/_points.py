@@ -13,10 +13,9 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from cmap import Color
 
-    from scenex.model import nodes
-    from scenex.model.nodes.points import ScalingMode
+    from scenex import model
 
-SPACE_MAP: Mapping[ScalingMode, Literal["model", "screen", "world"]] = {
+SPACE_MAP: Mapping[model.ScalingMode, Literal["model", "screen", "world"]] = {
     True: "world",
     False: "screen",
     "fixed": "screen",
@@ -30,7 +29,7 @@ class Points(Node):
 
     _pygfx_node: pygfx.Points
 
-    def __init__(self, points: nodes.Points, **backend_kwargs: Any) -> None:
+    def __init__(self, points: model.Points, **backend_kwargs: Any) -> None:
         # TODO: unclear whether get_view() is better here...
         coords = np.asarray(points.coords)
         n_coords = len(coords)

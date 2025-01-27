@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 import pygfx
 
-from scenex.model import adaptor_base
+from scenex.adaptors.base import ViewAdaptor
 
 from ._adaptor_registry import get_adaptor
 
@@ -25,7 +25,7 @@ BLENDING_MAP = {
 }
 
 
-class View(adaptor_base.ViewAdaptor):
+class View(ViewAdaptor):
     """View interface for pygfx Backend.
 
     A view combines a scene and a camera to render a scene (onto a canvas).

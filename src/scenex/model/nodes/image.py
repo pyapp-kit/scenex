@@ -1,16 +1,9 @@
-from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Literal, TypeVar
+from typing import Any, Literal
 
 from cmap import Colormap
 from pydantic import Field
 
-from scenex.model._base import _AT
-
-from .node import Node, NodeAdaptor
-
-if TYPE_CHECKING:
-    from numpy.typing import NDArray
-
+from .node import Node
 
 InterpolationMode = Literal["nearest", "linear", "bicubic"]
 
@@ -39,23 +32,3 @@ class Image(Node):
     interpolation: InterpolationMode = Field(
         default="nearest", description="Interpolation mode."
     )
-
-
-# -------------------- Controller ABC --------------------
-
-_IT = TypeVar("_IT", bound="Image", covariant=True)
-
-
-class ImageAdaptor(NodeAdaptor[_IT, _AT]):
-    """Protocol for a backend Image adaptor object."""
-
-    @abstractmethod
-    def _snx_set_data(self, arg: "NDArray") -> None: ...
-    @abstractmethod
-    def _snx_set_cmap(self, arg: Colormap) -> None: ...
-    @abstractmethod
-    def _snx_set_clims(self, arg: tuple[float, float] | None) -> None: ...
-    @abstractmethod
-    def _snx_set_gamma(self, arg: float) -> None: ...
-    @abstractmethod
-    def _snx_set_interpolation(self, arg: InterpolationMode) -> None: ...

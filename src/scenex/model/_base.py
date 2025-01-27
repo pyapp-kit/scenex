@@ -1,12 +1,10 @@
-import logging
 import uuid
-from abc import ABC, abstractmethod
 from collections.abc import Iterable, Iterator
 from contextlib import suppress
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, ClassVar, TypeVar
 from weakref import WeakValueDictionary
 
-from psygnal import EmissionInfo, SignalGroupDescriptor
+from psygnal import SignalGroupDescriptor
 from pydantic import BaseModel, ConfigDict, PrivateAttr
 
 _EM = TypeVar("_EM", covariant=True, bound="EventedBase")
@@ -69,51 +67,3 @@ class EventedBase(BaseModel):
                     if val == default:
                         continue
             yield key, val
-
-
-_AT = TypeVar("_AT")
-logger = logging.getLogger(__name__)
-
-
-class Adaptor(ABC, Generic[_EM, _AT]):
-    """ABC for backend adaptor classes.
-
-    An adaptor converts model change events into into native calls for the given
-    backend.
-    """
-
-    SETTER_METHOD = "_snx_set_{name}"
-
-    @abstractmethod
-    def __init__(self, obj: _EM) -> None:
-        """All backend adaptor objects receive the object they are adapting."""
-
-    @abstractmethod
-    def _snx_get_native(self) -> _AT:
-        """Return the native object for the ."""
-
-    def handle_event(self, info: EmissionInfo) -> None:
-        signal_name = info.signal.name
-
-        try:
-            name = self.SETTER_METHOD.format(name=signal_name)
-            setter = getattr(self, name)
-        except AttributeError as e:
-            logger.exception(e)
-            return
-
-        event_name = f"{type(self).__name__}.{signal_name}"
-        logger.debug(f"{event_name}={info.args} emitting to backend")
-
-        try:
-            setter(info.args[0])
-        except Exception as e:
-            logger.exception(e)
-
-
-class SupportsVisibility(Adaptor[_EM, _AT]):
-    """Protocol for objects that support visibility (show/hide)."""
-
-    @abstractmethod
-    def _snx_set_visible(self, arg: bool) -> None:
-        """Set the visibility of the object."""

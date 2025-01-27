@@ -32,7 +32,7 @@ __all__ = [
 
 def show(obj: Node | View) -> None:
     """Show the scene."""
-    from .backends.auto import get_adaptor_registry
+    from .adaptors.auto import get_adaptor_registry
 
     adaptors = get_adaptor_registry()
     if isinstance(obj, View):

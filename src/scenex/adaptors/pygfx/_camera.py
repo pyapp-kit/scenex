@@ -1,23 +1,26 @@
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 import pygfx
 
-from scenex.model.nodes import camera
+from scenex.adaptors.base import CameraAdaptor
 
 from ._adaptor_registry import get_adaptor
 from ._node import Node
 
+if TYPE_CHECKING:
+    from scenex import model
 
-class Camera(Node, camera.CameraAdaptor):
+
+class Camera(Node, CameraAdaptor):
     """Adaptor for pygfx camera."""
 
     _pygfx_node: pygfx.PerspectiveCamera
     pygfx_controller: pygfx.Controller
 
-    def __init__(self, camera: camera.Camera, **backend_kwargs: Any) -> None:
+    def __init__(self, camera: model.Camera, **backend_kwargs: Any) -> None:
         self._camera_model = camera
         if camera.type == "panzoom":
             self._pygfx_node = pygfx.OrthographicCamera()
@@ -35,7 +38,7 @@ class Camera(Node, camera.CameraAdaptor):
     def _snx_set_center(self, arg: tuple[float, ...]) -> None:
         raise NotImplementedError
 
-    def _snx_set_type(self, arg: camera.CameraType) -> None:
+    def _snx_set_type(self, arg: model.CameraType) -> None:
         raise NotImplementedError
 
     def _view_size(self) -> tuple[float, float] | None:

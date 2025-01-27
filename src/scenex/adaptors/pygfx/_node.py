@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, cast
 
-from scenex.model.nodes import node as core_node
+from scenex.adaptors.base import NodeAdaptor
 
 from ._adaptor_registry import get_adaptor
 
@@ -11,10 +11,11 @@ if TYPE_CHECKING:
     from pygfx.materials import Material
     from pygfx.objects import WorldObject
 
+    from scenex import model
     from scenex.model import Transform
 
 
-class Node(core_node.NodeAdaptor):
+class Node(NodeAdaptor):
     """Node adaptor for pygfx Backend."""
 
     _pygfx_node: WorldObject
@@ -31,7 +32,7 @@ class Node(core_node.NodeAdaptor):
         # Could this be entirely managed on the model side/
         self._name = arg
 
-    def _snx_set_parent(self, parent: core_node.Node | None) -> None:
+    def _snx_set_parent(self, parent: model.Node | None) -> None:
         if parent is None:
             self._pygfx_node._reset_parent()
         else:
@@ -57,7 +58,7 @@ class Node(core_node.NodeAdaptor):
         # pygfx uses a transposed matrix relative to the model
         self._pygfx_node.local.matrix = arg.root.T
 
-    def _snx_add_node(self, node: core_node.Node) -> None:
+    def _snx_add_node(self, node: model.Node) -> None:
         # create if it doesn't exist
         adaptor = cast("Node", get_adaptor(node))
         self._pygfx_node.add(adaptor._snx_get_native())

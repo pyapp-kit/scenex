@@ -1,18 +1,11 @@
 from __future__ import annotations
 
-from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Literal, TypeVar
+from typing import Any, Literal
 
 from cmap import Color
 from pydantic import Field
 
-from scenex.model._base import _AT
-
-from .node import Node, NodeAdaptor
-
-if TYPE_CHECKING:
-    from numpy.typing import NDArray
-
+from .node import Node
 
 SymbolName = Literal[
     "disc",
@@ -58,29 +51,3 @@ class Points(Node):
     )
 
     antialias: float = Field(default=1, description="Anti-aliasing factor, in px.")
-
-
-# -------------------- Controller ABC --------------------
-
-_PT = TypeVar("_PT", bound=Points, covariant=True)
-
-
-class PointsAdaptor(NodeAdaptor[_PT, _AT]):
-    """Protocol for a backend Image adaptor object."""
-
-    @abstractmethod
-    def _snx_set_coords(self, coords: NDArray) -> None: ...
-    @abstractmethod
-    def _snx_set_size(self, size: float) -> None: ...
-    @abstractmethod
-    def _snx_set_face_color(self, face_color: Color) -> None: ...
-    @abstractmethod
-    def _snx_set_edge_color(self, edge_color: Color) -> None: ...
-    @abstractmethod
-    def _snx_set_edge_width(self, edge_width: float) -> None: ...
-    @abstractmethod
-    def _snx_set_symbol(self, symbol: str) -> None: ...
-    @abstractmethod
-    def _snx_set_scaling(self, scaling: str) -> None: ...
-    @abstractmethod
-    def _snx_set_antialias(self, antialias: float) -> None: ...

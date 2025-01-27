@@ -7,7 +7,8 @@ from functools import cache
 from typing import TYPE_CHECKING, Any, TypeVar, overload
 
 from scenex import model as models
-from scenex.model import adaptor_base as adpt
+
+from . import base
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -27,29 +28,29 @@ class AdaptorRegistry:
     """
 
     def __init__(self) -> None:
-        self._objects: dict[str, adpt.Adaptor] = {}
+        self._objects: dict[str, base.Adaptor] = {}
 
-    def all(self) -> Iterator[adpt.Adaptor]:
+    def all(self) -> Iterator[base.Adaptor]:
         """Return an iterator over all adaptors in the registry."""
         yield from self._objects.values()
 
     # TODO: see if this can be done better with typevars.
     # (it doesn't appear to be trivial)
     @overload
-    def get_adaptor(self, obj: model.Points) -> adpt.PointsAdaptor: ...
+    def get_adaptor(self, obj: model.Points) -> base.PointsAdaptor: ...
     @overload
-    def get_adaptor(self, obj: model.Image) -> adpt.ImageAdaptor: ...
+    def get_adaptor(self, obj: model.Image) -> base.ImageAdaptor: ...
     @overload
-    def get_adaptor(self, obj: model.Camera) -> adpt.CameraAdaptor: ...
+    def get_adaptor(self, obj: model.Camera) -> base.CameraAdaptor: ...
     @overload
-    def get_adaptor(self, obj: model.Scene) -> adpt.NodeAdaptor: ...
+    def get_adaptor(self, obj: model.Scene) -> base.NodeAdaptor: ...
     @overload
-    def get_adaptor(self, obj: model.View) -> adpt.ViewAdaptor: ...
+    def get_adaptor(self, obj: model.View) -> base.ViewAdaptor: ...
     @overload
-    def get_adaptor(self, obj: model.Canvas) -> adpt.CanvasAdaptor: ...
+    def get_adaptor(self, obj: model.Canvas) -> base.CanvasAdaptor: ...
     @overload
-    def get_adaptor(self, obj: model.EventedBase) -> adpt.Adaptor: ...
-    def get_adaptor(self, obj: _M, create: bool = True) -> adpt.Adaptor[_M, Any]:
+    def get_adaptor(self, obj: model.EventedBase) -> base.Adaptor: ...
+    def get_adaptor(self, obj: _M, create: bool = True) -> base.Adaptor[_M, Any]:
         """Get the adaptor for the given model object, create if `create` is True."""
         if obj._model_id.hex not in self._objects:
             if not create:
@@ -58,7 +59,7 @@ class AdaptorRegistry:
             self.initialize_adaptor(obj, adaptor)
         return self._objects[obj._model_id.hex]
 
-    def initialize_adaptor(self, model: _M, adaptor: adpt.Adaptor) -> None:
+    def initialize_adaptor(self, model: _M, adaptor: base.Adaptor) -> None:
         """Initialize the adaptor for the given model object."""
         sync_adaptor(adaptor, model)
         model.events.connect(adaptor.handle_event)
@@ -72,7 +73,7 @@ class AdaptorRegistry:
             for child in model.children:
                 self.get_adaptor(child)
 
-    def get_adaptor_class(self, obj: _M) -> type[adpt.Adaptor]:
+    def get_adaptor_class(self, obj: _M) -> type[base.Adaptor]:
         """Return the adaptor class for the given model object."""
         cls = type(self)
         cls_module = sys.modules[cls.__module__]
@@ -82,21 +83,21 @@ class AdaptorRegistry:
         )
 
     @classmethod
-    def validate_adaptor_class(cls, obj: _M, adaptor_cls: type[adpt.Adaptor]) -> None:
+    def validate_adaptor_class(cls, obj: _M, adaptor_cls: type[base.Adaptor]) -> None:
         """Validate that the given class is a valid adaptor for the given object."""
         return _validate_adaptor_class(type(obj), adaptor_cls)
 
-    def create_adaptor(self, model: _M) -> adpt.Adaptor[_M, Any]:
+    def create_adaptor(self, model: _M) -> base.Adaptor[_M, Any]:
         """Create a new adaptor for the given model object."""
-        adaptor_cls: type[adpt.Adaptor] = self.get_adaptor_class(model)
+        adaptor_cls: type[base.Adaptor] = self.get_adaptor_class(model)
         self.validate_adaptor_class(model, adaptor_cls)
         adaptor = adaptor_cls(model)
 
         return adaptor
 
 
-def _update_blocker(adaptor: adpt.Adaptor) -> contextlib.AbstractContextManager:
-    if isinstance(adaptor, adpt.NodeAdaptor):
+def _update_blocker(adaptor: base.Adaptor) -> contextlib.AbstractContextManager:
+    if isinstance(adaptor, base.NodeAdaptor):
 
         @contextlib.contextmanager
         def blocker() -> Iterator[None]:
@@ -110,7 +111,7 @@ def _update_blocker(adaptor: adpt.Adaptor) -> contextlib.AbstractContextManager:
     return contextlib.nullcontext()
 
 
-def sync_adaptor(adaptor: adpt.Adaptor, model: EventedBase) -> None:
+def sync_adaptor(adaptor: base.Adaptor, model: EventedBase) -> None:
     """Decorator to validate and cache adaptor classes."""
     with _update_blocker(adaptor):
         for field_name in model.model_fields:
@@ -129,8 +130,8 @@ def sync_adaptor(adaptor: adpt.Adaptor, model: EventedBase) -> None:
 
 @cache
 def _validate_adaptor_class(
-    obj_type: type[_M], adaptor_cls: type[adpt.Adaptor]
+    obj_type: type[_M], adaptor_cls: type[base.Adaptor]
 ) -> None:
-    if not isinstance(adaptor_cls, type) and issubclass(adaptor_cls, adpt.Adaptor):
+    if not isinstance(adaptor_cls, type) and issubclass(adaptor_cls, base.Adaptor):
         raise TypeError(f"Expected an Adaptor class, got {adaptor_cls!r}")
     # TODO

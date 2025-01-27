@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, cast
 
-from scenex.model import adaptor_base
+from scenex.adaptors.base import CanvasAdaptor
 
 from ._adaptor_registry import adaptors
 
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from ._view import View
 
 
-class Canvas(adaptor_base.CanvasAdaptor):
+class Canvas(CanvasAdaptor):
     """Canvas interface for pygfx Backend."""
 
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:

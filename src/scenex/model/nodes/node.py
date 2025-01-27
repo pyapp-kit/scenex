@@ -1,7 +1,6 @@
 import logging
-from abc import abstractmethod
 from collections.abc import Iterator, Sequence
-from typing import TYPE_CHECKING, Annotated, Any, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Annotated, Any, Union, cast
 
 from pydantic import (
     ConfigDict,
@@ -12,7 +11,7 @@ from pydantic import (
     model_serializer,
 )
 
-from scenex.model._base import _AT, EventedBase, SupportsVisibility
+from scenex.model._base import EventedBase
 from scenex.model.transform import Transform
 
 if TYPE_CHECKING:
@@ -201,46 +200,3 @@ class Node(EventedBase):
                 break
             yield parent
             x = parent
-
-
-# -------------------- Controller ABC --------------------
-
-_NT = TypeVar("_NT", bound="Node", covariant=True)
-
-
-class NodeAdaptor(SupportsVisibility[_NT, _AT]):
-    """Backend interface for a Node."""
-
-    @abstractmethod
-    def _snx_set_name(self, arg: str) -> None: ...
-    @abstractmethod
-    def _snx_set_parent(self, arg: Node | None) -> None: ...
-    # @abstractmethod
-    # def _snx_set_children(self, arg: list[Node]) -> None: ...
-    @abstractmethod
-    def _snx_set_opacity(self, arg: float) -> None: ...
-    @abstractmethod
-    def _snx_set_order(self, arg: int) -> None: ...
-    @abstractmethod
-    def _snx_set_interactive(self, arg: bool) -> None: ...
-    @abstractmethod
-    def _snx_set_transform(self, arg: Transform) -> None: ...
-    @abstractmethod
-    def _snx_add_node(self, node: Node) -> None: ...
-
-    @abstractmethod
-    def _snx_block_updates(self) -> None:
-        """Block future updates until `unblock_updates` is called."""
-
-    @abstractmethod
-    def _snx_unblock_updates(self) -> None:
-        """Unblock updates after `block_updates` was called."""
-
-    @abstractmethod
-    def _snx_force_update(self) -> None:
-        """Force an update to the node."""
-
-    def _snx_set_node_type(self, arg: str) -> None:
-        """Set the node type."""
-        # this is a no-op, but is required for the serializer
-        pass

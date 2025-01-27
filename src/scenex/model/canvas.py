@@ -1,19 +1,13 @@
 from __future__ import annotations
 
-from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import Any
 
 from cmap import Color
 from pydantic import ConfigDict, Field
 
-from scenex.model._base import _AT
-
-from ._base import EventedBase, SupportsVisibility
+from ._base import EventedBase
 from ._evented_list import EventedList
 from .view import View  # noqa: TC001
-
-if TYPE_CHECKING:
-    import numpy as np
 
 
 class Canvas(EventedBase):
@@ -59,35 +53,3 @@ class Canvas(EventedBase):
     def hide(self) -> None:
         """Hide the canvas."""
         self.visible = False
-
-
-# -------------------- Controller ABC --------------------
-
-_CT = TypeVar("_CT", bound="Canvas", covariant=True)
-
-
-class CanvasAdaptor(SupportsVisibility[_CT, _AT]):
-    """Protocol defining the interface for a Canvas adaptor."""
-
-    @abstractmethod
-    def _snx_set_width(self, arg: int) -> None: ...
-    @abstractmethod
-    def _snx_set_height(self, arg: int) -> None: ...
-    @abstractmethod
-    def _snx_set_background_color(self, arg: Color | None) -> None: ...
-    @abstractmethod
-    def _snx_set_title(self, arg: str) -> None: ...
-    @abstractmethod
-    def _snx_close(self) -> None: ...
-    @abstractmethod
-    def _snx_render(self) -> np.ndarray: ...
-    @abstractmethod
-    def _snx_add_view(self, view: View) -> None: ...
-
-    def _snx_set_views(self, views: list[View]) -> None:
-        pass
-
-    def _snx_get_ipython_mimebundle(
-        self, *args: Any, **kwargs: Any
-    ) -> dict | tuple[dict, dict] | Any:
-        return NotImplemented

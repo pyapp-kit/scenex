@@ -1,7 +1,10 @@
 """Model module for SceneX."""
 
+from cmap import Color, Colormap  # re-export
+
 from ._base import EventedBase, objects
 from .canvas import Canvas
+from .layout import Layout
 from .nodes.camera import Camera, CameraType
 from .nodes.image import Image, InterpolationMode
 from .nodes.node import AnyNode, Node
@@ -16,9 +19,12 @@ __all__ = [
     "Camera",
     "CameraType",
     "Canvas",
+    "Color",
+    "Colormap",
     "EventedBase",
     "Image",
     "InterpolationMode",
+    "Layout",
     "Node",
     "Points",
     "ScalingMode",

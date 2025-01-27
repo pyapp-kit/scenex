@@ -1,4 +1,4 @@
-from .adaptor_base import AdaptorRegistry
+from .registry import AdaptorRegistry
 
 
 def get_adaptor_registry() -> AdaptorRegistry:

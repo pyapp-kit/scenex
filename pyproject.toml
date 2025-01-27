@@ -48,6 +48,7 @@ dev = [
     "pre-commit",
     "rich",
     "ruff",
+    "PyQt6",
 ]
 
 [project.urls]

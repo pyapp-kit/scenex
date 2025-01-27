@@ -3,21 +3,16 @@
 from __future__ import annotations
 
 import logging
-from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Literal, TypeVar
+from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import ConfigDict, Field, PrivateAttr, computed_field
 
-from scenex.model._base import _AT
-
-from ._base import EventedBase, SupportsVisibility
+from ._base import EventedBase
 from .layout import Layout
 from .nodes.camera import Camera
 from .nodes.scene import Scene
 
 if TYPE_CHECKING:
-    from cmap import Color
-
     from .canvas import Canvas
 
 logger = logging.getLogger(__name__)
@@ -72,38 +67,3 @@ class View(EventedBase):
     def canvas(self, value: Canvas) -> None:
         self._canvas = value
         self._canvas.views.append(self)
-
-
-# -------------------- Controller ABC --------------------
-
-_VT = TypeVar("_VT", bound="View", covariant=True)
-
-# TODO: decide whether all the layout stuff goes here...
-
-
-class ViewAdaptor(SupportsVisibility[_VT, _AT]):
-    """Protocol defining the interface for a View adaptor."""
-
-    @abstractmethod
-    def _snx_set_blending(self, arg: BlendMode) -> None: ...
-    @abstractmethod
-    def _snx_set_camera(self, arg: Camera) -> None: ...
-    @abstractmethod
-    def _snx_set_scene(self, arg: Scene) -> None: ...
-    @abstractmethod
-    def _snx_set_position(self, arg: tuple[float, float]) -> None: ...
-    @abstractmethod
-    def _snx_set_size(self, arg: tuple[float, float] | None) -> None: ...
-    @abstractmethod
-    def _snx_set_background_color(self, arg: Color | None) -> None: ...
-    @abstractmethod
-    def _snx_set_border_width(self, arg: float) -> None: ...
-    @abstractmethod
-    def _snx_set_border_color(self, arg: Color | None) -> None: ...
-    @abstractmethod
-    def _snx_set_padding(self, arg: int) -> None: ...
-    @abstractmethod
-    def _snx_set_margin(self, arg: int) -> None: ...
-
-    def _snx_set_layout(self, arg: Layout) -> None:
-        pass
