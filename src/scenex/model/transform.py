@@ -148,7 +148,7 @@ class Transform(RootModel):
         return self.dot(translate(pos[0, :3]))
 
     def rotated(
-        self, angle: float, axis: ArrayLike, about: ArrayLike | None = None
+        self, angle: float, axis: ArrayLike = (0, 0, 1), about: ArrayLike | None = None
     ) -> Transform:
         """Return new transform, rotated some angle about a given axis.
 
@@ -161,6 +161,7 @@ class Transform(RootModel):
             The angle of rotation, in degrees.
         axis : array-like
             The x, y and z coordinates of the axis vector to rotate around.
+            By default, will rotate around the z-axis: `(0, 0, 1)`.
         about : array-like or None
             The x, y and z coordinates to rotate around. If None, will rotate around
             the origin (0, 0, 0).
@@ -271,7 +272,7 @@ def rotate(angle: float, axis: ArrayLike) -> np.ndarray:
         Transformation matrix describing the rotation.
     """
     angle = np.radians(angle)
-    axis = np.array(axis, copy=False)
+    axis = np.asarray(axis)
     if len(axis) != 3:
         raise ValueError("axis must be a 3-element vector")
     x, y, z = axis / np.linalg.norm(axis)

@@ -50,7 +50,7 @@ class View(EventedBase):
         super().model_post_init(__context)
         self.camera.parent = self.scene
 
-    @computed_field  # type: ignore
+    # @computed_field(repr=False)  # type: ignore
     @property
     def canvas(self) -> Canvas:
         """The canvas that the view is on.

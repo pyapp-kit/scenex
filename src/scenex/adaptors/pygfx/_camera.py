@@ -34,17 +34,17 @@ class Camera(Node, CameraAdaptor):
         self._snx_set_range(0.1)
 
     def _snx_set_zoom(self, zoom: float) -> None:
-        raise NotImplementedError
+        return None
 
     def _snx_set_center(self, arg: tuple[float, ...]) -> None:
-        raise NotImplementedError
+        return None
 
     def _snx_set_type(self, arg: model.CameraType) -> None:
-        raise NotImplementedError
+        return None
 
     def _view_size(self) -> tuple[float, float] | None:
         """Return the size of first parent viewbox in pixels."""
-        raise NotImplementedError
+        return None
 
     def update_controller(self) -> None:
         # This is called by the View Adaptor in the `_visit` method

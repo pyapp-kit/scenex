@@ -38,7 +38,9 @@ class Node(EventedBase):
     """
 
     name: str | None = Field(default=None, description="Name of the node.")
-    parent: AnyNode | None = None
+    parent: AnyNode | None = Field(
+        repr=False, default=None, description="Parent node.", exclude=True
+    )
     # children: EventedList[AnyNode] = Field(default_factory=EventedList, frozen=True)
     visible: bool = Field(default=True, description="Whether this node is visible.")
     interactive: bool = Field(
@@ -63,14 +65,14 @@ class Node(EventedBase):
 
     # -----------------------------
 
-    @model_serializer(mode="wrap")
-    def _serialize_withnode_type(self, handler: SerializerFunctionWrapHandler) -> Any:
-        # modified serializer that ensures node_type is included,
-        # (e.g. even if exclude_defaults=True)
-        data = handler(self)
-        if node_type := getattr(self, "node_type", None):
-            data["node_type"] = node_type
-        return data
+    # @model_serializer(mode="wrap")
+    # def _serialize_withnode_type(self, handler: SerializerFunctionWrapHandler) -> Any:
+    #     # modified serializer that ensures node_type is included,
+    #     # (e.g. even if exclude_defaults=True)
+    #     data = handler(self)
+    #     if node_type := getattr(self, "node_type", None):
+    #         data["node_type"] = node_type
+    #     return data
 
     # prevent direct instantiation.
     # makes it easier to use NodeUnion without having to deal with self-reference.
