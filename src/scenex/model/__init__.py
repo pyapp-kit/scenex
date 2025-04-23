@@ -10,6 +10,7 @@ from .nodes.image import Image, InterpolationMode
 from .nodes.node import AnyNode, Node
 from .nodes.points import Points, ScalingMode, SymbolName
 from .nodes.scene import Scene
+from .nodes.volume import RenderMode, Volume
 from .transform import Transform
 from .view import BlendMode, View
 
@@ -27,10 +28,12 @@ __all__ = [
     "Layout",
     "Node",
     "Points",
+    "RenderMode",
     "ScalingMode",
     "Scene",
     "SymbolName",
     "Transform",
     "View",
+    "Volume",
     "objects",
 ]

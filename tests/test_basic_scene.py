@@ -24,6 +24,13 @@ def test_basic_scene() -> None:
                     clims=(0, 255),
                     opacity=0.7,
                 ),
+                snx.Volume(
+                    data=np.random.randint(0, 255, (200, 200, 20)).astype(np.uint8),
+                    cmap="viridis",
+                    transform=snx.Transform().scaled((1.3, 0.5)).translated((-100, 100)),
+                    clims=(0, 255),
+                    opacity=0.7,
+                ),
                 snx.Points(
                     coords=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
                     size=5,
@@ -35,3 +42,5 @@ def test_basic_scene() -> None:
     )
 
     snx.show(view)
+
+test_basic_scene()

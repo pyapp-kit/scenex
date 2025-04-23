@@ -8,5 +8,16 @@ from ._node import Node
 from ._points import Points
 from ._scene import Scene
 from ._view import View
+from ._volume import Volume
 
-__all__ = ["Camera", "Canvas", "Image", "Node", "Points", "Scene", "View", "adaptors"]
+__all__ = [
+    "Camera",
+    "Canvas",
+    "Image",
+    "Node",
+    "Points",
+    "Scene",
+    "View",
+    "Volume",
+    "adaptors"
+]

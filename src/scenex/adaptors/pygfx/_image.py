@@ -34,14 +34,12 @@ class Image(Node):
         self._material.clim = arg
 
     def _snx_set_gamma(self, arg: float) -> None:
-        warnings.warn(
-            "Gamma correction not supported by pygfx", RuntimeWarning, stacklevel=2
-        )
+        self._material.gamma = arg
 
     def _snx_set_interpolation(self, arg: model.InterpolationMode) -> None:
         if arg == "bicubic":
             warnings.warn(
-                "Bicubic interpolation not supported by pygfx",
+                "Bicubic interpolation not supported by pygfx - falling back to linear",
                 RuntimeWarning,
                 stacklevel=2,
             )
