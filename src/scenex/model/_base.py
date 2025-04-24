@@ -55,7 +55,7 @@ class EventedBase(BaseModel):
             yield from super_args
             return
 
-        fields = self.model_fields
+        fields = type(self).model_fields
         for key, val in super_args:
             if key in fields:
                 default = fields[key].get_default(

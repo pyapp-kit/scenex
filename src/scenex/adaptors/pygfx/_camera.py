@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
@@ -31,20 +32,20 @@ class Camera(Node, CameraAdaptor):
             self.pygfx_controller = pygfx.OrbitController(self._pygfx_node)
 
         self._pygfx_node.local.scale_y = -1  # don't think this is working...
-        self._snx_set_range(0.1)
 
     def _snx_set_zoom(self, zoom: float) -> None:
-        raise NotImplementedError
+        warnings.warn("Set camera zoom not implemented", RuntimeWarning, stacklevel=2)
 
     def _snx_set_center(self, arg: tuple[float, ...]) -> None:
-        raise NotImplementedError
+        warnings.warn("Set camera center not implemented", RuntimeWarning, stacklevel=2)
 
     def _snx_set_type(self, arg: model.CameraType) -> None:
-        raise NotImplementedError
+        warnings.warn("Set camera type not implemented", RuntimeWarning, stacklevel=2)
 
     def _view_size(self) -> tuple[float, float] | None:
         """Return the size of first parent viewbox in pixels."""
-        raise NotImplementedError
+        warnings.warn("Set camera size not implemented", RuntimeWarning, stacklevel=2)
+        return None
 
     def update_controller(self) -> None:
         # This is called by the View Adaptor in the `_visit` method
@@ -65,9 +66,9 @@ class Camera(Node, CameraAdaptor):
 
         gfx_scene = cast("pygfx.Scene", get_adaptor(scene)._snx_get_native())
         cam = self._pygfx_node
-        cam.show_object(gfx_scene)
 
         if (bb := gfx_scene.get_world_bounding_box()) is not None:
+            cam.show_object(gfx_scene)
             width, height, _depth = np.ptp(bb, axis=0)
             if width < 0.01:
                 width = 1
