@@ -29,15 +29,15 @@ jobs:
       - run: uv run pyright
 
   test:
-    name: test ${{ matrix.os }} - Python ${{ matrix.python-version }}
+    name: test ${{ matrix.os }} py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     env:
       UV_FROZEN: 1
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
         os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         canvas-extra: [pygfx]
 
     steps:
@@ -50,6 +50,7 @@ jobs:
       - uses: pyvista/setup-headless-display-action@v4
 
       - name: Test
+        shell: bash
         run: |
           uv run -v \
             --no-dev --group test --extra ${{ matrix.canvas-extra }} \
