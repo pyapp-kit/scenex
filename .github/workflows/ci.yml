@@ -37,6 +37,8 @@ jobs:
   test:
     name: test ${{ matrix.os }} - Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
+    env:
+      UV_FROZEN: 1
     strategy:
       fail-fast: false
       matrix:
