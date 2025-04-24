@@ -6,7 +6,9 @@ from pydantic import (
     ConfigDict,
     Field,
     PrivateAttr,
+    SerializerFunctionWrapHandler,
     computed_field,
+    model_serializer,
 )
 
 from scenex.model._base import EventedBase
@@ -63,14 +65,14 @@ class Node(EventedBase):
 
     # -----------------------------
 
-    # @model_serializer(mode="wrap")
-    # def _serialize_withnode_type(self, handler: SerializerFunctionWrapHandler) -> Any:
-    #     # modified serializer that ensures node_type is included,
-    #     # (e.g. even if exclude_defaults=True)
-    #     data = handler(self)
-    #     if node_type := getattr(self, "node_type", None):
-    #         data["node_type"] = node_type
-    #     return data
+    @model_serializer(mode="wrap")
+    def _serialize_withnode_type(self, handler: SerializerFunctionWrapHandler) -> Any:
+        # modified serializer that ensures node_type is included,
+        # (e.g. even if exclude_defaults=True)
+        data = handler(self)
+        if node_type := getattr(self, "node_type", None):
+            data["node_type"] = node_type
+        return data
 
     # prevent direct instantiation.
     # makes it easier to use NodeUnion without having to deal with self-reference.
