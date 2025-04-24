@@ -56,22 +56,20 @@ class View(ViewAdaptor):
         pass
 
     def _snx_set_scene(self, scene: model.Scene) -> None:
-        # Grab the VisPy scene
-        self._scene_adaptor = cast("_scene.Scene", get_adaptor(scene))
-        vispy_scene = self._scene_adaptor._vispy_node
+        # Remove the old scene from the viewbox
+        prev = self._vispy_viewbox._scene
+        prev.parent = None
 
         # Set the private attribute on the vispy viewbox like its constructor does
-        if old_scene := self._vispy_viewbox._scene:
-            old_scene.parent = None
-        self._vispy_viewbox._scene = vispy_scene
-
-        vispy_scene.parent = self._vispy_viewbox
-        # vispy_scene._clipper = old_scene._clipper
-        # vispy_scene.clip_children = True
+        new = cast("_scene.Scene", get_adaptor(scene))._vispy_node
+        self._vispy_viewbox._scene = new
+        new.parent = self._vispy_viewbox
+        new._clipper = prev._clipper
+        new.clip_children = prev.clip_children
 
         # Add the camera to the scene
         if hasattr(self, "_vispy_cam"):
-            self._vispy_cam.parent = vispy_scene
+            self._vispy_cam.parent = new
 
     def _snx_set_camera(self, cam: model.Camera) -> None:
         self._cam_adaptor = cast("_camera.Camera", get_adaptor(cam))
