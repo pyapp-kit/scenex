@@ -1278,7 +1278,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=1.24" },
     { name = "psygnal", specifier = ">=0.11.1" },
     { name = "pydantic", specifier = ">=2.10" },
-    { name = "pygfx", marker = "extra == 'pygfx'", specifier = ">=0.7.0" },
+    { name = "pygfx", marker = "extra == 'pygfx'", specifier = ">=0.9.0" },
 ]
 provides-extras = ["pygfx"]
 

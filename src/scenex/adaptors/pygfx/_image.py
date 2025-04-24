@@ -20,12 +20,11 @@ class Image(Node):
 
     _pygfx_node: pygfx.Image
     _material: pygfx.ImageBasicMaterial
-    _geometry: pygfx.Geometry
 
     def __init__(self, image: model.Image, **backend_kwargs: Any) -> None:
-        self._snx_set_data(image.data)
         self._material = pygfx.ImageBasicMaterial(clim=image.clims)
-        self._pygfx_node = pygfx.Image(self._geometry, self._material)
+        self._pygfx_node = pygfx.Image(None, self._material)
+        self._snx_set_data(image.data)
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
         self._material.map = arg.to_pygfx()
@@ -34,9 +33,7 @@ class Image(Node):
         self._material.clim = arg
 
     def _snx_set_gamma(self, arg: float) -> None:
-        warnings.warn(
-            "Gamma correction not supported by pygfx", RuntimeWarning, stacklevel=2
-        )
+        self._material.gamma = arg
 
     def _snx_set_interpolation(self, arg: model.InterpolationMode) -> None:
         if arg == "bicubic":
@@ -60,4 +57,4 @@ class Image(Node):
 
     def _snx_set_data(self, data: ArrayLike) -> None:
         self._texture = self._create_texture(np.asanyarray(data))
-        self._geometry = pygfx.Geometry(grid=self._texture)
+        self._pygfx_node.geometry = pygfx.Geometry(grid=self._texture)
