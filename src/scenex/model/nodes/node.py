@@ -6,9 +6,7 @@ from pydantic import (
     ConfigDict,
     Field,
     PrivateAttr,
-    SerializerFunctionWrapHandler,
     computed_field,
-    model_serializer,
 )
 
 from scenex.model._base import EventedBase

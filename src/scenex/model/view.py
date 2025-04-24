@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Literal
 
-from pydantic import ConfigDict, Field, PrivateAttr, computed_field
+from pydantic import ConfigDict, Field, PrivateAttr
 
 from ._base import EventedBase
 from .layout import Layout
