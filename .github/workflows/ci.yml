@@ -53,7 +53,7 @@ jobs:
 
       - name: Test
         run: |
-          uv run -v --no-dev --extra test --extra ${{ matrix.canvas-extra }} \
+          uv run -v --no-dev --group test --extra ${{ matrix.canvas-extra }} \
             coverage run -p -m pytest -v --color=yes
 
       - name: Upload coverage
