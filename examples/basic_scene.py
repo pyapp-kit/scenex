@@ -3,7 +3,6 @@ from rendercanvas.auto import loop
 
 import scenex as snx
 
-
 view = snx.View(
     blending="default",
     scene=snx.Scene(

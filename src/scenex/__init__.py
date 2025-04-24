@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from contextlib import suppress
 from importlib.metadata import PackageNotFoundError, version
 from typing import no_type_check
 
