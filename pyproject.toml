@@ -38,7 +38,7 @@ dependencies = ["cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10"]
 pygfx = ["pygfx>=0.9.0"]
 
 [dependency-groups]
-test = ["pytest>=8", "pytest-cov>=6", "glfw"]
+test = ["pytest>=8", "pytest-cov>=6", "PyQt6"]
 dev = [
     { include-group = "test" },
     "scenex[pygfx]",
@@ -49,7 +49,6 @@ dev = [
     "rich",
     "ruff",
     "pyright>=1.1.392",
-    "PyQt6",
 ]
 
 
