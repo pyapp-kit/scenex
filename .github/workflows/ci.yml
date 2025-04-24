@@ -47,6 +47,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
 
+      - uses: pyvista/setup-headless-display-action@v4
+
       - name: Test
         run: |
           uv run -v \
