@@ -40,13 +40,13 @@ class View(ViewAdaptor):
     _vispy_cam: vispy.scene.BaseCamera
 
     def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
-        self._vispy_viewbox = vispy.scene.ViewBox()
-        self._snx_set_scene(view.scene)
         self._snx_set_camera(view.camera)
+        self._vispy_viewbox = vispy.scene.ViewBox(self._vispy_cam)
+        self._snx_set_scene(view.scene)
         self._snx_set_blending(view.blending)
 
     def _snx_get_native(self) -> Any:
-        raise NotImplementedError("Nah")
+        return self._vispy_viewbox
 
     def _snx_set_blending(self, arg: model.BlendMode) -> None:
         pass
@@ -66,8 +66,8 @@ class View(ViewAdaptor):
         self._vispy_viewbox._scene = vispy_scene
 
         vispy_scene.parent = self._vispy_viewbox
-        vispy_scene._clipper = Clipper()
-        vispy_scene.clip_children = True
+        # vispy_scene._clipper = old_scene._clipper
+        # vispy_scene.clip_children = True
 
         # Add the camera to the scene
         if hasattr(self, "_vispy_cam"):
@@ -76,7 +76,8 @@ class View(ViewAdaptor):
     def _snx_set_camera(self, cam: model.Camera) -> None:
         self._cam_adaptor = cast("_camera.Camera", get_adaptor(cam))
         self._vispy_cam = self._cam_adaptor._vispy_node
-        self._vispy_viewbox.camera = self._vispy_cam
+        if hasattr(self, "_vispy_viewbox"):
+            self._vispy_viewbox.camera = self._vispy_cam
 
     def _draw(self) -> None:
         raise NotImplementedError("No YOU _draw")

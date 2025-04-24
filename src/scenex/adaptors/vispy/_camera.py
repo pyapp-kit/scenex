@@ -32,13 +32,13 @@ class Camera(Node, CameraAdaptor):
         self._snx_set_range(0.1)
 
     def _snx_set_zoom(self, zoom: float) -> None:
-        raise NotImplementedError
+        self._vispy_node.zoom_factor = zoom
 
     def _snx_set_center(self, arg: tuple[float, ...]) -> None:
-        raise NotImplementedError
+        self._vispy_node.center = arg
 
     def _snx_set_type(self, arg: model.CameraType) -> None:
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def _snx_set_transform(self, arg: Transform) -> None:
         if isinstance(self._vispy_node, vispy.scene.PanZoomCamera):
