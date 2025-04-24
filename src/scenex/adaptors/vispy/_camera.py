@@ -23,6 +23,7 @@ class Camera(Node, CameraAdaptor):
         self._camera_model = camera
         if camera.type == "panzoom":
             self._vispy_node = vispy.scene.PanZoomCamera()
+            self._vispy_node.interactive = True
         elif camera.type == "perspective":
             # TODO: These settings were copied from the pygfx camera.
             # Unify these values?

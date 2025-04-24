@@ -20,8 +20,9 @@ class Image(Node):
     _vispy_node: vispy.scene.Image
 
     def __init__(self, image: model.Image, **backend_kwargs: Any) -> None:
-        self._vispy_node = vispy.scene.Image(texture_format="auto", **backend_kwargs)
+        self._vispy_node = vispy.scene.Image(data=image.data, texture_format="auto", **backend_kwargs)
         self._snx_set_data(image.data)
+        self._vispy_node.visible = True
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
         self._vispy_node.cmap = arg.to_vispy()

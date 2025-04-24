@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 import vispy
 import vispy.scene
+import vispy.scene.subscene
 
 from scenex.adaptors.base import ViewAdaptor
 
@@ -32,23 +33,19 @@ class View(ViewAdaptor):
     A view combines a scene and a camera to render a scene (onto a canvas).
     """
 
-    _vispy_canvas: vispy.scene.SceneCanvas
+    vispy.scene.SceneCanvas
+    _vispy_canvas: vispy.scene.subscene.SubScene
     _vispy_viewbox: vispy.scene.ViewBox
     _vispy_cam: vispy.scene.BaseCamera
 
     def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
-        self._vispy_canvas = vispy.scene.SceneCanvas()
-        self._vispy_viewbox = cast(
-            "vispy.scene.Widget",
-            self._vispy_canvas.central_widget
-        ).add_view()
-
+        self._vispy_viewbox = vispy.scene.ViewBox()
         self._snx_set_scene(view.scene)
         self._snx_set_camera(view.camera)
         self._snx_set_blending(view.blending)
 
     def _snx_get_native(self) -> Any:
-        return self._vispy_canvas.native
+        raise NotImplementedError("Nah")
 
     def _snx_set_blending(self, arg: model.BlendMode) -> None:
         pass
@@ -59,7 +56,10 @@ class View(ViewAdaptor):
 
     def _snx_set_scene(self, scene: model.Scene) -> None:
         self._scene_adaptor = cast("_scene.Scene", get_adaptor(scene))
-        self._vispy_canvas.scene = self._scene_adaptor._vispy_node
+        vispy_scene = self._scene_adaptor._vispy_node
+        self._vispy_viewbox._scene = vispy_scene
+        if hasattr(self, "_vispy_cam"):
+            self._vispy_cam.parent = vispy_scene
 
     def _snx_set_camera(self, cam: model.Camera) -> None:
         self._cam_adaptor = cast("_camera.Camera", get_adaptor(cam))
@@ -67,8 +67,9 @@ class View(ViewAdaptor):
         self._vispy_viewbox.camera = self._vispy_cam
 
     def _draw(self) -> None:
-        print("updating")
-        self._vispy_canvas.update()
+        raise NotImplementedError("No YOU _draw")
+        # print("updating")
+        # self._vispy_canvas.update()
 
     def _snx_set_position(self, arg: tuple[float, float]) -> None:
         raise NotImplementedError()
@@ -77,10 +78,7 @@ class View(ViewAdaptor):
         raise NotImplementedError()
 
     def _snx_set_background_color(self, color: Color | None) -> None:
-        if color is None:
-            self._vispy_canvas.bgcolor = "black"
-        else:
-            self._vispy_canvas.bgcolor = color.rgba
+        raise NotImplementedError("Meh, don't feel like it")
 
     def _snx_set_border_width(self, arg: float) -> None:
         warnings.warn(
