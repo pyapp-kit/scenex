@@ -6,7 +6,7 @@ import numpy as np
 
 from scenex.adaptors.base import CanvasAdaptor
 
-from ._adaptor_registry import adaptors, get_adaptor
+from ._adaptor_registry import get_adaptor
 
 if TYPE_CHECKING:
     from cmap import Color
@@ -14,8 +14,6 @@ if TYPE_CHECKING:
     from rendercanvas.base import BaseRenderCanvas
 
     from scenex import model
-
-    from ._view import View
 
     class SupportsHideShow(BaseRenderCanvas):
         def show(self) -> None: ...
@@ -31,26 +29,18 @@ class Canvas(CanvasAdaptor):
 
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
         from vispy.scene import SceneCanvas, Grid
-        from vispy.scene import Rectangle
 
         self._canvas = SceneCanvas(
             title=canvas.title,
             size=(canvas.width, canvas.height)
         )
-        # rect = Rectangle(
-        #     center=[100, 100],
-        #     color="red",
-        #     border_color="white",
-        #     width=200,
-        #     height=200,
-        # )
-        # rect.parent = self._canvas.scene
         # Qt RenderCanvas calls show() in its __init__ method, so we need to hide it
         if supports_hide_show(self._canvas.native):
+
             self._canvas.native.hide()
-        self._grid = cast(Grid, self._canvas.central_widget.add_grid())
+        self._grid = cast("Grid", self._canvas.central_widget.add_grid())
         for view in canvas.views:
-            self._grid.add_widget(get_adaptor(view)._vispy_viewbox)
+            self._snx_add_view(view)
         self._views = canvas.views
 
     def _snx_get_native(self) -> RenderCanvas:
@@ -65,15 +55,9 @@ class Canvas(CanvasAdaptor):
 
     def _draw(self) -> None:
         self._canvas.update()
-        # for view in self._views:
-        #     adaptor = cast("View", adaptors.get_adaptor(view))
-        #     adaptor._draw()
 
     def _snx_add_view(self, view: model.View) -> None:
         self._grid.add_widget(get_adaptor(view)._vispy_viewbox)
-        # adaptor = cast("View", view.backend_adaptor())
-        # adaptor._pygfx_cam.set_viewport(self._viewport)
-        # self._views.append(adaptor)
 
     def _snx_set_width(self, arg: int) -> None:
         self._canvas.size = (self._canvas.size[0], arg)

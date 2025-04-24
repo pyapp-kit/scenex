@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, cast
 import vispy
 import vispy.scene
 import vispy.scene.subscene
+from vispy.visuals.filters import Clipper
 
 from scenex.adaptors.base import ViewAdaptor
 
@@ -55,9 +56,16 @@ class View(ViewAdaptor):
         pass
 
     def _snx_set_scene(self, scene: model.Scene) -> None:
+        # Grab the VisPy scene
         self._scene_adaptor = cast("_scene.Scene", get_adaptor(scene))
         vispy_scene = self._scene_adaptor._vispy_node
+
+        # Set the private attribute on the vispy viewbox like its constructor does
         self._vispy_viewbox._scene = vispy_scene
+        vispy_scene._clipper = Clipper()
+        vispy_scene.clip_children = True
+
+        # Add the camera to the scene
         if hasattr(self, "_vispy_cam"):
             self._vispy_cam.parent = vispy_scene
 
