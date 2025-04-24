@@ -31,7 +31,6 @@ class Camera(Node, CameraAdaptor):
             self.pygfx_controller = pygfx.OrbitController(self._pygfx_node)
 
         self._pygfx_node.local.scale_y = -1  # don't think this is working...
-        self._snx_set_range(0.1)
 
     def _snx_set_zoom(self, zoom: float) -> None:
         return None
@@ -65,9 +64,9 @@ class Camera(Node, CameraAdaptor):
 
         gfx_scene = cast("pygfx.Scene", get_adaptor(scene)._snx_get_native())
         cam = self._pygfx_node
-        cam.show_object(gfx_scene)
 
         if (bb := gfx_scene.get_world_bounding_box()) is not None:
+            cam.show_object(gfx_scene)
             width, height, _depth = np.ptp(bb, axis=0)
             if width < 0.01:
                 width = 1

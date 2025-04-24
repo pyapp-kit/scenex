@@ -6,4 +6,4 @@
 [![CI](https://github.com/tlambert03/scenex/actions/workflows/ci.yml/badge.svg)](https://github.com/tlambert03/scenex/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/tlambert03/scenex/branch/main/graph/badge.svg)](https://codecov.io/gh/tlambert03/scenex)
 
-Declarative scene graph model
+Declarative, reactive scene graph model, with backend adapter abstraction
