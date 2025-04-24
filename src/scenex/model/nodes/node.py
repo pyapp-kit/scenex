@@ -38,7 +38,9 @@ class Node(EventedBase):
     """
 
     name: str | None = Field(default=None, description="Name of the node.")
-    parent: AnyNode | None = None
+    parent: AnyNode | None = Field(
+        repr=False, default=None, description="Parent node.", exclude=True
+    )
     # children: EventedList[AnyNode] = Field(default_factory=EventedList, frozen=True)
     visible: bool = Field(default=True, description="Whether this node is visible.")
     interactive: bool = Field(

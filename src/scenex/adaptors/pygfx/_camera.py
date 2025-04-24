@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
@@ -33,17 +34,18 @@ class Camera(Node, CameraAdaptor):
         self._pygfx_node.local.scale_y = -1  # don't think this is working...
 
     def _snx_set_zoom(self, zoom: float) -> None:
-        raise NotImplementedError
+        warnings.warn("Set camera zoom not implemented", RuntimeWarning, stacklevel=2)
 
     def _snx_set_center(self, arg: tuple[float, ...]) -> None:
-        raise NotImplementedError
+        warnings.warn("Set camera center not implemented", RuntimeWarning, stacklevel=2)
 
     def _snx_set_type(self, arg: model.CameraType) -> None:
-        raise NotImplementedError
+        warnings.warn("Set camera type not implemented", RuntimeWarning, stacklevel=2)
 
     def _view_size(self) -> tuple[float, float] | None:
         """Return the size of first parent viewbox in pixels."""
-        raise NotImplementedError
+        warnings.warn("Set camera size not implemented", RuntimeWarning, stacklevel=2)
+        return None
 
     def update_controller(self) -> None:
         # This is called by the View Adaptor in the `_visit` method

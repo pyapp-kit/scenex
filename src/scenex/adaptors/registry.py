@@ -120,7 +120,7 @@ def _update_blocker(adaptor: base.Adaptor) -> contextlib.AbstractContextManager:
 def sync_adaptor(adaptor: base.Adaptor, model: EventedBase) -> None:
     """Decorator to validate and cache adaptor classes."""
     with _update_blocker(adaptor):
-        for field_name in model.model_fields:
+        for field_name in type(model).model_fields:
             method_name = adaptor.SETTER_METHOD.format(name=field_name)
             value = getattr(model, field_name)
             try:

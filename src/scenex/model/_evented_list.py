@@ -7,12 +7,11 @@ pydantic.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping, MutableSequence
+from collections.abc import Callable, Iterable, Mapping, MutableSequence
 from functools import cached_property
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     SupportsIndex,
     TypeVar,
     get_args,

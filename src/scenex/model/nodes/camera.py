@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal, Union
+from typing import Literal
 
 from pydantic import Field
 
@@ -9,7 +9,7 @@ from .node import Node
 CameraType = Literal["panzoom", "perspective"]
 Position2D = tuple[float, float]
 Position3D = tuple[float, float, float]
-Position = Union[Position2D, Position3D]
+Position = Position2D | Position3D
 
 
 class Camera(Node):

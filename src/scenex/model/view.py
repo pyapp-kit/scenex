@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Literal
 
-from pydantic import ConfigDict, Field, PrivateAttr, computed_field
+from pydantic import ConfigDict, Field, PrivateAttr
 
 from ._base import EventedBase
 from .layout import Layout
@@ -50,7 +50,6 @@ class View(EventedBase):
         super().model_post_init(__context)
         self.camera.parent = self.scene
 
-    @computed_field  # type: ignore
     @property
     def canvas(self) -> Canvas:
         """The canvas that the view is on.
