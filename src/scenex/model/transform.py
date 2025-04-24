@@ -3,14 +3,14 @@ from __future__ import annotations
 import functools
 import math
 from functools import reduce
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 import numpy as np
 from pydantic import ConfigDict, Field, RootModel
 from pydantic_core import core_schema
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Callable, Iterable
 
     from numpy.typing import ArrayLike, DTypeLike, NDArray
     from pydantic import GetCoreSchemaHandler
@@ -35,7 +35,7 @@ def _arg_to_vec4(
 
     @functools.wraps(func)
     def wrapper(self_: Transform, arg: ArrayLike) -> NDArray:
-        if not isinstance(arg, (tuple, list, np.ndarray)):
+        if not isinstance(arg, tuple | list | np.ndarray):
             raise TypeError(f"Cannot convert argument to 4D vector: {arg!r}")
         arg = np.array(arg)
         flatten = arg.ndim == 1
