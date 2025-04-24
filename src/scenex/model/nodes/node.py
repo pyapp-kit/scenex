@@ -13,6 +13,7 @@ from pydantic import (
 
 from scenex.model._base import EventedBase
 from scenex.model.transform import Transform
+from scenex.adaptors.auto import get_adaptor_registry
 
 if TYPE_CHECKING:
     from .camera import Camera
@@ -91,6 +92,7 @@ class Node(EventedBase):
         # 3. parent also as @computed_field ... but want it directly on the model?
         # ... (still not sure, maybe 3 is better)
         def __setattr__(self, name: str, value: Any):
+            par = None
             if is_parent := name == "parent":
                 if removing := (value is None and self.parent is not None):
                     par = self.parent
@@ -99,6 +101,10 @@ class Node(EventedBase):
                 if removing:
                     par._children.remove(self)
                 elif self not in value._children:
+                    # HACK: models should know nothing about the adaptors
+                    if self.parent and get_adaptor_registry().has_adaptor(self.parent):
+                        get_adaptor_registry().get_adaptor(self)
+                    # end HACK
                     value._children.append(cast("AnyNode", self))
 
     @computed_field  # type: ignore [prop-decorator]
