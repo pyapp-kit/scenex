@@ -101,10 +101,8 @@ class Node(EventedBase):
                 if removing:
                     par._children.remove(self)
                 elif self not in value._children:
-                    # HACK: models should know nothing about the adaptors
-                    if self.parent and get_adaptor_registry().has_adaptor(self.parent):
-                        get_adaptor_registry().get_adaptor(self)
-                    # end HACK
+                    if self.parent and self.parent.has_adaptor():
+                        self.get_adaptor()
                     value._children.append(cast("AnyNode", self))
 
     @computed_field  # type: ignore [prop-decorator]

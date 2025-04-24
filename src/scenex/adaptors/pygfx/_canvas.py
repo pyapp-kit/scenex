@@ -89,9 +89,13 @@ class Canvas(CanvasAdaptor):
     ) -> np.ndarray:
         """Render to screenshot."""
         from rendercanvas.offscreen import OffscreenRenderCanvas
+        from rendercanvas.auto import loop
 
         # not sure about this...
         w, h = self._wgpu_canvas.get_logical_size()
-        canvas = OffscreenRenderCanvas(width=w, height=h, pixel_ratio=1)
+        if size is None:
+            size = (w, h)
+
+        canvas = OffscreenRenderCanvas(size=size, pixel_ratio=1)
         canvas.request_draw(self._draw)
         return cast("np.ndarray", canvas.draw())

@@ -53,3 +53,11 @@ class Canvas(EventedBase):
     def hide(self) -> None:
         """Hide the canvas."""
         self.visible = False
+
+    def render(self) -> Any:
+        """Render the canvas.
+
+        Returns:
+            The rendered image.
+        """
+        return self.get_adaptor()._snx_render()

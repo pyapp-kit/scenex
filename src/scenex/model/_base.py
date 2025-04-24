@@ -1,11 +1,15 @@
 import uuid
 from collections.abc import Iterable, Iterator
 from contextlib import suppress
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, overload
 from weakref import WeakValueDictionary
 
 from psygnal import SignalGroupDescriptor
 from pydantic import BaseModel, ConfigDict, PrivateAttr
+
+if TYPE_CHECKING:
+    from scenex import model
+    from scenex.adaptors import base
 
 
 class ExtendedConfig(ConfigDict, total=False):
@@ -65,3 +69,31 @@ class EventedBase(BaseModel):
                     if val == default:
                         continue
             yield key, val
+
+    # TODO: see if this can be done better with typevars.
+    # (it doesn't appear to be trivial)
+    @overload
+    def get_adaptor(self: "model.Points") -> "base.PointsAdaptor": ...
+    @overload
+    def get_adaptor(self: "model.Image") -> "base.ImageAdaptor": ...
+    @overload
+    def get_adaptor(self: "model.Camera") -> "base.CameraAdaptor": ...
+    @overload
+    def get_adaptor(self: "model.Scene") -> "base.NodeAdaptor": ...
+    @overload
+    def get_adaptor(self: "model.View") -> "base.ViewAdaptor": ...
+    @overload
+    def get_adaptor(self: "model.Canvas") -> "base.CanvasAdaptor": ...
+    @overload
+    def get_adaptor(self: "model.EventedBase") -> "base.Adaptor": ...
+    def get_adaptor(self) -> Any | None:
+        """Get the adaptor for this model."""
+        from scenex.adaptors.auto import get_adaptor_registry
+
+        return get_adaptor_registry().get_adaptor(self)
+
+    def has_adaptor(self) -> bool:
+        """Check if this model has an adaptor."""
+        from scenex.adaptors.auto import get_adaptor_registry
+
+        return get_adaptor_registry().has_adaptor(self)

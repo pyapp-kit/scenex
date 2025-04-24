@@ -33,9 +33,6 @@ class AdaptorRegistry:
     def all(self) -> Iterator[base.Adaptor]:
         """Return an iterator over all adaptors in the registry."""
         yield from self._objects.values()
-    
-    def has_adaptor(self, obj: _M) -> bool:
-        return obj._model_id.hex in self._objects
 
     # TODO: see if this can be done better with typevars.
     # (it doesn't appear to be trivial)
@@ -63,6 +60,10 @@ class AdaptorRegistry:
             self._objects[obj._model_id.hex] = adaptor = self.create_adaptor(obj)
             self.initialize_adaptor(obj, adaptor)
         return self._objects[obj._model_id.hex]
+
+    def has_adaptor(self, obj: model.EventedBase) -> bool:
+        """Check if the registry has an adaptor for the given model object."""
+        return obj._model_id.hex in self._objects
 
     def initialize_adaptor(
         self, model: model.EventedBase, adaptor: base.Adaptor
