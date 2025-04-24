@@ -3,20 +3,11 @@ from rendercanvas.auto import loop
 
 import scenex as snx
 
-# 2d sine wave
-X, Y = np.meshgrid(np.linspace(-10, 10, 100), np.linspace(-10, 10, 100))
-sine_img = (np.sin(X) * np.cos(Y)).astype(np.float32)
-
 
 view = snx.View(
     blending="default",
     scene=snx.Scene(
         children=[
-            snx.Image(
-                name="sine image",
-                data=sine_img,
-                clims=(-1, 1),
-            ),
             snx.Image(
                 data=np.random.randint(0, 255, (200, 200)).astype(np.uint8),
                 cmap="viridis",
@@ -34,6 +25,12 @@ view = snx.View(
     ),
 )
 
+# example of adding an object to a scene
+
+X, Y = np.meshgrid(np.linspace(-10, 10, 100), np.linspace(-10, 10, 100))
+sine_img = (np.sin(X) * np.cos(Y)).astype(np.float32)
+image = snx.Image(name="sine image", data=sine_img, clims=(-1, 1))
+image.parent = view.scene
 
 snx.show(view)
 loop.run()

@@ -34,3 +34,7 @@ __all__ = [
     "View",
     "objects",
 ]
+
+for obj in list(globals().values()):
+    if isinstance(obj, type) and issubclass(obj, EventedBase):
+        obj.model_rebuild()
