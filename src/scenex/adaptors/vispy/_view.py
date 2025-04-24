@@ -61,7 +61,11 @@ class View(ViewAdaptor):
         vispy_scene = self._scene_adaptor._vispy_node
 
         # Set the private attribute on the vispy viewbox like its constructor does
+        if old_scene := self._vispy_viewbox._scene:
+            old_scene.parent = None
         self._vispy_viewbox._scene = vispy_scene
+
+        vispy_scene.parent = self._vispy_viewbox
         vispy_scene._clipper = Clipper()
         vispy_scene.clip_children = True
 
