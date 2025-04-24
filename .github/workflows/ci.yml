@@ -46,10 +46,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
-
       - uses: pyvista/setup-headless-display-action@v4
         with:
           qt: true
+      - name: Install llvmpipe and lavapipe for offscreen canvas
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update -y -qq
+          sudo apt install -y libegl1-mesa-dev libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers
 
       - name: Test
         shell: bash
