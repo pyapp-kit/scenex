@@ -21,12 +21,17 @@ jobs:
       - uses: actions/checkout@v4
       - run: pipx run check-manifest
 
-  pyright:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
-      - run: uv run pyright
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync
+      - uses: pre-commit/action@v3.0.0
+        with:
+          extra_args: --all-files --verbose
 
   test:
     name: test ${{ matrix.os }} py${{ matrix.python-version }}
