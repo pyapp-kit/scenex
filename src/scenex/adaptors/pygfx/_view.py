@@ -3,6 +3,7 @@ from __future__ import annotations
 import warnings
 from typing import TYPE_CHECKING, Any, cast
 
+import numpy as np
 import pygfx
 
 from scenex.adaptors.base import ViewAdaptor
@@ -42,6 +43,7 @@ class View(ViewAdaptor):
         self._snx_set_scene(view.scene)
         self._snx_set_camera(view.camera)
         self._snx_set_blending(view.blending)
+        self._snx_set_background_color(view.layout.background_color)
 
     def _snx_get_native(self) -> pygfx.Viewport:
         return pygfx.Viewport(self._renderer)
@@ -100,3 +102,13 @@ class View(ViewAdaptor):
         warnings.warn(
             "set_margin not implemented for pygfx", RuntimeWarning, stacklevel=2
         )
+
+    def _snx_render(self) -> np.ndarray:
+        """Render to offscreen buffer."""
+        from rendercanvas.offscreen import OffscreenRenderCanvas
+
+        canvas = OffscreenRenderCanvas(size=(640, 480), pixel_ratio=2)
+        renderer = pygfx.renderers.WgpuRenderer(canvas)
+
+        canvas.request_draw(lambda: renderer.render(self._pygfx_scene, self._pygfx_cam))
+        return np.asarray(canvas.draw())

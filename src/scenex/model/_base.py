@@ -1,11 +1,14 @@
 import uuid
 from collections.abc import Iterable, Iterator
 from contextlib import suppress
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 from weakref import WeakValueDictionary
 
 from psygnal import SignalGroupDescriptor
 from pydantic import BaseModel, ConfigDict, PrivateAttr
+
+if TYPE_CHECKING:
+    from scenex.adaptors import base
 
 
 class ExtendedConfig(ConfigDict, total=False):
@@ -65,3 +68,12 @@ class EventedBase(BaseModel):
                     if val == default:
                         continue
             yield key, val
+
+    def _get_adaptor(
+        self, *, backend: str | None = None, create: bool = False
+    ) -> "base.Adaptor":
+        """Get the adaptor for this model."""
+        from scenex.adaptors.auto import get_adaptor_registry
+
+        reg = get_adaptor_registry(backend=backend)
+        return reg.get_adaptor(self, create=create)

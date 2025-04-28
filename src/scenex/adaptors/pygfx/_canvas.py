@@ -51,7 +51,7 @@ class Canvas(CanvasAdaptor):
 
     def _draw(self) -> None:
         for view in self._views:
-            adaptor = cast("View", adaptors.get_adaptor(view))
+            adaptor = cast("View", adaptors.get_adaptor(view, create=True))
             adaptor._draw()
 
     def _snx_add_view(self, view: model.View) -> None:
@@ -79,19 +79,14 @@ class Canvas(CanvasAdaptor):
         """Close canvas."""
         self._wgpu_canvas.close()
 
-    def _snx_render(
-        self,
-        region: tuple[int, int, int, int] | None = None,
-        size: tuple[int, int] | None = None,
-        bgcolor: Color | None = None,
-        crop: np.ndarray | tuple[int, int, int, int] | None = None,
-        alpha: bool = True,
-    ) -> np.ndarray:
-        """Render to screenshot."""
+    def _snx_render(self) -> np.ndarray:
+        """Render to offscreen buffer."""
         from rendercanvas.offscreen import OffscreenRenderCanvas
 
         # not sure about this...
-        w, h = self._wgpu_canvas.get_logical_size()
-        canvas = OffscreenRenderCanvas(width=w, height=h, pixel_ratio=1)
+        # w, h = self._wgpu_canvas.get_logical_size()
+        canvas = OffscreenRenderCanvas(size=(640, 480), pixel_ratio=2)
         canvas.request_draw(self._draw)
+        canvas.force_draw()
+        breakpoint()
         return cast("np.ndarray", canvas.draw())
