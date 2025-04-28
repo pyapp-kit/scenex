@@ -111,6 +111,10 @@ plugins = ["pydantic.mypy"]
 module = ["rendercanvas.*"]
 follow_untyped_imports = true
 
+[[tool.mypy.overrides]]
+module = ["pygfx.*"]
+ignore_missing_imports = true
+
 [tool.pydantic-mypy]
 init_forbid_extra = false
 init_typed = false

@@ -1,5 +1,5 @@
 import logging
-from collections.abc import Iterator, Sequence
+from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING, Annotated, Any, Union, cast
 
 from pydantic import (
@@ -15,10 +15,23 @@ from scenex.model._base import EventedBase
 from scenex.model.transform import Transform
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
+    from typing_extensions import TypedDict, Unpack
+
     from .camera import Camera
     from .image import Image
     from .points import Points
     from .scene import Scene
+
+    class NodeKwargs(TypedDict, total=False):
+        """TypedDict for Node kwargs."""
+
+        name: str | None
+        visible: bool
+        interactive: bool
+        opacity: float
+        order: int
+        transform: Transform | npt.ArrayLike
 
 
 logger = logging.getLogger(__name__)
@@ -37,11 +50,11 @@ class Node(EventedBase):
     be used in place of Node.
     """
 
+    # see computed fields below
+    _parent: "AnyNode | None" = PrivateAttr(default=None)
+    _children: list["AnyNode"] = PrivateAttr(default_factory=list)
+
     name: str | None = Field(default=None, description="Name of the node.")
-    parent: AnyNode | None = Field(
-        repr=False, default=None, description="Parent node.", exclude=True
-    )
-    # children: EventedList[AnyNode] = Field(default_factory=EventedList, frozen=True)
     visible: bool = Field(default=True, description="Whether this node is visible.")
     interactive: bool = Field(
         default=False, description="Whether this node accepts mouse and touch events"
@@ -59,11 +72,32 @@ class Node(EventedBase):
         "frame of the parent.",
     )
 
-    _children: list[AnyNode] = PrivateAttr(default_factory=list)
-
     model_config = ConfigDict(extra="forbid")
 
     # -----------------------------
+    @computed_field  # type: ignore [prop-decorator]
+    @property
+    def children(self) -> tuple["Node", ...]:
+        """Return a tuple of the children of this node."""
+        return tuple(self._children)
+
+    def add_child(self, child: "AnyNode") -> None:
+        """Add a child node to this node."""
+        self._children.append(child)
+        child._parent = cast("AnyNode", self)
+
+    # NOT a computed_field or will cause a recursion error
+    @property
+    def parent(self) -> "AnyNode | None":
+        """Return the parent of this node."""
+        return self._parent
+
+    @parent.setter
+    def parent(self, value: "AnyNode | None") -> None:
+        """Set the parent of this node."""
+        if value is not None and self not in value._children:
+            value._children.append(cast("AnyNode", self))
+        self._parent = value
 
     @model_serializer(mode="wrap")
     def _serialize_withnode_type(self, handler: SerializerFunctionWrapHandler) -> Any:
@@ -74,46 +108,23 @@ class Node(EventedBase):
             data["node_type"] = node_type
         return data
 
-    # prevent direct instantiation.
-    # makes it easier to use NodeUnion without having to deal with self-reference.
-    def __init__(self, /, children: Sequence[AnyNode] = (), **data: Any) -> None:
+    def __init__(
+        self,
+        *,
+        children: Iterable["Node | dict[str, Any]"] = (),
+        **data: "Unpack[NodeKwargs]",
+    ) -> None:
+        # prevent direct instantiation.
+        # makes it easier to use NodeUnion without having to deal with self-reference.
         if type(self) is Node:
             raise TypeError("Node cannot be instantiated directly. Use a subclass.")
-        super().__init__(**data)
-        if children:
-            for child in children:
-                child.parent = cast("AnyNode", self)
 
-    if not TYPE_CHECKING:
-        # considered:
-        # 1. field_validator(mode='after') -> don't have access to self
-        # 2. model_validator(mode='after') -> triggered on every field
-        # 3. parent also as @computed_field ... but want it directly on the model?
-        # ... (still not sure, maybe 3 is better)
-        def __setattr__(self, name: str, value: Any):
-            if is_parent := name == "parent":
-                if removing := (value is None and self.parent is not None):
-                    par = self.parent
-            super().__setattr__(name, value)
-            if is_parent:
-                if removing:
-                    par._children.remove(self)
-                elif self not in value._children:
-                    value._children.append(cast("AnyNode", self))
+        super().__init__(**data)  # pyright: ignore[reportCallIssue]
 
-    @computed_field  # type: ignore [prop-decorator]
-    @property
-    def children(self) -> tuple[AnyNode, ...]:
-        """Return a tuple of the children of this node."""
-        return tuple(self._children)
-
-    def model_post_init(self, __context: Any) -> None:
-        """Post-initialization hook for the model."""
-        super().model_post_init(__context)
-        # ensure parent is set on children
-        # for child in self.children:
-        # child.parent = cast("AnyNode", self)
-        # self.children.item_inserted.connect(self._on_child_inserted)
+        for ch in children:
+            if not isinstance(ch, Node):
+                ch = Node.model_validate(ch)
+                self.add_child(ch)  # type: ignore [arg-type]
 
     def __contains__(self, item: object) -> bool:
         """Return True if this node is an ancestor of item."""

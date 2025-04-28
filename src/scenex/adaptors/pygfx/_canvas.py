@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, TypeGuard, cast
+from typing import TYPE_CHECKING, Any, TypeGuard, cast, no_type_check
 
 from scenex.adaptors.base import CanvasAdaptor
 
@@ -9,7 +9,6 @@ from ._adaptor_registry import adaptors
 if TYPE_CHECKING:
     import numpy as np
     from cmap import Color
-    from rendercanvas.auto import RenderCanvas
     from rendercanvas.base import BaseRenderCanvas
 
     from scenex import model
@@ -40,8 +39,8 @@ class Canvas(CanvasAdaptor):
         self._wgpu_canvas.set_title(canvas.title)
         self._views = canvas.views
 
-    def _snx_get_native(self) -> RenderCanvas:
-        return self._wgpu_canvas
+    def _snx_get_native(self) -> BaseRenderCanvas:
+        return self._wgpu_canvas  # type: ignore[no-any-return]
 
     def _snx_set_visible(self, arg: bool) -> None:
         # show the qt canvas we patched earlier in __init__
@@ -79,6 +78,7 @@ class Canvas(CanvasAdaptor):
         """Close canvas."""
         self._wgpu_canvas.close()
 
+    @no_type_check
     def _snx_render(
         self,
         region: tuple[int, int, int, int] | None = None,
