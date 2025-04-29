@@ -213,3 +213,9 @@ class Node(EventedBase):
                 break
             yield parent
             x = parent
+
+    def tree_repr(self) -> str:
+        """Return an ASCII/Unicode tree representation of self and its descendants."""
+        from scenex.util import tree_repr
+
+        return tree_repr(self, node_repr=object.__repr__)

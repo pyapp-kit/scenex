@@ -2,11 +2,14 @@ import logging
 import uuid
 from collections.abc import Iterable, Iterator
 from contextlib import suppress
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 from weakref import WeakValueDictionary
 
 from psygnal import SignalGroupDescriptor
 from pydantic import BaseModel, ConfigDict, PrivateAttr
+
+if TYPE_CHECKING:
+    from scenex.adaptors.base import Adaptor
 
 logger = logging.getLogger("scenex.model")
 
@@ -71,3 +74,15 @@ class EventedBase(BaseModel):
                     if val == default:
                         continue
             yield key, val
+
+    def _get_adaptor(self, backend: str | None = None) -> "Adaptor":
+        """Get all adaptors for this model."""
+        from scenex.adaptors.auto import get_adaptor_registry
+
+        reg = get_adaptor_registry(backend=backend)
+        return reg.get_adaptor(self)
+
+    def _get_native(self, backend: str | None = None) -> Any:
+        """Get the native object for this model."""
+        adaptor = self._get_adaptor(backend=backend)
+        return adaptor._snx_get_native()
