@@ -76,7 +76,7 @@ class Node(EventedBase):
 
     # prevent direct instantiation.
     # makes it easier to use NodeUnion without having to deal with self-reference.
-    def __init__(self, *, children: Sequence[AnyNode] = (), **data: Any) -> None:
+    def __init__(self, *, children: Sequence["Node"] = (), **data: Any) -> None:
         if type(self) is Node:
             raise TypeError("Node cannot be instantiated directly. Use a subclass.")
         super().__init__(**data)
