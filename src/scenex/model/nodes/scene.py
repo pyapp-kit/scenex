@@ -1,6 +1,7 @@
-from typing import Literal
+from collections.abc import Sequence
+from typing import Any, Literal
 
-from .node import Node
+from .node import AnyNode, Node
 
 
 class Scene(Node):
@@ -11,3 +12,6 @@ class Scene(Node):
     """
 
     node_type: Literal["scene"] = "scene"
+
+    def __init__(self, children: Sequence["AnyNode"] = (), **data: Any) -> None:
+        super().__init__(children=children, **data)
