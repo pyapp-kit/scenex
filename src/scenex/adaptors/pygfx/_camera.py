@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import warnings
+import logging
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
@@ -13,6 +13,8 @@ from ._node import Node
 
 if TYPE_CHECKING:
     from scenex import model
+
+logger = logging.getLogger("scenex.adaptors.pygfx")
 
 
 class Camera(Node, CameraAdaptor):
@@ -34,17 +36,17 @@ class Camera(Node, CameraAdaptor):
         self._pygfx_node.local.scale_y = -1  # don't think this is working...
 
     def _snx_set_zoom(self, zoom: float) -> None:
-        warnings.warn("Set camera zoom not implemented", RuntimeWarning, stacklevel=2)
+        logger.warning("'Camera._snx_set_zoom' not implemented for pygfx")
 
     def _snx_set_center(self, arg: tuple[float, ...]) -> None:
-        warnings.warn("Set camera center not implemented", RuntimeWarning, stacklevel=2)
+        logger.warning("'Camera._snx_set_center' not implemented for pygfx")
 
     def _snx_set_type(self, arg: model.CameraType) -> None:
-        warnings.warn("Set camera type not implemented", RuntimeWarning, stacklevel=2)
+        logger.warning("'Camera._snx_set_type' not implemented for pygfx")
 
     def _view_size(self) -> tuple[float, float] | None:
         """Return the size of first parent viewbox in pixels."""
-        warnings.warn("Set camera size not implemented", RuntimeWarning, stacklevel=2)
+        logger.warning("'Camera._view_size' not implemented for pygfx")
         return None
 
     def update_controller(self) -> None:
