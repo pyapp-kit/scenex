@@ -1,3 +1,4 @@
+import cmap
 import numpy as np
 import pytest
 
@@ -9,7 +10,7 @@ def random_points_node() -> snx.Points:
     return snx.Points(
         coords=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
         size=5,
-        face_color="coral",
+        face_color=cmap.Color("coral"),
         transform=snx.Transform().translated((0, -50)),
     )
 
@@ -19,7 +20,7 @@ def random_image_node() -> snx.Image:
     return snx.Image(
         name="random image",
         data=np.random.randint(0, 255, (200, 200)).astype(np.uint8),
-        cmap="viridis",
+        cmap=cmap.Colormap("viridis"),
         transform=snx.Transform().scaled((1.3, 0.5)).translated((-40, 20)),
         clims=(0, 255),
         opacity=0.7,
