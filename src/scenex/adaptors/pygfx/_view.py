@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import warnings
+import logging
 from typing import TYPE_CHECKING, Any, cast
 
 import pygfx
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
     from . import _camera, _canvas, _scene
 
-
+logger = logging.getLogger("scenex.adaptors.pygfx")
 BLENDING_MAP = {
     "default": "default",
     "opaque": "opaque",
@@ -67,14 +67,10 @@ class View(ViewAdaptor):
         renderer.request_draw()
 
     def _snx_set_position(self, arg: tuple[float, float]) -> None:
-        warnings.warn(
-            "set_position not implemented for pygfx", RuntimeWarning, stacklevel=2
-        )
+        logger.warning("set_position not implemented for pygfx")
 
     def _snx_set_size(self, arg: tuple[float, float] | None) -> None:
-        warnings.warn(
-            "set_size not implemented for pygfx", RuntimeWarning, stacklevel=2
-        )
+        logger.warning("set_size not implemented for pygfx")
 
     def _snx_set_background_color(self, color: Color | None) -> None:
         colors = (color.rgba,) if color is not None else ()
@@ -82,21 +78,13 @@ class View(ViewAdaptor):
         self._pygfx_scene.add(background)
 
     def _snx_set_border_width(self, arg: float) -> None:
-        warnings.warn(
-            "set_border_width not implemented for pygfx", RuntimeWarning, stacklevel=2
-        )
+        logger.warning("set_border_width not implemented for pygfx")
 
     def _snx_set_border_color(self, arg: Color | None) -> None:
-        warnings.warn(
-            "set_border_color not implemented for pygfx", RuntimeWarning, stacklevel=2
-        )
+        logger.warning("set_border_color not implemented for pygfx")
 
     def _snx_set_padding(self, arg: int) -> None:
-        warnings.warn(
-            "set_padding not implemented for pygfx", RuntimeWarning, stacklevel=2
-        )
+        logger.warning("set_padding not implemented for pygfx")
 
     def _snx_set_margin(self, arg: int) -> None:
-        warnings.warn(
-            "set_margin not implemented for pygfx", RuntimeWarning, stacklevel=2
-        )
+        logger.warning("set_margin not implemented for pygfx")
