@@ -65,9 +65,7 @@ jobs:
 
       - name: Test
         shell: bash
-        run: |
-          uv run --no-sync coverage run -p -m pytest -v
-          uv run coverage report --data-file=$(ls -s time .coverage* | tail -1)
+        run: uv run --no-sync coverage run -p -m pytest -v
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
