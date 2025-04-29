@@ -17,7 +17,7 @@ from .model.nodes.points import Points
 from .model.nodes.scene import Scene
 from .model.transform import Transform
 from .model.view import View
-from .util import show, tree_repr
+from .util import show
 
 __all__ = [
     "Camera",
@@ -29,5 +29,4 @@ __all__ = [
     "Transform",
     "View",
     "show",
-    "tree_repr",
 ]
