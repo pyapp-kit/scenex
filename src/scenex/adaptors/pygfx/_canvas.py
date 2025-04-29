@@ -30,7 +30,7 @@ class Canvas(CanvasAdaptor):
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
         from rendercanvas.auto import RenderCanvas
 
-        self._wgpu_canvas = RenderCanvas()
+        self._wgpu_canvas = cast("BaseRenderCanvas", RenderCanvas())
         # Qt RenderCanvas calls show() in its __init__ method, so we need to hide it
         if supports_hide_show(self._wgpu_canvas):
             self._wgpu_canvas.hide()
@@ -40,7 +40,7 @@ class Canvas(CanvasAdaptor):
         self._views = canvas.views
 
     def _snx_get_native(self) -> BaseRenderCanvas:
-        return self._wgpu_canvas  # type: ignore[no-any-return]
+        return self._wgpu_canvas
 
     def _snx_set_visible(self, arg: bool) -> None:
         # show the qt canvas we patched earlier in __init__

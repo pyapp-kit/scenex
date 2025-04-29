@@ -106,6 +106,7 @@ disallow_subclassing_any = false
 show_error_codes = true
 pretty = true
 plugins = ["pydantic.mypy"]
+untyped_calls_exclude = ["rendercanvas"]
 
 [[tool.mypy.overrides]]
 module = ["rendercanvas.*"]
@@ -130,6 +131,7 @@ venv = ".venv"
 # https://docs.pytest.org/
 [tool.pytest.ini_options]
 minversion = "7.0"
+addopts = ["--color=yes"]
 testpaths = ["tests"]
 filterwarnings = ["error"]
 
