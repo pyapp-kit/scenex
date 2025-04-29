@@ -66,11 +66,6 @@ class AdaptorRegistry:
             )
             self._objects[obj._model_id.hex] = adaptor = self.create_adaptor(obj)
             self.initialize_adaptor(obj, adaptor)
-            logger.debug(
-                "        finished %-13r for: %s",
-                type(adaptor).__name__,
-                obj._model_id.hex[:8],
-            )
         return self._objects[obj._model_id.hex]
 
     def initialize_adaptor(
