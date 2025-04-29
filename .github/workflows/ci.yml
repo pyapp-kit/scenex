@@ -70,7 +70,7 @@ jobs:
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
-          name: covreport-${{ matrix.os }}-py${{ matrix.python-version }}-canv${{ matrix.canvas-extra }}
+          name: covreport-${{ matrix.os }}-py${{ matrix.python-version }}-${{ matrix.canvas-extra }}
           path: ./.coverage*
           include-hidden-files: true
 
