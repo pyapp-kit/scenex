@@ -131,6 +131,7 @@ venv = ".venv"
 # https://docs.pytest.org/
 [tool.pytest.ini_options]
 minversion = "7.0"
+addopts = ["--color=yes"]
 testpaths = ["tests"]
 filterwarnings = ["error"]
 

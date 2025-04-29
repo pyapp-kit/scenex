@@ -60,12 +60,11 @@ jobs:
           sudo apt-get update -y -qq
           sudo apt install -y libegl1-mesa-dev libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers
 
+      - name: Install dependencies
+        run: uv sync -v --no-dev --group test --extra ${{ matrix.canvas-extra }}
+
       - name: Test
-        shell: bash
-        run: |
-          uv run -v \
-            --no-dev --group test --extra ${{ matrix.canvas-extra }} \
-            coverage run -p -m pytest -v --color=yes --cov --cov-report=xml
+        run: uv run --no-sync coverage run -p -m pytest -v --cov --cov-report=xml
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
