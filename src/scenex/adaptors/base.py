@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from scenex import model
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("scenex.adaptors")
 
 TNative = TypeVar("TNative")  # type representing a backend object
 TModel = TypeVar("TModel", bound="model.EventedBase", covariant=True)
@@ -52,11 +52,16 @@ class Adaptor(ABC, Generic[TModel, TNative]):
             logger.exception(e)
             return
 
-        event_name = f"{type(self).__name__}.{signal_name}"
-        logger.debug(f"{event_name}={info.args} emitting to backend")
+        arg = info.args[0]
+        logger.debug(
+            "EVENT: %r -> %s=%r  ",
+            type(self),
+            signal_name,
+            arg,
+        )
 
         try:
-            setter(info.args[0])
+            setter(arg)
         except Exception as e:
             logger.exception(e)
 

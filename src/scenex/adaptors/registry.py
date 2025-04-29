@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from scenex.model._base import EventedBase
 
 _M = TypeVar("_M", bound="model.EventedBase")
+logger = logging.getLogger("scenex.adaptors")
 
 
 class AdaptorRegistry:
@@ -57,8 +58,19 @@ class AdaptorRegistry:
         if obj._model_id.hex not in self._objects:
             if not create:
                 raise KeyError(f"No adaptor found for {obj!r}, and create=False")
+            logger.debug(
+                "Creating %r Adaptor %-14r id: %s",
+                type(self).__module__,
+                type(obj).__name__,
+                obj._model_id.hex[:8],
+            )
             self._objects[obj._model_id.hex] = adaptor = self.create_adaptor(obj)
             self.initialize_adaptor(obj, adaptor)
+            logger.debug(
+                "        finished %-13r for: %s",
+                type(adaptor).__name__,
+                obj._model_id.hex[:8],
+            )
         return self._objects[obj._model_id.hex]
 
     def initialize_adaptor(
@@ -74,8 +86,9 @@ class AdaptorRegistry:
         if isinstance(model, models.View):
             self.get_adaptor(model.scene)
         if isinstance(model, models.Node):
-            for child in model.children:
-                self.get_adaptor(child)
+            if model.children:
+                for child in model.children:
+                    self.get_adaptor(child)
 
     def get_adaptor_class(self, obj: model.EventedBase) -> type[base.Adaptor]:
         """Return the adaptor class for the given model object."""
@@ -127,9 +140,7 @@ def sync_adaptor(adaptor: base.Adaptor, model: EventedBase) -> None:
                 vis_set = getattr(adaptor, method_name)
                 vis_set(value)
             except Exception as e:
-                logging.warning(
-                    "Failed to set field %r on adaptor %r: %s", field_name, adaptor, e
-                )
+                logger.warning("%r: %s", adaptor, e)
     force_update = getattr(adaptor, "_snx_force_update", lambda: None)
     force_update()
 

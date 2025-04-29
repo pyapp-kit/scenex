@@ -74,6 +74,24 @@ class Node(EventedBase):
 
     model_config = ConfigDict(extra="forbid")
 
+    def __init__(
+        self,
+        *,
+        children: Iterable["Node | dict[str, Any]"] = (),
+        **data: "Unpack[NodeKwargs]",
+    ) -> None:
+        # prevent direct instantiation.
+        # makes it easier to use NodeUnion without having to deal with self-reference.
+        if type(self) is Node:
+            raise TypeError("Node cannot be instantiated directly. Use a subclass.")
+
+        super().__init__(**data)  # pyright: ignore[reportCallIssue]
+
+        for ch in children:
+            if not isinstance(ch, Node):
+                ch = Node.model_validate(ch)
+            self.add_child(ch)  # type: ignore [arg-type]
+
     # -----------------------------
     @computed_field  # type: ignore [prop-decorator]
     @property
@@ -107,24 +125,6 @@ class Node(EventedBase):
         if node_type := getattr(self, "node_type", None):
             data["node_type"] = node_type
         return data
-
-    def __init__(
-        self,
-        *,
-        children: Iterable["Node | dict[str, Any]"] = (),
-        **data: "Unpack[NodeKwargs]",
-    ) -> None:
-        # prevent direct instantiation.
-        # makes it easier to use NodeUnion without having to deal with self-reference.
-        if type(self) is Node:
-            raise TypeError("Node cannot be instantiated directly. Use a subclass.")
-
-        super().__init__(**data)  # pyright: ignore[reportCallIssue]
-
-        for ch in children:
-            if not isinstance(ch, Node):
-                ch = Node.model_validate(ch)
-                self.add_child(ch)  # type: ignore [arg-type]
 
     def __contains__(self, item: object) -> bool:
         """Return True if this node is an ancestor of item."""
