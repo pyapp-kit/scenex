@@ -93,7 +93,7 @@ class Node(EventedBase):
             self.add_child(ch)  # type: ignore [arg-type]
 
     # -----------------------------
-    @computed_field  # type: ignore [prop-decorator]
+    # @computed_field  # type: ignore [prop-decorator]
     @property
     def children(self) -> tuple["Node", ...]:
         """Return a tuple of the children of this node."""
@@ -104,7 +104,7 @@ class Node(EventedBase):
         self._children.append(child)
         child._parent = cast("AnyNode", self)
 
-    # NOT a computed_field or will cause a recursion error
+    @computed_field  # type: ignore [prop-decorator]
     @property
     def parent(self) -> "AnyNode | None":
         """Return the parent of this node."""

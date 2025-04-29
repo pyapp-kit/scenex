@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from scenex.adaptors.base import NodeAdaptor, TNode
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
     from scenex import model
     from scenex.model import Transform
 
-
+logger = logging.getLogger("scenex.adaptors.pygfx")
 TObj = TypeVar("TObj", bound="pygfx.WorldObject")
 TMat = TypeVar("TMat", bound="pygfx.Material")
 TGeo = TypeVar("TGeo", bound="pygfx.Geometry")

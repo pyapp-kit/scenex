@@ -72,7 +72,10 @@ class AdaptorRegistry:
         self, model: model.EventedBase, adaptor: base.Adaptor
     ) -> None:
         """Initialize the adaptor for the given model object."""
+        # syncronize all model properties with the adaptor
         sync_adaptor(adaptor, model)
+        # connect the model events to the adaptor, to keep the adaptor in sync
+
         model.events.connect(adaptor.handle_event)
 
         if isinstance(model, models.Canvas):
@@ -81,9 +84,8 @@ class AdaptorRegistry:
         if isinstance(model, models.View):
             self.get_adaptor(model.scene)
         if isinstance(model, models.Node):
-            if model.children:
-                for child in model.children:
-                    self.get_adaptor(child)
+            for child in model.children:
+                self.get_adaptor(child)
 
     def get_adaptor_class(self, obj: model.EventedBase) -> type[base.Adaptor]:
         """Return the adaptor class for the given model object."""
@@ -128,7 +130,9 @@ def _update_blocker(adaptor: base.Adaptor) -> contextlib.AbstractContextManager:
 def sync_adaptor(adaptor: base.Adaptor, model: EventedBase) -> None:
     """Decorator to validate and cache adaptor classes."""
     with _update_blocker(adaptor):
-        for field_name in type(model).model_fields:
+        fields = type(model).model_fields | type(model).model_computed_fields
+        logger.debug("Synchronizing fields %r", set(fields))
+        for field_name in fields:
             method_name = adaptor.SETTER_METHOD.format(name=field_name)
             value = getattr(model, field_name)
             try:
