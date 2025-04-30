@@ -37,7 +37,6 @@ class AdaptorRegistry:
 
     # TODO: see if this can be done better with typevars.
     # (it doesn't appear to be trivial)
-    # fmt: off
     @overload
     def get_adaptor(
         self,
