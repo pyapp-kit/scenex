@@ -55,8 +55,8 @@ class Node(EventedBase):
     be used in place of Node.
     """
 
-    # see computed fields below
     parent: "Node | None" = Field(default=None, repr=False, exclude=True)
+    # see computed field below
     _children: list["AnyNode"] = PrivateAttr(default_factory=list)
 
     name: str | None = Field(default=None, description="Name of the node.")
@@ -138,13 +138,13 @@ class Node(EventedBase):
         return result
 
     @staticmethod
-    def _update_parent_children(node: "Node", old_parent: "Node | None") -> None:
+    def _update_parent_children(node: "Node", old_parent: "Node | None" = None) -> None:
         """Remove the node from its old_parent and add it to its new parent."""
         if (new_parent := node.parent) != old_parent:
-            if new_parent and node not in new_parent._children:
+            if new_parent is not None and node not in new_parent._children:
                 new_parent._children.append(cast("AnyNode", node))
                 new_parent.child_added.emit(node)
-            if old_parent and node in old_parent._children:
+            if old_parent is not None and node in old_parent._children:
                 old_parent._children.remove(cast("AnyNode", node))
                 old_parent.child_removed.emit(node)
 

@@ -106,14 +106,17 @@ class AdaptorRegistry:
 
         if isinstance(model, models.Canvas):
             for view in model.views:
-                self.get_adaptor(view)
+                self.get_adaptor(view, create=True)
         if isinstance(model, models.View):
-            self.get_adaptor(model.scene)
+            self.get_adaptor(model.scene, create=True)
         if isinstance(model, models.Node):
             adaptor = cast("base.NodeAdaptor", adaptor)
             model.child_added.connect(adaptor._snx_add_child)
             model.child_removed.connect(adaptor._snx_remove_child)
             for child in model.children:
+                # perhaps optional ... since _implementations of _snx_add_child
+                # will also likely need to call get_adaptor
+                self.get_adaptor(child, create=True)
                 adaptor._snx_add_child(child)
 
     def get_adaptor_class(self, obj: model.EventedBase) -> type[base.Adaptor]:
