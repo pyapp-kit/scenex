@@ -1,3 +1,4 @@
+import cmap
 import numpy as np
 from rendercanvas.auto import loop
 
@@ -9,7 +10,7 @@ view = snx.View(
         children=[
             snx.Image(
                 data=np.random.randint(0, 255, (200, 200)).astype(np.uint8),
-                cmap="viridis",
+                cmap=cmap.Colormap("viridis"),
                 transform=snx.Transform().scaled((1.3, 0.5)).translated((-40, 20)),
                 clims=(0, 255),
                 opacity=0.7,
@@ -17,7 +18,7 @@ view = snx.View(
             snx.Points(
                 coords=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
                 size=5,
-                face_color="coral",
+                face_color=cmap.Color("coral"),
                 transform=snx.Transform().translated((0, -50)),
             ),
         ]
@@ -25,11 +26,10 @@ view = snx.View(
 )
 
 # example of adding an object to a scene
-
 X, Y = np.meshgrid(np.linspace(-10, 10, 100), np.linspace(-10, 10, 100))
 sine_img = (np.sin(X) * np.cos(Y)).astype(np.float32)
 image = snx.Image(name="sine image", data=sine_img, clims=(-1, 1))
-image.parent = view.scene
+view.scene.add_child(image)
 
 snx.show(view)
 loop.run()
