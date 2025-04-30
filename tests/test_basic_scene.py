@@ -34,6 +34,8 @@ def test_basic_view(basic_view: snx.View) -> None:
     assert isinstance(basic_view.model_dump(), dict)
     assert isinstance(basic_view.model_dump_json(), str)
     assert snx.util.tree_repr(basic_view.scene, node_repr=_obj_name) == EXPECT_REPR
+    ary = basic_view.render()
+    assert isinstance(ary, np.ndarray)
 
 
 @pytest.mark.parametrize("backend", ["pygfx"])

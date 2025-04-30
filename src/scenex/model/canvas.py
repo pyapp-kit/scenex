@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 
 from cmap import Color
 from pydantic import ConfigDict, Field
@@ -8,6 +8,11 @@ from pydantic import ConfigDict, Field
 from ._base import EventedBase
 from ._evented_list import EventedList
 from .view import View  # noqa: TC001
+
+if TYPE_CHECKING:
+    import numpy as np
+
+    from scenex.adaptors.base import CanvasAdaptor
 
 
 class Canvas(EventedBase):
@@ -44,12 +49,7 @@ class Canvas(EventedBase):
         """Set the size of the canvas."""
         self.width, self.height = value
 
-    # show and render will trigger a backend connection
-
-    def show(self) -> None:
+    def render(self) -> np.ndarray:
         """Show the canvas."""
-        self.visible = True
-
-    def hide(self) -> None:
-        """Hide the canvas."""
-        self.visible = False
+        adaptor = cast("CanvasAdaptor", self._get_adaptor())
+        return adaptor._snx_render()

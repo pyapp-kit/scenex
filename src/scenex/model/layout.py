@@ -39,8 +39,8 @@ class Layout(EventedBase):
     y: float = Field(
         default=0, description="The y-coordinate of the object (wrt parent)."
     )
-    width: float = Field(default=0, description="The width of the object.")
-    height: float = Field(default=0, description="The height of the object.")
+    width: float = Field(default=600, description="The width of the object.")
+    height: float = Field(default=600, description="The height of the object.")
     background_color: Color | None = Field(
         default=Color("black"),
         description="The background color (inside of the border). "
@@ -58,7 +58,7 @@ class Layout(EventedBase):
         "(i.e. the space reserved between the contents and the border).",
     )
     margin: int = Field(
-        default=0, description="he margin to keep outside the widget's border"
+        default=0, description="The margin to keep outside the widget's border"
     )
 
     model_config = ConfigDict(extra="forbid")

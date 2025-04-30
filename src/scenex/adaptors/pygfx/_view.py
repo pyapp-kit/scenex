@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, cast
 
+import numpy as np
 import pygfx
 
 from scenex.adaptors.base import ViewAdaptor
@@ -42,6 +43,8 @@ class View(ViewAdaptor):
         self._snx_set_scene(view.scene)
         self._snx_set_camera(view.camera)
         self._snx_set_blending(view.blending)
+        # TODO: this is needed... but breaks tests until we deal with Layout better.
+        # self._snx_set_background_color(view.layout.background_color)
 
     def _snx_get_native(self) -> pygfx.Viewport:
         return pygfx.Viewport(self._renderer)
@@ -67,10 +70,10 @@ class View(ViewAdaptor):
         renderer.request_draw()
 
     def _snx_set_position(self, arg: tuple[float, float]) -> None:
-        logger.warning("set_position not implemented for pygfx")
+        logger.warning("View.set_position not implemented for pygfx")
 
     def _snx_set_size(self, arg: tuple[float, float] | None) -> None:
-        logger.warning("set_size not implemented for pygfx")
+        logger.warning("View.set_size not implemented for pygfx")
 
     def _snx_set_background_color(self, color: Color | None) -> None:
         colors = (color.rgba,) if color is not None else ()
@@ -78,13 +81,23 @@ class View(ViewAdaptor):
         self._pygfx_scene.add(background)
 
     def _snx_set_border_width(self, arg: float) -> None:
-        logger.warning("set_border_width not implemented for pygfx")
+        logger.warning("View.set_border_width not implemented for pygfx")
 
     def _snx_set_border_color(self, arg: Color | None) -> None:
-        logger.warning("set_border_color not implemented for pygfx")
+        logger.warning("View.set_border_color not implemented for pygfx")
 
     def _snx_set_padding(self, arg: int) -> None:
-        logger.warning("set_padding not implemented for pygfx")
+        logger.warning("View.set_padding not implemented for pygfx")
 
     def _snx_set_margin(self, arg: int) -> None:
-        logger.warning("set_margin not implemented for pygfx")
+        logger.warning("View.set_margin not implemented for pygfx")
+
+    def _snx_render(self) -> np.ndarray:
+        """Render to offscreen buffer."""
+        from rendercanvas.offscreen import OffscreenRenderCanvas
+
+        canvas = OffscreenRenderCanvas(size=(640, 480), pixel_ratio=2)
+        renderer = pygfx.renderers.WgpuRenderer(canvas)
+
+        canvas.request_draw(lambda: renderer.render(self._pygfx_scene, self._pygfx_cam))
+        return np.asarray(canvas.draw())
