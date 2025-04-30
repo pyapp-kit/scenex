@@ -30,7 +30,7 @@ def _get_model_type(cls: TypeAliasType) -> type[EventedBase]:
         raise ValueError(
             f"Cannot get model class for {cls.__name__}: no bound type found"
         )
-    if sys.version_info >= (3, 12):
+    if sys.version_info >= (3, 13):
         model_type = ref._evaluate(
             {"model": model}, None, type_params=None, recursive_guard=frozenset()
         )
