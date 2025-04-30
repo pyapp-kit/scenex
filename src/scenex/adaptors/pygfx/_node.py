@@ -36,12 +36,13 @@ class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj, TMat, TGeo]):
         # Could this be entirely managed on the model side/
         self._name = arg
 
-    def _snx_set_parent(self, parent: model.Node | None) -> None:
-        if parent is None:
-            self._pygfx_node._reset_parent()
-        else:
-            parent_adaptor = cast("Node", get_adaptor(parent))
-            parent_adaptor._pygfx_node.add(self._pygfx_node)
+    def _snx_add_child(self, arg: model.Node) -> None:
+        child_adaptor = cast("Node", get_adaptor(arg))
+        self._pygfx_node.add(child_adaptor._pygfx_node)
+
+    def _snx_remove_child(self, arg: model.Node) -> None:
+        child_adaptor = cast("Node", get_adaptor(arg))
+        self._pygfx_node.remove(child_adaptor._pygfx_node)
 
     def _snx_set_visible(self, arg: bool) -> None:
         self._pygfx_node.visible = arg

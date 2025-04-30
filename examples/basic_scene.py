@@ -26,11 +26,10 @@ view = snx.View(
 )
 
 # example of adding an object to a scene
-
 X, Y = np.meshgrid(np.linspace(-10, 10, 100), np.linspace(-10, 10, 100))
 sine_img = (np.sin(X) * np.cos(Y)).astype(np.float32)
 image = snx.Image(name="sine image", data=sine_img, clims=(-1, 1))
-image.parent = view.scene
+view.scene.add_child(image)
 
 snx.show(view)
 loop.run()

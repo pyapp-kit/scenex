@@ -1,14 +1,18 @@
 import logging
 from collections.abc import Iterable, Iterator
-from typing import TYPE_CHECKING, Annotated, Any, Union, cast
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, Union, cast
 
+from psygnal import Signal
 from pydantic import (
     ConfigDict,
     Field,
+    ModelWrapValidatorHandler,
     PrivateAttr,
     SerializerFunctionWrapHandler,
+    ValidationInfo,
     computed_field,
     model_serializer,
+    model_validator,
 )
 
 from scenex.model._base import EventedBase
@@ -16,7 +20,7 @@ from scenex.model.transform import Transform
 
 if TYPE_CHECKING:
     import numpy.typing as npt
-    from typing_extensions import TypedDict, Unpack
+    from typing_extensions import Self, TypedDict, Unpack
 
     from .camera import Camera
     from .image import Image
@@ -51,7 +55,7 @@ class Node(EventedBase):
     """
 
     # see computed fields below
-    _parent: "AnyNode | None" = PrivateAttr(default=None)
+    parent: "Node | None" = Field(None, repr=False, exclude=True)
     _children: list["AnyNode"] = PrivateAttr(default_factory=list)
 
     name: str | None = Field(default=None, description="Name of the node.")
@@ -74,6 +78,9 @@ class Node(EventedBase):
 
     model_config = ConfigDict(extra="forbid")
 
+    child_added: ClassVar[Signal] = Signal(object)
+    child_removed: ClassVar[Signal] = Signal(object)
+
     def __init__(
         self,
         *,
@@ -92,6 +99,7 @@ class Node(EventedBase):
                 ch = Node.model_validate(ch)
             self.add_child(ch)  # type: ignore [arg-type]
 
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def children(self) -> tuple["Node", ...]:
         """Return a tuple of the children of this node."""
@@ -100,22 +108,44 @@ class Node(EventedBase):
     def add_child(self, child: "AnyNode") -> None:
         """Add a child node to this node."""
         self._children.append(child)
-        child._parent = cast("AnyNode", self)
+        child.parent = cast("AnyNode", self)
+        self.child_added.emit(child)
 
-    @computed_field  # type: ignore [prop-decorator]
-    @property
-    def parent(self) -> "AnyNode | None":
-        """Return the parent of this node."""
-        return self._parent
+    def remove_child(self, child: "AnyNode") -> None:
+        """Remove a child node from this node. Does not raise if child is missing."""
+        if child in self._children:
+            self._children.remove(child)
+            child.parent = None
+            self.child_removed.emit(child)
 
-    @parent.setter
-    def parent(self, value: "AnyNode | None") -> None:
-        """Set the parent of this node."""
-        if value is not None and self not in value._children:
-            value._children.append(cast("AnyNode", self))
-        prev, self._parent = self._parent, value
-        if value != prev:
-            self.events.parent.emit(value, prev)
+    @model_validator(mode="wrap")
+    @classmethod
+    def _validate_model(
+        cls,
+        value: Any,
+        handler: ModelWrapValidatorHandler["Self"],
+        info: ValidationInfo,
+    ) -> "Self":
+        # Ensures that changing the parent of a node
+        # also updates the children of the new/old parent.
+        if isinstance(value, dict):
+            old_parent = value.get("parent")
+        else:
+            old_parent = getattr(value, "parent", None)
+        result = handler(value)
+        cls._update_parent_children(result, old_parent)
+        return result
+
+    @staticmethod
+    def _update_parent_children(node: "Node", old_parent: "Node | None") -> None:
+        """Remove the node from its old_parent and add it to its new parent."""
+        if (new_parent := node.parent) != old_parent:
+            if new_parent and node not in new_parent._children:
+                new_parent._children.append(cast("AnyNode", node))
+                new_parent.child_added.emit(node)
+            if old_parent and node in old_parent._children:
+                old_parent._children.remove(cast("AnyNode", node))
+                old_parent.child_removed.emit(node)
 
     @model_serializer(mode="wrap")
     def _serialize_withnode_type(self, handler: SerializerFunctionWrapHandler) -> Any:

@@ -63,7 +63,7 @@ class Camera(Node, CameraAdaptor):
     def _snx_zoom_to_fit(self, margin: float) -> None:
         # reset camera to fit all objects
         if not (scene := self._camera_model.parent):
-            print("No scene found for camera")
+            logger.warning("Camera has no parent scene, cannot zoom to fit")
             return
 
         gfx_scene = cast("pygfx.Scene", get_adaptor(scene)._snx_get_native())
