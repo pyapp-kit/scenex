@@ -30,6 +30,7 @@ if TYPE_CHECKING:
     class NodeKwargs(TypedDict, total=False):
         """TypedDict for Node kwargs."""
 
+        parent: "Node | None"
         name: str | None
         visible: bool
         interactive: bool
@@ -55,7 +56,7 @@ class Node(EventedBase):
     """
 
     # see computed fields below
-    parent: "Node | None" = Field(None, repr=False, exclude=True)
+    parent: "Node | None" = Field(default=None, repr=False, exclude=True)
     _children: list["AnyNode"] = PrivateAttr(default_factory=list)
 
     name: str | None = Field(default=None, description="Name of the node.")
@@ -233,7 +234,7 @@ class Node(EventedBase):
         """
         yield self
 
-        x = cast("AnyNode", self)
+        x = self
         while True:
             try:
                 parent = x.parent

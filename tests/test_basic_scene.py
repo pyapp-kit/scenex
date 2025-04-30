@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections import Counter
 from typing import Any
 
 import numpy as np
@@ -47,9 +46,6 @@ def test_view_tree_matches_native(basic_view: snx.View, backend: str) -> None:
     native_scene = basic_view.scene._get_native(backend=backend)
     view_tree = snx.util.tree_dict(native_scene, obj_name=_obj_name)
     assert isinstance(view_tree, dict)
-    # remove the ambient light from the view tree for equality check
-    if "AmbientLight" in view_tree["Scene"]:
-        view_tree["Scene"].remove("AmbientLight")
     assert model_tree == view_tree
 
 
