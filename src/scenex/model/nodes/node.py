@@ -92,8 +92,6 @@ class Node(EventedBase):
                 ch = Node.model_validate(ch)
             self.add_child(ch)  # type: ignore [arg-type]
 
-    # -----------------------------
-    # @computed_field  # type: ignore [prop-decorator]
     @property
     def children(self) -> tuple["Node", ...]:
         """Return a tuple of the children of this node."""
@@ -115,7 +113,9 @@ class Node(EventedBase):
         """Set the parent of this node."""
         if value is not None and self not in value._children:
             value._children.append(cast("AnyNode", self))
-        self._parent = value
+        prev, self._parent = self._parent, value
+        if value != prev:
+            self.events.parent.emit(value, prev)
 
     @model_serializer(mode="wrap")
     def _serialize_withnode_type(self, handler: SerializerFunctionWrapHandler) -> Any:

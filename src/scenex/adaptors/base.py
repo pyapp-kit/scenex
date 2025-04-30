@@ -111,11 +111,6 @@ class NodeAdaptor(SupportsVisibility[TNode, TNative]):
     def _snx_force_update(self) -> None:
         """Force an update to the node."""
 
-    def _snx_set_node_type(self, arg: str, /) -> None:
-        """Set the node type."""
-        # this is a no-op, but is required for the serializer
-        pass
-
 
 class CameraAdaptor(NodeAdaptor[TCamera, TNative]):
     """Protocol for a backend camera adaptor object."""
@@ -127,7 +122,7 @@ class CameraAdaptor(NodeAdaptor[TCamera, TNative]):
     @abstractmethod
     def _snx_set_center(self, arg: tuple[float, ...], /) -> None: ...
     @abstractmethod
-    def _snx_set_range(self, arg: float, /) -> None: ...
+    def _snx_zoom_to_fit(self, arg: float, /) -> None: ...
 
 
 class ImageAdaptor(NodeAdaptor[TImage, TNative]):
@@ -183,9 +178,6 @@ class CanvasAdaptor(SupportsVisibility[TCanvas, TNative]):
     def _snx_render(self) -> NDArray: ...
     @abstractmethod
     def _snx_add_view(self, arg: model.View, /) -> None: ...
-
-    def _snx_set_views(self, arg: list[model.View], /) -> None:
-        pass
 
     def _snx_get_ipython_mimebundle(
         self, *args: Any, **kwargs: Any

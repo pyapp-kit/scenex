@@ -117,7 +117,7 @@ def show(obj: model.Node | model.View | model.Canvas) -> None:
     reg.get_adaptor(canvas, create=True)
     for view in canvas.views:
         cam = reg.get_adaptor(view.camera)
-        cam._snx_set_range(0.1)
+        cam._snx_zoom_to_fit(0.1)
 
         # logger.debug("SHOW MODEL  %s", tree_repr(view.scene))
         # native_scene = view.scene._get_native()

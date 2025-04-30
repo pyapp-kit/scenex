@@ -139,7 +139,11 @@ def sync_adaptor(adaptor: base.Adaptor, model: EventedBase) -> None:
                 vis_set = getattr(adaptor, method_name)
                 vis_set(value)
             except Exception as e:
-                logger.warning("%r: %s", adaptor, e)
+                # TODO:
+                # it's probably fine that certain snx_set_* methods are not implemented
+                # in fact... we may want to flip it around and only get fields based
+                # on the available _snx_set_* methods
+                logger.debug("MISSING %r: %s", adaptor, e)
     force_update = getattr(adaptor, "_snx_force_update", lambda: None)
     force_update()
 
