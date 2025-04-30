@@ -21,12 +21,17 @@ jobs:
       - uses: actions/checkout@v4
       - run: pipx run check-manifest
 
-  pyright:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
-      - run: uv run pyright
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync
+      - uses: pre-commit/action@v3.0.0
+        with:
+          extra_args: --all-files --verbose
 
   test:
     name: test ${{ matrix.os }} py${{ matrix.python-version }}
@@ -55,17 +60,17 @@ jobs:
           sudo apt-get update -y -qq
           sudo apt install -y libegl1-mesa-dev libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers
 
+      - name: Install dependencies
+        run: uv sync --no-dev --group test --extra ${{ matrix.canvas-extra }}
+
       - name: Test
         shell: bash
-        run: |
-          uv run -v \
-            --no-dev --group test --extra ${{ matrix.canvas-extra }} \
-            coverage run -p -m pytest -v --color=yes --cov --cov-report=xml
+        run: uv run --no-sync coverage run -p -m pytest -v
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
-          name: covreport-${{ matrix.os }}-py${{ matrix.python-version }}
+          name: covreport-${{ matrix.os }}-py${{ matrix.python-version }}-${{ matrix.canvas-extra }}
           path: ./.coverage*
           include-hidden-files: true
 
@@ -91,18 +96,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🐍 Set up Python
-        uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.x"
+          enable-cache: true
 
-      - name: 👷 Build
-        run: |
-          python -m pip install build
-          python -m build
+      - run: uv build
 
-      - name: 🚢 Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: pypa/gh-action-pypi-publish@release/v1
 
       - uses: softprops/action-gh-release@v2
         with:

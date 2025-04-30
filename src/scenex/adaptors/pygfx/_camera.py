@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import warnings
+import logging
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
@@ -13,6 +13,8 @@ from ._node import Node
 
 if TYPE_CHECKING:
     from scenex import model
+
+logger = logging.getLogger("scenex.adaptors.pygfx")
 
 
 class Camera(Node, CameraAdaptor):
@@ -34,17 +36,17 @@ class Camera(Node, CameraAdaptor):
         self._pygfx_node.local.scale_y = -1  # don't think this is working...
 
     def _snx_set_zoom(self, zoom: float) -> None:
-        warnings.warn("Set camera zoom not implemented", RuntimeWarning, stacklevel=2)
+        logger.warning("'Camera._snx_set_zoom' not implemented for pygfx")
 
     def _snx_set_center(self, arg: tuple[float, ...]) -> None:
-        warnings.warn("Set camera center not implemented", RuntimeWarning, stacklevel=2)
+        logger.warning("'Camera._snx_set_center' not implemented for pygfx")
 
     def _snx_set_type(self, arg: model.CameraType) -> None:
-        warnings.warn("Set camera type not implemented", RuntimeWarning, stacklevel=2)
+        logger.warning("'Camera._snx_set_type' not implemented for pygfx")
 
     def _view_size(self) -> tuple[float, float] | None:
         """Return the size of first parent viewbox in pixels."""
-        warnings.warn("Set camera size not implemented", RuntimeWarning, stacklevel=2)
+        logger.warning("'Camera._view_size' not implemented for pygfx")
         return None
 
     def update_controller(self) -> None:
@@ -58,10 +60,10 @@ class Camera(Node, CameraAdaptor):
         # and should perhaps be moved to the View Adaptor
         self.pygfx_controller.add_default_event_handlers(viewport, self._pygfx_node)
 
-    def _snx_set_range(self, margin: float) -> None:
+    def _snx_zoom_to_fit(self, margin: float) -> None:
         # reset camera to fit all objects
         if not (scene := self._camera_model.parent):
-            print("No scene found for camera")
+            logger.warning("Camera has no parent scene, cannot zoom to fit")
             return
 
         gfx_scene = cast("pygfx.Scene", get_adaptor(scene)._snx_get_native())

@@ -1,11 +1,17 @@
+import logging
 import uuid
 from collections.abc import Iterable, Iterator
 from contextlib import suppress
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 from weakref import WeakValueDictionary
 
 from psygnal import SignalGroupDescriptor
 from pydantic import BaseModel, ConfigDict, PrivateAttr
+
+if TYPE_CHECKING:
+    from scenex.adaptors.base import Adaptor
+
+logger = logging.getLogger("scenex.model")
 
 
 class ExtendedConfig(ConfigDict, total=False):
@@ -31,7 +37,7 @@ objects = _ObjectRegistry()
 class EventedBase(BaseModel):
     """Base class for all evented pydantic-style models."""
 
-    _model_id: uuid.UUID = PrivateAttr(default_factory=uuid.uuid1)
+    _model_id: uuid.UUID = PrivateAttr(default_factory=uuid.uuid4)
 
     events: ClassVar[SignalGroupDescriptor] = SignalGroupDescriptor()
 
@@ -47,6 +53,9 @@ class EventedBase(BaseModel):
     def model_post_init(self, __context: Any) -> None:
         """Called after the model is initialized."""
         objects.register(self)
+        logger.debug(
+            "Created model %-12r id: %s", type(self).__name__, self._model_id.hex[:8]
+        )
 
     def __repr_args__(self) -> Iterable[tuple[str | None, Any]]:
         # repr that excludes default values
@@ -65,3 +74,17 @@ class EventedBase(BaseModel):
                     if val == default:
                         continue
             yield key, val
+
+    def _get_adaptor(
+        self, backend: str | None = None, create: bool = False
+    ) -> "Adaptor":
+        """Get all adaptors for this model."""
+        from scenex.adaptors.auto import get_adaptor_registry
+
+        reg = get_adaptor_registry(backend=backend)
+        return reg.get_adaptor(self, create=create)
+
+    def _get_native(self, backend: str | None = None, create: bool = False) -> Any:
+        """Get the native object for this model."""
+        adaptor = self._get_adaptor(backend=backend, create=create)
+        return adaptor._snx_get_native()

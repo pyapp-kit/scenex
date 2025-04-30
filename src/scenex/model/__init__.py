@@ -40,4 +40,5 @@ __all__ = [
 
 for obj in list(globals().values()):
     if isinstance(obj, type) and issubclass(obj, EventedBase):
+        obj.__module__ = __name__
         obj.model_rebuild()

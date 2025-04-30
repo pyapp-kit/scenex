@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import warnings
+import logging
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -13,6 +13,8 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
     from scenex import model
+
+logger = logging.getLogger("scenex.adaptors.pygfx")
 
 
 class Image(Node):
@@ -37,7 +39,7 @@ class Image(Node):
 
     def _snx_set_interpolation(self, arg: model.InterpolationMode) -> None:
         if arg == "bicubic":
-            warnings.warn(
+            logger.warning(
                 "Bicubic interpolation not supported by pygfx - falling back to linear",
                 RuntimeWarning,
                 stacklevel=2,

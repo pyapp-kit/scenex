@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 from pydantic import ConfigDict, Field, PrivateAttr
 
@@ -13,6 +13,10 @@ from .nodes.camera import Camera
 from .nodes.scene import Scene
 
 if TYPE_CHECKING:
+    import numpy as np
+
+    from scenex.adaptors.base import ViewAdaptor
+
     from .canvas import Canvas
 
 logger = logging.getLogger(__name__)
@@ -66,3 +70,8 @@ class View(EventedBase):
     def canvas(self, value: Canvas) -> None:
         self._canvas = value
         self._canvas.views.append(self)
+
+    def render(self) -> np.ndarray:
+        """Show the canvas."""
+        adaptor = cast("ViewAdaptor", self._get_adaptor())
+        return adaptor._snx_render()
