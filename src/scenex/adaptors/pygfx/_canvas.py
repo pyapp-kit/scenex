@@ -78,14 +78,7 @@ class Canvas(CanvasAdaptor):
         """Close canvas."""
         self._wgpu_canvas.close()
 
-    def _snx_render(
-        self,
-        region: tuple[int, int, int, int] | None = None,
-        size: tuple[int, int] | None = None,
-        bgcolor: Color | None = None,
-        crop: np.ndarray | tuple[int, int, int, int] | None = None,
-        alpha: bool = True,
-    ) -> np.ndarray:
+    def _snx_render(self) -> np.ndarray:
         """Render to screenshot."""
         from rendercanvas.offscreen import OffscreenRenderCanvas
 

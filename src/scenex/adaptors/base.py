@@ -21,6 +21,7 @@ TImage = TypeVar("TImage", bound="model.Image", covariant=True)
 TPoints = TypeVar("TPoints", bound="model.Points", covariant=True)
 TCanvas = TypeVar("TCanvas", bound="model.Canvas", covariant=True)
 TView = TypeVar("TView", bound="model.View", covariant=True)
+TLayout = TypeVar("TLayout", bound="model.Layout", covariant=True)
 
 
 class Adaptor(ABC, Generic[TModel, TNative]):
@@ -53,12 +54,7 @@ class Adaptor(ABC, Generic[TModel, TNative]):
             return
 
         arg = info.args[0]
-        logger.debug(
-            "EVENT: %r -> %s=%r  ",
-            type(self),
-            signal_name,
-            arg,
-        )
+        logger.debug("EVENT: %r -> %s=%r  ", type(self), signal_name, arg)
 
         try:
             setter(arg)
@@ -85,9 +81,9 @@ class NodeAdaptor(SupportsVisibility[TNode, TNative]):
     @abstractmethod
     def _snx_set_name(self, arg: str, /) -> None: ...
     @abstractmethod
-    def _snx_set_parent(self, arg: model.Node | None, /) -> None: ...
-    # @abstractmethod
-    # def _snx_set_children(self, arg: list[Node], /) -> None: ...
+    def _snx_add_child(self, arg: model.Node, /) -> None: ...
+    @abstractmethod
+    def _snx_remove_child(self, arg: model.Node, /) -> None: ...
     @abstractmethod
     def _snx_set_opacity(self, arg: float, /) -> None: ...
     @abstractmethod
@@ -111,11 +107,6 @@ class NodeAdaptor(SupportsVisibility[TNode, TNative]):
     def _snx_force_update(self) -> None:
         """Force an update to the node."""
 
-    def _snx_set_node_type(self, arg: str, /) -> None:
-        """Set the node type."""
-        # this is a no-op, but is required for the serializer
-        pass
-
 
 class CameraAdaptor(NodeAdaptor[TCamera, TNative]):
     """Protocol for a backend camera adaptor object."""
@@ -127,7 +118,7 @@ class CameraAdaptor(NodeAdaptor[TCamera, TNative]):
     @abstractmethod
     def _snx_set_center(self, arg: tuple[float, ...], /) -> None: ...
     @abstractmethod
-    def _snx_set_range(self, arg: float, /) -> None: ...
+    def _snx_zoom_to_fit(self, arg: float, /) -> None: ...
 
 
 class ImageAdaptor(NodeAdaptor[TImage, TNative]):
@@ -184,9 +175,6 @@ class CanvasAdaptor(SupportsVisibility[TCanvas, TNative]):
     @abstractmethod
     def _snx_add_view(self, arg: model.View, /) -> None: ...
 
-    def _snx_set_views(self, arg: list[model.View], /) -> None:
-        pass
-
     def _snx_get_ipython_mimebundle(
         self, *args: Any, **kwargs: Any
     ) -> dict | tuple[dict, dict] | Any:
@@ -196,19 +184,17 @@ class CanvasAdaptor(SupportsVisibility[TCanvas, TNative]):
 # TODO: decide whether all the layout stuff goes here...
 
 
-class ViewAdaptor(SupportsVisibility[TView, TNative]):
-    """Protocol defining the interface for a View adaptor."""
+class LayoutAdaptor(Adaptor[TLayout, TNative]):
+    """Protocol defining the interface for a Layout adaptor."""
 
     @abstractmethod
-    def _snx_set_blending(self, arg: model.BlendMode, /) -> None: ...
+    def _snx_set_x(self, arg: float, /) -> None: ...
     @abstractmethod
-    def _snx_set_camera(self, arg: model.Camera, /) -> None: ...
+    def _snx_set_y(self, arg: float, /) -> None: ...
     @abstractmethod
-    def _snx_set_scene(self, arg: model.Scene, /) -> None: ...
+    def _snx_set_width(self, arg: float, /) -> None: ...
     @abstractmethod
-    def _snx_set_position(self, arg: tuple[float, float], /) -> None: ...
-    @abstractmethod
-    def _snx_set_size(self, arg: tuple[float, float] | None, /) -> None: ...
+    def _snx_set_height(self, arg: float, /) -> None: ...
     @abstractmethod
     def _snx_set_background_color(self, arg: model.Color | None, /) -> None: ...
     @abstractmethod
@@ -220,5 +206,13 @@ class ViewAdaptor(SupportsVisibility[TView, TNative]):
     @abstractmethod
     def _snx_set_margin(self, arg: int, /) -> None: ...
 
-    def _snx_set_layout(self, arg: model.Layout, /) -> None:
-        pass
+
+class ViewAdaptor(SupportsVisibility[TView, TNative]):
+    """Protocol defining the interface for a View adaptor."""
+
+    @abstractmethod
+    def _snx_set_scene(self, arg: model.Scene, /) -> None: ...
+    @abstractmethod
+    def _snx_set_camera(self, arg: model.Camera, /) -> None: ...
+    @abstractmethod
+    def _snx_set_blending(self, arg: model.BlendMode, /) -> None: ...

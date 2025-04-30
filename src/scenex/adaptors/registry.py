@@ -4,7 +4,7 @@ import contextlib
 import logging
 import sys
 from functools import cache
-from typing import TYPE_CHECKING, Any, TypeVar, overload
+from typing import TYPE_CHECKING, Any, TypeVar, cast, overload
 
 from scenex import model as models
 
@@ -38,21 +38,47 @@ class AdaptorRegistry:
     # TODO: see if this can be done better with typevars.
     # (it doesn't appear to be trivial)
     @overload
-    def get_adaptor(self, obj: model.Points) -> base.PointsAdaptor: ...
+    def get_adaptor(
+        self,
+        obj: model.Points,
+        create: bool = ...,
+    ) -> base.PointsAdaptor: ...
     @overload
-    def get_adaptor(self, obj: model.Image) -> base.ImageAdaptor: ...
+    def get_adaptor(
+        self,
+        obj: model.Image,
+        create: bool = ...,
+    ) -> base.ImageAdaptor: ...
     @overload
-    def get_adaptor(self, obj: model.Camera) -> base.CameraAdaptor: ...
+    def get_adaptor(
+        self,
+        obj: model.Camera,
+        create: bool = ...,
+    ) -> base.CameraAdaptor: ...
     @overload
-    def get_adaptor(self, obj: model.Scene) -> base.NodeAdaptor: ...
+    def get_adaptor(
+        self,
+        obj: model.Scene,
+        create: bool = ...,
+    ) -> base.NodeAdaptor: ...
     @overload
-    def get_adaptor(self, obj: model.View) -> base.ViewAdaptor: ...
+    def get_adaptor(
+        self,
+        obj: model.View,
+        create: bool = ...,
+    ) -> base.ViewAdaptor: ...
     @overload
-    def get_adaptor(self, obj: model.Canvas) -> base.CanvasAdaptor: ...
+    def get_adaptor(
+        self,
+        obj: model.Canvas,
+        create: bool = ...,
+    ) -> base.CanvasAdaptor: ...
     @overload
-    def get_adaptor(self, obj: model.EventedBase) -> base.Adaptor: ...
-    @overload
-    def get_adaptor(self, obj: _M, create: bool = True) -> base.Adaptor[_M, Any]: ...
+    def get_adaptor(
+        self,
+        obj: model.EventedBase,
+        create: bool = ...,
+    ) -> base.Adaptor: ...
     def get_adaptor(self, obj: _M, create: bool = True) -> base.Adaptor[_M, Any]:
         """Get the adaptor for the given model object, create if `create` is True."""
         if obj._model_id.hex not in self._objects:
@@ -72,17 +98,26 @@ class AdaptorRegistry:
         self, model: model.EventedBase, adaptor: base.Adaptor
     ) -> None:
         """Initialize the adaptor for the given model object."""
+        # syncronize all model properties with the adaptor
         sync_adaptor(adaptor, model)
+        # connect the model events to the adaptor, to keep the adaptor in sync
+
         model.events.connect(adaptor.handle_event)
 
         if isinstance(model, models.Canvas):
             for view in model.views:
-                self.get_adaptor(view)
+                self.get_adaptor(view, create=True)
         if isinstance(model, models.View):
-            self.get_adaptor(model.scene)
+            self.get_adaptor(model.scene, create=True)
         if isinstance(model, models.Node):
+            adaptor = cast("base.NodeAdaptor", adaptor)
+            model.child_added.connect(adaptor._snx_add_child)
+            model.child_removed.connect(adaptor._snx_remove_child)
             for child in model.children:
-                self.get_adaptor(child)
+                # perhaps optional ... since _implementations of _snx_add_child
+                # will also likely need to call get_adaptor
+                self.get_adaptor(child, create=True)
+                adaptor._snx_add_child(child)
 
     def get_adaptor_class(self, obj: model.EventedBase) -> type[base.Adaptor]:
         """Return the adaptor class for the given model object."""
@@ -127,14 +162,20 @@ def _update_blocker(adaptor: base.Adaptor) -> contextlib.AbstractContextManager:
 def sync_adaptor(adaptor: base.Adaptor, model: EventedBase) -> None:
     """Decorator to validate and cache adaptor classes."""
     with _update_blocker(adaptor):
-        for field_name in type(model).model_fields:
+        fields = type(model).model_fields | type(model).model_computed_fields
+        logger.debug("Synchronizing fields %r", set(fields))
+        for field_name in fields:
             method_name = adaptor.SETTER_METHOD.format(name=field_name)
             value = getattr(model, field_name)
             try:
                 vis_set = getattr(adaptor, method_name)
                 vis_set(value)
             except Exception as e:
-                logger.warning("%r: %s", adaptor, e)
+                # TODO:
+                # it's probably fine that certain snx_set_* methods are not implemented
+                # in fact... we may want to flip it around and only get fields based
+                # on the available _snx_set_* methods
+                logger.debug("MISSING %r: %s", adaptor, e)
     force_update = getattr(adaptor, "_snx_force_update", lambda: None)
     force_update()
 
