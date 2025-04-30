@@ -1,7 +1,5 @@
-
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -41,8 +39,8 @@ class Volume(Node):
         self._vispy_node.set_data(np.asarray(data))
 
     def _snx_set_rendermode(
-              self,
-              data: model.RenderMode,
-              interpolation: model.InterpolationMode | None = None
-            ) -> None:
+        self,
+        data: model.RenderMode,
+        interpolation: model.InterpolationMode | None = None,
+    ) -> None:
         self._vispy_node.method = data

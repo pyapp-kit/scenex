@@ -1,7 +1,6 @@
 import cmap
 import numpy as np
 from qtpy.QtWidgets import QApplication
-from rendercanvas.auto import loop
 
 # import vispy vispy.use(app="PyQt6")
 import scenex as snx

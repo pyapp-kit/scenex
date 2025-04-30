@@ -28,15 +28,13 @@ class Canvas(CanvasAdaptor):
     """Canvas interface for vispy Backend."""
 
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
-        from vispy.scene import SceneCanvas, Grid
+        from vispy.scene import Grid, SceneCanvas
 
         self._canvas = SceneCanvas(
-            title=canvas.title,
-            size=(canvas.width, canvas.height)
+            title=canvas.title, size=(canvas.width, canvas.height)
         )
         # Qt RenderCanvas calls show() in its __init__ method, so we need to hide it
         if supports_hide_show(self._canvas.native):
-
             self._canvas.native.hide()
         self._grid = cast("Grid", self._canvas.central_widget.add_grid())
         for view in canvas.views:

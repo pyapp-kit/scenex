@@ -19,5 +19,5 @@ __all__ = [
     "Scene",
     "View",
     "Volume",
-    "adaptors"
+    "adaptors",
 ]

@@ -29,7 +29,7 @@ class Camera(Node, CameraAdaptor):
             # Unify these values?
             self._vispy_node = vispy.scene.ArcballCamera(70)
 
-        self._snx_set_range(0.1)
+        self._snx_zoom_to_fit(0.1)
 
     def _snx_set_zoom(self, zoom: float) -> None:
         self._vispy_node.zoom_factor = zoom
@@ -52,6 +52,6 @@ class Camera(Node, CameraAdaptor):
         """Return the size of first parent viewbox in pixels."""
         raise NotImplementedError
 
-    def _snx_set_range(self, margin: float) -> None:
+    def _snx_zoom_to_fit(self, margin: float) -> None:
         # reset camera to fit all objects
         self._vispy_node.set_range()

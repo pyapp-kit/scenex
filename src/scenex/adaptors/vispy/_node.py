@@ -10,7 +10,6 @@ from scenex.adaptors.base import NodeAdaptor, TNode
 from ._adaptor_registry import get_adaptor
 
 if TYPE_CHECKING:
-
     from scenex import model
     from scenex.model import Transform
 
@@ -33,11 +32,19 @@ class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj]):
         # Could this be entirely managed on the model side/
         self._name = arg
 
-    def _snx_set_parent(self, parent: model.Node | None) -> None:
-        if parent is None:
-            self._vispy_node.parent = None
-        else:
-            self._vispy_node.parent = get_adaptor(parent)._vispy_node
+    def _snx_add_child(self, child: model.Node) -> None:
+        # create if it doesn't exist
+        child_adaptor = cast(
+            "Node[Any, vispy.scene.Node]", get_adaptor(child, create=True)
+        )
+        child_adaptor._vispy_node.parent = self._vispy_node
+
+    def _snx_remove_child(self, child: model.Node) -> None:
+        # create if it doesn't exist
+        child_adaptor = cast(
+            "Node[Any, vispy.scene.Node]", get_adaptor(child, create=True)
+        )
+        child_adaptor._vispy_node.parent = None
 
     def _snx_set_visible(self, arg: bool) -> None:
         self._vispy_node.visible = arg

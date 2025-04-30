@@ -36,12 +36,13 @@ dependencies = ["cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10"]
 
 [project.optional-dependencies]
 pygfx = ["pygfx>=0.9.0"]
+vispy = ["vispy>=0.15.0", "pyopengl"]
 
 [dependency-groups]
 test = ["pytest>=8", "pytest-cov>=6", "PyQt6"]
 dev = [
     { include-group = "test" },
-    "scenex[pygfx]",
+    "scenex[pygfx,vispy]",
     "ipython",
     "mypy",
     "pdbpp; sys_platform != 'win32'",

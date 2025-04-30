@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import warnings
@@ -57,15 +56,15 @@ class Volume(Node):
         self._geometry = pygfx.Geometry(grid=self._texture)
 
     def _snx_set_rendermode(
-              self,
-              data: model.RenderMode,
-              interpolation: model.InterpolationMode | None = None
-            ) -> None:
+        self,
+        data: model.RenderMode,
+        interpolation: model.InterpolationMode | None = None,
+    ) -> None:
         kwargs: dict[str, Any] = {"depth_test": False}
         if interpolation is not None:
-                kwargs["interpolation"] = interpolation
+            kwargs["interpolation"] = interpolation
         elif self._material is not None:
-                kwargs["interpolation"] = self._material.interpolation
+            kwargs["interpolation"] = self._material.interpolation
 
         if data == "mip":
             self._material = pygfx.VolumeMipMaterial(**kwargs)

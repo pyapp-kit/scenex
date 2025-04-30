@@ -12,7 +12,7 @@ class Scene(Node):
 
     def __init__(self, scene: model.Scene, **backend_kwargs: Any) -> None:
         self._vispy_node = SubScene(**backend_kwargs)
-        
+
         self._vispy_node.visible = scene.visible
         self._vispy_node.order = scene.order
 

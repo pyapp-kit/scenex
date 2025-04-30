@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING, Any
 
 import vispy.scene
@@ -20,7 +19,9 @@ class Image(Node):
     _vispy_node: vispy.scene.Image
 
     def __init__(self, image: model.Image, **backend_kwargs: Any) -> None:
-        self._vispy_node = vispy.scene.Image(data=image.data, texture_format="auto", **backend_kwargs)
+        self._vispy_node = vispy.scene.Image(
+            data=image.data, texture_format="auto", **backend_kwargs
+        )
         self._snx_set_data(image.data)
         self._vispy_node.visible = True
 

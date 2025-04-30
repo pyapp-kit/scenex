@@ -11,6 +11,6 @@ class Volume(Image):
     """A dense 3-dimensional array of intensity values."""
 
     render_mode: RenderMode = Field(
-        default='mip',
+        default="mip",
         description="The method to use in rendering the volume.",
     )

@@ -3,10 +3,10 @@ from __future__ import annotations
 import warnings
 from typing import TYPE_CHECKING, Any, cast
 
+import numpy as np
 import vispy
 import vispy.scene
 import vispy.scene.subscene
-from vispy.visuals.filters import Clipper
 
 from scenex.adaptors.base import ViewAdaptor
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
     from scenex import model
 
-    from . import _camera, _canvas, _scene
+    from . import _camera, _scene
 
 
 BLENDING_MAP = {
@@ -34,7 +34,6 @@ class View(ViewAdaptor):
     A view combines a scene and a camera to render a scene (onto a canvas).
     """
 
-    vispy.scene.SceneCanvas
     _vispy_canvas: vispy.scene.subscene.SubScene
     _vispy_viewbox: vispy.scene.ViewBox
     _vispy_cam: vispy.scene.BaseCamera
@@ -110,3 +109,7 @@ class View(ViewAdaptor):
         warnings.warn(
             "set_margin not implemented for vispy", RuntimeWarning, stacklevel=2
         )
+
+    def _snx_render(self) -> np.ndarray:
+        """Render to screenshot."""
+        return np.asarray(self._vispy_viewbox.canvas.render())  # type: ignore[no-any-return]
