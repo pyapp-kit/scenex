@@ -134,7 +134,7 @@ venv = ".venv"
 minversion = "7.0"
 addopts = ["--color=yes"]
 testpaths = ["tests"]
-filterwarnings = ["error"]
+filterwarnings = ["error", "ignore:'count' is passed as positional argument::vispy"]
 
 # https://coverage.readthedocs.io/
 [tool.coverage.report]
