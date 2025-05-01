@@ -16,7 +16,7 @@ from pydantic import (
 )
 
 from scenex.model._base import EventedBase
-from scenex.model.transform import Transform
+from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
     import numpy.typing as npt
@@ -49,7 +49,7 @@ AnyNode = Annotated[
 
 
 class Node(EventedBase):
-    """Base class for all nodes.  Also a `Container[Node]`.
+    """Base class for all nodes.  Also a [`Container[Node]`][collections.abc.Container].
 
     Do not instantiate this class directly. Use a subclass.  GenericNode may
     be used in place of Node.

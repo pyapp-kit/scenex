@@ -9,14 +9,14 @@ try:
 except PackageNotFoundError:
     __version__ = "uninstalled"
 
-from .model.canvas import Canvas
-from .model.nodes.camera import Camera
-from .model.nodes.image import Image
-from .model.nodes.node import Node
-from .model.nodes.points import Points
-from .model.nodes.scene import Scene
-from .model.transform import Transform
-from .model.view import View
+from .model._canvas import Canvas
+from .model._nodes.camera import Camera
+from .model._nodes.image import Image
+from .model._nodes.node import Node
+from .model._nodes.points import Points
+from .model._nodes.scene import Scene
+from .model._transform import Transform
+from .model._view import View
 from .util import show
 
 __all__ = [

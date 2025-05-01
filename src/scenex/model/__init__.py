@@ -1,17 +1,27 @@
-"""Model module for SceneX."""
+"""Model objects for the scene graph.
+
+The entire scene graph is built from these objects.  The scene graph is a
+tree of nodes, where each node is a model object.  The root of the tree is
+a `Scene` object, which contains all the other nodes.  Each node can have
+children, which are also nodes.
+
+To "view" a model means to create a backend adaptor for each node in the
+scene graph.  The adaptor is responsible for rendering the node and
+interacting with the backend.  Adaptors live in [`scenex.adaptors`][scenex].
+"""
 
 from cmap import Color, Colormap  # re-export
 
 from ._base import EventedBase, objects
-from .canvas import Canvas
-from .layout import Layout
-from .nodes.camera import Camera, CameraType
-from .nodes.image import Image, InterpolationMode
-from .nodes.node import AnyNode, Node
-from .nodes.points import Points, ScalingMode, SymbolName
-from .nodes.scene import Scene
-from .transform import Transform
-from .view import BlendMode, View
+from ._canvas import Canvas
+from ._layout import Layout
+from ._nodes.camera import Camera, CameraType
+from ._nodes.image import Image, InterpolationMode
+from ._nodes.node import AnyNode, Node
+from ._nodes.points import Points, ScalingMode, SymbolName
+from ._nodes.scene import Scene
+from ._transform import Transform
+from ._view import BlendMode, View
 
 __all__ = [
     "AnyNode",

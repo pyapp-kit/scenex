@@ -28,7 +28,7 @@ ScalingMode = Literal[True, False, "fixed", "scene", "visual"]
 
 
 class Points(Node):
-    """Points that can be placed in scene."""
+    """Coordinates that can be represented in a scene."""
 
     node_type: Literal["points"] = "points"
 

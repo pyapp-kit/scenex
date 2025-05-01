@@ -9,7 +9,7 @@ from psygnal import SignalGroupDescriptor
 from pydantic import BaseModel, ConfigDict, PrivateAttr
 
 if TYPE_CHECKING:
-    from scenex.adaptors.base import Adaptor
+    from scenex.adaptors._base import Adaptor
 
 logger = logging.getLogger("scenex.model")
 
@@ -79,7 +79,7 @@ class EventedBase(BaseModel):
         self, backend: str | None = None, create: bool = False
     ) -> "Adaptor":
         """Get all adaptors for this model."""
-        from scenex.adaptors.auto import get_adaptor_registry
+        from scenex.adaptors import get_adaptor_registry
 
         reg = get_adaptor_registry(backend=backend)
         return reg.get_adaptor(self, create=create)
