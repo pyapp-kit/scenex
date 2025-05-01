@@ -39,7 +39,7 @@ class Points(Node):
         self._vispy_node = vispy.scene.Markers(
             pos=np.asarray(points.coords),
             symbol=points.symbol,
-            scaling=points.scaling,  # type: ignore
+            scaling=points.scaling,
             antialias=points.antialias,
             edge_color=points.edge_color,
             edge_width=points.edge_width,

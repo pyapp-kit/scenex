@@ -5,8 +5,9 @@ from ._registry import AdaptorRegistry
 
 def get_adaptor_registry(backend: str | None = None) -> AdaptorRegistry:
     """Get the backend adaptor registry."""
+    adaptors: AdaptorRegistry
     if backend == "vispy":
-        from .vispy import adaptors
+        from ._vispy import adaptors
 
         return adaptors
     if backend == "pygfx":
@@ -16,7 +17,7 @@ def get_adaptor_registry(backend: str | None = None) -> AdaptorRegistry:
 
     # If no backend is specified, try to find one
     if importlib.util.find_spec("vispy") is not None:
-        from .vispy import adaptors
+        from ._vispy import adaptors
 
         return adaptors
     if importlib.util.find_spec("pygfx") is not None:

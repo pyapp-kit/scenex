@@ -112,4 +112,4 @@ class View(ViewAdaptor):
 
     def _snx_render(self) -> np.ndarray:
         """Render to screenshot."""
-        return np.asarray(self._vispy_viewbox.canvas.render())  # type: ignore[no-any-return]
+        return np.asarray(self._vispy_viewbox.canvas.render())
