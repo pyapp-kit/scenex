@@ -8,16 +8,16 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 from pydantic import ConfigDict, Field, PrivateAttr
 
 from ._base import EventedBase
-from .layout import Layout
-from .nodes.camera import Camera
-from .nodes.scene import Scene
+from ._layout import Layout
+from ._nodes.camera import Camera
+from ._nodes.scene import Scene
 
 if TYPE_CHECKING:
     import numpy as np
 
     from scenex.adaptors._base import ViewAdaptor
 
-    from .canvas import Canvas
+    from ._canvas import Canvas
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,10 @@ BlendMode = Literal["default", "opaque", "alpha", "additive"]
 
 
 class View(EventedBase):
-    """A rectangular area on a canvas that displays a scene, with a camera.
+    """An association of a scene and a camera.
+
+    A view represents a rectangular area on a canvas that displays a single scene with a
+    single camera.
 
     A canvas can have one or more views. Each view has a single scene (i.e. a
     scene graph of nodes) and a single camera. The camera defines the view
@@ -61,7 +64,7 @@ class View(EventedBase):
         If one hasn't been created/assigned, a new one is created.
         """
         if (canvas := self._canvas) is None:
-            from .canvas import Canvas
+            from ._canvas import Canvas
 
             self.canvas = canvas = Canvas()
         return canvas

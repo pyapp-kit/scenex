@@ -112,7 +112,7 @@ class AdaptorRegistry:
         if isinstance(model, models.View):
             self.get_adaptor(model.scene, create=True)
         if isinstance(model, models.Node):
-            adaptor = cast("base.NodeAdaptor", adaptor)
+            adaptor = cast("_base.NodeAdaptor", adaptor)
             model.child_added.connect(adaptor._snx_add_child)
             model.child_removed.connect(adaptor._snx_remove_child)
             for child in model.children:

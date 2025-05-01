@@ -22,19 +22,19 @@ theme:
   name: material
   custom_dir: docs/_overrides
   icon:
-    logo: material/cube-scan
+    logo: material/graph
     repo: fontawesome/brands/github
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
       toggle:
-        icon: material/graph
+        icon: material/brightness-auto
         name: Switch to light mode
 
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: blue
+      primary: black
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
@@ -42,7 +42,7 @@ theme:
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: blue grey
+      primary: black
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
@@ -140,6 +140,6 @@ extra:
   dev_build: !ENV ["DOCS_DEV", false]
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/pyapp-kit
+      link: https://github.com/pyapp-kit/
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/scenex/

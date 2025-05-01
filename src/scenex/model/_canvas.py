@@ -7,7 +7,7 @@ from pydantic import ConfigDict, Field
 
 from ._base import EventedBase
 from ._evented_list import EventedList
-from .view import View  # noqa: TC001
+from ._view import View  # noqa: TC001
 
 if TYPE_CHECKING:
     import numpy as np

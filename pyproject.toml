@@ -62,8 +62,8 @@ dev = [
 ]
 
 [project.urls]
-homepage = "https://github.com/tlambert03/scenex"
-repository = "https://github.com/tlambert03/scenex"
+homepage = "https://github.com/pyapp-kit/scenex"
+repository = "https://github.com/pyapp-kit/scenex"
 
 
 # https://docs.astral.sh/ruff

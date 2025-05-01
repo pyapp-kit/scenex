@@ -1,3 +1,5 @@
+"""Utility functions for `scenex`."""
+
 from __future__ import annotations
 
 import logging
@@ -93,7 +95,7 @@ def show(obj: model.Node | model.View | model.Canvas) -> None:
 
     Parameters
     ----------
-    obj : Node | View
+    obj : Node | View | Canvas
         The scene or view to show. If a Node is provided, it will be wrapped in a Scene
         and then in a View.
     """
