@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 import pygfx
 
-from scenex.adaptors.base import ViewAdaptor
+from scenex.adaptors._base import ViewAdaptor
 
 from ._adaptor_registry import get_adaptor
 

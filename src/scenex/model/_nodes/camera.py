@@ -13,7 +13,11 @@ Position = Position2D | Position3D
 
 
 class Camera(Node):
-    """A camera that defines the view of a scene."""
+    """A camera that defines the view and perspective of a scene.
+
+    The camera lives in, and is a child of, a scene graph.  It defines the view
+    transformation for the scene, mapping it onto a 2D surface.
+    """
 
     node_type: Literal["camera"] = "camera"
 

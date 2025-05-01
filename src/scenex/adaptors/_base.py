@@ -1,3 +1,5 @@
+"""Base classes for backend adaptors."""
+
 from __future__ import annotations
 
 import logging

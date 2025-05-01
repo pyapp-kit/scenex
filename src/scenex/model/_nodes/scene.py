@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class Scene(Node):
-    """A Root node for a scene graph.
+    """A root node for a scene graph.
 
     This really isn't anything more than a regular Node, but it's an explicit
     marker that this node is the root of a scene graph.

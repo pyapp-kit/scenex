@@ -6,7 +6,7 @@ from typing_extensions import TypeAliasType
 
 import scenex as snx
 from scenex import model
-from scenex.adaptors.base import Adaptor
+from scenex.adaptors import Adaptor
 from scenex.model._base import EventedBase
 
 

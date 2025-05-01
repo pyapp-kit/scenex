@@ -87,7 +87,7 @@ class Matrix3D(np.ndarray):
 
 
 class Transform(RootModel):
-    """Transformation."""
+    """A 4x4 transformation matrix placing a 3D object in 3D space."""
 
     root: Matrix3D = Field(
         default_factory=lambda: np.eye(4),  # type: ignore

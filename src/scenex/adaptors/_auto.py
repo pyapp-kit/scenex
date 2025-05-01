@@ -1,6 +1,6 @@
 import importlib.util
 
-from .registry import AdaptorRegistry
+from ._registry import AdaptorRegistry
 
 
 def get_adaptor_registry(backend: str | None = None) -> AdaptorRegistry:
@@ -10,7 +10,7 @@ def get_adaptor_registry(backend: str | None = None) -> AdaptorRegistry:
 
         return adaptors
     if backend == "pygfx":
-        from .pygfx import adaptors
+        from ._pygfx import adaptors
 
         return adaptors
 
@@ -20,7 +20,7 @@ def get_adaptor_registry(backend: str | None = None) -> AdaptorRegistry:
 
         return adaptors
     if importlib.util.find_spec("pygfx") is not None:
-        from .pygfx import adaptors
+        from ._pygfx import adaptors
 
         return adaptors
 

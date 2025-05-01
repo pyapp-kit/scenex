@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
-from scenex.adaptors.base import CanvasAdaptor
+from scenex.adaptors._base import CanvasAdaptor
 
 from ._adaptor_registry import adaptors
 
