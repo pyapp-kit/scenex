@@ -1,4 +1,6 @@
-from .registry import AdaptorRegistry
+"""Auto-detection of the backend adaptor registry."""
+
+from ._registry import AdaptorRegistry
 
 
 def get_adaptor_registry(backend: str | None = None) -> AdaptorRegistry:
@@ -6,6 +8,6 @@ def get_adaptor_registry(backend: str | None = None) -> AdaptorRegistry:
     if backend not in ("pygfx", None):
         raise ValueError(f"Unknown backend: {backend}")
 
-    from .pygfx import adaptors
+    from ._pygfx import adaptors
 
     return adaptors

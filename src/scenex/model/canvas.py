@@ -12,7 +12,7 @@ from .view import View  # noqa: TC001
 if TYPE_CHECKING:
     import numpy as np
 
-    from scenex.adaptors.base import CanvasAdaptor
+    from scenex.adaptors._base import CanvasAdaptor
 
 
 class Canvas(EventedBase):

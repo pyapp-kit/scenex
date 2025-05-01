@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
-from scenex.adaptors.base import NodeAdaptor, TNode
+from scenex.adaptors._base import NodeAdaptor, TNode
 
 from ._adaptor_registry import get_adaptor
 

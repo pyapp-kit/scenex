@@ -15,7 +15,7 @@ from .nodes.scene import Scene
 if TYPE_CHECKING:
     import numpy as np
 
-    from scenex.adaptors.base import ViewAdaptor
+    from scenex.adaptors._base import ViewAdaptor
 
     from .canvas import Canvas
 

@@ -48,9 +48,9 @@ def tree_repr(
         Function to convert the node to a string. Defaults to `object.__repr__` (which
         avoids complex repr functions on objects, but use `repr` if you want to see
         the full representation).
-    prefix : str, optional
+    _prefix : str, optional
         Prefix to use for each line of the tree. Defaults to an empty string.
-    is_last : bool, optional
+    _is_last : bool, optional
         Whether this node is the last child of its parent. Defaults to `True`.
         This is used to determine the branch character to use in the tree
         representation.
@@ -97,7 +97,7 @@ def show(obj: model.Node | model.View | model.Canvas) -> None:
         The scene or view to show. If a Node is provided, it will be wrapped in a Scene
         and then in a View.
     """
-    from .adaptors.auto import get_adaptor_registry
+    from .adaptors import get_adaptor_registry
 
     if isinstance(obj, model.Canvas):
         canvas = obj
