@@ -1,6 +1,6 @@
 from typing import Any
 
-from scenex.adaptors.registry import AdaptorRegistry
+from scenex.adaptors._registry import AdaptorRegistry
 
 
 class VispyAdaptorRegistry(AdaptorRegistry):

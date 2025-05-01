@@ -8,7 +8,7 @@ import vispy
 import vispy.scene
 import vispy.scene.subscene
 
-from scenex.adaptors.base import ViewAdaptor
+from scenex.adaptors._base import ViewAdaptor
 
 from ._adaptor_registry import get_adaptor
 

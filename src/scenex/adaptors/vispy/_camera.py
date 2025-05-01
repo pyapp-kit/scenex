@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 import vispy.scene
 
-from scenex.adaptors.base import CameraAdaptor
+from scenex.adaptors._base import CameraAdaptor
 
 from ._node import Node
 
 if TYPE_CHECKING:
     from scenex import model
-    from scenex.model.transform import Transform
+    from scenex.model import Transform
 
 
 class Camera(Node, CameraAdaptor):

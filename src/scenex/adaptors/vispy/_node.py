@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 import numpy as np
 import vispy.scene
 
-from scenex.adaptors.base import NodeAdaptor, TNode
+from scenex.adaptors._base import NodeAdaptor, TNode
 
 from ._adaptor_registry import get_adaptor
 
