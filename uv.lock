@@ -314,6 +314,29 @@ wheels = [
 ]
 
 [[package]]
+name = "editdistpy"
+version = "0.1.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/32/4d/0aa43de7794b9b54f58e966f3dabf7dc67f67893b06291d5494abbeb8008/editdistpy-0.1.5.tar.gz", hash = "sha256:f594d5e96c5d6674aed1d5119911f0d3210f46f3c68d28de640adce2fe3d39f9", size = 99611 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/07/ce/fd48738a5b04f6a3f782473b529cf79f1c8e7c26e1095dfa0c037b27531b/editdistpy-0.1.5-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:aae02f5a88cd681acdffd84c2d1e2b116e70bd16061a31b9d048b82704bb74b5", size = 141878 },
+    { url = "https://files.pythonhosted.org/packages/e4/fa/b875526b51fce601afe489c1281882e08f7a54b1f52890040787eb50dee6/editdistpy-0.1.5-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:ac82cd00b9d9e4d1c184f4b9d547ee00636f335510554e537ab55eba23054d95", size = 141437 },
+    { url = "https://files.pythonhosted.org/packages/91/d4/a420f306295f1b942be3b1cfa2810f53662ed2ed15923681b2d4f1c26f68/editdistpy-0.1.5-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4d59ff81c31a485652669959d77e8b142d2379b9a390131d1fa52d757a24f4a8", size = 144107 },
+    { url = "https://files.pythonhosted.org/packages/3e/38/f9be8ab8d1b75c966832692653eb45f81ee365faf614dc6ed4fa0cc4827f/editdistpy-0.1.5-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:a6005d80be4a04fdc33ba467e78e595b609c1bf0ca7e3094fc114cf31f457735", size = 1134221 },
+    { url = "https://files.pythonhosted.org/packages/3e/7d/d85df6d3ae1daba1f08e5c81846b165d1605c83009d57c29bc9cc5886e74/editdistpy-0.1.5-cp310-cp310-win_amd64.whl", hash = "sha256:c0758911d188f582ac2cd2e8bd0f96fe89957ed1f191353f051678cc801a6705", size = 142906 },
+    { url = "https://files.pythonhosted.org/packages/83/ea/49a025436e613b681281c3ac06e7eda851b6ffd4c724b8a6d21f271fcefc/editdistpy-0.1.5-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:cd2f319f477ca8f4863da6e6820c0c9a94b379e980bd4d9181af3ed01aefb7eb", size = 141599 },
+    { url = "https://files.pythonhosted.org/packages/50/ba/04f9b185d9ebf5a9b22f0fb99bbe397183a76046faa7ca53df38f3281473/editdistpy-0.1.5-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:4b8d4b441be465e873557146dc6381aa46bb4868f9c85238583df24d85d149e0", size = 141126 },
+    { url = "https://files.pythonhosted.org/packages/8a/34/d3490506fd915f8211c6b8e342ee73ec781200aac461fc5dd8de792f7f6a/editdistpy-0.1.5-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e4f031f3e44b05c884afa20fa7fc27ebbabf85c2f966ccbaf9ebb3b706fabeaf", size = 144087 },
+    { url = "https://files.pythonhosted.org/packages/76/1c/097939c37211d5f845781404c4e88dbe6948931edcb8cdc120d5bdcce090/editdistpy-0.1.5-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:02c5f73b6d1c28847b6840dd28cee9b7686d587464305c3a73ec1e1357610e21", size = 1134124 },
+    { url = "https://files.pythonhosted.org/packages/5a/35/6e8dadad9608acac7861d9388966cd6e58f2d9d33e2d8b391339081a453f/editdistpy-0.1.5-cp311-cp311-win_amd64.whl", hash = "sha256:38c52449f4f6e99fa55fd6e2b643f48827c60aec601475ec8f8eb7e557707f34", size = 142865 },
+    { url = "https://files.pythonhosted.org/packages/e2/7b/8c54f83098cefb9b97d60ed1b90a48baefa7bce4b853719da42375a041de/editdistpy-0.1.5-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:69f8f062beb1f74b390d3e3968c3de1810dff35209c8c279b3e134c981e53dd5", size = 141955 },
+    { url = "https://files.pythonhosted.org/packages/ad/0d/5267b5ce844eb4fd143b6e653c262a04ca8adfd9dbdbaf4e3976cc6b5b77/editdistpy-0.1.5-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:d4bbcfd92ba9e3d0a40025d4e37dfb90ac3d5e92e3b75617020c1c04898551f2", size = 141486 },
+    { url = "https://files.pythonhosted.org/packages/bd/40/0f5c79fd2c33029a0fdb8869226635888ebc38a464ee13ba32bde82bbcfe/editdistpy-0.1.5-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ea4473ab54e17954ed80fe3b9ffd763340e83033d6d9770e6f1962e4475af696", size = 144421 },
+    { url = "https://files.pythonhosted.org/packages/f0/4b/bf3cb4957428cdc4ee8ace62e8264eebeb0c4c5cc6fd72fc3a40c8d234fc/editdistpy-0.1.5-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:6bb84de9afdabf12f0de53d539050d7e1dae0f04c274d76d3b774e9cb9d48d18", size = 1134261 },
+    { url = "https://files.pythonhosted.org/packages/bd/3e/f8d36dfd88755fe21043843a7db801c9a22b31117b5f1ca3c041da6035e1/editdistpy-0.1.5-cp312-cp312-win_amd64.whl", hash = "sha256:ea1088d8c21b324d6e2472b926b49ff02895386f85b5992ee0213d728e3ed17b", size = 143080 },
+]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.2.2"
 source = { registry = "https://pypi.org/simple" }
@@ -886,8 +909,9 @@ wheels = [
 ]
 
 [package.optional-dependencies]
-codespell = [
+all = [
     { name = "codespell" },
+    { name = "symspellpy" },
 ]
 
 [[package]]
@@ -1656,7 +1680,7 @@ dev = [
     { name = "mkdocs-api-autonav" },
     { name = "mkdocs-material" },
     { name = "mkdocs-minify-plugin" },
-    { name = "mkdocs-spellcheck", extra = ["codespell"] },
+    { name = "mkdocs-spellcheck", extra = ["all"] },
     { name = "mkdocstrings-python" },
     { name = "mypy" },
     { name = "pdbpp", marker = "sys_platform != 'win32'" },
@@ -1675,7 +1699,7 @@ docs = [
     { name = "mkdocs-api-autonav" },
     { name = "mkdocs-material" },
     { name = "mkdocs-minify-plugin" },
-    { name = "mkdocs-spellcheck", extra = ["codespell"] },
+    { name = "mkdocs-spellcheck", extra = ["all"] },
     { name = "mkdocstrings-python" },
 ]
 test = [
@@ -1704,7 +1728,7 @@ dev = [
     { name = "mkdocs-api-autonav", specifier = ">=0.2.1" },
     { name = "mkdocs-material", specifier = ">=9.6.12" },
     { name = "mkdocs-minify-plugin", specifier = ">=0.8.0" },
-    { name = "mkdocs-spellcheck", extras = ["codespell"], specifier = ">=1.1.1" },
+    { name = "mkdocs-spellcheck", extras = ["all"], specifier = ">=1.1.1" },
     { name = "mkdocstrings-python", specifier = ">=1.16.10" },
     { name = "mypy" },
     { name = "pdbpp", marker = "sys_platform != 'win32'" },
@@ -1723,7 +1747,7 @@ docs = [
     { name = "mkdocs-api-autonav", specifier = ">=0.2.1" },
     { name = "mkdocs-material", specifier = ">=9.6.12" },
     { name = "mkdocs-minify-plugin", specifier = ">=0.8.0" },
-    { name = "mkdocs-spellcheck", extras = ["codespell"], specifier = ">=1.1.1" },
+    { name = "mkdocs-spellcheck", extras = ["all"], specifier = ">=1.1.1" },
     { name = "mkdocstrings-python", specifier = ">=1.16.10" },
 ]
 test = [
@@ -1762,6 +1786,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/28/e3/55dcc2cfbc3ca9c29519eb6884dd1415ecb53b0e934862d3559ddcb7e20b/stack_data-0.6.3.tar.gz", hash = "sha256:836a778de4fec4dcd1dcd89ed8abff8a221f58308462e1c4aa2a3cf30148f0b9", size = 44707 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f1/7b/ce1eafaf1a76852e2ec9b22edecf1daa58175c090266e9f6c64afcd81d91/stack_data-0.6.3-py3-none-any.whl", hash = "sha256:d5558e0c25a4cb0853cddad3d77da9891a08cb85dd9f9f91b9f8cd66e511e695", size = 24521 },
+]
+
+[[package]]
+name = "symspellpy"
+version = "6.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "editdistpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ce/42/f445e683376bb5eee35db34e062372e0c4cfa6671632cb0b0dafa747e32e/symspellpy-6.9.0.tar.gz", hash = "sha256:5ce8cb8a13e531db03f664407abc9e42e272f16bab7c0639500a8bdd07eee482", size = 2615560 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/54/07/c903a3a42222a4bb6aedf620a63554f577f3020b4f56f339889718126c1c/symspellpy-6.9.0-py3-none-any.whl", hash = "sha256:b6dba96275fdbedc240491854160bbe596dda930f2d58567ad55faf82a4e4b43", size = 2612234 },
 ]
 
 [[package]]
