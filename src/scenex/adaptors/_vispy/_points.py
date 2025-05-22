@@ -28,8 +28,7 @@ SPACE_MAP: Mapping[model.ScalingMode, Literal["model", "screen", "world"]] = {
 class Points(Node):
     """Vispy backend adaptor for an Points node."""
 
-    # FIXME: Better understand the issue
-    _vispy_node: vispy.visuals.MarkersVisual  # pyright: ignore
+    _vispy_node: vispy.visuals.MarkersVisual
 
     def __init__(self, points: model.Points, **backend_kwargs: Any) -> None:
         # TODO: unclear whether get_view() is better here...
