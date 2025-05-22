@@ -47,8 +47,6 @@ class Canvas(CanvasAdaptor):
         # show the qt canvas we patched earlier in __init__
         if supports_hide_show(self._canvas.native):
             self._canvas.show()
-        # TODO: Is this needed?
-        # self._wgpu_canvas.request_draw(self._draw)
 
     def _draw(self) -> None:
         self._canvas.update()
@@ -84,5 +82,13 @@ class Canvas(CanvasAdaptor):
         alpha: bool = True,
     ) -> np.ndarray:
         """Render to screenshot."""
-        # VERY sure about this...
-        return np.asarray(self._canvas.render())
+        vispy_bgcolor = None
+        if bgcolor and bgcolor.name:
+            from vispy.color import Color as _Color
+
+            vispy_bgcolor = _Color(bgcolor.name)
+        return np.asarray(
+            self._canvas.render(
+                region=region, size=size, bgcolor=vispy_bgcolor, crop=crop, alpha=alpha
+            )
+        )
