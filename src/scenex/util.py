@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import logging
+import os
 from collections.abc import Callable, Iterable
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, Literal, Protocol
 
 from scenex import model
+from scenex.adaptors._auto import CANVAS_ENV_VAR, determine_backend
 
 if TYPE_CHECKING:
     from typing import TypeAlias
@@ -124,6 +126,25 @@ def show(obj: model.Node | model.View | model.Canvas) -> None:
         # logger.debug("SHOW MODEL  %s", tree_repr(view.scene))
         # native_scene = view.scene._get_native()
         # logger.debug("SHOW NATIVE %s", tree_repr(native_scene))
+
+
+def loop() -> None:
+    """Enter the native GUI event loop."""
+    if determine_backend() == "vispy":
+        from vispy.app import run
+
+        run()
+    else:
+        from rendercanvas.auto import loop
+
+        loop.run()
+
+
+def use(backend: Literal["vispy", "pygfx"] | None = None) -> None:
+    if backend is None:
+        del os.environ[CANVAS_ENV_VAR]
+    else:
+        os.environ[CANVAS_ENV_VAR] = backend
 
 
 def _cls_name_with_id(obj: Any) -> str:

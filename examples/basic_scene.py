@@ -1,8 +1,6 @@
 import cmap
 import numpy as np
-from qtpy.QtWidgets import QApplication
 
-# import vispy vispy.use(app="PyQt6")
 import scenex as snx
 
 view = snx.View(
@@ -32,6 +30,6 @@ sine_img = (np.sin(X) * np.cos(Y)).astype(np.float32)
 image = snx.Image(name="sine image", data=sine_img, clims=(-1, 1))
 view.scene.add_child(image)
 
+snx.use("vispy")
 snx.show(view)
-# loop.run()
-QApplication.instance().exec()
+snx.loop()

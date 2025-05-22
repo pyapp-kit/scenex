@@ -18,7 +18,7 @@ from .model._nodes.scene import Scene
 from .model._nodes.volume import Volume
 from .model._transform import Transform
 from .model._view import View
-from .util import show
+from .util import loop, show, use
 
 __all__ = [
     "Camera",
@@ -30,5 +30,7 @@ __all__ = [
     "Transform",
     "View",
     "Volume",
+    "loop",
     "show",
+    "use",
 ]
