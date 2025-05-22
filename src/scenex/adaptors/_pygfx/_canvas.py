@@ -60,11 +60,11 @@ class Canvas(CanvasAdaptor):
         # self._views.append(adaptor)
 
     def _snx_set_width(self, arg: int) -> None:
-        _, height = self._wgpu_canvas.get_logical_size()
+        _, height = cast("tuple[float, float]", self._wgpu_canvas.get_logical_size())
         self._wgpu_canvas.set_logical_size(arg, height)
 
     def _snx_set_height(self, arg: int) -> None:
-        width, _ = self._wgpu_canvas.get_logical_size()
+        width, _ = cast("tuple[float, float]", self._wgpu_canvas.get_logical_size())
         self._wgpu_canvas.set_logical_size(width, arg)
 
     def _snx_set_background_color(self, arg: Color | None) -> None:

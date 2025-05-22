@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 import vispy.scene
+import vispy.visuals
 
 from ._node import Node
 
@@ -28,7 +29,7 @@ class Points(Node):
     """Vispy backend adaptor for an Points node."""
 
     # FIXME: Better understand the issue
-    _vispy_node: vispy.scene.Markers  # pyright: ignore
+    _vispy_node: vispy.visuals.MarkersVisual  # pyright: ignore
 
     def __init__(self, points: model.Points, **backend_kwargs: Any) -> None:
         # TODO: unclear whether get_view() is better here...

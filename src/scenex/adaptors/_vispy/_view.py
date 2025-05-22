@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 import vispy
+import vispy.app
 import vispy.scene
 import vispy.scene.subscene
 
@@ -113,5 +114,8 @@ class View(ViewAdaptor):
         )
 
     def _snx_render(self) -> np.ndarray:
-        warnings.warn("render not implemented for vispy", RuntimeWarning, stacklevel=2)
+        """Render to screenshot."""
+        canvas = cast("vispy.scene.Node", self._vispy_viewbox).canvas
+        if isinstance(canvas, vispy.app.Canvas):
+            return np.asarray(canvas.render())
         return np.zeros((640, 480))

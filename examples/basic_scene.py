@@ -32,4 +32,5 @@ view.scene.add_child(image)
 
 snx.use("vispy")
 snx.show(view)
+view.render()
 snx.loop()

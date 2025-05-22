@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import vispy.scene
+import vispy.visuals
 
 from ._node import Node
 
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 class Image(Node):
     """pygfx backend adaptor for an Image node."""
 
-    _vispy_node: vispy.scene.Image
+    _vispy_node: vispy.visuals.ImageVisual
 
     def __init__(self, image: model.Image, **backend_kwargs: Any) -> None:
         self._vispy_node = vispy.scene.Image(

@@ -10,7 +10,6 @@ from ._adaptor_registry import get_adaptor
 
 if TYPE_CHECKING:
     from cmap import Color
-    from rendercanvas.auto import RenderCanvas
     from rendercanvas.base import BaseRenderCanvas
 
     from scenex import model
@@ -41,7 +40,7 @@ class Canvas(CanvasAdaptor):
             self._snx_add_view(view)
         self._views = canvas.views
 
-    def _snx_get_native(self) -> RenderCanvas:
+    def _snx_get_native(self) -> Any:
         return self._canvas.native
 
     def _snx_set_visible(self, arg: bool) -> None:

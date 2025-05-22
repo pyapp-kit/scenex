@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import vispy.scene
+import vispy.visuals
 
 from ._node import Node
 
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 class Volume(Node):
     """vispy backend adaptor for a Volume node."""
 
-    _vispy_node: vispy.scene.Volume
+    _vispy_node: vispy.visuals.VolumeVisual
 
     def __init__(self, volume: model.Volume, **backend_kwargs: Any) -> None:
         self._vispy_node = vispy.scene.Volume(texture_format="auto", **backend_kwargs)
