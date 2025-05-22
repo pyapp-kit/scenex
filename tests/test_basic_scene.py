@@ -14,6 +14,7 @@ Scene
     ├── Image
     ├── Image
     ├── Points
+    ├── Volume
     └── Camera
 """.strip()
 

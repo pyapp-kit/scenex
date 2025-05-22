@@ -53,6 +53,7 @@ dev = [
     { include-group = "test" },
     { include-group = "docs" },
     "scenex[pygfx,vispy]",
+    "imageio[tifffile] >=2.20",
     "ipython",
     "mypy",
     "pdbpp; sys_platform != 'win32'",

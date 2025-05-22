@@ -21,8 +21,10 @@ class Volume(Node):
     _vispy_node: vispy.visuals.VolumeVisual
 
     def __init__(self, volume: model.Volume, **backend_kwargs: Any) -> None:
-        self._vispy_node = vispy.scene.Volume(texture_format="auto", **backend_kwargs)
-        self._snx_set_data(volume.data)
+        # TODO: What if volume.data is None?
+        self._vispy_node = vispy.scene.Volume(
+            volume.data, texture_format="auto", **backend_kwargs
+        )
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
         self._vispy_node.cmap = arg.to_vispy()
