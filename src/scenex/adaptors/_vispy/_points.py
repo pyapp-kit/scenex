@@ -27,7 +27,8 @@ SPACE_MAP: Mapping[model.ScalingMode, Literal["model", "screen", "world"]] = {
 class Points(Node):
     """Vispy backend adaptor for an Points node."""
 
-    _pygfx_node: vispy.scene.Markers
+    # FIXME: Better understand the issue
+    _vispy_node: vispy.scene.Markers  # pyright: ignore
 
     def __init__(self, points: model.Points, **backend_kwargs: Any) -> None:
         # TODO: unclear whether get_view() is better here...
@@ -39,8 +40,8 @@ class Points(Node):
         self._vispy_node = vispy.scene.Markers(
             pos=np.asarray(points.coords),
             symbol=points.symbol,
-            scaling=points.scaling,
-            antialias=points.antialias,
+            scaling=points.scaling,  # pyright: ignore
+            antialias=points.antialias,  # pyright: ignore
             edge_color=points.edge_color,
             edge_width=points.edge_width,
             face_color=points.face_color,

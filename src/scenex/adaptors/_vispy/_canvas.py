@@ -55,7 +55,7 @@ class Canvas(CanvasAdaptor):
         self._canvas.update()
 
     def _snx_add_view(self, view: model.View) -> None:
-        self._grid.add_widget(get_adaptor(view)._vispy_viewbox)
+        self._grid.add_widget(get_adaptor(view)._snx_get_native())
 
     def _snx_set_width(self, arg: int) -> None:
         self._canvas.size = (self._canvas.size[0], arg)

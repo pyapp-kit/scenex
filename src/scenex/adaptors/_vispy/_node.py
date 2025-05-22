@@ -66,7 +66,7 @@ class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj]):
     def _snx_add_node(self, node: model.Node) -> None:
         # create if it doesn't exist
         adaptor = cast("Node", get_adaptor(node))
-        self._vispy_node.children.add(adaptor._snx_get_native())
+        adaptor._snx_get_native().parent = self._vispy_node
 
     def _snx_force_update(self) -> None:
         pass
