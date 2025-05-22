@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 import vispy
 import vispy.app
+import vispy.color
 import vispy.scene
 import vispy.scene.subscene
 
@@ -35,13 +36,14 @@ class View(ViewAdaptor):
     A view combines a scene and a camera to render a scene (onto a canvas).
     """
 
-    _vispy_canvas: vispy.scene.subscene.SubScene
+    _vispy_scene: vispy.scene.subscene.SubScene
     _vispy_viewbox: vispy.scene.ViewBox
-    _vispy_cam: vispy.scene.BaseCamera
+    _vispy_camera: vispy.scene.BaseCamera
 
     def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
+        self._vispy_viewbox = vispy.scene.ViewBox()
+
         self._snx_set_camera(view.camera)
-        self._vispy_viewbox = vispy.scene.ViewBox(self._vispy_cam)
         self._snx_set_scene(view.scene)
         self._snx_set_blending(view.blending)
 
@@ -49,8 +51,9 @@ class View(ViewAdaptor):
         return self._vispy_viewbox
 
     def _snx_set_blending(self, arg: model.BlendMode) -> None:
+        # FIXME: This is tricky - needs to be passed to set_gl_state for each scene
+        # node.
         pass
-        # self._renderer.blend_mode = BLENDING_MAP.get(arg, "default")
 
     def _snx_set_visible(self, arg: bool) -> None:
         pass
@@ -61,37 +64,36 @@ class View(ViewAdaptor):
         if prev is not None:
             cast("vispy.scene.subscene.SubScene", prev).parent = None
 
-        # Set the private attribute on the vispy viewbox like its constructor does
+        # Set the scene through a private attribute
+        # Unfortunate there's no public attr for this.
         new = cast("_scene.Scene", get_adaptor(scene))._vispy_node
         self._vispy_viewbox._scene = new
         new.parent = self._vispy_viewbox
+
+        # FIXME: Viewbox expects there to always be a Clipper
+        # Let's just copy the old one?
         if isinstance(prev, vispy.scene.subscene.SubScene):
             new._clipper = prev.clipper
             new.clip_children = prev.clip_children
 
         # Add the camera to the scene
         if hasattr(self, "_vispy_cam"):
-            self._vispy_cam.parent = new
+            self._vispy_camera.parent = new
 
     def _snx_set_camera(self, cam: model.Camera) -> None:
         self._cam_adaptor = cast("_camera.Camera", get_adaptor(cam))
-        self._vispy_cam = self._cam_adaptor._vispy_node
+        self._vispy_camera = self._cam_adaptor._vispy_node
         if hasattr(self, "_vispy_viewbox"):
-            self._vispy_viewbox.camera = self._vispy_cam
+            self._vispy_viewbox.camera = self._vispy_camera
 
     def _draw(self) -> None:
-        raise NotImplementedError("No YOU _draw")
-        # print("updating")
-        # self._vispy_canvas.update()
+        self._vispy_viewbox.update()
 
     def _snx_set_position(self, arg: tuple[float, float]) -> None:
         raise NotImplementedError()
 
     def _snx_set_size(self, arg: tuple[float, float] | None) -> None:
         raise NotImplementedError()
-
-    def _snx_set_background_color(self, color: Color | None) -> None:
-        raise NotImplementedError("Meh, don't feel like it")
 
     def _snx_set_border_width(self, arg: float) -> None:
         warnings.warn(
