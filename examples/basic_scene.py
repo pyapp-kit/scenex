@@ -30,7 +30,5 @@ sine_img = (np.sin(X) * np.cos(Y)).astype(np.float32)
 image = snx.Image(name="sine image", data=sine_img, clims=(-1, 1))
 view.scene.add_child(image)
 
-snx.use("vispy")
 snx.show(view)
-view.render()
 snx.loop()
