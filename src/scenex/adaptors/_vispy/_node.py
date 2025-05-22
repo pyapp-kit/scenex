@@ -21,16 +21,12 @@ class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj]):
     """Node adaptor for pygfx Backend."""
 
     _vispy_node: TObj
-    _name: str
 
     def _snx_get_native(self) -> Any:
         return self._vispy_node
 
     def _snx_set_name(self, arg: str) -> None:
-        # not sure pygfx has a name attribute...
-        # TODO: for that matter... do we need a name attribute?
-        # Could this be entirely managed on the model side/
-        self._name = arg
+        self._vispy_node.name = arg
 
     def _snx_add_child(self, child: model.Node) -> None:
         # create if it doesn't exist
