@@ -15,6 +15,3 @@ class Scene(Node):
 
         self._vispy_node.visible = scene.visible
         self._vispy_node.order = scene.order
-
-        # # Almar does this in Display.show...
-        # self._vispy_node.ambie(pygfx.AmbientLight())
