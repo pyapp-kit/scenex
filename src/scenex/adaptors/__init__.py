@@ -5,8 +5,14 @@ For each model in [`scenex.model`][], there is a corresponding adaptor in
 in the model.
 """
 
-from ._auto import get_adaptor_registry
+from ._auto import get_adaptor_registry, run, use
 from ._base import Adaptor
 from ._registry import AdaptorRegistry
 
-__all__ = ["Adaptor", "AdaptorRegistry", "get_adaptor_registry"]
+__all__ = [
+    "Adaptor",
+    "AdaptorRegistry",
+    "get_adaptor_registry",
+    "run",
+    "use",
+]
