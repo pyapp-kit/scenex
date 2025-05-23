@@ -30,7 +30,7 @@ class Canvas(CanvasAdaptor):
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
         from rendercanvas.auto import RenderCanvas
 
-        self._wgpu_canvas = cast("BaseRenderCanvas", RenderCanvas())
+        self._wgpu_canvas = RenderCanvas()
         # Qt RenderCanvas calls show() in its __init__ method, so we need to hide it
         if supports_hide_show(self._wgpu_canvas):
             self._wgpu_canvas.hide()
