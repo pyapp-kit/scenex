@@ -40,7 +40,7 @@ repos:
         language: system
         types_or: [python, pyi]
         require_serial: true
-        entry: uv run --no-extra imgui mypy
+        entry: uv run mypy
       - id: pyright
         name: pyright
         language: system
