@@ -62,7 +62,9 @@ class Node(EventedBase):
     name: str | None = Field(default=None, description="Name of the node.")
     visible: bool = Field(default=True, description="Whether this node is visible.")
     interactive: bool = Field(
-        default=False, description="Whether this node accepts mouse and touch events"
+        default=False,
+        description="Whether this node accepts mouse and touch events",
+        repr=False,
     )
     opacity: float = Field(default=1.0, ge=0, le=1, description="Opacity of this node.")
     order: int = Field(
@@ -80,7 +82,7 @@ class Node(EventedBase):
     model_config = ConfigDict(extra="forbid")
 
     child_added: ClassVar[Signal] = Signal(object)
-    child_removed: ClassVar[Signal] = Signal(object)
+    child_about_to_be_removed: ClassVar[Signal] = Signal(object)
 
     def __init__(
         self,
@@ -115,9 +117,9 @@ class Node(EventedBase):
     def remove_child(self, child: "AnyNode") -> None:
         """Remove a child node from this node. Does not raise if child is missing."""
         if child in self._children:
+            self.child_about_to_be_removed.emit(child)
             self._children.remove(child)
             child.parent = None
-            self.child_removed.emit(child)
 
     @model_validator(mode="wrap")
     @classmethod
@@ -144,9 +146,8 @@ class Node(EventedBase):
             if new_parent is not None and node not in new_parent._children:
                 new_parent._children.append(cast("AnyNode", node))
                 new_parent.child_added.emit(node)
-            if old_parent is not None and node in old_parent._children:
-                old_parent._children.remove(cast("AnyNode", node))
-                old_parent.child_removed.emit(node)
+            if old_parent is not None:
+                old_parent.remove_child(cast("AnyNode", node))
 
     @model_serializer(mode="wrap")
     def _serialize_withnode_type(self, handler: SerializerFunctionWrapHandler) -> Any:

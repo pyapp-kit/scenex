@@ -35,12 +35,21 @@ repos:
         require_serial: true
         entry: uv run ruff check --force-exclude
         args: [--output-format=full, --show-fixes, --exit-non-zero-on-fix]
+      # imgui_bundle has syntax errors in its stubs that causes mypy to fail altogether
+      # https://github.com/python/mypy/issues/6897
+      # https://github.com/python/mypy/issues/14670
+      - id: patch-imgui-stubs
+        name: patch-imgui-stubs
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+        entry: "sed -i '' 's/ptm: struct tm/ptm: tm/' .venv/lib/python3.13/site-packages/imgui_bundle/implot/internal.pyi"
       - id: mypy
         name: mypy
         language: system
         types_or: [python, pyi]
         require_serial: true
-        entry: uv run mypy
+        entry: uv run --no-extra imgui mypy
       - id: pyright
         name: pyright
         language: system

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
+from annotated_types import Interval
 from cmap import Color
 from pydantic import Field
 
@@ -34,7 +35,9 @@ class Points(Node):
 
     # numpy array of 2D/3D point centers, shape (N, 2) or (N, 3)
     coords: Any = Field(default=None, repr=False, exclude=True)
-    size: float = Field(default=10.0, description="The size of the points.")
+    size: Annotated[float, Interval(ge=0.5, le=100)] = Field(
+        default=10.0, description="The size of the points."
+    )
     face_color: Color | None = Field(
         default=Color("white"), description="The color of the faces."
     )

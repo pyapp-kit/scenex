@@ -1,5 +1,6 @@
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
+from annotated_types import Interval
 from cmap import Colormap
 from pydantic import Field
 
@@ -26,7 +27,7 @@ class Image(Node):
         default=None,
         description="The min and max values to use when normalizing the image.",
     )
-    gamma: float = Field(
+    gamma: Annotated[float, Interval(gt=0, le=2)] = Field(
         default=1.0, description="Gamma correction applied after normalization."
     )
     interpolation: InterpolationMode = Field(

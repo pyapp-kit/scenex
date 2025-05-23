@@ -118,7 +118,7 @@ class AdaptorRegistry:
         if isinstance(model, models.Node):
             adaptor = cast("_base.NodeAdaptor", adaptor)
             model.child_added.connect(adaptor._snx_add_child)
-            model.child_removed.connect(adaptor._snx_remove_child)
+            model.child_about_to_be_removed.connect(adaptor._snx_remove_child)
             for child in model.children:
                 # perhaps optional ... since _implementations of _snx_add_child
                 # will also likely need to call get_adaptor

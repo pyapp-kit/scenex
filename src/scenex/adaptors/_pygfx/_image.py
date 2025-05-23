@@ -47,7 +47,8 @@ class Image(Node):
             arg = "linear"
         self._material.interpolation = arg
 
-    def _create_texture(self, data: np.ndarray) -> pygfx.Texture:
+    def _create_texture(self, data: ArrayLike | None) -> pygfx.Texture:
+        data = np.asanyarray(data)
         if data is not None:
             dim = data.ndim
             if dim > 2 and data.shape[-1] <= 4:
@@ -58,5 +59,5 @@ class Image(Node):
         return pygfx.Texture(data, dim=dim)
 
     def _snx_set_data(self, data: ArrayLike) -> None:
-        self._texture = self._create_texture(np.asanyarray(data))
+        self._texture = self._create_texture(data)
         self._pygfx_node.geometry = pygfx.Geometry(grid=self._texture)
