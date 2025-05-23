@@ -1,11 +1,8 @@
-import logging
-
 import cmap
 import numpy as np
 
 import scenex as snx
 
-logging.basicConfig(level=logging.INFO)
 # both are optional, just for example
 snx.use("pygfx")
 # snx.use("vispy")
