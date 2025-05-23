@@ -1,7 +1,14 @@
+import logging
+
 import cmap
 import numpy as np
 
 import scenex as snx
+
+logging.basicConfig(level=logging.INFO)
+# both are optional, just for example
+snx.use("pygfx")
+# snx.use("vispy")
 
 view = snx.View(
     blending="default",
@@ -31,5 +38,6 @@ sine_img = (np.sin(X) * np.cos(Y)).astype(np.float32)
 image = snx.Image(name="sine image", data=sine_img, clims=(-1, 1))
 view.scene.add_child(image)
 
+
 snx.show(view)
-snx.loop()
+snx.run()
