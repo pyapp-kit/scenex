@@ -28,6 +28,7 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
+          python-version: "3.13"
       - run: uv sync
       # imgui_bundle has syntax errors in its stubs that causes mypy to fail altogether
       # https://github.com/python/mypy/issues/6897
