@@ -4,6 +4,11 @@ from scenex.adaptors._registry import AdaptorRegistry
 
 
 class VispyAdaptorRegistry(AdaptorRegistry):
+    def start_event_loop(self) -> None:
+        from vispy import app
+
+        app.run()
+
     def get_adaptor_class(self, obj: Any) -> type:
         from scenex.adaptors import _vispy
 

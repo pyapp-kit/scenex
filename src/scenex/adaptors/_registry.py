@@ -33,6 +33,10 @@ class AdaptorRegistry:
     def __init__(self) -> None:
         self._objects: dict[str, _base.Adaptor] = {}
 
+    def start_event_loop(self) -> None:
+        """Run the Application event loop."""
+        raise NotImplementedError("This method should be implemented by the backend.")
+
     def all(self) -> Iterator[_base.Adaptor]:
         """Return an iterator over all adaptors in the registry."""
         yield from self._objects.values()

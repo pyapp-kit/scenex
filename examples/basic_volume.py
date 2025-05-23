@@ -24,4 +24,4 @@ view = snx.View(
 )
 
 snx.show(view)
-snx.loop()
+snx.run()
