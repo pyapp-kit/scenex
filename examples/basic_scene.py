@@ -1,6 +1,5 @@
 import cmap
 import numpy as np
-from rendercanvas.auto import loop
 
 import scenex as snx
 
@@ -19,6 +18,7 @@ view = snx.View(
                 coords=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
                 size=5,
                 face_color=cmap.Color("coral"),
+                edge_color=cmap.Color("purple"),
                 transform=snx.Transform().translated((0, -50)),
             ),
         ]
@@ -32,4 +32,4 @@ image = snx.Image(name="sine image", data=sine_img, clims=(-1, 1))
 view.scene.add_child(image)
 
 snx.show(view)
-loop.run()
+snx.loop()

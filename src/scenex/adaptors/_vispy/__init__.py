@@ -1,4 +1,4 @@
-"""Pygfx backend for SceneX."""
+"""Vispy backend for SceneX."""
 
 from ._adaptor_registry import adaptors
 from ._camera import Camera
