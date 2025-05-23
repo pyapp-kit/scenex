@@ -76,6 +76,7 @@ target-version = "py310"
 fix = true
 unsafe-fixes = true
 src = ["src"]
+exclude = ["stub_patches"]
 
 # https://docs.astral.sh/ruff/rules
 [tool.ruff.lint]
@@ -119,7 +120,7 @@ show_error_codes = true
 pretty = true
 plugins = ["pydantic.mypy"]
 untyped_calls_exclude = ["rendercanvas"]
-mypy_path = "typings"
+mypy_path = "stub_patches"
 
 [[tool.mypy.overrides]]
 module = ["rendercanvas.*"]
@@ -128,11 +129,6 @@ follow_untyped_imports = true
 [[tool.mypy.overrides]]
 module = ["pygfx.*", "vispy.*", "wgpu.*"]
 ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = ["imgui_bundle.*"]
-ignore_missing_imports = true    # silence “cannot find module”
-follow_imports = "skip"          # don't open any of its files
 
 [tool.pydantic-mypy]
 init_forbid_extra = false
