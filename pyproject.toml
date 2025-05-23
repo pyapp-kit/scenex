@@ -76,7 +76,7 @@ target-version = "py310"
 fix = true
 unsafe-fixes = true
 src = ["src"]
-exclude = ["stub_patches"]
+exclude = ["_stubs"]
 
 # https://docs.astral.sh/ruff/rules
 [tool.ruff.lint]
@@ -120,7 +120,7 @@ show_error_codes = true
 pretty = true
 plugins = ["pydantic.mypy"]
 untyped_calls_exclude = ["rendercanvas"]
-mypy_path = "stub_patches"
+mypy_path = "_stubs"
 
 [[tool.mypy.overrides]]
 module = ["rendercanvas.*"]
