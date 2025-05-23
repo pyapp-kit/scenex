@@ -64,3 +64,8 @@ def use(backend: KnownBackend | None = None) -> None:
     global _USE
     if backend is None or _ensure_valid_backend(backend):
         _USE = backend
+
+
+def run() -> None:
+    """Enter the native GUI event loop."""
+    get_adaptor_registry().start_event_loop()

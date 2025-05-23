@@ -9,8 +9,7 @@ try:
 except PackageNotFoundError:
     __version__ = "uninstalled"
 
-from .adaptors import use
-from .app import run
+from .adaptors import run, use
 from .model._canvas import Canvas
 from .model._nodes.camera import Camera
 from .model._nodes.image import Image
