@@ -62,7 +62,9 @@ class Node(EventedBase):
     name: str | None = Field(default=None, description="Name of the node.")
     visible: bool = Field(default=True, description="Whether this node is visible.")
     interactive: bool = Field(
-        default=False, description="Whether this node accepts mouse and touch events"
+        default=False,
+        description="Whether this node accepts mouse and touch events",
+        repr=False,
     )
     opacity: float = Field(default=1.0, ge=0, le=1, description="Opacity of this node.")
     order: int = Field(

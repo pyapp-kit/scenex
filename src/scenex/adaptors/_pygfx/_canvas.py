@@ -87,5 +87,4 @@ class Canvas(CanvasAdaptor):
         canvas = OffscreenRenderCanvas(size=(640, 480), pixel_ratio=2)
         canvas.request_draw(self._draw)
         canvas.force_draw()
-        breakpoint()
         return cast("np.ndarray", canvas.draw())

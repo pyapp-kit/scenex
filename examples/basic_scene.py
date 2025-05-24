@@ -3,6 +3,12 @@ import numpy as np
 
 import scenex as snx
 
+try:
+    from scenex.imgui import add_imgui_controls
+except ImportError:
+    print("imgui not available, skipping imgui controls")
+    add_imgui_controls = None  # type: ignore[assignment]
+
 view = snx.View(
     blending="default",
     scene=snx.Scene(
@@ -36,4 +42,6 @@ snx.use("pygfx")
 # snx.use("vispy")
 
 snx.show(view)
+if add_imgui_controls is not None:
+    add_imgui_controls(view)
 snx.run()

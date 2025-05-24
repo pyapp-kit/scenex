@@ -90,7 +90,7 @@ def _ensure_iterable(obj: object) -> Iterable[Any]:
     )
 
 
-def show(obj: model.Node | model.View | model.Canvas) -> None:
+def show(obj: model.Node | model.View | model.Canvas) -> model.Canvas:
     """Show a scene or view.
 
     Parameters
@@ -124,6 +124,7 @@ def show(obj: model.Node | model.View | model.Canvas) -> None:
         # logger.debug("SHOW MODEL  %s", tree_repr(view.scene))
         # native_scene = view.scene._get_native()
         # logger.debug("SHOW NATIVE %s", tree_repr(native_scene))
+    return canvas
 
 
 def _cls_name_with_id(obj: Any) -> str:

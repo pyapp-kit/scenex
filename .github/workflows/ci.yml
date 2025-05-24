@@ -28,8 +28,8 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
-      - run: uv sync
-      - uses: pre-commit/action@v3.0.1
+          python-version: "3.13"
+      - uses: tox-dev/action-pre-commit-uv@v1
         with:
           extra_args: --all-files --verbose
 
