@@ -26,6 +26,7 @@ class Image(Node):
     def __init__(self, image: model.Image, **backend_kwargs: Any) -> None:
         self._material = pygfx.ImageBasicMaterial(clim=image.clims)
         self._pygfx_node = pygfx.Image(None, self._material)
+        self._model = image
         self._snx_set_data(image.data)
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
@@ -44,7 +45,8 @@ class Image(Node):
                 RuntimeWarning,
                 stacklevel=2,
             )
-            arg = "linear"
+            self._model.interpolation = "linear"
+            return
         self._material.interpolation = arg
 
     def _create_texture(self, data: ArrayLike | None) -> pygfx.Texture:
