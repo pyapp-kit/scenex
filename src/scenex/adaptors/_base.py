@@ -20,6 +20,7 @@ TModel = TypeVar("TModel", bound="model.EventedBase", covariant=True)
 TNode = TypeVar("TNode", bound="model.Node", covariant=True)
 TCamera = TypeVar("TCamera", bound="model.Camera", covariant=True)
 TImage = TypeVar("TImage", bound="model.Image", covariant=True)
+TVolume = TypeVar("TVolume", bound="model.Volume", covariant=True)
 TPoints = TypeVar("TPoints", bound="model.Points", covariant=True)
 TCanvas = TypeVar("TCanvas", bound="model.Canvas", covariant=True)
 TView = TypeVar("TView", bound="model.View", covariant=True)
@@ -47,6 +48,9 @@ class Adaptor(ABC, Generic[TModel, TNative]):
     def handle_event(self, info: EmissionInfo) -> None:
         """Receive info from psygnal callback and convert to adaptor call."""
         signal_name = info.signal.name
+        if signal_name == "parent":
+            # Parent change events are handled by the parent adaptor.
+            return
 
         try:
             name = self.SETTER_METHOD.format(name=signal_name)
@@ -138,6 +142,11 @@ class ImageAdaptor(NodeAdaptor[TImage, TNative]):
     def _snx_set_interpolation(self, arg: model.InterpolationMode, /) -> None: ...
 
 
+class VolumeAdaptor(ImageAdaptor[TVolume, TNative]):
+    @abstractmethod
+    def _snx_set_render_mode(self, arg: model.RenderMode, /) -> None: ...
+
+
 class PointsAdaptor(NodeAdaptor[TPoints, TNative]):
     """Protocol for a backend Image adaptor object."""
 
@@ -154,7 +163,7 @@ class PointsAdaptor(NodeAdaptor[TPoints, TNative]):
     @abstractmethod
     def _snx_set_symbol(self, arg: str, /) -> None: ...
     @abstractmethod
-    def _snx_set_scaling(self, arg: str, /) -> None: ...
+    def _snx_set_scaling(self, arg: model.ScalingMode, /) -> None: ...
     @abstractmethod
     def _snx_set_antialias(self, arg: float, /) -> None: ...
 

@@ -89,7 +89,10 @@ class AdaptorRegistry:
         """Get the adaptor for the given model object, create if `create` is True."""
         if obj._model_id.hex not in self._objects:
             if not create:
-                raise KeyError(f"No adaptor found for {obj!r}, and create=False")
+                raise KeyError(
+                    f"{type(self).__name__!r} has no adaptor for {type(obj)} @ "
+                    f"{id(obj):x}, and create=False"
+                )
             logger.debug(
                 "Creating %r Adaptor %-14r id: %s",
                 type(self).__module__,

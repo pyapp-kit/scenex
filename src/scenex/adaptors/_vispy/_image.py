@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Any
 import vispy.scene
 import vispy.visuals
 
+from scenex.adaptors._base import ImageAdaptor
+
 from ._node import Node
 
 if TYPE_CHECKING:
@@ -14,7 +16,7 @@ if TYPE_CHECKING:
     from scenex import model
 
 
-class Image(Node):
+class Image(Node, ImageAdaptor):
     """pygfx backend adaptor for an Image node."""
 
     _vispy_node: vispy.visuals.ImageVisual

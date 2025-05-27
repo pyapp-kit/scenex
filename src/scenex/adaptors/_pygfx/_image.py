@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 import pygfx
 
+from scenex.adaptors._base import ImageAdaptor
+
 from ._node import Node
 
 if TYPE_CHECKING:
@@ -17,7 +19,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger("scenex.adaptors.pygfx")
 
 
-class Image(Node):
+class Image(Node, ImageAdaptor):
     """pygfx backend adaptor for an Image node."""
 
     _pygfx_node: pygfx.Image

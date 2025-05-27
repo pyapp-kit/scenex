@@ -7,6 +7,8 @@ import vispy.color
 import vispy.scene
 import vispy.visuals
 
+from scenex.adaptors._base import PointsAdaptor
+
 from ._node import Node
 
 if TYPE_CHECKING:
@@ -26,7 +28,7 @@ SPACE_MAP: Mapping[model.ScalingMode, Literal["model", "screen", "world"]] = {
 }
 
 
-class Points(Node):
+class Points(Node, PointsAdaptor):
     """Vispy backend adaptor for an Points node."""
 
     _model: model.Points
@@ -63,7 +65,7 @@ class Points(Node):
     def _snx_set_symbol(self, symbol: str) -> None:
         self._update_vispy_data()
 
-    def _snx_set_scaling(self, scaling: str) -> None:
+    def _snx_set_scaling(self, scaling: model.ScalingMode) -> None:
         self._update_vispy_data()
 
     def _snx_set_antialias(self, antialias: float) -> None:

@@ -51,5 +51,6 @@ class Canvas(EventedBase):
 
     def render(self) -> np.ndarray:
         """Show the canvas."""
-        adaptor = cast("CanvasAdaptor", self._get_adaptor())
-        return adaptor._snx_render()
+        if adaptors := self._get_adaptors():
+            return cast("CanvasAdaptor", adaptors[0])._snx_render()
+        raise RuntimeError("No adaptor found for Canvas.")

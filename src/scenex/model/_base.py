@@ -75,16 +75,19 @@ class EventedBase(BaseModel):
                         continue
             yield key, val
 
-    def _get_adaptor(
+    def _get_adaptors(
         self, backend: str | None = None, create: bool = False
-    ) -> "Adaptor":
+    ) -> list["Adaptor"]:
         """Get all adaptors for this model."""
-        from scenex.adaptors import get_adaptor_registry
+        from scenex.adaptors import get_adaptor_registry, get_all_adaptors
 
-        reg = get_adaptor_registry(backend=backend)
-        return reg.get_adaptor(self, create=create)
+        if backend:
+            reg = get_adaptor_registry(backend=backend)
+            return [reg.get_adaptor(self, create=create)]
+        else:
+            return list(get_all_adaptors(self))
 
     def _get_native(self, backend: str | None = None, create: bool = False) -> Any:
         """Get the native object for this model."""
-        adaptor = self._get_adaptor(backend=backend, create=create)
-        return adaptor._snx_get_native()
+        if adaptors := self._get_adaptors(backend=backend, create=create):
+            return adaptors[0]._snx_get_native()

@@ -90,7 +90,9 @@ def _ensure_iterable(obj: object) -> Iterable[Any]:
     )
 
 
-def show(obj: model.Node | model.View | model.Canvas) -> model.Canvas:
+def show(
+    obj: model.Node | model.View | model.Canvas, *, backend: str | None = None
+) -> model.Canvas:
     """Show a scene or view.
 
     Parameters
@@ -98,9 +100,13 @@ def show(obj: model.Node | model.View | model.Canvas) -> model.Canvas:
     obj : Node | View | Canvas
         The scene or view to show. If a Node is provided, it will be wrapped in a Scene
         and then in a View.
+    backend : str, optional
+        The backend to use for rendering. If not specified, the default backend will be
+        used. Defaults to None.
     """
     from .adaptors import get_adaptor_registry
 
+    view = None
     if isinstance(obj, model.Canvas):
         canvas = obj
     else:
@@ -115,7 +121,7 @@ def show(obj: model.Node | model.View | model.Canvas) -> model.Canvas:
         canvas = model.Canvas(views=[view])  # pyright: ignore[reportArgumentType]
 
     canvas.visible = True
-    reg = get_adaptor_registry()
+    reg = get_adaptor_registry(backend=backend)
     reg.get_adaptor(canvas, create=True)
     for view in canvas.views:
         cam = reg.get_adaptor(view.camera)

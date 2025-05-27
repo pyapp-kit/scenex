@@ -2,9 +2,15 @@ from __future__ import annotations
 
 import importlib.util
 import os
-from typing import TYPE_CHECKING, Literal, TypeAlias, TypeGuard, get_args
+import sys
+from contextlib import suppress
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias, TypeGuard, cast, get_args
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
+    from scenex.adaptors._base import Adaptor
+
     from ._registry import AdaptorRegistry
 
 KnownBackend: TypeAlias = Literal["vispy", "pygfx"]
@@ -32,6 +38,15 @@ def get_adaptor_registry(backend: KnownBackend | str | None = None) -> AdaptorRe
             from . import _pygfx
 
             return _pygfx.adaptors
+
+
+def get_all_adaptors(obj: Any) -> Iterator[Adaptor]:
+    """Get all adaptors for the given object."""
+    for mod_name in ["scenex.adaptors._vispy", "scenex.adaptors._pygfx"]:
+        if mod := sys.modules.get(mod_name):
+            reg = cast("AdaptorRegistry", mod.adaptors)
+            with suppress(KeyError):
+                yield reg.get_adaptor(obj, create=False)
 
 
 def determine_backend(request: KnownBackend | str | None = None) -> KnownBackend:
