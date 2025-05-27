@@ -37,7 +37,7 @@ dependencies = ["cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10"]
 [project.optional-dependencies]
 pygfx = ["pygfx>=0.9.0"]
 vispy = ["vispy>=0.15.0", "pyopengl"]
-imgui = ["imgui-bundle>=1.6.3"]
+imgui = ["imgui-bundle>=1.6,!=1.6.3"]  # 1.6.3 breaks type checking
 
 [dependency-groups]
 test = ["pytest>=8", "pytest-cov>=6", "PyQt6"]
@@ -120,7 +120,6 @@ show_error_codes = true
 pretty = true
 plugins = ["pydantic.mypy"]
 untyped_calls_exclude = ["rendercanvas"]
-mypy_path = "_stubs"
 
 [[tool.mypy.overrides]]
 module = ["rendercanvas.*"]
