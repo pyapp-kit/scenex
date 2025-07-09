@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
     from scenex import model
+    from scenex.model._transform import Transform
 
 logger = logging.getLogger("scenex.adaptors.pygfx")
 
@@ -37,6 +38,10 @@ class Image(Node):
 
     def _snx_set_gamma(self, arg: float) -> None:
         self._material.gamma = arg
+
+    def _snx_set_transform(self, arg: Transform) -> None:
+        # Offset due to locating the center of pixels at integer locations.
+        super()._snx_set_transform(arg.translated([0.5, 0.5]))
 
     def _snx_set_interpolation(self, arg: model.InterpolationMode) -> None:
         if arg == "bicubic":
