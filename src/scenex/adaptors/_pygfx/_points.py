@@ -6,6 +6,8 @@ import cmap
 import numpy as np
 import pygfx
 
+from scenex.adaptors._base import PointsAdaptor
+
 from ._node import Node
 
 if TYPE_CHECKING:
@@ -25,7 +27,7 @@ SPACE_MAP: Mapping[model.ScalingMode, Literal["model", "screen", "world"]] = {
 }
 
 
-class Points(Node):
+class Points(Node, PointsAdaptor):
     """Vispy backend adaptor for an Points node."""
 
     _pygfx_node: pygfx.Points
