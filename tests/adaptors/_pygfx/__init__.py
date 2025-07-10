@@ -1,10 +1,11 @@
 """Tests pertaining to Pygfx components"""
 
-from importlib.util import find_spec
-
 import pytest
 
-if not find_spec("pygfx"):
+from scenex.adaptors._auto import determine_backend
+
+if not determine_backend() == "pygfx":
     pytest.skip(
-        "Skipping Pygfx tests as Pygfx is not installed", allow_module_level=True
+        "Skipping Pygfx tests as Pygfx will not be used in this environment",
+        allow_module_level=True,
     )

@@ -1,10 +1,11 @@
 """Tests pertaining to VisPy adaptors"""
 
-from importlib.util import find_spec
-
 import pytest
 
-if not find_spec("vispy"):
+from scenex.adaptors._auto import determine_backend
+
+if not determine_backend() == "vispy":
     pytest.skip(
-        "Skipping vispy tests as vispy is not installed", allow_module_level=True
+        "Skipping VisPy tests as VisPy will not be used in this environment",
+        allow_module_level=True,
     )
