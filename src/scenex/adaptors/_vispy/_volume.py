@@ -6,6 +6,8 @@ import numpy as np
 import vispy.scene
 import vispy.visuals
 
+from scenex.adaptors._base import VolumeAdaptor
+
 from ._node import Node
 
 if TYPE_CHECKING:
@@ -15,7 +17,7 @@ if TYPE_CHECKING:
     from scenex import model
 
 
-class Volume(Node):
+class Volume(Node, VolumeAdaptor):
     """vispy backend adaptor for a Volume node."""
 
     _vispy_node: vispy.visuals.VolumeVisual
@@ -41,7 +43,7 @@ class Volume(Node):
     def _snx_set_data(self, data: ArrayLike) -> None:
         self._vispy_node.set_data(np.asarray(data))
 
-    def _snx_set_rendermode(
+    def _snx_set_render_mode(
         self,
         data: model.RenderMode,
         interpolation: model.InterpolationMode | None = None,
