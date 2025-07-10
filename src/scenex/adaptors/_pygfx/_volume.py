@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 import pygfx
 
+from scenex.adaptors._base import VolumeAdaptor
+
 from ._node import Node
 
 if TYPE_CHECKING:
@@ -15,7 +17,7 @@ if TYPE_CHECKING:
     from scenex import model
 
 
-class Volume(Node):
+class Volume(Node, VolumeAdaptor):
     """pygfx backend adaptor for a Volume node."""
 
     _pygfx_node: pygfx.Volume
@@ -24,7 +26,7 @@ class Volume(Node):
 
     def __init__(self, volume: model.Volume, **backend_kwargs: Any) -> None:
         self._snx_set_data(volume.data)
-        self._snx_set_rendermode(volume.render_mode, volume.interpolation)
+        self._snx_set_render_mode(volume.render_mode, volume.interpolation)
         self._pygfx_node = pygfx.Volume(self._geometry, self._material)
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
@@ -55,7 +57,7 @@ class Volume(Node):
         self._texture = self._create_texture(np.asanyarray(data))
         self._geometry = pygfx.Geometry(grid=self._texture)
 
-    def _snx_set_rendermode(
+    def _snx_set_render_mode(
         self,
         data: model.RenderMode,
         interpolation: model.InterpolationMode | None = None,
