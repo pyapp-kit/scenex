@@ -29,7 +29,8 @@ class Volume(Node):
 
     def _snx_set_transform(self, arg: Transform) -> None:
         # Offset accounting for vispy's pixel centers at half-integer locations
-        super()._snx_set_transform(arg.translated([-0.5, -0.5, -0.5]))
+        offset = arg.map([-0.5, -0.5, -0.5, 0])
+        super()._snx_set_transform(arg.translated(offset))
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
         self._vispy_node.cmap = arg.to_vispy()
