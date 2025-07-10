@@ -13,6 +13,7 @@ from ._node import Node
 
 if TYPE_CHECKING:
     from scenex import model
+    from scenex.model import Transform
 
 logger = logging.getLogger("scenex.adaptors.pygfx")
 
@@ -60,6 +61,9 @@ class Camera(Node, CameraAdaptor):
         # and should perhaps be moved to the View Adaptor
         self.pygfx_controller.add_default_event_handlers(viewport, self._pygfx_node)
 
+    def _snx_set_projection(self, arg: Transform) -> None:
+        self._pygfx_node.projection_matrix = arg.root  # pyright: ignore[reportAttributeAccessIssue]
+
     def _snx_zoom_to_fit(self, margin: float) -> None:
         # reset camera to fit all objects
         if not (scene := self._camera_model.parent):
@@ -78,4 +82,10 @@ class Camera(Node, CameraAdaptor):
                 height = 1
             cam.width = width
             cam.height = height
+            self._camera_model.center = tuple(np.mean(bb, axis=0))
         cam.zoom = 1 - margin
+        # FIXME: Pyright
+        self._camera_model.transform = cam.local.matrix.T  # pyright: ignore[reportAttributeAccessIssue]
+        # HACK: Ideally, we'd use `cam.projection_matrix`, but it's a cached
+        # property that doesn't get recomputed.
+        self._camera_model.projection = cam._update_projection_matrix()  # pyright: ignore[reportAttributeAccessIssue]

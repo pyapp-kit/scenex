@@ -4,6 +4,8 @@ from typing import Literal
 
 from pydantic import Field
 
+from scenex.model._transform import Transform
+
 from .node import Node
 
 CameraType = Literal["panzoom", "perspective"]
@@ -17,6 +19,13 @@ class Camera(Node):
 
     The camera lives in, and is a child of, a scene graph.  It defines the view
     transformation for the scene, mapping it onto a 2D surface.
+
+    Cameras have two different Transforms. Like all Nodes, it has a transform
+    `transform`, describing its location in the world. Its other transform,
+    `projection`, describes how 2D normalized device coordinates
+    {(x, y) | x in [-1, 1], y in [-1, 1]} map to a ray in 3D world space. The inner
+    product of these matrices can convert a 2D canvas position to a 3D ray eminating
+    from the camera node into the world.
     """
 
     node_type: Literal["camera"] = "camera"
@@ -30,4 +39,8 @@ class Camera(Node):
     zoom: float = Field(default=1.0, description="Zoom factor of the camera.")
     center: Position = Field(
         default=(0, 0, 0), description="Center position of the view."
+    )
+    projection: Transform = Field(
+        default_factory=Transform,
+        description="Describes how 3D points are mapped to a 2D canvas",
     )
