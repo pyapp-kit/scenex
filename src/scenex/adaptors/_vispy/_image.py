@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
     from scenex import model
+    from scenex.model._transform import Transform
 
 
 class Image(Node):
@@ -25,6 +26,10 @@ class Image(Node):
         )
         self._snx_set_data(image.data)
         self._vispy_node.visible = True
+
+    def _snx_set_transform(self, arg: Transform) -> None:
+        # Offset accounting for vispy's pixel centers at half-integer locations
+        super()._snx_set_transform(arg.translated([-0.5, -0.5]))
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
         self._vispy_node.cmap = arg.to_vispy()
