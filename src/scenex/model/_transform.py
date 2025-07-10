@@ -104,7 +104,7 @@ class Transform(RootModel):
         """Return string representation of the transform."""
         return repr(self.root).replace("array", "Transform")
 
-    def __rich_repr__(self) -> Iterable[Any]:  # type: ignore
+    def __rich_repr__(self) -> Iterable[Any]:
         """Return representation of the transform for richs."""
         yield self.root.tolist()
 
@@ -362,7 +362,7 @@ def as_vec4(obj: ArrayLike, default: ArrayLike = (0, 0, 0, 1)) -> np.ndarray:
     obj = np.atleast_2d(obj)
     # For multiple vectors, reshape to (..., 4)
     if obj.shape[-1] < 4:
-        new = np.empty(obj.shape[:-1] + (4,), dtype=obj.dtype)
+        new = np.empty((*obj.shape[:-1], 4), dtype=obj.dtype)
         new[:] = default
         new[..., : obj.shape[-1]] = obj
         obj = new
