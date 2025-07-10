@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Any, TypeGuard, cast
 import numpy as np
 
 from scenex.adaptors._base import CanvasAdaptor
+from scenex.events._auto import app
+from scenex.events.events import _handle_event
 
 from ._adaptor_registry import get_adaptor
 
@@ -13,6 +15,7 @@ if TYPE_CHECKING:
     from rendercanvas.base import BaseRenderCanvas
 
     from scenex import model
+    from scenex.model._view import View
 
     class SupportsHideShow(BaseRenderCanvas):
         def show(self) -> None: ...
@@ -27,7 +30,7 @@ class Canvas(CanvasAdaptor):
     """Canvas interface for vispy Backend."""
 
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
-        from vispy.scene import Grid, SceneCanvas
+        from vispy.scene import Grid, SceneCanvas, VisualNode
 
         self._canvas = SceneCanvas(
             title=canvas.title, size=(canvas.width, canvas.height)
@@ -36,28 +39,47 @@ class Canvas(CanvasAdaptor):
         if supports_hide_show(self._canvas.native):
             self._canvas.native.hide()
         self._grid = cast("Grid", self._canvas.central_widget.add_grid())
+        self._views: list[View] = []
         for view in canvas.views:
             self._snx_add_view(view)
-        self._views = canvas.views
+        self._filter = app().install_event_filter(
+            self._canvas.native, canvas, lambda e: _handle_event(canvas, e)
+        )
+
+        self._visual_to_node: dict[VisualNode, model.Node | None] = {}
+        self._last_canvas_pos: tuple[float, float] | None = None
 
     def _snx_get_native(self) -> Any:
         return self._canvas.native
 
     def _snx_set_visible(self, arg: bool) -> None:
         # show the qt canvas we patched earlier in __init__
-        if supports_hide_show(self._canvas.native):
-            self._canvas.show()
+        app().show(self._canvas.native, arg)
 
     def _draw(self) -> None:
         self._canvas.update()
 
     def _snx_add_view(self, view: model.View) -> None:
-        adaptor = get_adaptor(view)
-        self._grid.add_widget(adaptor._snx_get_native())
-        # HACK: Update view size by passing the existing camera
-        self._grid._prepare_draw(adaptor._snx_get_native())
-        cam_adaptor = get_adaptor(view.camera)
-        cam_adaptor._set_view(adaptor._vispy_viewbox)  # type: ignore
+        self._views.append(view)
+        # FIXME: Allow customization
+        x = 0.0
+        dx = float(self._canvas.size[0]) / len(self._views)
+
+        for view in self._views:
+            view.layout.x = x
+            view.layout.y = 0
+            view.layout.width = dx
+            view.layout.height = self._canvas.size[1]
+            x += dx
+
+        self._grid.add_widget(get_adaptor(view)._snx_get_native())
+        get_adaptor(view.camera)._set_view(view.layout.width, view.layout.height)  # type:ignore
+        # adaptor = get_adaptor(view)
+        # self._grid.add_widget(adaptor._snx_get_native())
+        # # HACK: Update view size by passing the existing camera
+        # self._grid._prepare_draw(adaptor._snx_get_native())
+        # cam_adaptor = get_adaptor(view.camera)
+        # cam_adaptor._set_view(adaptor._vispy_viewbox)  # type: ignore
 
     def _snx_set_width(self, arg: int) -> None:
         self._canvas.size = (self._canvas.size[0], arg)

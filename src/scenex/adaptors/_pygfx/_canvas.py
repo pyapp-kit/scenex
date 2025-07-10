@@ -3,8 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
 from scenex.adaptors._base import CanvasAdaptor
+from scenex.events._auto import app
+from scenex.events.events import _handle_event
 
-from ._adaptor_registry import adaptors
+from ._adaptor_registry import get_adaptor
 
 if TYPE_CHECKING:
     import numpy as np
@@ -30,14 +32,32 @@ class Canvas(CanvasAdaptor):
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
         from rendercanvas.auto import RenderCanvas
 
-        self._wgpu_canvas = RenderCanvas()
-        # Qt RenderCanvas calls show() in its __init__ method, so we need to hide it
-        if supports_hide_show(self._wgpu_canvas):
-            self._wgpu_canvas.hide()
+        canvas_cls = RenderCanvas
+        # HACK: Qt
+        if canvas_cls.__module__.startswith("rendercanvas.qt"):
+            from qtpy.QtCore import QSize
+            from rendercanvas.auto import loop
+            from rendercanvas.qt import QRenderWidget
 
+            class _QRenderWidget(QRenderWidget):
+                def sizeHint(self) -> QSize:
+                    return QSize(self.width(), self.height())
+
+            loop._rc_init()
+            canvas_cls = _QRenderWidget
+        self._canvas = canvas
+        self._wgpu_canvas = canvas_cls()
+
+        # FIXME: This seems to not work on my laptop, without external monitors.
+        # The physical canvas size is still 625, 625...
         self._wgpu_canvas.set_logical_size(canvas.width, canvas.height)
         self._wgpu_canvas.set_title(canvas.title)
-        self._views = canvas.views
+        self._views: list[model.View] = []
+        for view in canvas.views:
+            self._snx_add_view(view)
+        self._filter = app().install_event_filter(
+            self._wgpu_canvas, canvas, lambda e: _handle_event(canvas, e)
+        )
 
     def _snx_get_native(self) -> BaseRenderCanvas:
         return self._wgpu_canvas
@@ -50,14 +70,22 @@ class Canvas(CanvasAdaptor):
 
     def _draw(self) -> None:
         for view in self._views:
-            adaptor = cast("View", adaptors.get_adaptor(view, create=True))
-            adaptor._draw()
+            cast("View", get_adaptor(view))._draw()
 
     def _snx_add_view(self, view: model.View) -> None:
-        pass
-        # adaptor = cast("View", view.backend_adaptor())
-        # adaptor._pygfx_cam.set_viewport(self._viewport)
-        # self._views.append(adaptor)
+        # This logic should go in the canvas node, I think
+        self._views.append(view)
+
+        # FIXME: Allow customization
+        x = 0.0
+        dx = float(self._wgpu_canvas.get_logical_size()[0]) / len(self._views)
+
+        for view in self._views:
+            view.layout.x = x
+            view.layout.y = 0
+            view.layout.width = dx
+            view.layout.height = self._wgpu_canvas.get_logical_size()[1]  # type: ignore
+            x += dx
 
     def _snx_set_width(self, arg: int) -> None:
         _, height = cast("tuple[float, float]", self._wgpu_canvas.get_logical_size())

@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import logging
-from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING, Annotated, Any, ClassVar, Union, cast
 
 from psygnal import Signal
@@ -19,8 +20,13 @@ from scenex.model._base import EventedBase
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable, Iterator
+
     import numpy.typing as npt
     from typing_extensions import Self, TypedDict, Unpack
+
+    from scenex.events import Event
+    from scenex.events.events import Ray
 
     from .camera import Camera
     from .image import Image
@@ -30,7 +36,7 @@ if TYPE_CHECKING:
     class NodeKwargs(TypedDict, total=False):
         """TypedDict for Node kwargs."""
 
-        parent: "Node | None"
+        parent: Node | None
         name: str | None
         visible: bool
         interactive: bool
@@ -55,9 +61,9 @@ class Node(EventedBase):
     be used in place of Node.
     """
 
-    parent: "Node | None" = Field(default=None, repr=False, exclude=True)
+    parent: Node | None = Field(default=None, repr=False, exclude=True)
     # see computed field below
-    _children: list["AnyNode"] = PrivateAttr(default_factory=list)
+    _children: list[AnyNode] = PrivateAttr(default_factory=list)
 
     name: str | None = Field(default=None, description="Name of the node.")
     visible: bool = Field(default=True, description="Whether this node is visible.")
@@ -79,6 +85,17 @@ class Node(EventedBase):
         "frame of the parent.",
     )
 
+    _filter: Callable[[Event, Node], bool] | None = PrivateAttr(default=None)
+
+    def set_event_filter(
+        self, callable: Callable[[Event, Node], bool] | None
+    ) -> Callable[[Event, Node], bool] | None:
+        old, self._filter = self._filter, callable
+        return old
+
+    def filter_event(self, event: Event, target: Node) -> bool:
+        return self._filter(event, target) if self._filter else False
+
     model_config = ConfigDict(extra="forbid")
 
     child_added: ClassVar[Signal] = Signal(object)
@@ -87,8 +104,8 @@ class Node(EventedBase):
     def __init__(
         self,
         *,
-        children: Iterable["Node | dict[str, Any]"] = (),
-        **data: "Unpack[NodeKwargs]",
+        children: Iterable[Node | dict[str, Any]] = (),
+        **data: Unpack[NodeKwargs],
     ) -> None:
         # prevent direct instantiation.
         # makes it easier to use NodeUnion without having to deal with self-reference.
@@ -104,31 +121,50 @@ class Node(EventedBase):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def children(self) -> tuple["Node", ...]:
+    def children(self) -> tuple[Node, ...]:
         """Return a tuple of the children of this node."""
         return tuple(self._children)
 
-    def add_child(self, child: "AnyNode") -> None:
+    def add_child(self, child: AnyNode) -> None:
         """Add a child node to this node."""
         self._children.append(child)
         child.parent = cast("AnyNode", self)
         self.child_added.emit(child)
 
-    def remove_child(self, child: "AnyNode") -> None:
+    def remove_child(self, child: AnyNode) -> None:
         """Remove a child node from this node. Does not raise if child is missing."""
         if child in self._children:
             self._children.remove(child)
             child.parent = None
             self.child_removed.emit(child)
 
+    def passes_through(self, ray: Ray) -> float | None:
+        """Returns the depth t at which the provided ray intersects this node.
+
+        The ray, in this case, is defined by R(t) = ray_origin + ray_direction * t,
+        where t>=0
+
+        Parameters
+        ----------
+        ray : Ray
+            The ray passing through the scene
+
+        Returns
+        -------
+        t: float | None
+            The depth t at which the ray intersects the node, or None if it never
+            intersects.
+        """
+        raise RuntimeError("Must be implemented in subclasses")
+
     @model_validator(mode="wrap")
     @classmethod
     def _validate_model(
         cls,
         value: Any,
-        handler: ModelWrapValidatorHandler["Self"],
+        handler: ModelWrapValidatorHandler[Self],
         info: ValidationInfo,
-    ) -> "Self":
+    ) -> Self:
         # Ensures that changing the parent of a node
         # also updates the children of the new/old parent.
         if isinstance(value, dict):
@@ -140,7 +176,7 @@ class Node(EventedBase):
         return result
 
     @staticmethod
-    def _update_parent_children(node: "Node", old_parent: "Node | None" = None) -> None:
+    def _update_parent_children(node: Node, old_parent: Node | None = None) -> None:
         """Remove the node from its old_parent and add it to its new parent."""
         if (new_parent := node.parent) != old_parent:
             if new_parent is not None and node not in new_parent._children:
@@ -165,7 +201,7 @@ class Node(EventedBase):
 
     # below borrowed from vispy.scene.Node
 
-    def transform_to_node(self, other: "Node") -> Transform:
+    def transform_to_node(self, other: Node) -> Transform:
         """Return Transform that maps from coordinate frame of `self` to `other`.
 
         Note that there must be a _single_ path in the scenegraph that connects
@@ -185,7 +221,7 @@ class Node(EventedBase):
         tforms = [n.transform for n in a[:-1]] + [n.transform.inv() for n in b]
         return Transform.chain(*tforms[::-1])
 
-    def path_to_node(self, other: "Node") -> tuple[list["Node"], list["Node"]]:
+    def path_to_node(self, other: Node) -> tuple[list[Node], list[Node]]:
         """Return two lists describing the path from this node to another.
 
         Parameters
@@ -229,7 +265,7 @@ class Node(EventedBase):
         down = their_parents[: their_parents.index(common_parent)][::-1]
         return (up, down)
 
-    def iter_parents(self) -> Iterator["Node"]:
+    def iter_parents(self) -> Iterator[Node]:
         """Return list of parents starting from this node.
 
         The chain ends at the first node with no parents.
