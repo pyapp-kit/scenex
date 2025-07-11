@@ -126,7 +126,7 @@ module = ["rendercanvas.*"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
-module = ["pygfx.*", "vispy.*", "wgpu.*"]
+module = ["pygfx.*", "vispy.*", "wgpu.*", "pylinalg.*"]
 ignore_missing_imports = true
 
 [tool.pydantic-mypy]
