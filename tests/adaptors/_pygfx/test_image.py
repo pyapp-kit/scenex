@@ -5,6 +5,7 @@ import pytest
 
 import scenex as snx
 import scenex.adaptors._pygfx as adaptors
+from scenex.adaptors import get_adaptor_registry
 from scenex.model._transform import Transform
 
 
@@ -17,7 +18,7 @@ def image() -> snx.Image:
 
 @pytest.fixture
 def adaptor(image: snx.Image) -> adaptors.Image:
-    adaptor = image._get_adaptor(create=True)
+    adaptor = get_adaptor_registry().get_adaptor(image, create=True)
     assert isinstance(adaptor, adaptors.Image)
     return adaptor
 

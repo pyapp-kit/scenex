@@ -7,6 +7,7 @@ import pytest
 
 import scenex as snx
 import scenex.adaptors._vispy as adaptors
+from scenex.adaptors._auto import get_adaptor_registry
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
@@ -22,7 +23,7 @@ def volume() -> snx.Volume:
 
 @pytest.fixture
 def adaptor(volume: snx.Volume) -> adaptors.Volume:
-    adaptor = volume._get_adaptor(create=True)
+    adaptor = get_adaptor_registry().get_adaptor(volume, create=True)
     assert isinstance(adaptor, adaptors.Volume)
     return adaptor
 

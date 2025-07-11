@@ -7,6 +7,7 @@ import pytest
 
 import scenex as snx
 import scenex.adaptors._vispy as adaptors
+from scenex.adaptors._auto import get_adaptor_registry
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
@@ -22,7 +23,7 @@ def image() -> snx.Image:
 
 @pytest.fixture
 def adaptor(image: snx.Image) -> adaptors.Image:
-    adaptor = image._get_adaptor(create=True)
+    adaptor = get_adaptor_registry().get_adaptor(image, create=True)
     assert isinstance(adaptor, adaptors.Image)
     return adaptor
 
