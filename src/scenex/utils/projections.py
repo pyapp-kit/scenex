@@ -73,6 +73,8 @@ def perspective(
     projection: Transform
         A Transform matrix creating an orthographic camera view
     """
+    matrix = Matrix3D((4, 4))
+
     near, far = _get_near_and_far_plane(fov, depth)
 
     # if self._view_offset is not None:
@@ -100,7 +102,7 @@ def perspective(
         right = +0.5 * width
         # Set matrices
         projection_matrix = la.mat_perspective(
-            left, right, top, bottom, near, far, depth_range=(0, 1)
+            left, right, top, bottom, near, far, depth_range=(0, 1), out=matrix
         )
 
     else:
@@ -121,11 +123,11 @@ def perspective(
         right = +0.5 * width
         # Set matrices
         projection_matrix = la.mat_orthographic(
-            left, right, top, bottom, near, far, depth_range=(0, 1)
+            left, right, top, bottom, near, far, depth_range=(0, 1), out=matrix
         )
 
     projection_matrix.flags.writeable = False
-    return Transform(root=Matrix3D(projection_matrix))
+    return Transform(matrix)
 
 
 def _get_near_and_far_plane(fov: float, depth: float) -> tuple[float, float]:
