@@ -1,3 +1,5 @@
+from math import atan, pi
+
 import numpy as np
 
 import scenex as snx
@@ -22,27 +24,23 @@ view = snx.View(
             ),
         ]
     ),
-    # camera=snx.Camera(type="perspective"),
 )
-
-# both are optional, just for example
-snx.use("pygfx")
-# snx.use("vispy")
 
 canvas = snx.show(view)
 
-view.camera.transform = Transform().translated((127.5, 127.5, 228))
+view.camera.transform = Transform().translated((127.5, 127.5, 300))
 
 # view.camera.projection = projections.orthographic(
 #     1.1 * data.shape[0],
 #     1.1 *data.shape[1]
 # )
+
+near = 300
+fov = 2 * atan(data.shape[1] / 2 / 299.5) * 180 / pi
 view.camera.projection = projections.perspective(
-    zoom_factor=0.9,
-    fov=70,
-    view_width=view.layout.size[0],
-    view_height=view.layout.size[1],
-    depth=366.9768,
+    fov=fov,
+    near=near,
+    far=1_000_000,  # Just need something big
 )
 
 snx.run()
