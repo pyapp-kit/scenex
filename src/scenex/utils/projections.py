@@ -7,25 +7,30 @@ import pylinalg as la
 from scenex.model._transform import Matrix3D, Transform
 
 
-def orthographic(
-    width: float,
-    height: float,
-) -> Transform:
+def orthographic(width: float = 2, height: float = 2, depth: float = 2) -> Transform:
     """Creates an orthographic projection matrix.
+
+    Note that the resulting projection matrix provides no positional offset; this would
+    be out of scope, as such is the job of a camera's transform parameter.
 
     Parameters
     ----------
-    width: float
-        The width of the camera rectangle
-    height: float
-        The height of the camera rectangle
+    width: float, optional
+        The width of the camera rectangle. Default 2 (mirroring the side length of a
+        unit cube).
+    height: float, optional
+        The height of the camera rectangle. Default 2 (mirroring the side length of a
+        unit cube).
+    depth: float, optional
+        The depth of the camera rectangle. Default 2 (mirroring the side length of a
+        unit cube).
 
     Returns
     -------
     projection: Transform
         A Transform matrix creating an orthographic camera view
     """
-    return Transform().scaled((2 / width, 2 / height, 1))
+    return Transform().scaled((2 / width, 2 / height, -2 / depth))
 
 
 def perspective(
