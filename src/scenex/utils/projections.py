@@ -188,6 +188,8 @@ def perspective(fov: float, near: float, far: float) -> Transform:
 
     matrix = Matrix3D((4, 4))
 
+    # Computations derived from
+    # https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
     scaling_factor = 1 / (tan(fov / 2 * pi / 180))
     matrix[0, 0] = scaling_factor
     matrix[1, 1] = scaling_factor
