@@ -36,10 +36,6 @@ class Camera(Node):
         description="Whether the camera responds to user interaction, "
         "such as mouse and keyboard events.",
     )
-    zoom: float = Field(default=1.0, description="Zoom factor of the camera.")
-    center: Position = Field(
-        default=(0, 0, 0), description="Center position of the view."
-    )
     projection: Transform = Field(
         default_factory=Transform,
         description="Describes how 3D points are mapped to a 2D canvas",

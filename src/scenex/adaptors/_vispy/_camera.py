@@ -50,12 +50,6 @@ class Camera(Node, CameraAdaptor):
 
         self._snx_zoom_to_fit(0.1)
 
-    def _snx_set_zoom(self, zoom: float) -> None:
-        self._vispy_node.zoom_factor = zoom
-
-    def _snx_set_center(self, arg: tuple[float, ...]) -> None:
-        self._vispy_node.center = arg
-
     def _snx_set_type(self, arg: model.CameraType) -> None:
         raise NotImplementedError()
 

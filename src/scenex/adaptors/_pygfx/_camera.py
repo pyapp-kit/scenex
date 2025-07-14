@@ -36,12 +36,6 @@ class Camera(Node, CameraAdaptor):
 
         self._pygfx_node.local.scale_y = -1  # don't think this is working...
 
-    def _snx_set_zoom(self, zoom: float) -> None:
-        logger.warning("'Camera._snx_set_zoom' not implemented for pygfx")
-
-    def _snx_set_center(self, arg: tuple[float, ...]) -> None:
-        logger.warning("'Camera._snx_set_center' not implemented for pygfx")
-
     def _snx_set_type(self, arg: model.CameraType) -> None:
         logger.warning("'Camera._snx_set_type' not implemented for pygfx")
 
@@ -82,7 +76,6 @@ class Camera(Node, CameraAdaptor):
                 height = 1
             cam.width = width
             cam.height = height
-            self._camera_model.center = tuple(np.mean(bb, axis=0))
         cam.zoom = 1 - margin
         # FIXME: Pyright
         self._camera_model.transform = cam.local.matrix.T  # pyright: ignore[reportAttributeAccessIssue]
