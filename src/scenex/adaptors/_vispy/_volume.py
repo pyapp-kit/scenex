@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
     from scenex import model
+    from scenex.model._transform import Transform
 
 
 class Volume(Node, VolumeAdaptor):
@@ -27,6 +28,11 @@ class Volume(Node, VolumeAdaptor):
         self._vispy_node = vispy.scene.Volume(
             volume.data, texture_format="auto", **backend_kwargs
         )
+
+    def _snx_set_transform(self, arg: Transform) -> None:
+        # Offset accounting for vispy's pixel centers at half-integer locations
+        offset = arg.map([-0.5, -0.5, -0.5, 0])
+        super()._snx_set_transform(arg.translated(offset))
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
         self._vispy_node.cmap = arg.to_vispy()
