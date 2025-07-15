@@ -13,17 +13,26 @@ def orthographic(width: float = 2, height: float = 2, depth: float = 2) -> Trans
     Note that the resulting projection matrix provides no positional offset; this would
     be out of scope, as such is the job of a camera's transform parameter.
 
+    TODO: Consider passing bounds (i.e. a tuple[float, float]) for each parameter.
+    Unfortunately, though, this would effectively allow positional offsets for width and
+    height.
+
     Parameters
     ----------
     width: float, optional
-        The width of the camera rectangle. Default 2 (mirroring the side length of a
-        unit cube).
+        The width of the camera rectangular prism. Default 2 (mirroring the side length
+        of a unit cube).
     height: float, optional
-        The height of the camera rectangle. Default 2 (mirroring the side length of a
-        unit cube).
+        The height of the camera rectangular prism. Default 2 (mirroring the side length
+        of a unit cube).
     depth: float, optional
-        The depth of the camera rectangle. Default 2 (mirroring the side length of a
-        unit cube).
+        The depth of the camera rectangular prism. The near and far clipping planes of
+        the resulting matrix become (-depth / 2) and (depth / 2) respectively. Default
+        2, increase (to render things farther away) or decrease (to increase
+        performance) as needed.
+
+        TODO: Is this a good default? May want to consider some large number (1000?)
+        instead
 
     Returns
     -------

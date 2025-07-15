@@ -28,18 +28,20 @@ view = snx.View(
 
 canvas = snx.show(view)
 
+# Translate the camera to the center of the volume, and distance the camera from the
+# volume in the z dimension (important for perspective transforms)
 view.camera.transform = Transform().translated((127.5, 127.5, 300))
 
 # view.camera.projection = projections.orthographic(
-#     1.1 * data.shape[0],
-#     1.1 *data.shape[1]
+#     1.1 * data.shape[1],
+#     1.1 * data.shape[2],
+#     1000,
 # )
 
-near = 300
-fov = 2 * atan(data.shape[1] / 2 / 299.5) * 180 / pi
 view.camera.projection = projections.perspective(
-    fov=fov,
-    near=near,
+    # TODO: Create a helper function for this.
+    fov=2 * atan(data.shape[1] / 2 / 300) * 180 / pi,
+    near=300,
     far=1_000_000,  # Just need something big
 )
 
