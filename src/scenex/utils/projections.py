@@ -1,6 +1,9 @@
 """Utilities for creating projection matrices."""
 
 from math import pi, tan
+from typing import cast
+
+import numpy as np
 
 from scenex.model._transform import Matrix3D, Transform
 
@@ -186,8 +189,7 @@ def perspective(fov: float, near: float, far: float) -> Transform:
             "Perspective matrices require fov>0. Maybe consider an orthographic matrix?"
         )
 
-    matrix = Matrix3D((4, 4))
-    matrix[:, :] = 0
+    matrix = np.zeros((4, 4))
 
     # Computations derived from
     # https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
@@ -201,4 +203,4 @@ def perspective(fov: float, near: float, far: float) -> Transform:
     matrix[2, 3] = z_translation
 
     matrix[3, 2] = -1
-    return Transform(matrix)
+    return Transform(root=cast("Matrix3D", matrix))
