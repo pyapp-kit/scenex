@@ -1,11 +1,10 @@
 """Utilities for creating projection matrices."""
 
 from math import pi, tan
-from typing import cast
 
 import numpy as np
 
-from scenex.model._transform import Matrix3D, Transform
+from scenex.model._transform import Transform
 
 
 def orthographic(width: float = 2, height: float = 2, depth: float = 2) -> Transform:
@@ -203,4 +202,4 @@ def perspective(fov: float, near: float, far: float) -> Transform:
     matrix[2, 3] = z_translation
 
     matrix[3, 2] = -1
-    return Transform(root=cast("Matrix3D", matrix))
+    return Transform(root=matrix)
