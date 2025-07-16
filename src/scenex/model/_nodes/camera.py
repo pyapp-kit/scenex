@@ -36,6 +36,7 @@ class Camera(Node):
         description="Whether the camera responds to user interaction, "
         "such as mouse and keyboard events.",
     )
+    # FIXME: Default should be explained. And z-scale should probably be -1
     projection: Transform = Field(
         default_factory=Transform,
         description="Describes how 3D points are mapped to a 2D canvas",

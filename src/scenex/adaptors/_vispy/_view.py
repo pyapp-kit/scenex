@@ -85,6 +85,9 @@ class View(ViewAdaptor):
         self._vispy_camera = self._cam_adaptor._vispy_node
         if hasattr(self, "_vispy_viewbox"):
             self._vispy_viewbox.camera = self._vispy_camera
+            # Vispy camera transforms need knowledge of viewbox
+            # (specifically, its size)
+            self._cam_adaptor._set_view(self._vispy_viewbox)
 
     def _draw(self) -> None:
         self._vispy_viewbox.update()
