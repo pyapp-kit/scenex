@@ -52,7 +52,12 @@ class Canvas(CanvasAdaptor):
         self._canvas.update()
 
     def _snx_add_view(self, view: model.View) -> None:
-        self._grid.add_widget(get_adaptor(view)._snx_get_native())
+        adaptor = get_adaptor(view)
+        self._grid.add_widget(adaptor._snx_get_native())
+        # HACK: Update size and pass that an existing camera
+        self._grid._prepare_draw(adaptor._snx_get_native())
+        cam_adaptor = get_adaptor(view.camera)
+        cam_adaptor._set_view(adaptor._vispy_viewbox)  # type: ignore
 
     def _snx_set_width(self, arg: int) -> None:
         self._canvas.size = (self._canvas.size[0], arg)
