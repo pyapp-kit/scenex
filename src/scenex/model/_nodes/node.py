@@ -1,6 +1,6 @@
 import logging
 from collections.abc import Iterable, Iterator
-from typing import TYPE_CHECKING, Annotated, Any, ClassVar, Union, cast
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, Union, cast
 
 from psygnal import Signal
 from pydantic import (
@@ -46,6 +46,9 @@ logger = logging.getLogger(__name__)
 AnyNode = Annotated[
     Union["Image", "Points", "Camera", "Scene"], Field(discriminator="node_type")
 ]
+
+# Axis-Aligned Bounding Box
+AABB: TypeAlias = tuple[tuple[float, float, float], tuple[float, float, float]]
 
 
 class Node(EventedBase):
@@ -107,6 +110,11 @@ class Node(EventedBase):
     def children(self) -> tuple["Node", ...]:
         """Return a tuple of the children of this node."""
         return tuple(self._children)
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property  # TODO: Cache?
+    def bounding_box(self) -> AABB:
+        return ((0, 0, 0), (0, 0, 0))
 
     def add_child(self, child: "AnyNode") -> None:
         """Add a child node to this node."""
