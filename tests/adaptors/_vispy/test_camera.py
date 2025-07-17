@@ -17,15 +17,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def camera() -> tuple[snx.Camera, adaptors.Camera]:
-    model_cam = snx.Camera()
-    adaptor = get_adaptor_registry().get_adaptor(model_cam, create=True)
-    assert isinstance(adaptor, adaptors.Camera)
-    return (model_cam, adaptor)
-
-
-@pytest.fixture
-def view_camera() -> Generator[tuple[snx.Camera, adaptors.Camera], None, None]:
+def camera() -> Generator[tuple[snx.Camera, adaptors.Camera], None, None]:
     view = snx.View(camera=snx.Camera())
     adaptor = get_adaptor_registry().get_adaptor(view.camera, create=True)
     get_adaptor_registry().get_adaptor(view, create=True)
@@ -34,75 +26,62 @@ def view_camera() -> Generator[tuple[snx.Camera, adaptors.Camera], None, None]:
     yield (view.camera, adaptor)
 
 
-@pytest.fixture
-def adaptor(camera: snx.Camera) -> adaptors.Camera:
-    adaptor = get_adaptor_registry().get_adaptor(camera, create=True)
-    assert isinstance(adaptor, adaptors.Camera)
-    return adaptor
-
-
-def test_transform_with_view(view_camera: tuple[snx.Camera, adaptors.Camera]) -> None:
-    camera, adaptor = view_camera
+def test_transform_defaults(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
+    model, adaptor = camera
 
     node = adaptor._vispy_node
     assert isinstance(node, BaseCamera)
-    # Centered at [0, 0], top left [-1, -1], bottom right [1, 1]
-    identity_tform = Transform()
-    assert camera.transform == identity_tform
-    # Vispy wants to map [-1, -1] to [0, 0]
-    # Vispy wants to map [1, 1] to [10, 10]
+    # Centered at [0, 0], top left [-0.5, -0.5], bottom right [0.5, 0.5]
+    assert model.transform == Transform()
+    assert model.projection == projections.orthographic(1, 1, 1)
+    # Vispy wants to map [-0.5, -0.5] to [0, 0]
+    # Vispy wants to map [0.5, 0.5] to [10, 10]
     exp_tform_mat = np.asarray(
         [
-            [5, 0, 0, 0],
-            [0, 5, 0, 0],
-            [0, 0, -1, 0],
+            [10, 0, 0, 0],
+            [0, 10, 0, 0],
+            [0, 0, -2, 0],
             [5, 5, 0, 1],
         ]
     )
     assert np.array_equal(node.transform.matrix, exp_tform_mat)  # pyright: ignore[reportAttributeAccessIssue]
 
+
+def test_transform_translate(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
+    model, adaptor = camera
+
+    node = adaptor._vispy_node
+    assert isinstance(node, BaseCamera)
+
     # Move the camera
-    camera.transform = Transform().translated((1, 1))
+    model.transform = Transform().translated((0.5, 0.5))
     # Vispy wants to map [0, 0] to [0, 0]
-    # Vispy wants to map [2, 2] to [10, 10]
+    # Vispy wants to map [1, 1] to [10, 10]
     exp_tform_mat = np.asarray(
         [
-            [5, 0, 0, 0],
-            [0, 5, 0, 0],
-            [0, 0, -1, 0],
+            [10, 0, 0, 0],
+            [0, 10, 0, 0],
+            [0, 0, -2, 0],
             [0, 0, 0, 1],
         ]
     )
     assert np.array_equal(node.transform.matrix, exp_tform_mat)  # pyright: ignore[reportAttributeAccessIssue]
 
 
-def test_projection_with_view(view_camera: tuple[snx.Camera, adaptors.Camera]) -> None:
-    camera, adaptor = view_camera
+def test_transform_scale(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
+    model, adaptor = camera
 
     node = adaptor._vispy_node
     assert isinstance(node, BaseCamera)
-    # Centered at [0, 0], top left [-1, -1], bottom right [1, 1]
-    assert camera.projection == Transform().scaled((1, 1, -1))
+
+    # Widen the projection matrix
+    model.projection = projections.orthographic(2, 2, 2)
     # Vispy wants to map [-1, -1] to [0, 0]
     # Vispy wants to map [1, 1] to [10, 10]
     exp_tform_mat = np.asarray(
         [
             [5, 0, 0, 0],
             [0, 5, 0, 0],
-            [0, 0, -1, 0],
-            [5, 5, 0, 1],
-        ]
-    )
-    assert np.array_equal(node.transform.matrix, exp_tform_mat)  # pyright: ignore[reportAttributeAccessIssue]
-
-    # Widen the projection matrix
-    camera.projection = projections.orthographic(4, 4)
-    # Vispy wants to map [-2, -2] to [0, 0]
-    # Vispy wants to map [2, 2] to [10, 10]
-    exp_tform_mat = np.asarray(
-        [
-            [2.5, 0, 0, 0],
-            [0, 2.5, 0, 0],
             [0, 0, -1, 0],
             [5, 5, 0, 1],
         ]
