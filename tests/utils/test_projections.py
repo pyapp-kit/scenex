@@ -19,9 +19,9 @@ def test_orthographic() -> None:
     # By default, the return should unproject NDCs to a depth-inverted unit cube
     exp_mat = np.asarray(
         [
-            [1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, -1, 0],
+            [2, 0, 0, 0],
+            [0, 2, 0, 0],
+            [0, 0, -2, 0],
             [0, 0, 0, 1],
         ]
     )
@@ -29,10 +29,10 @@ def test_orthographic() -> None:
     assert np.array_equal(exp_mat, act_mat)
     exp_corners = np.asarray(
         [
-            [-1, -1, 0],
-            [-1, 1, 0],
-            [1, -1, 0],
-            [1, 1, 0],
+            [-0.5, -0.5, 0],
+            [-0.5, 0.5, 0],
+            [0.5, -0.5, 0],
+            [0.5, 0.5, 0],
         ]
     )
     assert np.array_equal(exp_corners, vec_unproject(CORNERS, act_mat))

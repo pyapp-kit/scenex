@@ -7,7 +7,7 @@ import numpy as np
 from scenex.model._transform import Transform
 
 
-def orthographic(width: float = 2, height: float = 2, depth: float = 2) -> Transform:
+def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Transform:
     """Creates an orthographic projection matrix.
 
     Note that the resulting projection matrix provides no positional offset; this would
@@ -20,15 +20,15 @@ def orthographic(width: float = 2, height: float = 2, depth: float = 2) -> Trans
     Parameters
     ----------
     width: float, optional
-        The width of the camera rectangular prism. Default 2 (mirroring the side length
+        The width of the camera rectangular prism. Default 1 (mirroring the side length
         of a unit cube).
     height: float, optional
-        The height of the camera rectangular prism. Default 2 (mirroring the side length
+        The height of the camera rectangular prism. Default 1 (mirroring the side length
         of a unit cube).
     depth: float, optional
         The depth of the camera rectangular prism. The near and far clipping planes of
         the resulting matrix become (-depth / 2) and (depth / 2) respectively. Default
-        2, increase (to render things farther away) or decrease (to increase
+        1, increase (to render things farther away) or decrease (to increase
         performance) as needed.
 
         TODO: Is this a good default? May want to consider some large number (1000?)

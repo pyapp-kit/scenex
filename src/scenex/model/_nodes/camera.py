@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import Field
 
-from scenex.model._transform import Transform
+from scenex.utils import projections
 
 from .node import Node
+
+if TYPE_CHECKING:
+    from scenex.model._transform import Transform
 
 CameraType = Literal["panzoom", "perspective"]
 Position2D = tuple[float, float]
@@ -35,8 +38,8 @@ class Camera(Node):
         description="Whether the camera responds to user interaction, "
         "such as mouse and keyboard events.",
     )
-    # FIXME: Default should be explained. And z-scale should probably be -1
     projection: Transform = Field(
-        default_factory=Transform,
-        description="Describes how 3D points are mapped to a 2D canvas",
+        default_factory=lambda: projections.orthographic(1, 1, 1),
+        description="Describes how 3D points are mapped to a 2D canvas, "
+        "default is an orthographic projection of a unit cube, centered at (0, 0, 0)",
     )

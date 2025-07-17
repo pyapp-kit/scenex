@@ -55,7 +55,7 @@ def test_transform_with_view(view_camera: tuple[snx.Camera, adaptors.Camera]) ->
         [
             [5, 0, 0, 0],
             [0, 5, 0, 0],
-            [0, 0, 1, 0],
+            [0, 0, -1, 0],
             [5, 5, 0, 1],
         ]
     )
@@ -69,7 +69,7 @@ def test_transform_with_view(view_camera: tuple[snx.Camera, adaptors.Camera]) ->
         [
             [5, 0, 0, 0],
             [0, 5, 0, 0],
-            [0, 0, 1, 0],
+            [0, 0, -1, 0],
             [0, 0, 0, 1],
         ]
     )
@@ -82,15 +82,14 @@ def test_projection_with_view(view_camera: tuple[snx.Camera, adaptors.Camera]) -
     node = adaptor._vispy_node
     assert isinstance(node, BaseCamera)
     # Centered at [0, 0], top left [-1, -1], bottom right [1, 1]
-    identity_tform = Transform()
-    assert camera.projection == identity_tform
+    assert camera.projection == Transform().scaled((1, 1, -1))
     # Vispy wants to map [-1, -1] to [0, 0]
     # Vispy wants to map [1, 1] to [10, 10]
     exp_tform_mat = np.asarray(
         [
             [5, 0, 0, 0],
             [0, 5, 0, 0],
-            [0, 0, 1, 0],
+            [0, 0, -1, 0],
             [5, 5, 0, 1],
         ]
     )
