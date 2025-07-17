@@ -32,7 +32,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Typing :: Typed",
 ]
-dependencies = ["cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10"]
+dependencies = ["cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10", "pylinalg"]
 
 [project.optional-dependencies]
 pygfx = ["pygfx>=0.9.0"]
@@ -129,7 +129,7 @@ module = ["rendercanvas.*"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
-module = ["pygfx.*", "vispy.*", "wgpu.*"]
+module = ["pygfx.*", "vispy.*", "wgpu.*", "glfw.*", "pylinalg.*"]
 ignore_missing_imports = true
 
 [tool.pydantic-mypy]

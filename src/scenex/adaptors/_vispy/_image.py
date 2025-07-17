@@ -28,6 +28,7 @@ class Image(Node, ImageAdaptor):
         )
         self._snx_set_data(image.data)
         self._vispy_node.visible = True
+        self._vispy_node.interactive = True
 
     def _snx_set_transform(self, arg: Transform) -> None:
         # Offset accounting for vispy's pixel centers at half-integer locations
