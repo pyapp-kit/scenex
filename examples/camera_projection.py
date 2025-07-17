@@ -1,3 +1,5 @@
+from math import atan, pi
+
 import numpy as np
 
 import scenex as snx
@@ -24,12 +26,21 @@ view = snx.View(
     ),
 )
 
-snx.show(view)
+canvas = snx.show(view)
 
-# FIXME: Add a model-based "look at"/"zoom to fit"
+# Translate the camera to the center of the volume, and distance the camera from the
+# volume in the z dimension (important for perspective transforms)
 view.camera.transform = Transform().translated((127.5, 127.5, 300))
+
+# view.camera.projection = projections.orthographic(
+#     1.1 * data.shape[1],
+#     1.1 * data.shape[2],
+#     1000,
+# )
+
 view.camera.projection = projections.perspective(
-    fov=70,
+    # TODO: Create a helper function for this.
+    fov=2 * atan(data.shape[1] / 2 / 300) * 180 / pi,
     near=300,
     far=1_000_000,  # Just need something big
 )
