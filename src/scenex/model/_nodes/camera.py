@@ -30,7 +30,6 @@ class Camera(Node):
 
     node_type: Literal["camera"] = "camera"
 
-    type: CameraType = Field(default="panzoom", description="Camera type.")
     interactive: bool = Field(
         default=True,
         description="Whether the camera responds to user interaction, "

@@ -26,13 +26,11 @@ class Camera(Node, CameraAdaptor):
 
     def __init__(self, camera: model.Camera, **backend_kwargs: Any) -> None:
         self._camera_model = camera
-        if camera.type == "panzoom":
-            self._pygfx_node = pygfx.OrthographicCamera()
-            self.pygfx_controller = pygfx.PanZoomController(self._pygfx_node)
-        elif camera.type == "perspective":
-            # this type ignore is because PerspectiveCamera lacks hints
-            self._pygfx_node = pygfx.PerspectiveCamera(70, 4 / 3)  # pyright: ignore reportArgumentType]
-            self.pygfx_controller = pygfx.OrbitController(self._pygfx_node)
+        # FIXME: This won't always hold as the projection matrix changes.
+        # Once we have better controllers via event filters, the pygfx_controller
+        # field should disappear and the _pygfx_node should just be a pygfx.Camera.
+        self._pygfx_node = pygfx.OrthographicCamera()
+        self.pygfx_controller = pygfx.PanZoomController(self._pygfx_node)
 
         self._pygfx_node.local.scale_y = -1  # don't think this is working...
 
