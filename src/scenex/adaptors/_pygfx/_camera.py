@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
-import numpy as np
 import pygfx
 
 from scenex.adaptors._base import CameraAdaptor
 
-from ._adaptor_registry import get_adaptor
 from ._node import Node
 
 if TYPE_CHECKING:
@@ -55,28 +53,3 @@ class Camera(Node, CameraAdaptor):
 
     def _snx_set_projection(self, arg: Transform) -> None:
         self._pygfx_node.projection_matrix = arg.root  # pyright: ignore[reportAttributeAccessIssue]
-
-    def _snx_zoom_to_fit(self, margin: float) -> None:
-        # reset camera to fit all objects
-        if not (scene := self._camera_model.parent):
-            logger.warning("Camera has no parent scene, cannot zoom to fit")
-            return
-
-        gfx_scene = cast("pygfx.Scene", get_adaptor(scene)._snx_get_native())
-        cam = self._pygfx_node
-
-        if (bb := gfx_scene.get_world_bounding_box()) is not None:
-            cam.show_object(gfx_scene)
-            width, height, _depth = np.ptp(bb, axis=0)
-            if width < 0.01:
-                width = 1
-            if height < 0.01:
-                height = 1
-            cam.width = width
-            cam.height = height
-        cam.zoom = 1 - margin
-        # FIXME: Pyright
-        self._camera_model.transform = cam.local.matrix.T  # pyright: ignore[reportAttributeAccessIssue]
-        # HACK: Ideally, we'd use `cam.projection_matrix`, but it's a cached
-        # property that doesn't get recomputed.
-        self._camera_model.projection = cam._update_projection_matrix()  # pyright: ignore[reportAttributeAccessIssue]

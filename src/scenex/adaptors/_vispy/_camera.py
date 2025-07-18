@@ -85,8 +85,3 @@ class Camera(Node, CameraAdaptor):
     def _view_size(self) -> tuple[float, float] | None:
         """Return the size of first parent viewbox in pixels."""
         raise NotImplementedError
-
-    def _snx_zoom_to_fit(self, margin: float) -> None:
-        # reset camera to fit all objects
-        # FIXME: Implement this code in the model
-        self._vispy_node.set_range(margin=margin)
