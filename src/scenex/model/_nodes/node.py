@@ -2,6 +2,7 @@ import logging
 from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, Union, cast
 
+import numpy as np
 from psygnal import Signal
 from pydantic import (
     ConfigDict,
@@ -114,7 +115,16 @@ class Node(EventedBase):
     @computed_field  # type: ignore[prop-decorator]
     @property  # TODO: Cache?
     def bounding_box(self) -> AABB:
-        return ((0, 0, 0), (0, 0, 0))
+        if not self.children:
+            return ((0, 0, 0), (0, 0, 0))
+        # FIXME: Avoid copying this in the node subclasses - they will want it because
+        # nothing is stopping them from having children of their own :)
+        node_aabbs = [n.transform.map(n.bounding_box)[:, :3] for n in self.children]
+        mi = np.min(np.vstack([t[0] for t in node_aabbs]), axis=0)
+        ma = np.max(np.vstack([t[1] for t in node_aabbs]), axis=0)
+        # Note the casting is important for pydantic
+        # FIXME: Should just validate in pydantic
+        return (tuple(float(m) for m in mi), tuple(float(m) for m in ma))  # type: ignore
 
     def add_child(self, child: "AnyNode") -> None:
         """Add a child node to this node."""

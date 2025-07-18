@@ -1,10 +1,20 @@
 """Utilities for creating projection matrices."""
 
+from __future__ import annotations
+
 from math import pi, tan
+from typing import TYPE_CHECKING
 
 import numpy as np
 
+# FIXME the top import (commented out) does not work due to a circular import
+# Because the Camera model uses orthographic for its default transform.
+# Might want to think about a better organization.
+# from scenex.model import Transform
 from scenex.model._transform import Transform
+
+if TYPE_CHECKING:
+    from scenex.model import View
 
 
 def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Transform:
@@ -82,3 +92,10 @@ def perspective(fov: float, near: float, far: float) -> Transform:
 
     matrix[3, 2] = -1
     return Transform(root=matrix)
+
+
+def zoom_to_fit(view: View) -> None:
+    """Adjusts Camera parameters to fit the entire scene."""
+    # Get the scene bounding box:
+    # for child in view.scene.children
+    pass
