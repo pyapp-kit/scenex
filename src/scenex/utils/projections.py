@@ -49,6 +49,9 @@ def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Trans
     projection: Transform
         A Transform matrix creating an orthographic camera view
     """
+    width = width if width else 1e-6
+    height = height if height else 1e-6
+    depth = depth if depth else 1e-6
     return Transform().scaled((2 / width, 2 / height, -2 / depth))
 
 
@@ -94,8 +97,25 @@ def perspective(fov: float, near: float, far: float) -> Transform:
     return Transform(root=matrix)
 
 
-def zoom_to_fit(view: View) -> None:
-    """Adjusts Camera parameters to fit the entire scene."""
-    # Get the scene bounding box:
-    # for child in view.scene.children
-    pass
+# TODO: perspective mode?
+# TODO: Preserve some camera state?
+def zoom_to_fit(view: View, zoom_factor: float = 1.0) -> None:
+    """Adjusts the Camera to fit the entire scene.
+
+    Parameters
+    ----------
+    view: View
+        The view to adjust. Contains the camera, whose parameters will be adjusted, and
+        the scene, whose elements will be considered in the adjustment.
+    zoom_factor: float
+        The amount to zoom the scene after adjusting camera parameters. The default,
+        1.0, will leave the scene touching the edges of the view. As the zoom factor
+        approaches 0, the scene will linearly decrease in size. As the zoom factor
+        increases beyond 1.0, the bounds of the scene will expand linearly beyond the
+        view.
+    """
+    # TODO: Test whether the camera can affect the bounding box...
+
+    bb = view.scene.bounding_box
+    view.camera.transform = Transform().translated(np.mean(bb, axis=0))
+    view.camera.projection = orthographic(*np.ptp(bb, axis=0)).scaled([zoom_factor] * 3)

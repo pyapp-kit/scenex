@@ -1,8 +1,8 @@
 import numpy as np
 from pylinalg import vec_unproject
 
-from scenex.model._transform import Transform
-from scenex.utils.projections import orthographic, perspective
+import scenex as snx
+from scenex.utils.projections import orthographic, perspective, zoom_to_fit
 
 CORNERS = np.asarray(
     [
@@ -78,7 +78,9 @@ def test_projection() -> None:
     # Note the z-offset is like 300.09. Might be rounding errors?
     assert np.allclose(exp_mat, mat, rtol=1e-1)
 
-    def _project(mat: Transform, world_pos: tuple[float, float, float]) -> np.ndarray:
+    def _project(
+        mat: snx.Transform, world_pos: tuple[float, float, float]
+    ) -> np.ndarray:
         # Inverting the behavior of vec_unproject
         proj = np.dot(mat.root, np.asarray((*world_pos, 1)))
         return proj[:2] / proj[3]  # type: ignore
@@ -91,3 +93,31 @@ def test_projection() -> None:
     # Test a near frustum corner, TRANSLATED back in the scene, does not map to a corner
     # This point models the back face of a volume
     assert np.allclose(np.asarray((5 / 6, 5 / 6)), _project(mat, (300, 300, -360)))
+
+
+def test_zoom_to_fit() -> None:
+    view = snx.View(
+        scene=snx.Scene(
+            children=[snx.Points(coords=np.asarray([[0, 100, 0], [100, 0, 1]]))]
+        )
+    )
+
+    zoom_to_fit(view)
+    # Assert the camera is moved to the center of the scene
+    assert view.camera.transform == snx.Transform().translated((50, 50, 0.5))
+    # Projection that maps world space to canvas coordinates
+    tform = view.camera.transform.inv() @ view.camera.projection
+    # Assert the camera projects [0, 0, 0] to NDC coordinates [-1, -1]
+    assert np.array_equal((-1, -1), tform.map((0, 0, 0))[:2])
+    # ...and [100, 100, 0] to NDC coordinates [1, 1]
+    assert np.array_equal((1, 1), tform.map((100, 100, 0))[:2])
+
+    zoom_to_fit(view, zoom_factor=0.9)
+    # Assert the camera is still at the center of the scene
+    assert view.camera.transform == snx.Transform().translated((50, 50, 0.5))
+    # Projection that maps world space to canvas coordinates
+    tform = view.camera.transform.inv() @ view.camera.projection
+    # Assert the camera projects [0, 0, 0] to NDC coordinates [-0.9, -0.9]
+    assert np.allclose((-0.9, -0.9), tform.map((0, 0, 0))[:2], rtol=1e-10)
+    # ...and [100, 100, 0] to NDC coordinates [0.9, 0.9]
+    assert np.allclose((0.9, 0.9), tform.map((100, 100, 0))[:2], rtol=1e-10)
