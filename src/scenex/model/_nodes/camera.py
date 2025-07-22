@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-from pydantic import Field
+from pydantic import Field, computed_field
 
 from scenex.utils import projections
 
@@ -43,3 +43,9 @@ class Camera(Node):
         description="Describes how 3D points are mapped to a 2D canvas, "
         "default is an orthographic projection of a unit cube, centered at (0, 0, 0)",
     )
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property  # TODO: Cache?
+    def bounding_box(self) -> None:
+        # Prevent cameras from distorting scene bounding boxes
+        return None

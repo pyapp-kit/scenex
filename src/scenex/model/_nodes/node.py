@@ -114,14 +114,14 @@ class Node(EventedBase):
 
     @computed_field  # type: ignore[prop-decorator]
     @property  # TODO: Cache?
-    def bounding_box(self) -> AABB:
-        if not self.children:
-            return ((0, 0, 0), (0, 0, 0))
-        # FIXME: Avoid copying this in the node subclasses - they will want it because
-        # nothing is stopping them from having children of their own :)
-        node_aabbs = [n.transform.map(n.bounding_box)[:, :3] for n in self.children]
-        mi = np.min(np.vstack([t[0] for t in node_aabbs]), axis=0)
-        ma = np.max(np.vstack([t[1] for t in node_aabbs]), axis=0)
+    def bounding_box(self) -> AABB | None:
+        bounded_nodes = [c for c in self.children if c.bounding_box]
+        if not bounded_nodes:
+            # If there are no children declaring a bounding box, return None
+            return None
+        node_aabbs = [n.transform.map(n.bounding_box)[:, :3] for n in bounded_nodes]  # type:ignore
+        mi = np.vstack([t[0] for t in node_aabbs]).min(axis=0)
+        ma = np.vstack([t[1] for t in node_aabbs]).max(axis=0)
         # Note the casting is important for pydantic
         # FIXME: Should just validate in pydantic
         return (tuple(float(m) for m in mi), tuple(float(m) for m in ma))  # type: ignore

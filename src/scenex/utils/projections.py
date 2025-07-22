@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from math import pi, tan
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 
@@ -99,7 +99,11 @@ def perspective(fov: float, near: float, far: float) -> Transform:
 
 # TODO: perspective mode?
 # TODO: Preserve some camera state?
-def zoom_to_fit(view: View, zoom_factor: float = 1.0) -> None:
+def zoom_to_fit(
+    view: View,
+    type: Literal["perspective", "orthographic"] = "orthographic",
+    zoom_factor: float = 1.0,
+) -> None:
     """Adjusts the Camera to fit the entire scene.
 
     Parameters
@@ -107,6 +111,8 @@ def zoom_to_fit(view: View, zoom_factor: float = 1.0) -> None:
     view: View
         The view to adjust. Contains the camera, whose parameters will be adjusted, and
         the scene, whose elements will be considered in the adjustment.
+    type: Literal["perspective", "orthographic"]
+        The type of canvas projection to use. Orthographic by default.
     zoom_factor: float
         The amount to zoom the scene after adjusting camera parameters. The default,
         1.0, will leave the scene touching the edges of the view. As the zoom factor
@@ -117,5 +123,21 @@ def zoom_to_fit(view: View, zoom_factor: float = 1.0) -> None:
     # TODO: Test whether the camera can affect the bounding box...
 
     bb = view.scene.bounding_box
-    view.camera.transform = Transform().translated(np.mean(bb, axis=0))
-    view.camera.projection = orthographic(*np.ptp(bb, axis=0)).scaled([zoom_factor] * 3)
+    center = np.mean(bb, axis=0) if bb else (0, 0, 0)
+    w, h, d = np.ptp(bb, axis=0) if bb else (1, 1, 1)
+    if type == "orthographic":
+        view.camera.transform = Transform().translated(center)
+        view.camera.projection = orthographic(w, h, d).scaled([zoom_factor] * 3)
+    elif type == "perspective":
+        # Compute the distance a to the near plane of the frustum using a default fov
+        o = max(w, h) / 2
+        fov = 70
+        a = o / tan(fov * pi / 360) / zoom_factor
+
+        # So that the bounding cube's front plane is mapped to the canvas,
+        # the camera must be a units away from the front plane (at z=(center[2] + d/2))
+        z_bound = center[2] + (d / 2) + a
+        view.camera.transform = Transform().translated((center[0], center[1], z_bound))
+        view.camera.projection = perspective(fov, a, far=1_000_000)
+    else:
+        raise TypeError(f"Unrecognized projection type: {type}")
