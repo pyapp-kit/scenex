@@ -45,10 +45,9 @@ class Camera(Node, CameraAdaptor):
         # The line below does not help...
         # self._vispy_node.flip = (False, True, False)
 
-    def _set_view(self, view: vispy.scene.ViewBox) -> None:
+    def _set_view(self, w: float, h: float) -> None:
         # map [-1, -1] to [0, 0]
         # map [1, 1] to [w, h]
-        w, h = view.size
         self._from_NDC = Transform().translated((1, 1)).scaled((w / 2, h / 2, 1))
 
         self._update_vispy_node_tform()

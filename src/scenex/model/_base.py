@@ -39,7 +39,11 @@ class EventedBase(BaseModel):
 
     _model_id: uuid.UUID = PrivateAttr(default_factory=uuid.uuid4)
 
-    events: ClassVar[SignalGroupDescriptor] = SignalGroupDescriptor()
+    events: ClassVar[SignalGroupDescriptor] = SignalGroupDescriptor(
+        # NB: Need to avoid propagating events to parents who don't necessarily have the
+        # same fields.
+        connect_child_events=False
+    )
 
     # note, strangely, for mypy reasons,
     # this configDict should not include extra="forbid"

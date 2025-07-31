@@ -74,3 +74,12 @@ class Layout(EventedBase):
     def size(self) -> tuple[float, float]:
         """Return the width, height of the layout as a tuple."""
         return self.width, self.height
+
+    def __contains__(self, pos: tuple[float, float]) -> bool:
+        offset = self.padding + self.border_width + self.margin
+
+        left = self.x + offset
+        right = self.x + self.width - offset
+        bottom = self.y + offset
+        top = self.y + self.height - offset
+        return left <= pos[0] and pos[0] <= right and bottom <= pos[1] and pos[1] <= top
