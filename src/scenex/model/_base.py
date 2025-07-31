@@ -83,13 +83,10 @@ class EventedBase(BaseModel):
         self, backend: str | None = None, create: bool = False
     ) -> list["Adaptor"]:
         """Get all adaptors for this model."""
-        from scenex.adaptors import get_adaptor_registry, get_all_adaptors
+        from scenex.adaptors import get_adaptor_registry
 
-        if backend:
-            reg = get_adaptor_registry(backend=backend)
-            return [reg.get_adaptor(self, create=create)]
-        else:
-            return list(get_all_adaptors(self))
+        reg = get_adaptor_registry(backend=backend)
+        return [reg.get_adaptor(self, create=create)]
 
     def _get_native(self, backend: str | None = None, create: bool = False) -> Any:
         """Get the native object for this model."""

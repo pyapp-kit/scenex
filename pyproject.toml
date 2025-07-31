@@ -32,7 +32,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Typing :: Typed",
 ]
-dependencies = ["cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10", "pylinalg"]
+dependencies = ["cmap>=0.5", "numpy>=2", "psygnal>=0.11.1", "pydantic>=2.10", "pylinalg"]
 
 [project.optional-dependencies]
 pyqt = [
@@ -40,16 +40,6 @@ pyqt = [
     "pyqt6 >=6.5.3; python_version >= '3.12'",
     "qtpy >=2",
     "superqt[iconify] >=0.7.2",
-]
-pyside = [
-    # defer to superqt's pyside6 restrictions
-    "superqt[iconify,pyside6] >=0.7.2",
-    # https://github.com/pyapp-kit/ndv/issues/59
-    "pyside6 ==6.6.3; sys_platform == 'win32'",
-    "numpy >=1.23,<2; sys_platform == 'win32'",  # needed for pyside6.6
-    "pyside6 >=6.4",
-    "pyside6 >=6.6; python_version >= '3.12'",
-    "qtpy >=2",
 ]
 glfw= [
     "glfw"
@@ -149,7 +139,7 @@ module = ["rendercanvas.*"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
-module = ["pygfx.*", "vispy.*", "wgpu.*", "glfw.*", "pylinalg.*"]
+module = ["pygfx.*", "vispy.*", "wgpu.*", "glfw.*", "pylinalg.*", "qtpy.*"]
 ignore_missing_imports = true
 
 [tool.pydantic-mypy]

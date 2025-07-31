@@ -22,7 +22,7 @@ class QtEventFilter(QObject, EventFilter):
     def __init__(
         self, canvas: Any, model_canvas: Canvas, filter_func: Callable[[Event], bool]
     ) -> None:
-        super(QObject, self).__init__()
+        super().__init__()
         self._canvas = canvas
         self._model_canvas = model_canvas
         self._filter_func = filter_func

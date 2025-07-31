@@ -34,7 +34,7 @@ jobs:
           extra_args: --all-files --verbose
 
   test:
-    name: test ${{ matrix.os }} py${{ matrix.python-version }} ${{ matrix.gfx }} ${{ matrix.window }}
+    name: test ${{ matrix.os }} py${{ matrix.python-version }} ${{ matrix.gfx }} ${{ matrix.canvas }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -42,7 +42,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13"]
         gfx: [pygfx, vispy]
-        window: [pyside, pyqt, glfw]
+        canvas: [pyqt, glfw]
 
     steps:
       - uses: actions/checkout@v4
@@ -60,7 +60,7 @@ jobs:
           sudo apt install -y libegl1-mesa-dev libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers
 
       - name: Install dependencies
-        run: uv sync --no-dev --group test --extra ${{ matrix.gfx }} --extra ${{matrix.window}} ${{ matrix.python-version != '3.10' && '--extra imgui' || '' }}
+        run: uv sync --no-dev --group test --extra ${{ matrix.gfx }} --extra ${{matrix.canvas}} ${{ matrix.python-version != '3.10' && '--extra imgui' || '' }}
 
       - name: Test
         shell: bash
@@ -69,7 +69,7 @@ jobs:
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
-          name: covreport-${{ matrix.os }}-py${{ matrix.python-version }}-${{ matrix.gfx }}
+          name: covreport-${{ matrix.os }}-py${{ matrix.python-version }}-${{ matrix.gfx }}-${{ matrix.canvas }}
           path: ./.coverage*
           include-hidden-files: true
 

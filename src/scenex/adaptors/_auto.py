@@ -41,7 +41,7 @@ def get_adaptor_registry(backend: KnownBackend | str | None = None) -> AdaptorRe
 
 
 def get_all_adaptors(obj: Any) -> Iterator[Adaptor]:
-    """Get all adaptors for the given object."""
+    """Get all loaded adaptors for the given object."""
     for mod_name in ["scenex.adaptors._vispy", "scenex.adaptors._pygfx"]:
         if mod := sys.modules.get(mod_name):
             reg = cast("AdaptorRegistry", mod.adaptors)
