@@ -37,15 +37,19 @@ class GuiFrontend(str, Enum):
         [GLFW](https://www.glfw.org/)
     QT : str
         [PyQt5/PySide2/PyQt6/PySide6](https://doc.qt.io)
+    JUPYTER : str
+        [JUPYTER](https://jupyter.org/)
     """
 
     GLFW = "glfw"
     QT = "qt"
+    JUPYTER = "jupyter"
 
 
 GUI_PROVIDERS: dict[GuiFrontend, tuple[str, str]] = {
     GuiFrontend.GLFW: ("scenex.events._glfw", "GlfwAppWrap"),
     GuiFrontend.QT: ("scenex.events._qt", "QtAppWrap"),
+    GuiFrontend.JUPYTER: ("scenex.events._jupyter", "JupyterAppWrap"),
 }
 
 
@@ -74,10 +78,16 @@ def _running_apps() -> Iterator[GuiFrontend]:
     """Return an iterator of running GUI applications."""
     for mod_name in ("PyQt5", "PySide2", "PySide6", "PyQt6"):
         if mod := sys.modules.get(f"{mod_name}.QtWidgets"):
+            print(f"Found {mod}")
             if (
                 qapp := getattr(mod, "QApplication", None)
             ) and qapp.instance() is not None:
                 yield GuiFrontend.QT
+
+    # Jupyter notebook
+    if (ipy := sys.modules.get("IPython")) and (shell := ipy.get_ipython()):
+        if shell.__class__.__name__ == "ZMQInteractiveShell":
+            yield GuiFrontend.JUPYTER
 
     # glfw provides no way to check if already running - this is a best guess.
     if glfw := sys.modules.get("glfw"):

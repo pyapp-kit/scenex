@@ -25,6 +25,7 @@ class GlfwEventFilter(EventFilter):
     def __init__(
         self, canvas: Any, model_canvas: Canvas, filter_func: Callable[[Event], bool]
     ) -> None:
+        print("Using GLFW Event Filter")
         self._canvas = model_canvas
         self._filter_func = filter_func
         self._active_button: MouseButton = MouseButton.NONE

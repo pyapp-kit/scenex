@@ -35,14 +35,20 @@ classifiers = [
 dependencies = ["cmap>=0.5", "numpy>=2", "psygnal>=0.11.1", "pydantic>=2.10", "pylinalg"]
 
 [project.optional-dependencies]
+glfw= [
+    "glfw"
+]
+jupyter = [
+    "ipywidgets >=8.0.5",
+    "jupyter >=1.1",
+    "jupyter_rfb >=0.3.3",
+    "glfw >=2.4",
+]
 pyqt = [
     "pyqt6 >=6.4,!=6.6",
     "pyqt6 >=6.5.3; python_version >= '3.12'",
     "qtpy >=2",
     "superqt[iconify] >=0.7.2",
-]
-glfw= [
-    "glfw"
 ]
 pygfx = ["pygfx>=0.9.0"]
 vispy = ["vispy>=0.15.0", "pyopengl"]
