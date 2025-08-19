@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from scenex import Canvas
+    from scenex.adaptors._base import CanvasAdaptor
     from scenex.events import Event
 
 
@@ -128,5 +129,5 @@ class QtAppWrap(App):
         cast("QWidget", canvas).installEventFilter(f)
         return f
 
-    def show(self, canvas: Any, visible: bool) -> None:
-        cast("QWidget", canvas).setVisible(visible)
+    def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
+        cast("QWidget", canvas._snx_get_window_ref()).setVisible(visible)

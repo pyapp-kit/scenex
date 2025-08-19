@@ -174,6 +174,10 @@ class CanvasAdaptor(SupportsVisibility[TCanvas, TNative]):
     @abstractmethod
     def _snx_set_background_color(self, arg: model.Color | None, /) -> None: ...
     @abstractmethod
+    def _snx_get_window_ref(self) -> Any:
+        """Returns an object understood by the backend widget toolkit."""
+
+    @abstractmethod
     def _snx_set_title(self, arg: str, /) -> None: ...
     @abstractmethod
     def _snx_close(self) -> None: ...

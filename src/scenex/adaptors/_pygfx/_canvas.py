@@ -62,10 +62,13 @@ class Canvas(CanvasAdaptor):
     def _snx_get_native(self) -> BaseRenderCanvas:
         return self._wgpu_canvas
 
+    def _snx_get_window_ref(self) -> Any:
+        if window := getattr(self._wgpu_canvas, "_window", None):
+            return window
+        return self._wgpu_canvas
+
     def _snx_set_visible(self, arg: bool) -> None:
-        # show the qt canvas we patched earlier in __init__
-        if supports_hide_show(self._wgpu_canvas):
-            self._wgpu_canvas.show()
+        app().show(self, arg)
         self._wgpu_canvas.request_draw(self._draw)
 
     def _draw(self) -> None:

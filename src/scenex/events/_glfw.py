@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from scenex import Canvas
+    from scenex.adaptors._base import CanvasAdaptor
     from scenex.events.events import Event
 
 BUTTONMAP = {
@@ -137,8 +138,8 @@ class GlfwAppWrap(App):
     ) -> EventFilter:
         return GlfwEventFilter(canvas, model_canvas, filter_func)
 
-    def show(self, canvas: Any, visible: bool) -> None:
+    def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
         if visible:
-            glfw.show_window(canvas._id)
+            glfw.show_window(canvas._snx_get_window_ref())
         else:
-            glfw.hide_window(canvas._id)
+            glfw.hide_window(canvas._snx_get_window_ref())

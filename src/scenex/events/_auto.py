@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
     from typing import Any
 
+    from scenex.adaptors._base import CanvasAdaptor
     from scenex.events import Event
     from scenex.model import Canvas
 
@@ -64,7 +65,7 @@ class App:
         """Create the application instance, if not already created."""
         raise NotImplementedError("Must be implemented by subclasses.")
 
-    def show(self, canvas: Any, visible: bool) -> None:
+    def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
         """Show or hide the canvas."""
         raise NotImplementedError("Must be implemented by subclasses.")
 

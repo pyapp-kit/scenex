@@ -38,7 +38,7 @@ class View(ViewAdaptor):
     def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
         self._model = view
         canvas_adaptor = cast("_canvas.Canvas", get_adaptor(view.canvas))
-        wgpu_canvas = canvas_adaptor._snx_get_native()
+        wgpu_canvas = canvas_adaptor._wgpu_canvas
         self._renderer = pygfx.renderers.WgpuRenderer(wgpu_canvas)
         size = tuple(wgpu_canvas.get_logical_size())
         self._rect = (0, 0, float(size[0]), float(size[1]))

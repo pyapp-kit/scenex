@@ -52,9 +52,12 @@ class Canvas(CanvasAdaptor):
     def _snx_get_native(self) -> Any:
         return self._canvas.native
 
+    def _snx_get_window_ref(self) -> Any:
+        return self._canvas.native
+
     def _snx_set_visible(self, arg: bool) -> None:
         # show the qt canvas we patched earlier in __init__
-        app().show(self._canvas.native, arg)
+        app().show(self, arg)
 
     def _draw(self) -> None:
         self._canvas.update()

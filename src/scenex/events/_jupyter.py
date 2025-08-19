@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from types import MethodType
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
-from IPython.display import display
+from IPython import display
 from jupyter_rfb import RemoteFrameBuffer
 
 from scenex.events._auto import App, EventFilter
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from scenex import Canvas
+    from scenex.adaptors._base import CanvasAdaptor
     from scenex.events.events import Event
 
 
@@ -31,75 +32,79 @@ class JupyterEventFilter(EventFilter):
 
         self._old_event = self._canvas.handle_event
 
-        def _handle_event(self: RemoteFrameBuffer, ev: dict) -> None:
-            nonlocal model_canvas
-            nonlocal filter_func
-            self._active_button = MouseButton.NONE
-            etype = ev["event_type"]
-            if etype == "pointer_move":
-                canvas_pos = (ev["x"], ev["y"])
-                if world_ray := _canvas_to_world(model_canvas, canvas_pos):
-                    filter_func(
-                        MouseEvent(
-                            type="move",
-                            canvas_pos=canvas_pos,
-                            world_ray=world_ray,
-                            buttons=self._active_button,
+        def _create_handler(
+            filter: JupyterEventFilter,
+        ) -> Callable[[RemoteFrameBuffer, dict], None]:
+            def _handle_event(self: RemoteFrameBuffer, ev: dict) -> None:
+                filter._active_button = MouseButton.NONE
+                etype = ev["event_type"]
+                if etype == "pointer_move":
+                    canvas_pos = (ev["x"], ev["y"])
+                    if world_ray := _canvas_to_world(filter._model_canvas, canvas_pos):
+                        filter._filter_func(
+                            MouseEvent(
+                                type="move",
+                                canvas_pos=canvas_pos,
+                                world_ray=world_ray,
+                                buttons=filter._active_button,
+                            )
                         )
-                    )
-            elif etype == "pointer_down":
-                canvas_pos = (ev["x"], ev["y"])
-                self._active_button |= JupyterEventFilter.mouse_btn(ev["button"])
-                if world_ray := _canvas_to_world(model_canvas, canvas_pos):
-                    filter_func(
-                        MouseEvent(
-                            type="press",
-                            canvas_pos=canvas_pos,
-                            world_ray=world_ray,
-                            buttons=self._active_button,
+                elif etype == "pointer_down":
+                    canvas_pos = (ev["x"], ev["y"])
+                    filter._active_button |= JupyterEventFilter.mouse_btn(ev["button"])
+                    if world_ray := _canvas_to_world(filter._model_canvas, canvas_pos):
+                        filter._filter_func(
+                            MouseEvent(
+                                type="press",
+                                canvas_pos=canvas_pos,
+                                world_ray=world_ray,
+                                buttons=filter._active_button,
+                            )
                         )
-                    )
-            elif etype == "double_click":
-                btn = JupyterEventFilter.mouse_btn(ev["button"])
-                canvas_pos = (ev["x"], ev["y"])
-                if world_ray := _canvas_to_world(model_canvas, canvas_pos):
-                    # Note that in Jupyter, a double_click event is not a pointer event
-                    # and as such, we need to handle both press and release. See
-                    # https://github.com/vispy/jupyter_rfb/blob/62831dd5a87bc19b4fd5f921d802ed21141e61ec/js/lib/widget.js#L270
-                    filter_func(
-                        MouseEvent(
-                            type="press",
-                            canvas_pos=canvas_pos,
-                            world_ray=world_ray,
-                            buttons=btn,
+                elif etype == "double_click":
+                    btn = JupyterEventFilter.mouse_btn(ev["button"])
+                    canvas_pos = (ev["x"], ev["y"])
+                    if world_ray := _canvas_to_world(filter._model_canvas, canvas_pos):
+                        # Note that in Jupyter, a double_click event is not a pointer
+                        # event and as such, we need to handle both press and release.
+                        # See
+                        # https://github.com/vispy/jupyter_rfb/blob/62831dd5a87bc19b4fd5f921d802ed21141e61ec/js/lib/widget.js#L270
+                        filter._filter_func(
+                            MouseEvent(
+                                type="press",
+                                canvas_pos=canvas_pos,
+                                world_ray=world_ray,
+                                buttons=btn,
+                            )
                         )
-                    )
-                    # Release
-                    filter_func(
-                        MouseEvent(
-                            type="release",
-                            canvas_pos=canvas_pos,
-                            world_ray=world_ray,
-                            buttons=btn,
+                        # Release
+                        filter._filter_func(
+                            MouseEvent(
+                                type="release",
+                                canvas_pos=canvas_pos,
+                                world_ray=world_ray,
+                                buttons=btn,
+                            )
                         )
-                    )
-            elif etype == "pointer_up":
-                canvas_pos = (ev["x"], ev["y"])
-                self._active_button |= JupyterEventFilter.mouse_btn(ev["button"])
-                if world_ray := _canvas_to_world(model_canvas, canvas_pos):
-                    filter_func(
-                        MouseEvent(
-                            type="release",
-                            canvas_pos=canvas_pos,
-                            world_ray=world_ray,
-                            buttons=self._active_button,
+                elif etype == "pointer_up":
+                    canvas_pos = (ev["x"], ev["y"])
+                    filter._active_button |= JupyterEventFilter.mouse_btn(ev["button"])
+                    if world_ray := _canvas_to_world(filter._model_canvas, canvas_pos):
+                        filter._filter_func(
+                            MouseEvent(
+                                type="release",
+                                canvas_pos=canvas_pos,
+                                world_ray=world_ray,
+                                buttons=filter._active_button,
+                            )
                         )
-                    )
-            # elif etype == "wheel":
-            # if not intercepted:
-            #     self._old_event(ev)
+                # elif etype == "wheel":
+                # if not intercepted:
+                #     self._old_event(ev)
 
-        self._canvas.handle_event = MethodType(_handle_event, self._canvas)
+            return _handle_event
+
+        self._canvas.handle_event = MethodType(_create_handler(self), self._canvas)
 
     @classmethod
     def mouse_btn(cls, btn: Any) -> MouseButton:
@@ -134,6 +139,9 @@ class JupyterEventFilter(EventFilter):
 class JupyterAppWrap(App):
     """Provider for Jupyter notebook."""
 
+    def __init__(self) -> None:
+        self._visible_canvases: set[CanvasAdaptor] = set()
+
     def create_app(self) -> Any:
         # No explicit app needed for Jupyter
         return None
@@ -143,6 +151,9 @@ class JupyterAppWrap(App):
     ) -> EventFilter:
         return JupyterEventFilter(canvas, model_canvas, filter_func)
 
-    def show(self, canvas: Any, visible: bool) -> None:
-        if visible:
-            display(canvas)
+    def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
+        native_canvas = cast("RemoteFrameBuffer", canvas._snx_get_window_ref())
+        if canvas not in self._visible_canvases:
+            self._visible_canvases.add(canvas)
+            display.display(native_canvas)
+        native_canvas.layout.display = "flex" if visible else "none"
