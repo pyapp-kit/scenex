@@ -40,9 +40,26 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.13"]
         gfx: [pygfx, vispy]
-        canvas: [pyqt, glfw]
+        canvas: [pyqt, glfw, jupyter, wx]
+        exclude:
+          # glfw.GLFWError: (65545) b'NSGL: Failed to find a suitable pixel format'
+          - os: macos-latest
+            canvas: glfw
+          # wxpython does not build wheels for ubuntu or macos-latest py3.10
+          - os: ubuntu-latest
+            gui: wxpython
+          - os: macos-latest
+            gui: wxpython
+            python-version: "3.10"
+        # include
+        #   - python-version: 3.11
+        #     gfx: pygfx
+        #     canvas: pyqt
+        #   - python-version: 3.12
+        #     gfx: pygfx
+        #     canvas: pyqt
 
     steps:
       - uses: actions/checkout@v4
