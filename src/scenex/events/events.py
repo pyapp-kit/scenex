@@ -92,6 +92,7 @@ def _filter_through(event: Any, node: Node, target: Node) -> bool:
     # receive the event?
 
     # First give this node a chance to filter the event.
+
     if node.interactive and node.filter_event(event, target):
         # Node filtered out the event, so we stop here.
         return True

@@ -138,14 +138,14 @@ disallow_subclassing_any = false
 show_error_codes = true
 pretty = true
 plugins = ["pydantic.mypy"]
-untyped_calls_exclude = ["rendercanvas"]
+untyped_calls_exclude = ["rendercanvas", "IPython"]
 
 [[tool.mypy.overrides]]
 module = ["rendercanvas.*"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
-module = ["pygfx.*", "vispy.*", "wgpu.*", "glfw.*", "pylinalg.*", "qtpy.*"]
+module = ["pygfx.*", "vispy.*", "wgpu.*", "glfw.*", "pylinalg.*", "qtpy.*", "IPython.*", "jupyter_rfb.*"]
 ignore_missing_imports = true
 
 [tool.pydantic-mypy]

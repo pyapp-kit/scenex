@@ -30,10 +30,8 @@ class JupyterEventFilter(EventFilter):
         self._active_button: MouseButton = MouseButton.NONE
 
         self._old_event = self._canvas.handle_event
-        display("Using Jupyter Event Filter")
 
         def _handle_event(self: RemoteFrameBuffer, ev: dict) -> None:
-            display(ev)
             nonlocal model_canvas
             nonlocal filter_func
             self._active_button = MouseButton.NONE
@@ -121,16 +119,16 @@ class JupyterEventFilter(EventFilter):
 
     def _on_wheel(self, event: dict) -> None:
         pos = (event["x"], event["y"])
-        ray = _canvas_to_world(self._model_canvas, pos)
-        self._filter_func(
-            WheelEvent(
-                type="wheel",
-                canvas_pos=pos,
-                world_ray=ray,
-                buttons=self._active_button,
-                angle_delta=(event["delta_x"], event["delta_y"]),
+        if ray := _canvas_to_world(self._model_canvas, pos):
+            self._filter_func(
+                WheelEvent(
+                    type="wheel",
+                    canvas_pos=pos,
+                    world_ray=ray,
+                    buttons=self._active_button,
+                    angle_delta=(event["delta_x"], event["delta_y"]),
+                )
             )
-        )
 
 
 class JupyterAppWrap(App):
@@ -147,5 +145,4 @@ class JupyterAppWrap(App):
 
     def show(self, canvas: Any, visible: bool) -> None:
         if visible:
-            display("Showing!")
             display(canvas)
