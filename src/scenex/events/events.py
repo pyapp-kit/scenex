@@ -76,6 +76,7 @@ def _handle_event(canvas: Canvas, event: Event) -> bool:
             if not handled and view.camera.interactive:
                 handled |= view.camera.filter_event(event, view.camera)
 
+    canvas._get_adaptors()
     return handled
 
 

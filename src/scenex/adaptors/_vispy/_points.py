@@ -98,3 +98,4 @@ class Points(Node, PointsAdaptor):
             edge_color=edge_color,
             edge_width=self._model.edge_width,
         )
+        self._vispy_node.update()

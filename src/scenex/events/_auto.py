@@ -36,20 +36,26 @@ class GuiFrontend(str, Enum):
     ----------
     GLFW : str
         [GLFW](https://www.glfw.org/)
-    QT : str
-        [PyQt5/PySide2/PyQt6/PySide6](https://doc.qt.io)
     JUPYTER : str
         [JUPYTER](https://jupyter.org/)
+    QT : str
+        [PyQt5/PySide2/PyQt6/PySide6](https://doc.qt.io)
+    WX : str
+        [WX](https://wxpython.org/)
     """
 
     GLFW = "glfw"
-    QT = "qt"
     JUPYTER = "jupyter"
+    QT = "qt"
+    WX = "wx"
 
 
 GUI_PROVIDERS: dict[GuiFrontend, tuple[str, str]] = {
     GuiFrontend.GLFW: ("scenex.events._glfw", "GlfwAppWrap"),
     GuiFrontend.QT: ("scenex.events._qt", "QtAppWrap"),
+    GuiFrontend.WX: ("scenex.events._wx", "WxAppWrap"),
+    # Note that Jupyter should go last because it is a guess based on IPython
+    # which may be installed with the other frameworks as well.
     GuiFrontend.JUPYTER: ("scenex.events._jupyter", "JupyterAppWrap"),
 }
 
@@ -63,6 +69,10 @@ class App:
 
     def create_app(self) -> Any:
         """Create the application instance, if not already created."""
+        raise NotImplementedError("Must be implemented by subclasses.")
+
+    def run(self) -> None:
+        """Run the application."""
         raise NotImplementedError("Must be implemented by subclasses.")
 
     def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
@@ -84,6 +94,9 @@ def _running_apps() -> Iterator[GuiFrontend]:
                 qapp := getattr(mod, "QApplication", None)
             ) and qapp.instance() is not None:
                 yield GuiFrontend.QT
+    # wx
+    if (wx := sys.modules.get("wx")) and wx.App.Get() is not None:
+        yield GuiFrontend.WX
 
     # Jupyter notebook
     if (ipy := sys.modules.get("IPython")) and (shell := ipy.get_ipython()):
@@ -112,6 +125,39 @@ def _load_app(module: str, cls_name: str) -> App:
     return cast("App", cls())
 
 
+def determine_app() -> GuiFrontend:
+    running = list(_running_apps())
+
+    # Try 1: Load a frontend explicitly requested by the user
+    requested = os.getenv(GUI_ENV_VAR, "").lower()
+    valid = {x.value for x in GuiFrontend}
+    if requested:
+        if requested not in valid:
+            raise ValueError(
+                f"Invalid GUI frontend: {requested!r}. Valid options: {valid}"
+            )
+        return GuiFrontend(requested)
+
+    # Try 2: Utilize an existing, running app
+    for key in GUI_PROVIDERS.keys():
+        if key in running:
+            return key
+
+    # Try 3: Load an existing app
+    errors: list[tuple[str, BaseException]] = []
+    for key, provider in GUI_PROVIDERS.items():
+        try:
+            _load_app(*provider)
+            return key
+        except Exception as e:
+            errors.append((key, e))
+
+    raise RuntimeError(  # pragma: no cover
+        f"Could not find an appropriate GUI frontend: {valid!r}. Tried:\n\n"
+        + "\n".join(f"- {key}: {err}" for key, err in errors)
+    )
+
+
 def app() -> App:
     """Return the active [`GuiFrontend`][ndv.views.GuiFrontend].
 
@@ -123,39 +169,7 @@ def app() -> App:
     if _APP is not None:
         return _APP
 
-    running = list(_running_apps())
-
-    # Try 1: Load a frontend explicitly requested by the user
-    requested = os.getenv(GUI_ENV_VAR, "").lower()
-    valid = {x.value for x in GuiFrontend}
-    if requested:
-        if requested not in valid:
-            raise ValueError(
-                f"Invalid GUI frontend: {requested!r}. Valid options: {valid}"
-            )
-        # ensure the app is created for explicitly requested frontends
-        _APP = _load_app(*GUI_PROVIDERS[GuiFrontend(requested)])
-        _APP.create_app()
-        return _APP
-
-    # Try 2: Utilize an existing, running app
-    for key, provider in GUI_PROVIDERS.items():
-        if key in running:
-            _APP = _load_app(*provider)
-            _APP.create_app()
-            return _APP
-
-    # Try 3: Load an existing app
-    errors: list[tuple[str, BaseException]] = []
-    for key, provider in GUI_PROVIDERS.items():
-        try:
-            _APP = _load_app(*provider)
-            _APP.create_app()
-            return _APP
-        except Exception as e:
-            errors.append((key, e))
-
-    raise RuntimeError(  # pragma: no cover
-        f"Could not find an appropriate GUI frontend: {valid!r}. Tried:\n\n"
-        + "\n".join(f"- {key}: {err}" for key, err in errors)
-    )
+    # ensure the app is created for explicitly requested frontends
+    _APP = _load_app(*GUI_PROVIDERS[determine_app()])
+    _APP.create_app()
+    return _APP

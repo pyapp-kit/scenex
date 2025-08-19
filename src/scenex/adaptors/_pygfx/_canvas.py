@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
 from scenex.adaptors._base import CanvasAdaptor
-from scenex.events._auto import app
+from scenex.events._auto import GuiFrontend, app, determine_app
 from scenex.events.events import _handle_event
 
 from ._adaptor_registry import get_adaptor
@@ -26,27 +26,45 @@ def supports_hide_show(obj: Any) -> TypeGuard[SupportsHideShow]:
     return hasattr(obj, "show") and hasattr(obj, "hide")
 
 
+def rendercanvas_class() -> type[BaseRenderCanvas]:
+    frontend = determine_app()
+    if frontend == GuiFrontend.QT:
+        from qtpy.QtCore import QSize  # pyright: ignore[reportMissingImports]
+        from rendercanvas.auto import loop
+        from rendercanvas.qt import QRenderWidget
+
+        class _QRenderWidget(QRenderWidget):
+            def sizeHint(self) -> QSize:
+                return QSize(self.width(), self.height())
+
+        loop._rc_init()
+        return _QRenderWidget
+
+    if frontend == GuiFrontend.JUPYTER:
+        import rendercanvas.jupyter
+
+        return rendercanvas.jupyter.JupyterRenderCanvas
+    if frontend == GuiFrontend.GLFW:
+        import rendercanvas.glfw
+
+        return rendercanvas.glfw.GlfwRenderCanvas
+    if frontend == GuiFrontend.WX:
+        # ...still not working
+        # import rendercanvas.wx
+        # return rendercanvas.wx.WxRenderWidget
+        from wgpu.gui.wx import WxWgpuCanvas
+
+        return WxWgpuCanvas  # type: ignore
+
+    raise ValueError("No suitable render canvas found")
+
+
 class Canvas(CanvasAdaptor):
     """Canvas interface for pygfx Backend."""
 
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
-        from rendercanvas.auto import RenderCanvas
-
-        canvas_cls = RenderCanvas
-        # HACK: Qt
-        if canvas_cls.__module__.startswith("rendercanvas.qt"):
-            from qtpy.QtCore import QSize
-            from rendercanvas.auto import loop
-            from rendercanvas.qt import QRenderWidget
-
-            class _QRenderWidget(QRenderWidget):
-                def sizeHint(self) -> QSize:
-                    return QSize(self.width(), self.height())
-
-            loop._rc_init()
-            canvas_cls = _QRenderWidget
         self._canvas = canvas
-        self._wgpu_canvas = canvas_cls()
+        self._wgpu_canvas = rendercanvas_class()()
 
         # FIXME: This seems to not work on my laptop, without external monitors.
         # The physical canvas size is still 625, 625...
