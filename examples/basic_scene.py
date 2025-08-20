@@ -29,6 +29,7 @@ view = snx.View(
             ),
         ]
     ),
+    camera=snx.Camera(interactive=True),
 )
 
 # example of adding an object to a scene
