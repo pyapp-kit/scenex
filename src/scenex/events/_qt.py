@@ -122,6 +122,20 @@ class QtAppWrap(App):
 
         return qapp
 
+    def run(self) -> None:
+        """Run the Qt event loop."""
+        app = QApplication.instance() or self.create_app()
+
+        for wdg in QApplication.topLevelWidgets():
+            wdg.raise_()
+
+        # if ipy_shell := self._ipython_shell():
+        #     # if we're already in an IPython session with %gui qt, don't block
+        #     if str(ipy_shell.active_eventloop).startswith("qt"):
+        #         return
+
+        app.exec()
+
     def install_event_filter(
         self, canvas: Any, model_canvas: Canvas, filter_func: Callable[[Event], bool]
     ) -> EventFilter:
