@@ -42,7 +42,7 @@ jupyter = [
     "ipywidgets >=8.0.5",
     "jupyter >=1.1",
     "jupyter_rfb >=0.3.3",
-    "glfw >=2.4",
+    "simplejpeg", # Otherwise jupyter_rfb will use PNG, which is apparently slower
 ]
 pyqt = [
     "pyqt6 >=6.4,!=6.6",
@@ -148,7 +148,7 @@ module = ["rendercanvas.*"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
-module = ["pygfx.*", "vispy.*", "wgpu.*", "glfw.*", "pylinalg.*", "qtpy.*", "IPython.*", "jupyter_rfb.*", "wx.*"]
+module = ["pygfx.*", "vispy.*", "wgpu.*", "glfw.*", "pylinalg.*", "qtpy.*", "ipywidgets.*", "IPython.*", "jupyter", "jupyter_rfb.*", "wx.*"]
 ignore_missing_imports = true
 
 [tool.pydantic-mypy]

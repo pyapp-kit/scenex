@@ -142,9 +142,29 @@ class JupyterAppWrap(App):
     def __init__(self) -> None:
         self._visible_canvases: set[CanvasAdaptor] = set()
 
+    # def is_running(self) -> bool:
+    #     if ipy_shell := self._ipython_shell():
+    #         return bool(ipy_shell.__class__.__name__ == "ZMQInteractiveShell")
+    #     return False
+
     def create_app(self) -> Any:
-        # No explicit app needed for Jupyter
-        return None
+        # if not self.is_running() and not os.getenv("PYTEST_CURRENT_TEST"):
+        #     # if we got here, it probably means that someone used
+        #     # NDV_GUI_FRONTEND=jupyter without actually being in a jupyter notebook
+        #     # we allow it in tests, but not in normal usage.
+        #     raise RuntimeError(  # pragma: no cover
+        #         "Jupyter is not running a notebook shell.  Cannot create app."
+        #     )
+
+        # No app creation needed...
+        # but make sure we can actually import the stuff we need
+        import ipywidgets  # noqa: F401
+        import jupyter  # noqa: F401
+
+    def run(self) -> None:
+        """Run the application."""
+        # No explicit run method needed for Jupyter
+        pass
 
     def install_event_filter(
         self, canvas: Any, model_canvas: Canvas, filter_func: Callable[[Event], bool]
