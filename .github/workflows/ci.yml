@@ -49,9 +49,9 @@ jobs:
             canvas: glfw
           # wxpython does not build wheels for ubuntu or macos-latest py3.10
           - os: ubuntu-latest
-            gui: wxpython
+            canvas: wx
           - os: macos-latest
-            gui: wxpython
+            canvas: wx
             python-version: "3.10"
         include:
           - python-version: 3.11
