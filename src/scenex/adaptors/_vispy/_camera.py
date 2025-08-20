@@ -41,14 +41,11 @@ class Camera(Node, CameraAdaptor):
         self._from_NDC = Transform()
 
         self._vispy_node = vispy.scene.BaseCamera()
-        # FIXME: Compared to pygfx, the y-axis appears inverted.
-        # The line below does not help...
-        # self._vispy_node.flip = (False, True, False)
 
     def _set_view(self, w: float, h: float) -> None:
-        # map [-1, -1] to [0, 0]
-        # map [1, 1] to [w, h]
-        self._from_NDC = Transform().translated((1, 1)).scaled((w / 2, h / 2, 1))
+        # map [-1, -1] to [0, h]
+        # map [1, 1] to [w, 0]
+        self._from_NDC = Transform().translated((1, -1)).scaled((w / 2, -h / 2, 1))
 
         self._update_vispy_node_tform()
 
