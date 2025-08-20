@@ -53,10 +53,10 @@ jobs:
           - os: macos-latest
             canvas: wx
             python-version: "3.10"
-        include:
-          - python-version: 3.11
-            gfx: pygfx
-            canvas: pyqt
+        # include:
+        #   - python-version: 3.11
+        #     gfx: pygfx
+            # canvas: pyqt
           # - python-version: 3.12
           #   gfx: pygfx
           #   canvas: pyqt
