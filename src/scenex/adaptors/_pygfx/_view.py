@@ -65,7 +65,6 @@ class View(ViewAdaptor):
     def _snx_set_camera(self, cam: model.Camera) -> None:
         self._cam_adaptor = cast("_camera.Camera", get_adaptor(cam))
         self._pygfx_cam = self._cam_adaptor._pygfx_node
-        self._cam_adaptor.pygfx_controller.register_events(self._renderer)
 
     def _draw(self) -> None:
         self._renderer.render(self._pygfx_scene, self._pygfx_cam, rect=self._rect)
