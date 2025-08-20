@@ -46,7 +46,7 @@ repos:
         language: system
         types_or: [python, pyi]
         require_serial: true
-        entry: uv run --active pyright
+        entry: uv run pyright
 
   - repo: https://github.com/crate-ci/typos
     rev: v1.34.0
