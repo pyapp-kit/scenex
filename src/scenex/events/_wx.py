@@ -144,4 +144,6 @@ class WxAppWrap(App):
         return WxEventFilter(canvas, model_canvas, filter_func)
 
     def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
-        canvas._snx_get_window_ref().Show(visible)
+        window = canvas._snx_get_window_ref()
+        if window and window.IsOk():
+            wx.CallAfter(window.Show, visible)
