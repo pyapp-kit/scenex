@@ -136,7 +136,10 @@ class GlfwAppWrap(App):
     def run(self) -> None:
         """Run the GLFW application."""
         # TODO
-        raise NotImplementedError("No, YOU run!")
+        raise NotImplementedError(
+            "GLFW event loop not implemented yet. In the meantime, "
+            "Uninstall GLFW and run another canvas framework."
+        )
 
     def install_event_filter(
         self, canvas: Any, model_canvas: Canvas, filter_func: Callable[[Event], bool]

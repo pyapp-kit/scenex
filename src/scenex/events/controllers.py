@@ -63,7 +63,11 @@ class OrbitController:
                     node.transform.root[3, :3],
                     quat_azimuth,
                 )
+
                 node.transform = Transform().translated(position)
+                node.projection = node.projection @ la.mat_from_axis_angle(
+                    up, delta_azimuth * math.pi / 180
+                )
                 self._drag_pos = new_pos
                 # print(position)
 
