@@ -133,6 +133,11 @@ class GlfwAppWrap(App):
         # Nothing really to return here...
         return None
 
+    def run(self) -> None:
+        """Run the GLFW application."""
+        # TODO
+        raise NotImplementedError("No, YOU run!")
+
     def install_event_filter(
         self, canvas: Any, model_canvas: Canvas, filter_func: Callable[[Event], bool]
     ) -> EventFilter:
