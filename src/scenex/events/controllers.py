@@ -7,21 +7,30 @@ import pylinalg as la
 
 from scenex.events.events import Event, MouseButton, MouseEvent, WheelEvent
 from scenex.model import Camera, Node
-from scenex.model._transform import Transform
 
 
 class OrbitController:
     """
-    Controller for orbiting a Camera node around a fixed point.
+    Orbits a Camera node around a fixed point.
 
-    Left mouse button: orbit/rotate.
+    Rotation direction follows pygfx precedent, where foreground objects (between the
+    camera and the center of rotation) move in the direction of mouse movement i.e.
+    foreground objects move right when the mouse moves right, and up when the mouse
+    moves up.
+
+    Orbit controls define a polar axis (the Z axis in this case), and allow user
+    interaction to adjust the camera's angle around the polar axis (azimuth) and angle
+    to the polar axis (elevation).
+
+    The left mouse button orbits/rotates the camera.
     Right mouse button: pan.
     Wheel: zoom to point.
     """
 
     def __init__(self, center: tuple[float, float, float] = (0.0, 0.0, 0.0)) -> None:
-        self._drag_pos: tuple[float, float] | None = None
-        self._center = np.array(center, dtype=float)
+        self.center = np.array(center, dtype=float)
+        self.polar_axis = np.array((0.0, 0.0, 1.0), dtype=float)
+        self._last_pos: tuple[float, float] | None = None
 
     def __call__(self, event: Event, node: Node) -> bool:
         """Handle mouse and wheel events to orbit the camera."""
@@ -36,49 +45,62 @@ class OrbitController:
 
             # Start orbit on left mouse press
             if event.type == "press" and MouseButton.LEFT in event.buttons:
-                self._drag_pos = new_pos
+                self._last_pos = new_pos
 
             # Orbit on mouse move with left button held
             elif (
                 event.type == "move"
                 and MouseButton.LEFT in event.buttons
-                and self._drag_pos is not None
+                and self._last_pos is not None
             ):
-                # Break down the camera transform relative to the orbit center
-                orbit_mat = node.transform.translated(-self._center)
-                position, rotation, scale = la.mat_decompose(orbit_mat.T)
-                # Phi is the angle from the positive z-axis (index 2)
-                # Theta is the angle from the positive y-axis (index 1)
-                r, phi, theta = la.vec_euclidean_to_spherical(
-                    orbit_mat.map((0, 0, 0))[:3]
-                )
-                # Azimuth is the angle (degrees) from the positive x-axis
-                azimuth = (theta * 180 / math.pi) - 90
-                # Elevation is the angle (degrees) from the positive z-axis
-                elevation = phi * 180 / math.pi
-                print(f"r={r}, azimuth={azimuth}, elevation={elevation}")
+                # The process of orbiting is as follows:
+                # 1. Compute the azimuth and elevation changes based on mouse movement.
+                #   - Azimuth describes the angle between the the positive X axis and
+                #       the projection of the camera's position onto the XY plane.
+                #   - Elevation describes the angle between the camera's position and
+                #       the positive Z axis.
+                # 2. Ensure these changes are clamped to valid ranges (only really
+                #   applies to elevation).
+                # 3. Adjust the current transform by:
+                #   a. Translating by the negative of the centerpoint, to take it out of
+                #       the computation.
+                #   b. Rotating to adjust the elevation. The axis of rotation is defined
+                #       by the camera's right vector. Note that this is done before the
+                #       azimuth adjustment because that adjustment will alter the
+                #       camera's right vector.
+                #   c. Rotating to adjust the azimuth. The axis of rotation is always
+                #       the positive Z axis.
+                #   d. Translating by the centerpoint, to reorient the camera around
+                #           that centerpoint.
 
-                # Azimuth angle is horizontal axis, elevation is vertical axis.
-                d_azimuth = self._drag_pos[0] - new_pos[0]
-                d_elevation = self._drag_pos[1] - new_pos[1]
+                # Step 0: Gather transform components, relative to camera center
+                orbit_mat = node.transform.translated(-self.center)
+                position, rotation, _scale = la.mat_decompose(orbit_mat.T)
+                camera_right = la.vec_transform_quat((1, 0, 0), rotation)
+                # TODO: Make this a controller parameter
+                camera_polar = (0, 0, 1)
 
-                new_elevation = max(0, min(180, elevation + d_elevation))
+                # Step 1
+                d_azimuth = self._last_pos[0] - new_pos[0]
+                d_elevation = float(self._last_pos[1] - new_pos[1])
 
-                new_azimuth = azimuth - d_azimuth
-                # new_azimuth = azimuth
+                # Step 2
+                e_bound = float(la.vec_angle(position, (0, 0, 1)) * 180 / math.pi)
+                if e_bound + d_elevation < 0:
+                    d_elevation = -e_bound
+                if e_bound + d_elevation > 180:
+                    d_elevation = 180 - e_bound
 
+                # Step 3
                 node.transform = (
-                    Transform()
-                    .scaled(scale)
-                    .rotated(90, (0, 1, 0))
-                    .rotated(90, (1, 0, 0))
-                    .translated((r, 0, 0))
-                    .rotated(90 - new_elevation, (0, -1, 0))
-                    .rotated(new_azimuth, (0, 0, 1))
-                    .translated(self._center)
+                    node.transform.translated(-self.center)  # 3a
+                    .rotated(d_elevation, camera_right)  # 3b
+                    .rotated(d_azimuth, camera_polar)  # 3c
+                    .translated(self.center)  # 3d
                 )
 
-                self._drag_pos = new_pos
+                # Step n+1: Update last position
+                self._last_pos = new_pos
 
         return handled
 
