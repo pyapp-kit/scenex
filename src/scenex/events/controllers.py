@@ -30,6 +30,8 @@ class OrbitController:
         handled = False
 
         if isinstance(event, MouseEvent):
+            # TODO: Pan with right click
+            # TODO: Zoom with wheel
             new_pos = event.canvas_pos
 
             # Start orbit on left mouse press
@@ -40,67 +42,43 @@ class OrbitController:
             elif (
                 event.type == "move"
                 and MouseButton.LEFT in event.buttons
-                and self._drag_pos
+                and self._drag_pos is not None
             ):
+                # Break down the camera transform relative to the orbit center
+                orbit_mat = node.transform.translated(-self._center)
+                position, rotation, scale = la.mat_decompose(orbit_mat.T)
+                # Phi is the angle from the positive z-axis (index 2)
+                # Theta is the angle from the positive y-axis (index 1)
+                r, phi, theta = la.vec_euclidean_to_spherical(
+                    orbit_mat.map((0, 0, 0))[:3]
+                )
+                # Azimuth is the angle (degrees) from the positive x-axis
+                azimuth = (theta * 180 / math.pi) - 90
+                # Elevation is the angle (degrees) from the positive z-axis
+                elevation = phi * 180 / math.pi
+                print(f"r={r}, azimuth={azimuth}, elevation={elevation}")
+
                 # Azimuth angle is horizontal axis, elevation is vertical axis.
-                delta_azimuth = self._drag_pos[0] - new_pos[0]
-                delta_elevation = self._drag_pos[1] - new_pos[1]
+                d_azimuth = self._drag_pos[0] - new_pos[0]
+                d_elevation = self._drag_pos[1] - new_pos[1]
 
-                up = la.vec_normalize(
-                    node.projection.map((0, 1)) - node.projection.map((0, 0))
-                )[:3]
+                new_elevation = max(0, min(180, elevation + d_elevation))
 
-                # Update position
-                quat_azimuth = la.quat_from_axis_angle(
-                    up, -delta_azimuth * math.pi / 180
-                )
-                quat_elevation = la.quat_from_axis_angle(
-                    (1, 0, 0), -delta_elevation * math.pi / 180
-                )
-                position = la.vec_transform_quat(
-                    node.transform.root[3, :3],
-                    la.quat_mul(quat_azimuth, quat_elevation),
-                )
-                node.transform = Transform().translated(position)
+                new_azimuth = azimuth - d_azimuth
+                # new_azimuth = azimuth
 
-                # Update projection
-                quat_azimuth = la.quat_from_axis_angle(
-                    up, delta_azimuth * math.pi / 180
+                node.transform = (
+                    Transform()
+                    .scaled(scale)
+                    .rotated(90, (0, 1, 0))
+                    .rotated(90, (1, 0, 0))
+                    .translated((r, 0, 0))
+                    .rotated(90 - new_elevation, (0, -1, 0))
+                    .rotated(new_azimuth, (0, 0, 1))
+                    .translated(self._center)
                 )
-                quat_elevation = la.quat_from_axis_angle(
-                    (1, 0, 0), delta_elevation * math.pi / 180
-                )
-                node.projection = node.projection @ la.mat_from_quat(
-                    la.quat_mul(quat_azimuth, quat_elevation)
-                )
-                # Update drag position
+
                 self._drag_pos = new_pos
-
-            # # Pan with right mouse button
-            # elif (
-            #     event.type == "move"
-            #     and MouseButton.RIGHT in event.buttons
-            #     and self._drag_pos
-            # ):
-            #     dx = self._drag_pos[0] - new_pos[0]
-            #     dy = self._drag_pos[1] - new_pos[1]
-            #     node.transform = node.transform.translated((dx, dy))
-            #     handled = True
-
-            # elif event.type == "press" and MouseButton.RIGHT in event.buttons:
-            #     self._drag_pos = new_pos
-
-            # elif event.type == "release" and MouseButton.RIGHT not in event.buttons:
-            #     self._drag_pos = None
-
-            # Zoom with wheel
-            # elif isinstance(event, WheelEvent):
-            #     _dx, dy = event.angle_delta
-            #     if dy:
-            #         zoom = 2 ** (dy * 0.001)
-            #         self._radius /= zoom
-            #         self._orbit_camera(node)
-            #         handled = True
 
         return handled
 
