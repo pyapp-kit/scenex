@@ -40,7 +40,8 @@ view.camera.transform = (
     Transform()
     .rotated(90, (0, 1, 0))
     .rotated(90, (1, 0, 0))
-    .translated((*orbit_center, 300, 0, 0))
+    .translated(orbit_center)
+    .translated((300, 0, 0))
 )
 # Perspective projection for 3D
 view.camera.projection = projections.perspective(

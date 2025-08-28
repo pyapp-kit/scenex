@@ -5,7 +5,7 @@ import math
 import numpy as np
 import pylinalg as la
 
-from scenex.events.events import Event, MouseButton, MouseEvent, WheelEvent
+from scenex.events.events import Event, MouseButton, MouseEvent, Ray, WheelEvent
 from scenex.model import Camera, Node
 
 
@@ -30,7 +30,8 @@ class OrbitController:
     def __init__(self, center: tuple[float, float, float] = (0.0, 0.0, 0.0)) -> None:
         self.center = np.array(center, dtype=float)
         self.polar_axis = np.array((0.0, 0.0, 1.0), dtype=float)
-        self._last_pos: tuple[float, float] | None = None
+        self._last_canvas_pos: tuple[float, float] | None = None
+        self._pan_ray: Ray | None = None
 
     def __call__(self, event: Event, node: Node) -> bool:
         """Handle mouse and wheel events to orbit the camera."""
@@ -39,19 +40,11 @@ class OrbitController:
         handled = False
 
         if isinstance(event, MouseEvent):
-            # TODO: Pan with right click
-            # TODO: Zoom with wheel
-            new_pos = event.canvas_pos
-
-            # Start orbit on left mouse press
-            if event.type == "press" and MouseButton.LEFT in event.buttons:
-                self._last_pos = new_pos
-
             # Orbit on mouse move with left button held
-            elif (
+            if (
                 event.type == "move"
-                and MouseButton.LEFT in event.buttons
-                and self._last_pos is not None
+                and event.buttons == MouseButton.LEFT
+                and self._last_canvas_pos is not None
             ):
                 # The process of orbiting is as follows:
                 # 1. Compute the azimuth and elevation changes based on mouse movement.
@@ -81,8 +74,8 @@ class OrbitController:
                 camera_polar = (0, 0, 1)
 
                 # Step 1
-                d_azimuth = self._last_pos[0] - new_pos[0]
-                d_elevation = float(self._last_pos[1] - new_pos[1])
+                d_azimuth = self._last_canvas_pos[0] - event.canvas_pos[0]
+                d_elevation = self._last_canvas_pos[1] - event.canvas_pos[1]
 
                 # Step 2
                 e_bound = float(la.vec_angle(position, (0, 0, 1)) * 180 / math.pi)
@@ -100,8 +93,40 @@ class OrbitController:
                 )
 
                 # Step n+1: Update last position
-                self._last_pos = new_pos
+                self._last_canvas_pos = self._last_canvas_pos
+                handled = True
 
+            # Pan on mouse move with right button held
+            elif event.type == "press" and event.buttons == MouseButton.RIGHT:
+                self._pan_ray = event.world_ray
+
+            # Pan on mouse move with right button held
+            elif (
+                event.type == "move"
+                and event.buttons == MouseButton.RIGHT
+                and self._pan_ray is not None
+            ):
+                dr = np.linalg.norm(node.transform.map((0, 0, 0))[:3] - self.center)
+                old_center = self._pan_ray.origin[:3] + np.multiply(
+                    dr, self._pan_ray.direction
+                )
+                new_center = event.world_ray.origin[:3] + np.multiply(
+                    dr, event.world_ray.direction
+                )
+                diff = np.subtract(old_center, new_center)
+                node.transform = node.transform.translated(diff)
+                self.center += diff
+                handled = True
+
+            elif isinstance(event, WheelEvent):
+                # Zoom while keeping the position under the cursor fixed.
+                _dx, dy = event.angle_delta
+                if dy:
+                    dr = node.transform.map((0, 0, 0))[:3] - self.center
+                    zoom = 2 ** (dy * 0.001)  # Magnifier stolen from pygfx
+                    node.transform = node.transform.translated(dr * (1 - zoom))
+
+            self._last_canvas_pos = event.canvas_pos
         return handled
 
 
