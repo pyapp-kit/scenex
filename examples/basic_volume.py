@@ -29,20 +29,15 @@ view = snx.View(
 )
 
 snx.use("vispy")
-snx.show(view)
+canvas = snx.show(view)
 
 # Orbit around the center of the volume
 orbit_center = np.mean(np.asarray(view.scene.bounding_box), axis=0)
 
 # Place the camera along the x axis, looking at the orbit center
 # TODO: Need a look at method
-view.camera.transform = (
-    Transform()
-    .rotated(90, (0, 1, 0))
-    .rotated(90, (1, 0, 0))
-    .translated(orbit_center)
-    .translated((300, 0, 0))
-)
+view.camera.transform = Transform().translated(orbit_center).translated((300, 0, 0))
+view.camera.look_at(orbit_center, up=(0, 0, 1))
 # Perspective projection for 3D
 view.camera.projection = projections.perspective(
     fov=70,
