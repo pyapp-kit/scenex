@@ -49,9 +49,9 @@ class Camera(Node):
         "such as mouse and keyboard events.",
     )
     projection: Transform = Field(
-        default_factory=lambda: projections.orthographic(1, 1, 1),
+        default_factory=lambda: projections.orthographic(2, 2, 2),
         description="Describes how 3D points are mapped to a 2D canvas, "
-        "default is an orthographic projection of a unit cube, centered at (0, 0, 0)",
+        "default is an orthographic projection of a 2x2x2 cube, centered at (0, 0, 0)",
     )
 
     @computed_field  # type: ignore[prop-decorator]

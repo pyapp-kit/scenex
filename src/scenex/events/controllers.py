@@ -69,9 +69,9 @@ class OrbitController:
                 # Step 0: Gather transform components, relative to camera center
                 orbit_mat = node.transform.translated(-self.center)
                 position, rotation, _scale = la.mat_decompose(orbit_mat.T)
-                camera_right = la.vec_transform_quat((1, 0, 0), rotation)
                 # TODO: Make this a controller parameter
                 camera_polar = (0, 0, 1)
+                camera_right = np.cross(camera_polar, position)
 
                 # Step 1
                 d_azimuth = self._last_canvas_pos[0] - event.canvas_pos[0]
@@ -119,15 +119,19 @@ class OrbitController:
                 handled = True
 
             elif isinstance(event, WheelEvent):
-                # Zoom while keeping the position under the cursor fixed.
                 _dx, dy = event.angle_delta
                 if dy:
                     dr = node.transform.map((0, 0, 0))[:3] - self.center
-                    zoom = 2 ** (dy * 0.001)  # Magnifier stolen from pygfx
-                    node.transform = node.transform.translated(dr * (1 - zoom))
+                    zoom = self._zoom_factor(dy)
+                    node.transform = node.transform.translated(dr * (zoom - 1))
+                handled = True
 
             self._last_canvas_pos = event.canvas_pos
         return handled
+
+    def _zoom_factor(self, delta: float) -> float:
+        # Magnifier stolen from pygfx
+        return 2 ** (-delta * 0.001)
 
 
 class PanZoomController:
@@ -148,7 +152,6 @@ class PanZoomController:
         assert isinstance(node, Camera)
         handled = False
 
-        # FIXME: Probably doesn't work outside of panzoom camera
         if isinstance(event, MouseEvent):
             new_pos = event.world_ray.origin[:2]
 
@@ -169,12 +172,14 @@ class PanZoomController:
                 node.transform = node.transform.translated((dx, dy))
                 handled = True
 
+            # Note that while panning adjusts the camera's transform matrix, zooming
+            # adjusts the projection matrix.
             elif isinstance(event, WheelEvent):
                 # Zoom while keeping the position under the cursor fixed.
                 _dx, dy = event.angle_delta
                 if dy:
                     # Step 1: Adjust the projection matrix to zoom in or out.
-                    zoom = 2 ** (dy * 0.001)  # Magnifier stolen from pygfx
+                    zoom = self._zoom_factor(dy)
                     node.projection = node.projection.scaled((zoom, zoom, 1.0))
 
                     # Step 2: Adjust the transform matrix to maintain the position
@@ -194,3 +199,7 @@ class PanZoomController:
                     handled = True
 
         return handled
+
+    def _zoom_factor(self, delta: float) -> float:
+        # Magnifier stolen from pygfx
+        return 2 ** (delta * 0.001)

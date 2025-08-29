@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Any, cast
 from cmap import Color
 from pydantic import ConfigDict, Field
 
+from scenex.events.events import Ray, _canvas_to_world
+
 from ._base import EventedBase
 from ._evented_list import EventedList
 from ._view import View  # noqa: TC001
@@ -54,3 +56,7 @@ class Canvas(EventedBase):
         if adaptors := self._get_adaptors():
             return cast("CanvasAdaptor", adaptors[0])._snx_render()
         raise RuntimeError("No adaptor found for Canvas.")
+
+    def to_world(self, canvas_pos: tuple[float, float]) -> Ray | None:
+        """Convert canvas coordinates to world coordinates."""
+        return _canvas_to_world(self, canvas_pos)

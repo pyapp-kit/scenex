@@ -28,20 +28,22 @@ def camera() -> Generator[tuple[snx.Camera, adaptors.Camera], None, None]:
 
 def test_transform_defaults(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
     model, adaptor = camera
+    # Centered at [0, 0], top left [-1, -1], bottom right [1, 1]
+    assert model.transform == Transform()
+    assert model.projection == projections.orthographic(2, 2, 2)
 
     node = adaptor._vispy_node
     assert isinstance(node, BaseCamera)
-    # Centered at [0, 0], top left [-0.5, -0.5], bottom right [0.5, 0.5]
-    assert model.transform == Transform()
-    assert model.projection == projections.orthographic(1, 1, 1)
-    # Vispy wants to map [-0.5, -0.5] to [0, 0]
-    # Vispy wants to map [0.5, 0.5] to [10, 10]
+
+    w, h = node.viewbox.size
+    # Vispy wants to map [-1, 1] to [0, 0]
+    # Vispy wants to map [1, -1] to [w, h]
     exp_tform_mat = np.asarray(
         [
-            [10, 0, 0, 0],
-            [0, 10, 0, 0],
-            [0, 0, -2, 0],
-            [5, 5, 0, 1],
+            [w / 2, 0, 0, 0],
+            [0, -h / 2, 0, 0],
+            [0, 0, -1, 0],
+            [w / 2, h / 2, 0, 1],
         ]
     )
     assert np.array_equal(node.transform.matrix, exp_tform_mat)  # pyright: ignore[reportAttributeAccessIssue]
@@ -54,15 +56,17 @@ def test_transform_translate(camera: tuple[snx.Camera, adaptors.Camera]) -> None
     assert isinstance(node, BaseCamera)
 
     # Move the camera
-    model.transform = Transform().translated((0.5, 0.5))
-    # Vispy wants to map [0, 0] to [0, 0]
-    # Vispy wants to map [1, 1] to [10, 10]
+    model.transform = Transform().translated((1, 1))
+
+    w, h = node.viewbox.size
+    # Vispy wants to map [0, 2] to [0, 0]
+    # Vispy wants to map [2, 0] to [w, h]
     exp_tform_mat = np.asarray(
         [
-            [10, 0, 0, 0],
-            [0, 10, 0, 0],
-            [0, 0, -2, 0],
-            [0, 0, 0, 1],
+            [w / 2, 0, 0, 0],
+            [0, -h / 2, 0, 0],
+            [0, 0, -1, 0],
+            [0, h, 0, 1],
         ]
     )
     assert np.array_equal(node.transform.matrix, exp_tform_mat)  # pyright: ignore[reportAttributeAccessIssue]
@@ -75,15 +79,17 @@ def test_transform_scale(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
     assert isinstance(node, BaseCamera)
 
     # Widen the projection matrix
-    model.projection = projections.orthographic(2, 2, 2)
-    # Vispy wants to map [-1, -1] to [0, 0]
-    # Vispy wants to map [1, 1] to [10, 10]
+    model.projection = projections.orthographic(4, 4, 4)
+
+    w, h = node.viewbox.size
+    # Vispy wants to map [-2, 2] to [0, 0]
+    # Vispy wants to map [2, -2] to [10, 10]
     exp_tform_mat = np.asarray(
         [
-            [5, 0, 0, 0],
-            [0, 5, 0, 0],
-            [0, 0, -1, 0],
-            [5, 5, 0, 1],
+            [w / 4, 0, 0, 0],
+            [0, -h / 4, 0, 0],
+            [0, 0, -1 / 2, 0],
+            [w / 2, h / 2, 0, 1],
         ]
     )
     assert np.array_equal(node.transform.matrix, exp_tform_mat)  # pyright: ignore[reportAttributeAccessIssue]

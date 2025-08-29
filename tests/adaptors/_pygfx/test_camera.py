@@ -31,14 +31,14 @@ def test_transform_defaults(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
 
     node = adaptor._pygfx_node
     assert isinstance(node, pygfx.Camera)
-    # Centered at [0, 0], top left [-0.5, -0.5], bottom right [0.5, 0.5]
+    # Centered at [0, 0], top left [-1, -1], bottom right [1, 1]
     assert model.transform == Transform()
-    assert model.projection == projections.orthographic(1, 1, 1)
+    assert model.projection == projections.orthographic(2, 2, 2)
 
     # Assert internal pygfx matrices match the model matrices
     # Note that pygfx matrices are transposes of scenex matrices
     assert np.array_equal(node.local.matrix.T, Transform())
-    assert np.array_equal(node.projection_matrix.T, projections.orthographic(1, 1, 1))  # pyright: ignore[reportAttributeAccessIssue]
+    assert np.array_equal(node.projection_matrix.T, projections.orthographic(2, 2, 2))  # pyright: ignore[reportAttributeAccessIssue]
 
 
 def test_transform_translate(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
@@ -53,7 +53,7 @@ def test_transform_translate(camera: tuple[snx.Camera, adaptors.Camera]) -> None
     # Assert internal pygfx matrices match the expected model matrices
     # Note that pygfx matrices are transposes of scenex matrices
     assert np.array_equal(node.local.matrix.T, Transform().translated((0.5, 0.5)))
-    assert np.array_equal(node.projection_matrix.T, projections.orthographic(1, 1, 1))  # pyright: ignore[reportAttributeAccessIssue]
+    assert np.array_equal(node.projection_matrix.T, projections.orthographic(2, 2, 2))  # pyright: ignore[reportAttributeAccessIssue]
 
 
 def test_transform_scale(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
@@ -63,9 +63,9 @@ def test_transform_scale(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
     assert isinstance(node, pygfx.Camera)
 
     # Widen the projection matrix
-    model.projection = projections.orthographic(2, 2, 2)
+    model.projection = projections.orthographic(4, 4, 4)
 
     # Assert internal pygfx matrices match the expected model matrices
     # Note that pygfx matrices are transposes of scenex matrices
     assert np.array_equal(node.local.matrix.T, Transform())
-    assert np.array_equal(node.projection_matrix.T, projections.orthographic(2, 2, 2))  # pyright: ignore[reportAttributeAccessIssue]
+    assert np.array_equal(node.projection_matrix.T, projections.orthographic(4, 4, 4))  # pyright: ignore[reportAttributeAccessIssue]

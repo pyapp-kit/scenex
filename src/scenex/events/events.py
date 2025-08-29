@@ -131,13 +131,12 @@ def _canvas_to_world(canvas: Canvas, canvas_pos: tuple[float, float]) -> Ray | N
     # * The view matrix, i.e. the transform positioning the camera in the world.
     # The result is a matrix mapping world coordinates
     camera_matrix = view.camera.projection @ view.camera.transform.inv().T
-    pos_diff = la.vec_transform(view.camera.transform.root[3, :3], camera_matrix.T)
     # Unproject the canvas NDC coordinates into world space.
-    pos_world = la.vec_unproject(pos_ndc + pos_diff[:2], camera_matrix)
+    pos_world = la.vec_unproject(pos_ndc, camera_matrix)
 
     # To find the direction of the ray, we find a unprojected point farther away
     # and subtract the closer point.
-    pos_world_farther = la.vec_unproject(pos_ndc + pos_diff[:2], camera_matrix, depth=1)
+    pos_world_farther = la.vec_unproject(pos_ndc, camera_matrix, depth=1)
     direction = pos_world_farther - pos_world
     direction = direction / np.linalg.norm(direction)
 

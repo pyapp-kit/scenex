@@ -8,7 +8,7 @@ from qtpy.QtGui import QMouseEvent, QWheelEvent
 from qtpy.QtWidgets import QApplication, QWidget
 
 from scenex.events._auto import App, EventFilter
-from scenex.events.events import MouseButton, MouseEvent, WheelEvent, _canvas_to_world
+from scenex.events.events import MouseButton, MouseEvent, WheelEvent
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -53,7 +53,7 @@ class QtEventFilter(QObject, EventFilter):
         if isinstance(qevent, QMouseEvent):
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
-            if not (ray := _canvas_to_world(self._model_canvas, canvas_pos)):
+            if not (ray := self._model_canvas.to_world(canvas_pos)):
                 return None
 
             etype = qevent.type()
@@ -93,7 +93,7 @@ class QtEventFilter(QObject, EventFilter):
             # TODO: Figure out the buttons
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
-            if not (ray := _canvas_to_world(self._model_canvas, canvas_pos)):
+            if not (ray := self._model_canvas.to_world(canvas_pos)):
                 return None
             return WheelEvent(
                 type="wheel",
