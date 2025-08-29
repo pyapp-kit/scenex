@@ -7,7 +7,7 @@ from IPython import display
 from jupyter_rfb import RemoteFrameBuffer
 
 from scenex.events._auto import App, EventFilter
-from scenex.events.events import MouseButton, MouseEvent, WheelEvent, _canvas_to_world
+from scenex.events.events import MouseButton, MouseEvent, WheelEvent
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -40,7 +40,7 @@ class JupyterEventFilter(EventFilter):
                 etype = ev["event_type"]
                 if etype == "pointer_move":
                     canvas_pos = (ev["x"], ev["y"])
-                    if world_ray := _canvas_to_world(filter._model_canvas, canvas_pos):
+                    if world_ray := filter._model_canvas.to_world(canvas_pos):
                         filter._filter_func(
                             MouseEvent(
                                 type="move",
@@ -52,7 +52,7 @@ class JupyterEventFilter(EventFilter):
                 elif etype == "pointer_down":
                     canvas_pos = (ev["x"], ev["y"])
                     filter._active_button |= JupyterEventFilter.mouse_btn(ev["button"])
-                    if world_ray := _canvas_to_world(filter._model_canvas, canvas_pos):
+                    if world_ray := filter._model_canvas.to_world(canvas_pos):
                         filter._filter_func(
                             MouseEvent(
                                 type="press",
@@ -64,7 +64,7 @@ class JupyterEventFilter(EventFilter):
                 elif etype == "double_click":
                     btn = JupyterEventFilter.mouse_btn(ev["button"])
                     canvas_pos = (ev["x"], ev["y"])
-                    if world_ray := _canvas_to_world(filter._model_canvas, canvas_pos):
+                    if world_ray := filter._model_canvas.to_world(canvas_pos):
                         # Note that in Jupyter, a double_click event is not a pointer
                         # event and as such, we need to handle both press and release.
                         # See
@@ -89,7 +89,7 @@ class JupyterEventFilter(EventFilter):
                 elif etype == "pointer_up":
                     canvas_pos = (ev["x"], ev["y"])
                     filter._active_button |= JupyterEventFilter.mouse_btn(ev["button"])
-                    if world_ray := _canvas_to_world(filter._model_canvas, canvas_pos):
+                    if world_ray := filter._model_canvas.to_world(canvas_pos):
                         filter._filter_func(
                             MouseEvent(
                                 type="release",
@@ -98,9 +98,18 @@ class JupyterEventFilter(EventFilter):
                                 buttons=filter._active_button,
                             )
                         )
-                # elif etype == "wheel":
-                # if not intercepted:
-                #     self._old_event(ev)
+                elif etype == "wheel":
+                    canvas_pos = (ev["x"], ev["y"])
+                    if world_ray := filter._model_canvas.to_world(canvas_pos):
+                        filter._filter_func(
+                            WheelEvent(
+                                type="wheel",
+                                canvas_pos=canvas_pos,
+                                world_ray=world_ray,
+                                buttons=filter._active_button,
+                                angle_delta=(ev["delta_x"], ev["delta_y"]),
+                            )
+                        )
 
             return _handle_event
 
@@ -121,19 +130,6 @@ class JupyterEventFilter(EventFilter):
 
     def uninstall(self) -> None:
         self._canvas.handle_event = self._old_event
-
-    def _on_wheel(self, event: dict) -> None:
-        pos = (event["x"], event["y"])
-        if ray := _canvas_to_world(self._model_canvas, pos):
-            self._filter_func(
-                WheelEvent(
-                    type="wheel",
-                    canvas_pos=pos,
-                    world_ray=ray,
-                    buttons=self._active_button,
-                    angle_delta=(event["delta_x"], event["delta_y"]),
-                )
-            )
 
 
 class JupyterAppWrap(App):

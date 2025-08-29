@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import glfw
 
 from scenex.events._auto import App, EventFilter
-from scenex.events.events import MouseButton, MouseEvent, WheelEvent, _canvas_to_world
+from scenex.events.events import MouseButton, MouseEvent, WheelEvent
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -56,7 +56,7 @@ class GlfwEventFilter(EventFilter):
     def _cursor_pos_callback(self, window: Any, xpos: float, ypos: float) -> None:
         """Handle cursor position events."""
         canvas_pos = (xpos, ypos)
-        if ray := _canvas_to_world(self._canvas, canvas_pos):
+        if ray := self._canvas.to_world(canvas_pos):
             self._filter_func(
                 MouseEvent(
                     type="move",
@@ -79,7 +79,7 @@ class GlfwEventFilter(EventFilter):
         self, window: Any, button: int, action: int, mods: int
     ) -> None:
         pos = glfw.get_cursor_pos(window)
-        if not (ray := _canvas_to_world(self._canvas, pos)):
+        if not (ray := self._canvas.to_world(pos)):
             return
 
         # Mouse click event
@@ -109,7 +109,7 @@ class GlfwEventFilter(EventFilter):
         self, window: Any, xoffset: float, yoffset: float
     ) -> None:
         pos = glfw.get_cursor_pos(window)
-        if not (ray := _canvas_to_world(self._canvas, pos)):
+        if not (ray := self._canvas.to_world(pos)):
             return
 
         # Mouse wheel event

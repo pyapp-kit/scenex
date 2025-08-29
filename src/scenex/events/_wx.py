@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 import wx
 
 from scenex.events._auto import App, EventFilter
-from scenex.events.events import MouseButton, MouseEvent, WheelEvent, _canvas_to_world
+from scenex.events.events import MouseButton, MouseEvent, WheelEvent
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -55,7 +55,7 @@ class WxEventFilter(EventFilter):
         btn = self._map_button(event)
         self._active_button |= btn
         pos = event.GetPosition()
-        if ray := _canvas_to_world(self._model_canvas, (pos.x, pos.y)):
+        if ray := self._model_canvas.to_world((pos.x, pos.y)):
             self._filter_func(
                 MouseEvent(
                     type="press",
@@ -70,7 +70,7 @@ class WxEventFilter(EventFilter):
         btn = self._map_button(event)
         self._active_button &= ~btn
         pos = event.GetPosition()
-        if ray := _canvas_to_world(self._model_canvas, (pos.x, pos.y)):
+        if ray := self._model_canvas.to_world((pos.x, pos.y)):
             self._filter_func(
                 MouseEvent(
                     type="release",
@@ -84,7 +84,7 @@ class WxEventFilter(EventFilter):
     def _on_mouse_move(self, event: wx.MouseEvent) -> None:
         pos = event.GetPosition()
         print(pos)
-        if ray := _canvas_to_world(self._model_canvas, (pos.x, pos.y)):
+        if ray := self._model_canvas.to_world((pos.x, pos.y)):
             self._filter_func(
                 MouseEvent(
                     type="move",
@@ -97,7 +97,7 @@ class WxEventFilter(EventFilter):
 
     def _on_wheel(self, event: wx.MouseEvent) -> None:
         pos = event.GetPosition()
-        if ray := _canvas_to_world(self._model_canvas, (pos.x, pos.y)):
+        if ray := self._model_canvas.to_world((pos.x, pos.y)):
             self._filter_func(
                 WheelEvent(
                     type="wheel",

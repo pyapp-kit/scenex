@@ -2,18 +2,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, cast
 
+import numpy as np
+import pylinalg as la
 from cmap import Color
 from pydantic import ConfigDict, Field
 
-from scenex.events.events import Ray, _canvas_to_world
+from scenex.events.events import Ray
 
 from ._base import EventedBase
 from ._evented_list import EventedList
 from ._view import View  # noqa: TC001
 
 if TYPE_CHECKING:
-    import numpy as np
-
     from scenex.adaptors._base import CanvasAdaptor
 
 
@@ -58,5 +58,49 @@ class Canvas(EventedBase):
         raise RuntimeError("No adaptor found for Canvas.")
 
     def to_world(self, canvas_pos: tuple[float, float]) -> Ray | None:
-        """Convert canvas coordinates to world coordinates."""
-        return _canvas_to_world(self, canvas_pos)
+        """Map XY canvas position (pixels) to XYZ coordinate in world space."""
+        # Code adapted from:
+        # https://github.com/pygfx/pygfx/pull/753/files#diff-173d643434d575e67f8c0a5bf2d7ea9791e6e03a4e7a64aa5fa2cf4172af05cdR395
+        view = self._containing_view(canvas_pos)
+        if view is None:
+            return None
+
+        # Get position relative to viewport
+        pos_rel = (
+            canvas_pos[0] - view.layout.x,
+            canvas_pos[1] - view.layout.y,
+        )
+
+        width, height = view.layout.size
+
+        # Convert position to Normalized Device Coordinates (NDC) - i.e., within [-1, 1]
+        x = pos_rel[0] / width * 2 - 1
+        y = -(pos_rel[1] / height * 2 - 1)
+        pos_ndc = (x, y)
+
+        # Note that the camera matrix is the matrix multiplication of:
+        # * The projection matrix, which projects local space (the rectangular
+        #   bounds of the perspective camera) into NDC.
+        # * The view matrix, i.e. the transform positioning the camera in the world.
+        # The result is a matrix mapping world coordinates
+        camera_matrix = view.camera.projection @ view.camera.transform.inv().T
+        # Unproject the canvas NDC coordinates into world space.
+        pos_world = la.vec_unproject(pos_ndc, camera_matrix)
+
+        # To find the direction of the ray, we find a unprojected point farther away
+        # and subtract the closer point.
+        pos_world_farther = la.vec_unproject(pos_ndc, camera_matrix, depth=1)
+        direction = pos_world_farther - pos_world
+        direction = direction / np.linalg.norm(direction)
+
+        ray = Ray(
+            origin=tuple(pos_world),
+            direction=tuple(direction),
+        )
+        return ray
+
+    def _containing_view(self, pos: tuple[float, float]) -> View | None:
+        for view in self.views:
+            if pos in view.layout:
+                return view
+        return None

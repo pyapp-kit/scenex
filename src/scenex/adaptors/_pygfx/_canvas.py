@@ -30,8 +30,7 @@ def rendercanvas_class() -> type[BaseRenderCanvas]:
     frontend = determine_app()
     if frontend == GuiFrontend.QT:
         from qtpy.QtCore import QSize  # pyright: ignore[reportMissingImports]
-        from rendercanvas.auto import loop
-        from rendercanvas.qt import QRenderWidget
+        from rendercanvas.qt import QRenderWidget, loop
 
         class _QRenderWidget(QRenderWidget):
             def sizeHint(self) -> QSize:
