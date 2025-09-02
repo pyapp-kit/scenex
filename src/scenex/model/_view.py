@@ -72,7 +72,8 @@ class View(EventedBase):
     @canvas.setter
     def canvas(self, value: Canvas) -> None:
         self._canvas = value
-        self._canvas.views.append(self)
+        if self not in value.views:
+            value.views.append(self)
 
     def render(self) -> np.ndarray:
         """Render the view to an array."""

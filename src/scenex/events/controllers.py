@@ -66,6 +66,10 @@ class OrbitController:
                 #   d. Translating by the centerpoint, to reorient the camera around
                 #           that centerpoint.
 
+                # FIXME: There's a problem evident when going crazy with orbit where the
+                # up vector gets distorted (i.e. is not in the plane of forward and
+                # polar axes).
+
                 # Step 0: Gather transform components, relative to camera center
                 orbit_mat = node.transform.translated(-self.center)
                 position, rotation, _scale = la.mat_decompose(orbit_mat.T)

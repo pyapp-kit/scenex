@@ -6,7 +6,6 @@ import numpy as np
 
 from scenex.adaptors._base import CanvasAdaptor
 from scenex.events._auto import app
-from scenex.events.events import _handle_event
 
 from ._adaptor_registry import get_adaptor
 
@@ -42,9 +41,7 @@ class Canvas(CanvasAdaptor):
         self._views: list[View] = []
         for view in canvas.views:
             self._snx_add_view(view)
-        self._filter = app().install_event_filter(
-            self._canvas.native, canvas, lambda e: _handle_event(canvas, e)
-        )
+        self._filter = app().install_event_filter(self._canvas.native, canvas)
 
         self._visual_to_node: dict[VisualNode, model.Node | None] = {}
         self._last_canvas_pos: tuple[float, float] | None = None

@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
 from scenex.adaptors._base import CanvasAdaptor
 from scenex.events._auto import GuiFrontend, app, determine_app
-from scenex.events.events import _handle_event
 
 from ._adaptor_registry import get_adaptor
 
@@ -50,6 +49,7 @@ def rendercanvas_class() -> type[BaseRenderCanvas]:
     if frontend == GuiFrontend.WX:
         # ...still not working
         # import rendercanvas.wx
+        # rendercanvas.wx.loop._rc_init()
         # return rendercanvas.wx.WxRenderWidget
         from wgpu.gui.wx import WxWgpuCanvas
 
@@ -72,16 +72,15 @@ class Canvas(CanvasAdaptor):
         self._views: list[model.View] = []
         for view in canvas.views:
             self._snx_add_view(view)
-        self._filter = app().install_event_filter(
-            self._wgpu_canvas, canvas, lambda e: _handle_event(canvas, e)
-        )
+        self._filter = app().install_event_filter(self._snx_get_window_ref(), canvas)
 
     def _snx_get_native(self) -> BaseRenderCanvas:
         return self._wgpu_canvas
 
     def _snx_get_window_ref(self) -> Any:
-        if window := getattr(self._wgpu_canvas, "_window", None):
-            return window
+        if subwdg := getattr(self._wgpu_canvas, "_subwidget", None):
+            # wx backend has a _subwidget attribute that is the actual widget
+            return subwdg
         return self._wgpu_canvas
 
     def _snx_set_visible(self, arg: bool) -> None:
@@ -94,6 +93,8 @@ class Canvas(CanvasAdaptor):
 
     def _snx_add_view(self, view: model.View) -> None:
         # This logic should go in the canvas node, I think
+        if view in self._views:
+            return
         self._views.append(view)
 
         # FIXME: Allow customization

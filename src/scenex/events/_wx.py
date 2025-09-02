@@ -8,11 +8,8 @@ from scenex.events._auto import App, EventFilter
 from scenex.events.events import MouseButton, MouseEvent, WheelEvent
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from scenex import Canvas
     from scenex.adaptors._base import CanvasAdaptor
-    from scenex.events.events import Event
 
 
 class WxEventFilter(EventFilter):
@@ -20,14 +17,9 @@ class WxEventFilter(EventFilter):
         self,
         canvas: wx.Window,
         model_canvas: Canvas,
-        filter_func: Callable[[Event], bool],
     ) -> None:
-        if swdg := getattr(canvas, "_subwidget", None):
-            canvas = swdg
-
         self._canvas = canvas
         self._model_canvas = model_canvas
-        self._filter_func = filter_func
         self._active_button: MouseButton = MouseButton.NONE
         self._install_events()
 
@@ -56,12 +48,9 @@ class WxEventFilter(EventFilter):
         self._active_button |= btn
         pos = event.GetPosition()
         if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            self._filter_func(
+            self._model_canvas.handle(
                 MouseEvent(
-                    type="press",
-                    canvas_pos=(pos.x, pos.y),
-                    world_ray=ray,
-                    buttons=self._active_button,
+                    type="press", canvas_pos=(pos.x, pos.y), world_ray=ray, buttons=btn
                 )
             )
             event.Skip()
@@ -71,21 +60,20 @@ class WxEventFilter(EventFilter):
         self._active_button &= ~btn
         pos = event.GetPosition()
         if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            self._filter_func(
+            self._model_canvas.handle(
                 MouseEvent(
                     type="release",
                     canvas_pos=(pos.x, pos.y),
                     world_ray=ray,
-                    buttons=self._active_button,
+                    buttons=btn,
                 )
             )
             event.Skip()
 
     def _on_mouse_move(self, event: wx.MouseEvent) -> None:
         pos = event.GetPosition()
-        print(pos)
         if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            self._filter_func(
+            self._model_canvas.handle(
                 MouseEvent(
                     type="move",
                     canvas_pos=(pos.x, pos.y),
@@ -98,13 +86,20 @@ class WxEventFilter(EventFilter):
     def _on_wheel(self, event: wx.MouseEvent) -> None:
         pos = event.GetPosition()
         if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            self._filter_func(
+            if event.GetWheelAxis() == 0:
+                # Vertical Scroll
+                angle_delta = (0, event.GetWheelRotation())
+            else:
+                # Horizontal Scroll
+                angle_delta = (event.GetWheelRotation(), 0)
+
+            self._model_canvas.handle(
                 WheelEvent(
                     type="wheel",
                     canvas_pos=(pos.x, pos.y),
                     world_ray=ray,
                     buttons=self._active_button,
-                    angle_delta=(event.GetWheelRotation(), 0),
+                    angle_delta=angle_delta,
                 )
             )
             event.Skip()
@@ -123,6 +118,8 @@ class WxAppWrap(App):
     """Provider for wxPython."""
 
     def create_app(self) -> Any:
+        if wx.App.Get():
+            return wx.App.Get()
         return wx.App(False)
 
     def run(self) -> None:
@@ -139,11 +136,9 @@ class WxAppWrap(App):
         self,
         canvas: wx.Window,
         model_canvas: Canvas,
-        filter_func: Callable[[Event], bool],
     ) -> EventFilter:
-        return WxEventFilter(canvas, model_canvas, filter_func)
+        return WxEventFilter(canvas, model_canvas)
 
     def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
         window = canvas._snx_get_window_ref()
-        if window and window.IsOk():
-            wx.CallAfter(window.Show, visible)
+        wx.CallAfter(window.Show, visible)

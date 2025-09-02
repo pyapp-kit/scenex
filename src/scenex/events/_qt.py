@@ -11,7 +11,6 @@ from scenex.events._auto import App, EventFilter
 from scenex.events.events import MouseButton, MouseEvent, WheelEvent
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
     from typing import Any
 
     from scenex import Canvas
@@ -20,19 +19,16 @@ if TYPE_CHECKING:
 
 
 class QtEventFilter(QObject, EventFilter):
-    def __init__(
-        self, canvas: Any, model_canvas: Canvas, filter_func: Callable[[Event], bool]
-    ) -> None:
+    def __init__(self, canvas: Any, model_canvas: Canvas) -> None:
         super().__init__()
         self._canvas = canvas
         self._model_canvas = model_canvas
-        self._filter_func = filter_func
-        self._active_button: MouseButton = MouseButton.NONE
+        self._active_buttons: MouseButton = MouseButton.NONE
 
     def eventFilter(self, a0: QObject | None = None, a1: QEvent | None = None) -> bool:
         if isinstance(a0, QWidget) and isinstance(a1, QEvent):
             if evt := self._convert_event(a1):
-                return self._filter_func(evt)
+                return self._model_canvas.handle(evt)
         return False
 
     def uninstall(self) -> None:
@@ -63,31 +59,34 @@ class QtEventFilter(QObject, EventFilter):
                     type="move",
                     canvas_pos=canvas_pos,
                     world_ray=ray,
-                    buttons=self._active_button,
+                    buttons=self._active_buttons,
                 )
             elif etype == QEvent.Type.MouseButtonDblClick:
-                self._active_button |= btn
+                self._active_buttons |= btn
                 return MouseEvent(
-                    type="double_click",
+                    type="double_press",
                     canvas_pos=canvas_pos,
                     world_ray=ray,
-                    buttons=self._active_button,
+                    buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonPress:
-                self._active_button |= btn
+                self._active_buttons |= btn
                 return MouseEvent(
                     type="press",
                     canvas_pos=canvas_pos,
                     world_ray=ray,
-                    buttons=self._active_button,
+                    buttons=btn,
                 )
+            # FIXME user might want to know (a) which button was just released
+            # and (b) which buttons are still pressed. (a) is likely more common, but we
+            # may want to revise the design.
             elif etype == QEvent.Type.MouseButtonRelease:
-                self._active_button &= ~btn
+                self._active_buttons &= ~btn
                 return MouseEvent(
                     type="release",
                     canvas_pos=canvas_pos,
                     world_ray=ray,
-                    buttons=self._active_button,
+                    buttons=btn,
                 )
         elif isinstance(qevent, QWheelEvent):
             # TODO: Figure out the buttons
@@ -99,7 +98,7 @@ class QtEventFilter(QObject, EventFilter):
                 type="wheel",
                 canvas_pos=canvas_pos,
                 world_ray=ray,
-                buttons=self._active_button,
+                buttons=self._active_buttons,
                 angle_delta=(qevent.angleDelta().x(), qevent.angleDelta().y()),
             )
 
@@ -136,10 +135,8 @@ class QtAppWrap(App):
 
         app.exec()
 
-    def install_event_filter(
-        self, canvas: Any, model_canvas: Canvas, filter_func: Callable[[Event], bool]
-    ) -> EventFilter:
-        f = QtEventFilter(canvas, model_canvas, filter_func)
+    def install_event_filter(self, canvas: Any, model_canvas: Canvas) -> EventFilter:
+        f = QtEventFilter(canvas, model_canvas)
         cast("QWidget", canvas).installEventFilter(f)
         return f
 

@@ -7,11 +7,10 @@ from enum import Enum
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterator
+    from collections.abc import Iterator
     from typing import Any
 
     from scenex.adaptors._base import CanvasAdaptor
-    from scenex.events import Event
     from scenex.model import Canvas
 
 
@@ -79,9 +78,7 @@ class App:
         """Show or hide the canvas."""
         raise NotImplementedError("Must be implemented by subclasses.")
 
-    def install_event_filter(
-        self, canvas: Any, model_canvas: Canvas, filter_func: Callable[[Event], bool]
-    ) -> EventFilter:
+    def install_event_filter(self, canvas: Any, model_canvas: Canvas) -> EventFilter:
         raise NotImplementedError("Must be implemented by subclasses.")
 
 
