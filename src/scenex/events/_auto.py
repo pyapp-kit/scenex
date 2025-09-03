@@ -50,12 +50,12 @@ class GuiFrontend(str, Enum):
 
 
 GUI_PROVIDERS: dict[GuiFrontend, tuple[str, str]] = {
-    GuiFrontend.GLFW: ("scenex.events._glfw", "GlfwAppWrap"),
     GuiFrontend.QT: ("scenex.events._qt", "QtAppWrap"),
     GuiFrontend.WX: ("scenex.events._wx", "WxAppWrap"),
     # Note that Jupyter should go last because it is a guess based on IPython
     # which may be installed with the other frameworks as well.
     GuiFrontend.JUPYTER: ("scenex.events._jupyter", "JupyterAppWrap"),
+    GuiFrontend.GLFW: ("scenex.events._glfw", "GlfwAppWrap"),
 }
 
 
