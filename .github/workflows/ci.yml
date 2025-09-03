@@ -47,6 +47,10 @@ jobs:
           # glfw.GLFWError: (65545) b'NSGL: Failed to find a suitable pixel format'
           - os: macos-latest
             canvas: glfw
+          # Also susceptible to the above bug, since under the hood GLFW gives vispy the OpenGL context.
+          - os: macos-latest
+            canvas: jupyter
+            gfx: vispy
           # wxpython does not build wheels for ubuntu or macos-latest py3.10
           - os: ubuntu-latest
             canvas: wx
