@@ -22,7 +22,7 @@ class EventFilter:
     pass
 
 
-GUI_ENV_VAR = "NDV_GUI_FRONTEND"
+GUI_ENV_VAR = "SCENEX_WIDGET_BACKEND"
 """Preferred GUI frontend. If not set, the first available GUI frontend is used."""
 _APP: App | None = None
 """Singleton instance of the current (GUI) application. Once set it shouldn't change."""

@@ -33,9 +33,13 @@ class JupyterEventFilter(EventFilter):
         ) -> Callable[[RemoteFrameBuffer, dict], None]:
             def _handle_event(self: RemoteFrameBuffer, ev: dict) -> None:
                 etype = ev["event_type"]
-                print(etype)
                 if etype == "pointer_move":
-                    filter._active_button |= JupyterEventFilter.mouse_btn(ev["button"])
+                    filter._active_button = MouseButton.NONE
+                    if btn := ev.get("button", None):
+                        filter._active_button |= JupyterEventFilter.mouse_btn(btn)
+                    elif btns := ev.get("buttons", None):
+                        for b in btns:
+                            filter._active_button |= JupyterEventFilter.mouse_btn(b)
                     canvas_pos = (ev["x"], ev["y"])
                     if world_ray := filter._model_canvas.to_world(canvas_pos):
                         filter._model_canvas.handle(
@@ -77,14 +81,15 @@ class JupyterEventFilter(EventFilter):
                         )
                 elif etype == "pointer_up":
                     canvas_pos = (ev["x"], ev["y"])
-                    filter._active_button &= ~JupyterEventFilter.mouse_btn(ev["button"])
+                    btn = JupyterEventFilter.mouse_btn(ev["button"])
+                    filter._active_button &= ~btn
                     if world_ray := filter._model_canvas.to_world(canvas_pos):
                         filter._model_canvas.handle(
                             MouseEvent(
                                 type="release",
                                 canvas_pos=canvas_pos,
                                 world_ray=world_ray,
-                                buttons=filter._active_button,
+                                buttons=btn,
                             )
                         )
                 elif etype == "wheel":

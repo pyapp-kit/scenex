@@ -8,12 +8,10 @@ from scenex.events._auto import App, EventFilter
 from scenex.events.events import MouseButton, MouseEvent, WheelEvent
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
     from typing import Any
 
     from scenex import Canvas
     from scenex.adaptors._base import CanvasAdaptor
-    from scenex.events.events import Event
 
 BUTTONMAP = {
     glfw.MOUSE_BUTTON_LEFT: MouseButton.LEFT,
@@ -23,12 +21,8 @@ BUTTONMAP = {
 
 
 class GlfwEventFilter(EventFilter):
-    def __init__(
-        self, canvas: Any, model_canvas: Canvas, filter_func: Callable[[Event], bool]
-    ) -> None:
-        print("Using GLFW Event Filter")
+    def __init__(self, canvas: Any, model_canvas: Canvas) -> None:
         self._canvas = model_canvas
-        self._filter_func = filter_func
         self._active_button: MouseButton = MouseButton.NONE
         self._window_id = self._guess_id(canvas)
         # TODO: Maybe save the old callbacks?
@@ -57,7 +51,7 @@ class GlfwEventFilter(EventFilter):
         """Handle cursor position events."""
         canvas_pos = (xpos, ypos)
         if ray := self._canvas.to_world(canvas_pos):
-            self._filter_func(
+            self._canvas.handle(
                 MouseEvent(
                     type="move",
                     canvas_pos=canvas_pos,
@@ -86,7 +80,7 @@ class GlfwEventFilter(EventFilter):
         if button in BUTTONMAP:
             if action == glfw.PRESS:
                 self._active_button |= BUTTONMAP[button]
-                self._filter_func(
+                self._canvas.handle(
                     MouseEvent(
                         type="press",
                         canvas_pos=pos,
@@ -96,7 +90,7 @@ class GlfwEventFilter(EventFilter):
                 )
             elif action == glfw.RELEASE:
                 self._active_button &= ~BUTTONMAP[button]
-                self._filter_func(
+                self._canvas.handle(
                     MouseEvent(
                         type="release",
                         canvas_pos=pos,
@@ -113,7 +107,7 @@ class GlfwEventFilter(EventFilter):
             return
 
         # Mouse wheel event
-        self._filter_func(
+        self._canvas.handle(
             WheelEvent(
                 type="scroll",
                 canvas_pos=pos,
@@ -141,10 +135,8 @@ class GlfwAppWrap(App):
             "Uninstall GLFW and run another canvas framework."
         )
 
-    def install_event_filter(
-        self, canvas: Any, model_canvas: Canvas, filter_func: Callable[[Event], bool]
-    ) -> EventFilter:
-        return GlfwEventFilter(canvas, model_canvas, filter_func)
+    def install_event_filter(self, canvas: Any, model_canvas: Canvas) -> EventFilter:
+        return GlfwEventFilter(canvas, model_canvas)
 
     def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
         if visible:

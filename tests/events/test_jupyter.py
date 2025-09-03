@@ -7,6 +7,7 @@ from unittest.mock import MagicMock
 import pytest
 
 import scenex as snx
+from scenex.adaptors._auto import determine_backend
 from scenex.events._auto import GuiFrontend, determine_app
 from scenex.events.events import MouseButton, MouseEvent, Ray, WheelEvent
 from scenex.model._transform import Transform
@@ -17,9 +18,20 @@ if determine_app() != GuiFrontend.JUPYTER:
         allow_module_level=True,
     )
 
+# HACK: Enable tests inside vispy
+if determine_backend() == "vispy":
+    import asyncio
+    import os
+
+    os.environ["_VISPY_TESTING_APP"] = "jupyter_rfb"
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
+    os.environ["SCENEX_WIDGET_BACKEND"] = "jupyter"
+
 
 @pytest.fixture
 def evented_canvas() -> snx.Canvas:
+    # IPython.getIPython().run_line_magic("gui", "inline")
     camera = snx.Camera(transform=Transform(), interactive=True)
     scene = snx.Scene(children=[])
     view = snx.View(scene=scene, camera=camera)
@@ -39,11 +51,11 @@ LEFT_MOUSE = 1
 RIGHT_MOUSE = 2
 
 
-def test_pointer_down(evented_canvas: snx.Canvas):
+def test_pointer_down(evented_canvas: snx.Canvas) -> None:
     native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
-    press_point = (5, 10)
+    press_point = (0, 0)
     # Press the left button
     native.handle_event(
         {
@@ -84,11 +96,11 @@ def test_pointer_down(evented_canvas: snx.Canvas):
     )
 
 
-def test_pointer_up(evented_canvas: snx.Canvas):
+def test_pointer_up(evented_canvas: snx.Canvas) -> None:
     native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
-    press_point = (5, 10)
+    press_point = (0, 0)
     native.handle_event(
         {
             "event_type": "pointer_up",
@@ -108,11 +120,11 @@ def test_pointer_up(evented_canvas: snx.Canvas):
     )
 
 
-def test_pointer_move(evented_canvas: snx.Canvas):
+def test_pointer_move(evented_canvas: snx.Canvas) -> None:
     native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
-    press_point = (5, 10)
+    press_point = (0, 0)
     native.handle_event(
         {
             "event_type": "pointer_move",
@@ -130,6 +142,7 @@ def test_pointer_move(evented_canvas: snx.Canvas):
         ),
         evented_canvas.views[0].camera,
     )
+    mock.reset_mock()
 
     native.handle_event(
         {
@@ -150,11 +163,11 @@ def test_pointer_move(evented_canvas: snx.Canvas):
     )
 
 
-def test_mouse_double_click(evented_canvas: snx.Canvas):
+def test_mouse_double_click(evented_canvas: snx.Canvas) -> None:
     native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
-    press_point = (5, 10)
+    press_point = (0, 0)
     native.handle_event(
         {
             "event_type": "double_click",
@@ -174,11 +187,11 @@ def test_mouse_double_click(evented_canvas: snx.Canvas):
     )
 
 
-def test_wheel(evented_canvas: snx.Canvas):
+def test_wheel(evented_canvas: snx.Canvas) -> None:
     native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
-    press_point = (5, 10)
+    press_point = (0, 0)
     native.handle_event(
         {
             "event_type": "wheel",
