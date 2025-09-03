@@ -42,7 +42,10 @@ jupyter = [
     "ipywidgets >=8.0.5",
     "jupyter >=1.1",
     "jupyter_rfb >=0.3.3",
-    "simplejpeg", # Otherwise jupyter_rfb will use PNG, which is apparently slower
+    # Note that this dep is only needed for Vispy, something like simplejpeg would work fine if just pygfx.
+    "glfw",
+    # Otherwise jupyter_rfb will use PNG, which is apparently slower
+    "simplejpeg",
 ]
 pyqt = [
     "pyqt6 >=6.4,!=6.6",
