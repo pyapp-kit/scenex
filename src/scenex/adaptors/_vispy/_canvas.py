@@ -60,6 +60,8 @@ class Canvas(CanvasAdaptor):
         self._canvas.update()
 
     def _snx_add_view(self, view: model.View) -> None:
+        if view in self._views:
+            return
         self._views.append(view)
         # FIXME: Allow customization
         x = 0.0
