@@ -7,15 +7,15 @@ from qtpy.QtCore import QEvent, QObject, Qt
 from qtpy.QtGui import QMouseEvent, QWheelEvent
 from qtpy.QtWidgets import QApplication, QWidget
 
-from scenex.events._auto import App, EventFilter
-from scenex.events.events import MouseButton, MouseEvent, WheelEvent
+from scenex.app._auto import App
+from scenex.app.events._events import EventFilter, MouseButton, MouseEvent, WheelEvent
 
 if TYPE_CHECKING:
     from typing import Any
 
     from scenex import Canvas
     from scenex.adaptors._base import CanvasAdaptor
-    from scenex.events import Event
+    from scenex.app.events import Event
 
 
 class QtEventFilter(QObject, EventFilter):

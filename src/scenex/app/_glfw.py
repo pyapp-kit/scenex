@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 
 import glfw
 
-from scenex.events._auto import App, EventFilter
-from scenex.events.events import MouseButton, MouseEvent, WheelEvent
+from scenex.app._auto import App
+from scenex.app.events._events import EventFilter, MouseButton, MouseEvent, WheelEvent
 
 if TYPE_CHECKING:
     from typing import Any

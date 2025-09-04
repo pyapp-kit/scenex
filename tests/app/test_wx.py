@@ -8,9 +8,8 @@ from unittest.mock import MagicMock
 import pytest
 
 import scenex as snx
-from scenex.events._auto import GuiFrontend, app, determine_app
-from scenex.events.events import MouseButton, MouseEvent, Ray, WheelEvent
-from scenex.model._transform import Transform
+from scenex.app import GuiFrontend, determine_app
+from scenex.app.events import MouseButton, MouseEvent, Ray, WheelEvent
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -27,27 +26,14 @@ else:
     )
 
 
-@pytest.fixture(scope="session")
-def wxapp() -> Iterator[wx.App]:
-    yield app().create_app()
-
-
 @pytest.fixture
-def evented_canvas() -> snx.Canvas:
-    camera = snx.Camera(transform=Transform(), interactive=True)
-    scene = snx.Scene(children=[])
-    canvas = snx.Canvas()
-    view = snx.View(scene=scene, camera=camera)
-    # FIXME: The canvas should take care of setting this.
-    view.canvas = canvas
-    canvas.views.append(view)
-    canvas._get_adaptors(create=True)[0]._snx_get_native()
-    return canvas
+def evented_canvas(basic_view: snx.Scene) -> Iterator[snx.Canvas]:
+    canvas = snx.show(basic_view)
+    canvas.render()
+    yield canvas
 
 
-def _processEvent(
-    wxapp: wx.App, evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any
-) -> None:
+def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None:
     """Simulates a wx event.
 
     Note that wx.UIActionSimulator is an alternative to this approach.
@@ -68,7 +54,7 @@ def _processEvent(
     # https://github.com/wxWidgets/Phoenix/blob/master/unittests/wtc.py#L41
     wdg.Show(True)
     wx.MilliSleep(50)
-    evtLoop = wxapp.GetTraits().CreateEventLoop()
+    evtLoop = wx.App.Get().GetTraits().CreateEventLoop()
     wx.EventLoopActivator(evtLoop)
     evtLoop.YieldFor(wx.EVT_CATEGORY_ALL)  # pyright: ignore[reportAttributeAccessIssue]
 
@@ -78,7 +64,7 @@ def _validate_ray(maybe_ray: Ray | None) -> Ray:
     return maybe_ray
 
 
-def test_mouse_press(wxapp: wx.App, evented_canvas: snx.Canvas) -> None:
+def test_mouse_press(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_window_ref()
@@ -86,7 +72,7 @@ def test_mouse_press(wxapp: wx.App, evented_canvas: snx.Canvas) -> None:
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)
     # Press the left button
-    _processEvent(wxapp, wx.EVT_LEFT_DOWN, native, pos=wx.Point(*press_point))
+    _processEvent(wx.EVT_LEFT_DOWN, native, pos=wx.Point(*press_point))
     mock.assert_called_once_with(
         MouseEvent(
             "press",
@@ -99,7 +85,7 @@ def test_mouse_press(wxapp: wx.App, evented_canvas: snx.Canvas) -> None:
     mock.reset_mock()
 
     # Now press the right button
-    _processEvent(wxapp, wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point))
+    _processEvent(wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point))
     mock.assert_called_once_with(
         MouseEvent(
             "press",
@@ -111,14 +97,14 @@ def test_mouse_press(wxapp: wx.App, evented_canvas: snx.Canvas) -> None:
     )
 
 
-def test_mouse_release(wxapp: wx.App, evented_canvas: snx.Canvas) -> None:
+def test_mouse_release(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_window_ref()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)
-    _processEvent(wxapp, wx.EVT_LEFT_UP, native, pos=wx.Point(*press_point))
+    _processEvent(wx.EVT_LEFT_UP, native, pos=wx.Point(*press_point))
     mock.assert_called_once_with(
         MouseEvent(
             "release",
@@ -130,7 +116,7 @@ def test_mouse_release(wxapp: wx.App, evented_canvas: snx.Canvas) -> None:
     )
 
 
-def test_mouse_move(wxapp: wx.App, evented_canvas: snx.Canvas) -> None:
+def test_mouse_move(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_window_ref()
@@ -138,10 +124,10 @@ def test_mouse_move(wxapp: wx.App, evented_canvas: snx.Canvas) -> None:
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)
     # FIXME: For some reason the mouse press is necessary for processing events?
-    _processEvent(wxapp, wx.EVT_LEFT_DOWN, native, pos=wx.Point(*press_point))
-    _processEvent(wxapp, wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point))
+    _processEvent(wx.EVT_LEFT_DOWN, native, pos=wx.Point(*press_point))
+    _processEvent(wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point))
     mock.reset_mock()
-    _processEvent(wxapp, wx.EVT_MOTION, native, pos=wx.Point(*press_point))
+    _processEvent(wx.EVT_MOTION, native, pos=wx.Point(*press_point))
     mock.assert_called_once_with(
         MouseEvent(
             "move",
@@ -153,16 +139,14 @@ def test_mouse_move(wxapp: wx.App, evented_canvas: snx.Canvas) -> None:
     )
 
 
-def test_mouse_wheel(wxapp: wx.App, evented_canvas: snx.Canvas) -> None:
+def test_mouse_wheel(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_window_ref()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)
-    _processEvent(
-        wxapp, wx.EVT_MOUSEWHEEL, native, pos=wx.Point(*press_point), rot=(0, 120)
-    )
+    _processEvent(wx.EVT_MOUSEWHEEL, native, pos=wx.Point(*press_point), rot=(0, 120))
     mock.assert_called_once_with(
         WheelEvent(
             "wheel",

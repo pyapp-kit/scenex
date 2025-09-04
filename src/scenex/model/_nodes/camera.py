@@ -15,7 +15,7 @@ from .node import Node
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from scenex.events.events import Event, Ray
+    from scenex.app.events._events import Event, Ray
     from scenex.model._transform import Transform
 
 CameraType = Literal["panzoom", "perspective"]

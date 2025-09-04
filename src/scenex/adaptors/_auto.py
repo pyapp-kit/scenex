@@ -6,7 +6,7 @@ import sys
 from contextlib import suppress
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, TypeGuard, cast, get_args
 
-from scenex.events._auto import app
+from scenex.app import app
 
 if TYPE_CHECKING:
     from collections.abc import Iterator

@@ -42,12 +42,10 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.10", "3.13"]
         gfx: [pygfx, vispy]
-        canvas: [pyqt, glfw, jupyter, wx]
+        canvas: [pyqt, jupyter, wx]
         exclude:
           # glfw.GLFWError: (65545) b'NSGL: Failed to find a suitable pixel format'
-          - os: macos-latest
-            canvas: glfw
-          # Also susceptible to the above bug, since under the hood GLFW gives vispy the OpenGL context.
+          # (Under the hood GLFW gives vispy the OpenGL context.)
           - os: macos-latest
             canvas: jupyter
             gfx: vispy

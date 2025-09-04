@@ -12,11 +12,6 @@ class Event:
     # TODO: Enum?
     type: str
 
-    def __eq__(self, value):
-        if not isinstance(value, Event):
-            return NotImplemented
-        return self.type == value.type
-
 
 class MouseButton(IntFlag):
     """A general mouse interaction event."""
@@ -57,3 +52,11 @@ class WheelEvent(MouseEvent):
     """A mouse interaction event describing wheel movement."""
 
     angle_delta: tuple[float, float]
+
+
+class EventFilter:
+    def uninstall(self) -> None:
+        """Uninstall the event filter."""
+        raise NotImplementedError("This method should be implemented by subclasses.")
+
+    pass

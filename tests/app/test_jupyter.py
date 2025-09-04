@@ -8,8 +8,8 @@ import pytest
 
 import scenex as snx
 from scenex.adaptors._auto import determine_backend
-from scenex.events._auto import GuiFrontend, determine_app
-from scenex.events.events import MouseButton, MouseEvent, Ray, WheelEvent
+from scenex.app import GuiFrontend, determine_app
+from scenex.app.events import MouseButton, MouseEvent, Ray, WheelEvent
 from scenex.model._transform import Transform
 
 if determine_app() != GuiFrontend.JUPYTER:

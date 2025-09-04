@@ -35,9 +35,6 @@ classifiers = [
 dependencies = ["cmap>=0.5", "numpy>=2", "psygnal>=0.11.1", "pydantic>=2.10", "pylinalg"]
 
 [project.optional-dependencies]
-glfw= [
-    "glfw"
-]
 jupyter = [
     "ipywidgets >=8.0.5",
     "jupyter >=1.1",
@@ -82,7 +79,7 @@ docs = [
 dev = [
     { include-group = "test" },
     { include-group = "docs" },
-    "scenex[pygfx,vispy,imgui]",
+    "scenex[pygfx,vispy,imgui,wx,jupyter,pyqt]",
     "imageio[tifffile] >=2.20",
     "ipython",
     "mypy",
@@ -148,7 +145,7 @@ disallow_subclassing_any = false
 show_error_codes = true
 pretty = true
 plugins = ["pydantic.mypy"]
-untyped_calls_exclude = ["rendercanvas", "IPython"]
+untyped_calls_exclude = ["rendercanvas", "IPython", "pytestqt"]
 
 [[tool.mypy.overrides]]
 module = ["rendercanvas.*"]

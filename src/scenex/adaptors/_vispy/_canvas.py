@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeGuard, cast
 import numpy as np
 
 from scenex.adaptors._base import CanvasAdaptor
-from scenex.events._auto import app
+from scenex.app import app
 
 from ._adaptor_registry import get_adaptor
 

@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 import scenex as snx
-from scenex.events.events import Ray
+from scenex.app.events import Ray
 from scenex.model._nodes.image import Image
 
 

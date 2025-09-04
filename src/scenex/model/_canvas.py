@@ -8,7 +8,7 @@ import pylinalg as la
 from cmap import Color
 from pydantic import ConfigDict, Field
 
-from scenex.events.events import Event, MouseEvent, Ray
+from scenex.app.events._events import Event, MouseEvent, Ray
 
 from ._base import EventedBase
 from ._evented_list import EventedList

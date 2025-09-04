@@ -6,12 +6,17 @@ import numpy as np
 import pylinalg as la
 
 import scenex as snx
-from scenex.events.controllers import OrbitController, PanZoomController
-from scenex.events.events import MouseButton, MouseEvent, Ray, WheelEvent
+from scenex.app.events import MouseButton, MouseEvent, Ray, WheelEvent
 from scenex.model._transform import Transform
+from scenex.utils.controllers import OrbitController, PanZoomController
 
 
-def test_panzoomcontroller_pan():
+def _validate_ray(maybe_ray: Ray | None) -> Ray:
+    assert maybe_ray is not None
+    return maybe_ray
+
+
+def test_panzoomcontroller_pan() -> None:
     """Tests panning behavior of the PanZoomController."""
     controller = PanZoomController()
     cam = snx.Camera(interactive=True, controller=controller)
@@ -36,7 +41,7 @@ def test_panzoomcontroller_pan():
     np.testing.assert_allclose(cam.transform.root, expected.root)
 
 
-def test_panzoomcontroller_zoom():
+def test_panzoomcontroller_zoom() -> None:
     """Tests zooming behavior of the PanZoomController."""
     controller = PanZoomController()
     cam = snx.Camera(interactive=True)
@@ -57,7 +62,7 @@ def test_panzoomcontroller_zoom():
     np.testing.assert_allclose(cam.projection.root, expected.root)
 
 
-def test_orbitcontroller_orbit():
+def test_orbitcontroller_orbit() -> None:
     """Tests orbiting behavior of the OrbitController."""
     # Camera is along the x axis, looking in the negative x direction at the center
     controller = OrbitController(center=(0, 0, 0))
@@ -80,7 +85,7 @@ def test_orbitcontroller_orbit():
     press_event = MouseEvent(
         type="press",
         canvas_pos=click_pos,
-        world_ray=canvas.to_world(click_pos),
+        world_ray=_validate_ray(canvas.to_world(click_pos)),
         buttons=MouseButton.LEFT,
     )
     controller(press_event, cam)
@@ -89,7 +94,7 @@ def test_orbitcontroller_orbit():
     move_event = MouseEvent(
         type="move",
         canvas_pos=move_pos,
-        world_ray=canvas.to_world(move_pos),
+        world_ray=_validate_ray(canvas.to_world(move_pos)),
         buttons=MouseButton.LEFT,
     )
     controller(move_event, cam)
@@ -97,7 +102,7 @@ def test_orbitcontroller_orbit():
     move_event = MouseEvent(
         type="move",
         canvas_pos=move_pos,
-        world_ray=canvas.to_world(move_pos),
+        world_ray=_validate_ray(canvas.to_world(move_pos)),
         buttons=MouseButton.LEFT,
     )
     controller(move_event, cam)
@@ -115,7 +120,7 @@ def test_orbitcontroller_orbit():
     np.testing.assert_allclose(pos_after_exp, pos_after_act)
 
 
-def test_orbitcontroller_zoom():
+def test_orbitcontroller_zoom() -> None:
     center = (0.0, 0.0, 0.0)
     cam = snx.Camera(interactive=True, transform=Transform().translated((0, 0, 10)))
     controller = OrbitController(center)
@@ -150,7 +155,7 @@ def test_orbitcontroller_zoom():
     np.testing.assert_allclose(cam.transform, tform_before)
 
 
-def test_orbitcontroller_pan():
+def test_orbitcontroller_pan() -> None:
     # Camera is along the x axis, looking in the negative x direction at the center
     controller = OrbitController(center=(0, 0, 0))
     cam = snx.Camera(interactive=True, controller=controller)
@@ -171,6 +176,7 @@ def test_orbitcontroller_pan():
     # Simulate right mouse press
     click_pos = (view.layout.width / 2, view.layout.height / 2)
     world_ray_before = canvas.to_world(click_pos)
+    assert world_ray_before is not None
     press_event = MouseEvent(
         type="press",
         canvas_pos=click_pos,
@@ -181,6 +187,7 @@ def test_orbitcontroller_pan():
     # Simulate right mouse move (pan)
     click_pos = (click_pos[0], click_pos[1] + view.layout.height // 2)
     world_ray_after = canvas.to_world(click_pos)
+    assert world_ray_after is not None
     move_event = MouseEvent(
         type="move",
         canvas_pos=click_pos,

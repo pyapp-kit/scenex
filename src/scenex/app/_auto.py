@@ -11,15 +11,8 @@ if TYPE_CHECKING:
     from typing import Any
 
     from scenex.adaptors._base import CanvasAdaptor
+    from scenex.app.events._events import EventFilter
     from scenex.model import Canvas
-
-
-class EventFilter:
-    def uninstall(self) -> None:
-        """Uninstall the event filter."""
-        raise NotImplementedError("This method should be implemented by subclasses.")
-
-    pass
 
 
 GUI_ENV_VAR = "SCENEX_WIDGET_BACKEND"
@@ -33,8 +26,6 @@ class GuiFrontend(str, Enum):
 
     Attributes
     ----------
-    GLFW : str
-        [GLFW](https://www.glfw.org/)
     JUPYTER : str
         [JUPYTER](https://jupyter.org/)
     QT : str
@@ -43,19 +34,17 @@ class GuiFrontend(str, Enum):
         [WX](https://wxpython.org/)
     """
 
-    GLFW = "glfw"
     JUPYTER = "jupyter"
     QT = "qt"
     WX = "wx"
 
 
 GUI_PROVIDERS: dict[GuiFrontend, tuple[str, str]] = {
-    GuiFrontend.QT: ("scenex.events._qt", "QtAppWrap"),
-    GuiFrontend.WX: ("scenex.events._wx", "WxAppWrap"),
+    GuiFrontend.WX: ("scenex.app._wx", "WxAppWrap"),
+    GuiFrontend.QT: ("scenex.app._qt", "QtAppWrap"),
     # Note that Jupyter should go last because it is a guess based on IPython
     # which may be installed with the other frameworks as well.
-    GuiFrontend.JUPYTER: ("scenex.events._jupyter", "JupyterAppWrap"),
-    GuiFrontend.GLFW: ("scenex.events._glfw", "GlfwAppWrap"),
+    GuiFrontend.JUPYTER: ("scenex.app._jupyter", "JupyterAppWrap"),
 }
 
 
@@ -100,21 +89,6 @@ def _running_apps() -> Iterator[GuiFrontend]:
         if shell.__class__.__name__ == "ZMQInteractiveShell":
             yield GuiFrontend.JUPYTER
 
-    # glfw provides no way to check if already running - this is a best guess.
-    if glfw := sys.modules.get("glfw"):
-        old, glfw.ERROR_REPORTING = glfw.ERROR_REPORTING, "exception"  # type: ignore[attr-defined]
-        glfw_initialized = False
-        try:
-            glfw.get_monitors()
-            glfw_initialized = True
-        except glfw.GLFWError:
-            pass
-
-        glfw.ERROR_REPORTING = old  # type: ignore[attr-defined]
-
-        if glfw_initialized:
-            yield GuiFrontend.GLFW
-
 
 def _load_app(module: str, cls_name: str) -> App:
     mod = importlib.import_module(module)
@@ -123,6 +97,12 @@ def _load_app(module: str, cls_name: str) -> App:
 
 
 def determine_app() -> GuiFrontend:
+    """Returns the [`GuiFrontend`][scenex.app.GuiFrontend].
+
+    This is determined first by the `NDV_GUI_FRONTEND` environment variable, after which
+    known GUI providers are tried in order until one is found that is either already
+    running, or available.
+    """
     running = list(_running_apps())
 
     # Try 1: Load a frontend explicitly requested by the user

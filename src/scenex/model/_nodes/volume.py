@@ -8,7 +8,7 @@ from .image import Image, _passes_through_parallelogram
 from .node import AABB  # noqa: TC001
 
 if TYPE_CHECKING:
-    from scenex.events.events import Ray
+    from scenex.app.events._events import Ray
 
 RenderMode = Literal["iso", "mip"]
 

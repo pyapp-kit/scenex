@@ -2,7 +2,7 @@ import cmap
 import numpy as np
 
 import scenex as snx
-from scenex.events.controllers import PanZoomController
+from scenex.utils.controllers import PanZoomController
 
 try:
     from scenex.imgui import add_imgui_controls
@@ -43,7 +43,9 @@ view.scene.add_child(image)
 # snx.use("pygfx")
 # snx.use("vispy")
 
-snx.show(view)
+canvas = snx.show(view)
+# canvas.render()
+
 if add_imgui_controls is not None:
     add_imgui_controls(view)
 snx.run()

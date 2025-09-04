@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self, TypedDict, Unpack
 
-    from scenex.events import Event, Ray
+    from scenex.app.events import Event, Ray
 
     from .camera import Camera
     from .image import Image

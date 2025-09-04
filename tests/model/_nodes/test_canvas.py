@@ -1,11 +1,11 @@
 import numpy as np
 
 import scenex as snx
-from scenex.events.events import Ray
+from scenex.app.events import Ray
 from scenex.utils import projections
 
 
-def test_to_world():
+def test_to_world() -> None:
     """Tests Canvas.to_world"""
     # Identity projection, identity transformation
     camera = snx.Camera(
@@ -33,7 +33,7 @@ def test_to_world():
     assert ray is None
 
 
-def test_to_world_translated():
+def test_to_world_translated() -> None:
     """Tests Canvas.to_world with a translated camera"""
     # Identity projection, small transformation
     camera = snx.Camera(
@@ -59,7 +59,7 @@ def test_to_world_translated():
     camera.transform = snx.Transform()
 
 
-def test_to_world_projection():
+def test_to_world_projection() -> None:
     """Tests Canvas.to_world with a non-identity camera projection"""
     # Narrowed projection, identity transformation
     camera = snx.Camera(

@@ -5,7 +5,7 @@ import math
 import numpy as np
 import pylinalg as la
 
-from scenex.events.events import Event, MouseButton, MouseEvent, Ray, WheelEvent
+from scenex.app.events._events import Event, MouseButton, MouseEvent, Ray, WheelEvent
 from scenex.model import Camera, Node
 
 

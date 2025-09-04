@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
 from scenex.adaptors._base import CanvasAdaptor
-from scenex.events._auto import GuiFrontend, app, determine_app
+from scenex.app import GuiFrontend, app, determine_app
 
 from ._adaptor_registry import get_adaptor
 
@@ -42,10 +42,6 @@ def rendercanvas_class() -> type[BaseRenderCanvas]:
         import rendercanvas.jupyter
 
         return rendercanvas.jupyter.JupyterRenderCanvas
-    if frontend == GuiFrontend.GLFW:
-        import rendercanvas.glfw
-
-        return rendercanvas.glfw.GlfwRenderCanvas
     if frontend == GuiFrontend.WX:
         # ...still not working
         # import rendercanvas.wx

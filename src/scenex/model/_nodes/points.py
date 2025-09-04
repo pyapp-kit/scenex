@@ -10,7 +10,7 @@ from pydantic import Field, computed_field
 from .node import AABB, Node
 
 if TYPE_CHECKING:
-    from scenex.events.events import Ray
+    from scenex.app.events._events import Ray
 
 SymbolName = Literal[
     "disc",
