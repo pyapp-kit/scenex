@@ -41,10 +41,6 @@ class Adaptor(ABC, Generic[TModel, TNative]):
     def __init__(self, obj: TModel) -> None:
         """All backend adaptor objects receive the object they are adapting."""
 
-    @abstractmethod
-    def _snx_get_native(self) -> TNative:
-        """Return the native object for the ."""
-
     def handle_event(self, info: EmissionInfo) -> None:
         """Receive info from psygnal callback and convert to adaptor call."""
         signal_name = info.signal.name
@@ -174,7 +170,7 @@ class CanvasAdaptor(SupportsVisibility[TCanvas, TNative]):
     @abstractmethod
     def _snx_set_background_color(self, arg: model.Color | None, /) -> None: ...
     @abstractmethod
-    def _snx_get_window_ref(self) -> Any:
+    def _snx_get_native(self) -> Any:
         """Returns an object understood by the backend widget toolkit."""
 
     @abstractmethod

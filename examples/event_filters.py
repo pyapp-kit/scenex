@@ -2,7 +2,7 @@ import cmap
 import numpy as np
 
 import scenex as snx
-from scenex.events import Event, MouseEvent
+from scenex.app.events import Event, MouseEvent
 
 img = snx.Image(
     data=np.zeros((200, 200)).astype(np.uint8),

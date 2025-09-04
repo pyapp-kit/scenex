@@ -14,7 +14,8 @@ if TYPE_CHECKING:
     from rendercanvas.base import BaseRenderCanvas
 
     from scenex import model
-    from scenex.model._view import View
+
+    from ._view import View
 
     class SupportsHideShow(BaseRenderCanvas):
         def show(self) -> None: ...
@@ -38,7 +39,7 @@ class Canvas(CanvasAdaptor):
         if supports_hide_show(self._canvas.native):
             self._canvas.native.hide()
         self._grid = cast("Grid", self._canvas.central_widget.add_grid())
-        self._views: list[View] = []
+        self._views: list[model.View] = []
         for view in canvas.views:
             self._snx_add_view(view)
         self._filter = app().install_event_filter(self._canvas.native, canvas)
@@ -47,9 +48,6 @@ class Canvas(CanvasAdaptor):
         self._last_canvas_pos: tuple[float, float] | None = None
 
     def _snx_get_native(self) -> Any:
-        return self._canvas.native
-
-    def _snx_get_window_ref(self) -> Any:
         return self._canvas.native
 
     def _snx_set_visible(self, arg: bool) -> None:
@@ -74,7 +72,7 @@ class Canvas(CanvasAdaptor):
             view.layout.height = self._canvas.size[1]
             x += dx
 
-        self._grid.add_widget(get_adaptor(view)._snx_get_native())
+        self._grid.add_widget(cast("View", get_adaptor(view))._vispy_viewbox)
         get_adaptor(view.camera)._set_view(view.layout.width, view.layout.height)  # type:ignore
         # adaptor = get_adaptor(view)
         # self._grid.add_widget(adaptor._snx_get_native())

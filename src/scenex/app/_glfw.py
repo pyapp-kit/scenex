@@ -140,6 +140,6 @@ class GlfwAppWrap(App):
 
     def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
         if visible:
-            glfw.show_window(canvas._snx_get_window_ref())
+            glfw.show_window(canvas._snx_get_native())
         else:
-            glfw.hide_window(canvas._snx_get_window_ref())
+            glfw.hide_window(canvas._snx_get_native())

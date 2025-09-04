@@ -87,8 +87,3 @@ class EventedBase(BaseModel):
 
         reg = get_adaptor_registry(backend=backend)
         return [reg.get_adaptor(self, create=create)]
-
-    def _get_native(self, backend: str | None = None, create: bool = False) -> Any:
-        """Get the native object for this model."""
-        if adaptors := self._get_adaptors(backend=backend, create=create):
-            return adaptors[0]._snx_get_native()

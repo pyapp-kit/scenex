@@ -161,7 +161,7 @@ class JupyterAppWrap(App):
         return JupyterEventFilter(canvas, model_canvas)
 
     def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
-        native_canvas = cast("RemoteFrameBuffer", canvas._snx_get_window_ref())
+        native_canvas = cast("RemoteFrameBuffer", canvas._snx_get_native())
         if canvas not in self._visible_canvases:
             self._visible_canvases.add(canvas)
             display.display(native_canvas)

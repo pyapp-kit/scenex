@@ -141,4 +141,4 @@ class QtAppWrap(App):
         return f
 
     def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
-        cast("QWidget", canvas._snx_get_window_ref()).setVisible(visible)
+        cast("QWidget", canvas._snx_get_native()).setVisible(visible)

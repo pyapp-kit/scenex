@@ -67,7 +67,7 @@ def _validate_ray(maybe_ray: Ray | None) -> Ray:
 def test_mouse_press(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_window_ref()
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)
@@ -100,7 +100,7 @@ def test_mouse_press(evented_canvas: snx.Canvas) -> None:
 def test_mouse_release(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_window_ref()
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)
@@ -119,7 +119,7 @@ def test_mouse_release(evented_canvas: snx.Canvas) -> None:
 def test_mouse_move(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_window_ref()
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)
@@ -142,7 +142,7 @@ def test_mouse_move(evented_canvas: snx.Canvas) -> None:
 def test_mouse_wheel(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_window_ref()
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)

@@ -12,7 +12,7 @@ except ImportError as e:
     ) from e
 import logging
 import types
-from typing import TYPE_CHECKING, Any, Literal, get_args, get_origin
+from typing import TYPE_CHECKING, Any, Literal, cast, get_args, get_origin
 
 import annotated_types
 import cmap
@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from pydantic.fields import FieldInfo
 
     import scenex as snx
+    from scenex.adaptors._base import CanvasAdaptor
     from scenex.model._view import View
 
 logger = logging.getLogger("scenex.imgui")
@@ -39,7 +40,7 @@ def add_imgui_controls(view: View) -> None:
     snx_canvas_model = view.canvas
     snx_canvas_adaptor = snx_canvas_model._get_adaptors(backend="pygfx")[0]
     snx_view_adaptor = view._get_adaptors(backend="pygfx")[0]
-    render_canv = snx_canvas_model._get_native()
+    render_canv = cast("CanvasAdaptor", snx_canvas_adaptor)._snx_get_native()
 
     if not (
         isinstance(snx_canvas_adaptor, PygfxCanvasAdaptor)

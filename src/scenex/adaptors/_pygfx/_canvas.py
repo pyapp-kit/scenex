@@ -44,12 +44,10 @@ def rendercanvas_class() -> type[BaseRenderCanvas]:
         return rendercanvas.jupyter.JupyterRenderCanvas
     if frontend == GuiFrontend.WX:
         # ...still not working
-        # import rendercanvas.wx
-        # rendercanvas.wx.loop._rc_init()
-        # return rendercanvas.wx.WxRenderWidget
-        from wgpu.gui.wx import WxWgpuCanvas
+        import rendercanvas.wx
 
-        return WxWgpuCanvas  # type: ignore
+        rendercanvas.wx.loop._rc_init()
+        return rendercanvas.wx.WxRenderCanvas
 
     raise ValueError("No suitable render canvas found")
 
@@ -68,12 +66,9 @@ class Canvas(CanvasAdaptor):
         self._views: list[model.View] = []
         for view in canvas.views:
             self._snx_add_view(view)
-        self._filter = app().install_event_filter(self._snx_get_window_ref(), canvas)
+        self._filter = app().install_event_filter(self._snx_get_native(), canvas)
 
-    def _snx_get_native(self) -> BaseRenderCanvas:
-        return self._wgpu_canvas
-
-    def _snx_get_window_ref(self) -> Any:
+    def _snx_get_native(self) -> Any:
         if subwdg := getattr(self._wgpu_canvas, "_subwidget", None):
             # wx backend has a _subwidget attribute that is the actual widget
             return subwdg
