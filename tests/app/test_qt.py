@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 from unittest.mock import MagicMock
 
 import pytest
@@ -12,11 +12,14 @@ from scenex.app import GuiFrontend, determine_app
 from scenex.app.events import MouseButton, MouseEvent, Ray
 from scenex.model._transform import Transform
 
+if TYPE_CHECKING:
+    from scenex.adaptors._base import CanvasAdaptor
+
 if determine_app() == GuiFrontend.QT:
     from qtpy.QtCore import QPoint, Qt
 
     if TYPE_CHECKING:
-        from pytestqt.qtbot import QtBot
+        from pytestqt.qtbot import QtBot  # pyright: ignore[reportMissingImports]
 else:
     pytest.skip(
         "Skipping Qt tests as Qt will not be used in this environment",
@@ -31,7 +34,9 @@ def evented_canvas(qtbot: QtBot) -> snx.Canvas:
     view = snx.View(scene=scene, camera=camera)
     canvas = snx.Canvas()
     canvas.views.append(view)
-    native = canvas._get_adaptors(create=True)[0]._snx_get_native()
+    native = cast(
+        "CanvasAdaptor", canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
     qtbot.addWidget(native)
     return canvas
 
@@ -42,7 +47,9 @@ def _validate_ray(maybe_ray: Ray | None) -> Ray:
 
 
 def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)
@@ -73,7 +80,9 @@ def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_mouse_release(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)
@@ -90,7 +99,9 @@ def test_mouse_release(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_mouse_move(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)
@@ -111,7 +122,9 @@ def test_mouse_move(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_mouse_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)
@@ -137,7 +150,9 @@ def test_mouse_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_mouse_double_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (5, 10)

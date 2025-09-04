@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, cast
 from unittest.mock import MagicMock
 
 import pytest
@@ -11,6 +12,9 @@ from scenex.adaptors._auto import determine_backend
 from scenex.app import GuiFrontend, determine_app
 from scenex.app.events import MouseButton, MouseEvent, Ray, WheelEvent
 from scenex.model._transform import Transform
+
+if TYPE_CHECKING:
+    from scenex.adaptors._base import CanvasAdaptor
 
 if determine_app() != GuiFrontend.JUPYTER:
     pytest.skip(
@@ -37,7 +41,6 @@ def evented_canvas() -> snx.Canvas:
     view = snx.View(scene=scene, camera=camera)
     canvas = snx.Canvas()
     canvas.views.append(view)
-    _native = canvas._get_adaptors(create=True)[0]._snx_get_native()
     return canvas
 
 
@@ -52,7 +55,9 @@ RIGHT_MOUSE = 2
 
 
 def test_pointer_down(evented_canvas: snx.Canvas) -> None:
-    native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (0, 0)
@@ -97,7 +102,9 @@ def test_pointer_down(evented_canvas: snx.Canvas) -> None:
 
 
 def test_pointer_up(evented_canvas: snx.Canvas) -> None:
-    native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (0, 0)
@@ -121,7 +128,9 @@ def test_pointer_up(evented_canvas: snx.Canvas) -> None:
 
 
 def test_pointer_move(evented_canvas: snx.Canvas) -> None:
-    native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (0, 0)
@@ -164,7 +173,9 @@ def test_pointer_move(evented_canvas: snx.Canvas) -> None:
 
 
 def test_mouse_double_click(evented_canvas: snx.Canvas) -> None:
-    native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (0, 0)
@@ -188,7 +199,9 @@ def test_mouse_double_click(evented_canvas: snx.Canvas) -> None:
 
 
 def test_wheel(evented_canvas: snx.Canvas) -> None:
-    native = evented_canvas._get_adaptors(create=True)[0]._snx_get_native()
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     press_point = (0, 0)

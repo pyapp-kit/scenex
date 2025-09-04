@@ -75,7 +75,7 @@ docs = [
 dev = [
     { include-group = "test" },
     { include-group = "docs" },
-    "scenex[pygfx,vispy,imgui,wx,jupyter,pyqt]",
+    "scenex[pygfx,vispy,imgui,jupyter,pyqt]", # FIXME: Add wx (and prevent it from breaking pre-commit)
     "imageio[tifffile] >=2.20",
     "ipython",
     "mypy",
@@ -148,7 +148,7 @@ module = ["rendercanvas.*"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
-module = ["pygfx.*", "vispy.*", "wgpu.*", "glfw.*", "pylinalg.*", "qtpy.*", "ipywidgets.*", "IPython.*", "jupyter", "jupyter_rfb.*", "wx.*"]
+module = ["pygfx.*", "vispy.*", "wgpu.*", "glfw.*", "pylinalg.*", "qtpy.*", "ipywidgets.*", "IPython.*", "jupyter", "jupyter_rfb.*", "wx.*", "pytestqt.*"]
 ignore_missing_imports = true
 
 [tool.pydantic-mypy]
