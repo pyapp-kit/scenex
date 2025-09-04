@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
-from qtpy.QtCore import QEvent, QObject, Qt
+from qtpy.QtCore import QEvent, QObject, Qt, QTimer
 from qtpy.QtGui import QMouseEvent, QWheelEvent
 from qtpy.QtWidgets import QApplication, QWidget
 
@@ -11,6 +11,7 @@ from scenex.app._auto import App
 from scenex.app.events._events import EventFilter, MouseButton, MouseEvent, WheelEvent
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from typing import Any
 
     from scenex import Canvas
@@ -142,3 +143,11 @@ class QtAppWrap(App):
 
     def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
         cast("QWidget", canvas._snx_get_native()).setVisible(visible)
+
+    def process_events(self) -> None:
+        """Process events for the application."""
+        QApplication.processEvents()
+
+    def call_later(self, msec: int, func: Callable[[], None]) -> None:
+        """Call `func` after `msec` milliseconds."""
+        QTimer.singleShot(msec, Qt.TimerType.PreciseTimer, func)

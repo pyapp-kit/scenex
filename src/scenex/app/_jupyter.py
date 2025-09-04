@@ -166,3 +166,15 @@ class JupyterAppWrap(App):
             self._visible_canvases.add(canvas)
             display.display(native_canvas)
         native_canvas.layout.display = "flex" if visible else "none"
+
+    def process_events(self) -> None:
+        """Process events for the application."""
+        pass
+
+    def call_later(self, msec: int, func: Callable[[], None]) -> None:
+        """Call `func` after `msec` milliseconds."""
+        # generic implementation using python threading
+
+        from threading import Timer
+
+        Timer(msec / 1000, func).start()

@@ -7,7 +7,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Callable, Iterator
     from typing import Any
 
     from scenex.adaptors._base import CanvasAdaptor
@@ -68,6 +68,14 @@ class App:
         raise NotImplementedError("Must be implemented by subclasses.")
 
     def install_event_filter(self, canvas: Any, model_canvas: Canvas) -> EventFilter:
+        raise NotImplementedError("Must be implemented by subclasses.")
+
+    def process_events(self) -> None:
+        """Process events."""
+        raise NotImplementedError("Must be implemented by subclasses.")
+
+    def call_later(self, msec: int, func: Callable[[], None]) -> None:
+        """Call `func` after `msec` milliseconds."""
         raise NotImplementedError("Must be implemented by subclasses.")
 
 

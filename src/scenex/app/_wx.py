@@ -8,6 +8,8 @@ from scenex.app._auto import App
 from scenex.app.events._events import EventFilter, MouseButton, MouseEvent, WheelEvent
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from scenex import Canvas
     from scenex.adaptors._base import CanvasAdaptor
 
@@ -142,3 +144,11 @@ class WxAppWrap(App):
     def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
         window = canvas._snx_get_native()
         wx.CallAfter(window.Show, visible)
+
+    def process_events(self) -> None:
+        """Process events."""
+        wx.SafeYield()
+
+    def call_later(self, msec: int, func: Callable[[], None]) -> None:
+        """Call `func` after `msec` milliseconds."""
+        wx.CallLater(msec, func)

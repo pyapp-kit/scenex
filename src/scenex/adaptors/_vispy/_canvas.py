@@ -53,6 +53,9 @@ class Canvas(CanvasAdaptor):
     def _snx_set_visible(self, arg: bool) -> None:
         # show the qt canvas we patched earlier in __init__
         app().show(self, arg)
+        # HACK
+        self._canvas.set_current()
+        app().process_events()
 
     def _draw(self) -> None:
         self._canvas.update()

@@ -29,7 +29,6 @@ else:
 @pytest.fixture
 def evented_canvas(basic_view: snx.Scene) -> Iterator[snx.Canvas]:
     canvas = snx.show(basic_view)
-    canvas.render()
     yield canvas
 
 
