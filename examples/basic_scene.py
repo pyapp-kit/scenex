@@ -43,8 +43,7 @@ view.scene.add_child(image)
 # snx.use("pygfx")
 # snx.use("vispy")
 
-canvas = snx.show(view)
-# canvas.render()
+snx.show(view)
 
 if add_imgui_controls is not None:
     add_imgui_controls(view)
