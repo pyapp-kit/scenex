@@ -197,8 +197,8 @@ def test_wheel(evented_canvas: snx.Canvas) -> None:
             "event_type": "wheel",
             "x": press_point[0],
             "y": press_point[1],
-            "delta_x": 0,
-            "delta_y": 120,
+            "dx": 0,
+            "dy": -120,  # Note that Jupyter_rfb uses a different y convention
             "button": LEFT_MOUSE,
         }
     )

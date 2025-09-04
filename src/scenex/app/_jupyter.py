@@ -94,8 +94,6 @@ class JupyterEventFilter(EventFilter):
                         )
                 elif etype == "wheel":
                     canvas_pos = (ev["x"], ev["y"])
-                    btn = JupyterEventFilter.mouse_btn(ev["button"])
-                    filter._active_button |= btn
                     if world_ray := filter._model_canvas.to_world(canvas_pos):
                         filter._model_canvas.handle(
                             WheelEvent(
@@ -103,7 +101,8 @@ class JupyterEventFilter(EventFilter):
                                 canvas_pos=canvas_pos,
                                 world_ray=world_ray,
                                 buttons=filter._active_button,
-                                angle_delta=(ev["delta_x"], ev["delta_y"]),
+                                # Note that Jupyter_rfb uses a different y convention
+                                angle_delta=(ev["dx"], -ev["dy"]),
                             )
                         )
 
