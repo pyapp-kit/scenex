@@ -199,7 +199,6 @@ def test_wheel(evented_canvas: snx.Canvas) -> None:
             "y": press_point[1],
             "dx": 0,
             "dy": -120,  # Note that Jupyter_rfb uses a different y convention
-            "button": LEFT_MOUSE,
         }
     )
     mock.assert_called_once_with(
@@ -207,7 +206,7 @@ def test_wheel(evented_canvas: snx.Canvas) -> None:
             "wheel",
             press_point,
             _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT,
+            MouseButton.NONE,
             angle_delta=(0, 120),
         ),
         evented_canvas.views[0].camera,
