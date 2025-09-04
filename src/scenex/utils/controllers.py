@@ -68,7 +68,8 @@ class OrbitController:
 
                 # FIXME: There's a problem evident when going crazy with orbit where the
                 # up vector gets distorted (i.e. is not in the plane of forward and
-                # polar axes).
+                # polar axes). May arise from leaving and re-entering the view while the
+                # mouse is held.
 
                 # Step 0: Gather transform components, relative to camera center
                 orbit_mat = node.transform.translated(-self.center)

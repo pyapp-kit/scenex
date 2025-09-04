@@ -67,10 +67,8 @@ class Camera(Node, CameraAdaptor):
 
     def _snx_set_projection(self, arg: Transform) -> None:
         self._projection = arg
-        # Have to recompute the vispy transform offset if the projection changed
-        self._snx_set_transform(self._camera_model.transform)
-        # FIXME this call is redundant since _snx_set_transform does it, but it's
-        # worth remembering that this needs to happen.
+        # Recompute the vispy node transform since it's a product of multiple scenex
+        # Transforms
         self._update_vispy_node_tform()
 
     def _update_vispy_node_tform(self) -> None:
