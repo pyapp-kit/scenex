@@ -25,29 +25,33 @@ def supports_hide_show(obj: Any) -> TypeGuard[SupportsHideShow]:
     return hasattr(obj, "show") and hasattr(obj, "hide")
 
 
-def rendercanvas_class() -> type[BaseRenderCanvas]:
+def _rendercanvas_class() -> BaseRenderCanvas:
+    """Obtains the appropriate class for the current GUI backend.
+
+    Explicit since PyGFX's backend selection process may be different from ours.
+    """
     frontend = determine_app()
+
     if frontend == GuiFrontend.QT:
         from qtpy.QtCore import QSize  # pyright: ignore[reportMissingImports]
-        from rendercanvas.qt import QRenderWidget, loop
+        from rendercanvas.qt import QRenderWidget
 
         class _QRenderWidget(QRenderWidget):
             def sizeHint(self) -> QSize:
                 return QSize(self.width(), self.height())
 
-        loop._rc_init()
-        return _QRenderWidget
+        # Init Qt Application - otherwise we can't create the widget
+        app()
+        return _QRenderWidget()  # type: ignore[no-untyped-call]
 
     if frontend == GuiFrontend.JUPYTER:
         import rendercanvas.jupyter
 
-        return rendercanvas.jupyter.JupyterRenderCanvas
+        return rendercanvas.jupyter.JupyterRenderCanvas()
     if frontend == GuiFrontend.WX:
-        # ...still not working
         import rendercanvas.wx
 
-        rendercanvas.wx.loop._rc_init()
-        return rendercanvas.wx.WxRenderCanvas
+        return rendercanvas.wx.WxRenderCanvas()
 
     raise ValueError("No suitable render canvas found")
 
@@ -57,7 +61,7 @@ class Canvas(CanvasAdaptor):
 
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
         self._canvas = canvas
-        self._wgpu_canvas = rendercanvas_class()()
+        self._wgpu_canvas = _rendercanvas_class()
 
         # FIXME: This seems to not work on my laptop, without external monitors.
         # The physical canvas size is still 625, 625...

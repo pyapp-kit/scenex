@@ -53,7 +53,8 @@ class Canvas(CanvasAdaptor):
     def _snx_set_visible(self, arg: bool) -> None:
         # show the qt canvas we patched earlier in __init__
         app().show(self, arg)
-        # HACK
+        # HACK Needed for the wx backend to start up OpenGL context ONLY during tests.
+        # (Starting the event loop also does this) It'd be great if we didn't need this.
         self._canvas.set_current()
         app().process_events()
 
