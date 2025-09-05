@@ -18,12 +18,6 @@ if TYPE_CHECKING:
     from . import _camera, _canvas, _scene
 
 logger = logging.getLogger("scenex.adaptors.pygfx")
-BLENDING_MAP = {
-    "default": "default",
-    "opaque": "opaque",
-    "alpha": "ordered1",
-    "additive": "additive",
-}
 
 
 class View(ViewAdaptor):
@@ -42,15 +36,11 @@ class View(ViewAdaptor):
 
         self._snx_set_scene(view.scene)
         self._snx_set_camera(view.camera)
-        self._snx_set_blending(view.blending)
         # TODO: this is needed... but breaks tests until we deal with Layout better.
         # self._snx_set_background_color(view.layout.background_color)
 
     def _snx_get_native(self) -> pygfx.Viewport:
         return pygfx.Viewport(self._renderer)
-
-    def _snx_set_blending(self, arg: model.BlendMode) -> None:
-        self._renderer.blend_mode = BLENDING_MAP.get(arg, "default")
 
     def _snx_set_visible(self, arg: bool) -> None:
         pass

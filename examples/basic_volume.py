@@ -11,7 +11,6 @@ except ImportError:
     data = np.random.randint(0, 2, (3, 3, 3)).astype(np.uint16)
 
 view = snx.View(
-    blending="default",
     scene=snx.Scene(
         children=[
             snx.Volume(

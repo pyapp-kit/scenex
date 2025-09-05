@@ -66,4 +66,4 @@ def basic_scene(
 
 @pytest.fixture
 def basic_view(basic_scene: snx.Scene) -> snx.View:
-    return snx.View(blending="default", scene=basic_scene)
+    return snx.View(scene=basic_scene)
