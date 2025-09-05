@@ -22,14 +22,6 @@ if TYPE_CHECKING:
     from . import _camera, _scene
 
 
-BLENDING_MAP = {
-    "default": "default",
-    "opaque": "opaque",
-    "alpha": "ordered1",
-    "additive": "additive",
-}
-
-
 class View(ViewAdaptor):
     """View interface for vispy Backend.
 
@@ -45,15 +37,9 @@ class View(ViewAdaptor):
 
         self._snx_set_camera(view.camera)
         self._snx_set_scene(view.scene)
-        self._snx_set_blending(view.blending)
 
     def _snx_get_native(self) -> Any:
         return self._vispy_viewbox
-
-    def _snx_set_blending(self, arg: model.BlendMode) -> None:
-        # FIXME: This is tricky - needs to be passed to set_gl_state for each scene
-        # node.
-        pass
 
     def _snx_set_visible(self, arg: bool) -> None:
         pass

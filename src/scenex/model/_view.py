@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from pydantic import ConfigDict, Field, PrivateAttr
 
@@ -22,10 +22,6 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-# just a random/basic selection of blend modes for now
-BlendMode = Literal["default", "opaque", "alpha", "additive"]
-
-
 class View(EventedBase):
     """An association of a scene and a camera.
 
@@ -41,11 +37,6 @@ class View(EventedBase):
     scene: Scene = Field(default_factory=Scene)
     camera: Camera = Field(default_factory=Camera)
     layout: Layout = Field(default_factory=Layout, frozen=True)
-    blending: BlendMode = Field(
-        default="default",
-        description="The blending mode to use when rendering the view. "
-        "Must be one of 'default', 'opaque', 'alpha', or 'additive'.",
-    )
     visible: bool = Field(default=True, description="Whether the view is visible.")
 
     _canvas: Canvas | None = PrivateAttr(None)
