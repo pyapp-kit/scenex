@@ -142,8 +142,8 @@ class WxAppWrap(App):
         return WxEventFilter(canvas, model_canvas)
 
     def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
-        window = canvas._snx_get_native()
-        wx.CallAfter(window.Show, visible)
+        canvas._snx_get_native().Show(visible)
+        self.process_events()
 
     def process_events(self) -> None:
         """Process events."""

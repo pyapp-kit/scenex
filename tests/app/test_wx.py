@@ -30,6 +30,7 @@ else:
 def evented_canvas(basic_view: snx.Scene) -> Iterator[snx.Canvas]:
     canvas = snx.show(basic_view)
     yield canvas
+    # FIXME: Probably good to destroy the canvas here - we may need a method for that
 
 
 def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None:
