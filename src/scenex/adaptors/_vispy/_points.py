@@ -46,7 +46,6 @@ class Points(Node, PointsAdaptor):
             edge_width=points.edge_width,
             face_color=points.face_color,
         )
-        self._vispy_node.interactive = True
 
     def _snx_set_coords(self, coords: npt.NDArray) -> None:
         # TODO: Will this overwrite our other parameters?
