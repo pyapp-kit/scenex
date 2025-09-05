@@ -35,10 +35,11 @@ class OrbitController:
 
     def __call__(self, event: Event, node: Node) -> bool:
         """Handle mouse and wheel events to orbit the camera."""
-        # TODO: Rigorous documentation
-        assert isinstance(node, Camera)
-        handled = False
+        # Only operate on INTERACTIVE Camera nodes
+        if not isinstance(node, Camera) or not node.interactive:
+            return False
 
+        handled = False
         if isinstance(event, MouseEvent):
             # Orbit on mouse move with left button held
             if (
@@ -154,9 +155,11 @@ class PanZoomController:
 
     def __call__(self, event: Event, node: Node) -> bool:
         """Handle mouse and wheel events to pan/zoom the camera."""
-        assert isinstance(node, Camera)
-        handled = False
+        # Only operate on INTERACTIVE Camera nodes
+        if not isinstance(node, Camera) or not node.interactive:
+            return False
 
+        handled = False
         if isinstance(event, MouseEvent):
             new_pos = event.world_ray.origin[:2]
 
