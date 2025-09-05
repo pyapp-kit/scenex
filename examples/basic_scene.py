@@ -11,7 +11,6 @@ except ImportError:
     add_imgui_controls = None  # type: ignore[assignment]
 
 view = snx.View(
-    blending="default",
     scene=snx.Scene(
         children=[
             snx.Image(

@@ -22,11 +22,10 @@ from ._nodes.points import Points, ScalingMode, SymbolName
 from ._nodes.scene import Scene
 from ._nodes.volume import RenderMode, Volume
 from ._transform import Transform
-from ._view import BlendMode, View
+from ._view import View
 
 __all__ = [
     "AnyNode",
-    "BlendMode",
     "Camera",
     "CameraType",
     "Canvas",
