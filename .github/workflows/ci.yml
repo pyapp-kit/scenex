@@ -22,7 +22,8 @@ jobs:
       - run: pipx run check-manifest
 
   lint:
-    runs-on: ubuntu-latest
+    # Avoid linting on ubuntu-latest since wx doesn't ship those wheels
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
