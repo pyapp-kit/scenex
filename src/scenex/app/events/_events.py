@@ -5,12 +5,14 @@ from enum import IntFlag, auto
 from typing import NamedTuple
 
 
+# Note that scenex follows the inheritance pattern for event subtypes.
+# This enables both extensibility, such that new event types can be added easily
+# even downstream, and also structured type checking.
 @dataclass
 class Event:
     """A general interaction event."""
 
-    # TODO: Enum?
-    type: str
+    pass
 
 
 class MouseButton(IntFlag):
@@ -37,14 +39,39 @@ class Ray(NamedTuple):
 
 @dataclass
 class MouseEvent(Event):
-    """A general mouse interaction event."""
+    """Base class for mouse interaction events."""
 
-    type: str
     canvas_pos: tuple[float, float]
     world_ray: Ray
-    # TODO: Enum?
-    # TODO: Just a MouseButton, you can AND the MouseButtons
     buttons: MouseButton
+
+
+@dataclass
+class MouseMoveEvent(MouseEvent):
+    """Mouse move event."""
+
+    pass
+
+
+@dataclass
+class MousePressEvent(MouseEvent):
+    """Mouse press event."""
+
+    pass
+
+
+@dataclass
+class MouseReleaseEvent(MouseEvent):
+    """Mouse release event."""
+
+    pass
+
+
+@dataclass
+class MouseDoublePressEvent(MouseEvent):
+    """Mouse double press event."""
+
+    pass
 
 
 @dataclass

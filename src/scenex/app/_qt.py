@@ -8,7 +8,15 @@ from qtpy.QtGui import QMouseEvent, QWheelEvent
 from qtpy.QtWidgets import QApplication, QWidget
 
 from scenex.app._auto import App
-from scenex.app.events._events import EventFilter, MouseButton, MouseEvent, WheelEvent
+from scenex.app.events._events import (
+    EventFilter,
+    MouseButton,
+    MouseDoublePressEvent,
+    MouseMoveEvent,
+    MousePressEvent,
+    MouseReleaseEvent,
+    WheelEvent,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -56,35 +64,28 @@ class QtEventFilter(QObject, EventFilter):
             etype = qevent.type()
             btn = self.mouse_btn(qevent.button())
             if etype == QEvent.Type.MouseMove:
-                return MouseEvent(
-                    type="move",
+                return MouseMoveEvent(
                     canvas_pos=canvas_pos,
                     world_ray=ray,
                     buttons=self._active_buttons,
                 )
             elif etype == QEvent.Type.MouseButtonDblClick:
                 self._active_buttons |= btn
-                return MouseEvent(
-                    type="double_press",
+                return MouseDoublePressEvent(
                     canvas_pos=canvas_pos,
                     world_ray=ray,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonPress:
                 self._active_buttons |= btn
-                return MouseEvent(
-                    type="press",
+                return MousePressEvent(
                     canvas_pos=canvas_pos,
                     world_ray=ray,
                     buttons=btn,
                 )
-            # FIXME user might want to know (a) which button was just released
-            # and (b) which buttons are still pressed. (a) is likely more common, but we
-            # may want to revise the design.
             elif etype == QEvent.Type.MouseButtonRelease:
                 self._active_buttons &= ~btn
-                return MouseEvent(
-                    type="release",
+                return MouseReleaseEvent(
                     canvas_pos=canvas_pos,
                     world_ray=ray,
                     buttons=btn,
@@ -96,7 +97,6 @@ class QtEventFilter(QObject, EventFilter):
             if not (ray := self._model_canvas.to_world(canvas_pos)):
                 return None
             return WheelEvent(
-                type="wheel",
                 canvas_pos=canvas_pos,
                 world_ray=ray,
                 buttons=self._active_buttons,

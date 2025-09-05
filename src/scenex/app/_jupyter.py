@@ -7,7 +7,15 @@ from IPython import display
 from jupyter_rfb import RemoteFrameBuffer
 
 from scenex.app._auto import App
-from scenex.app.events._events import EventFilter, MouseButton, MouseEvent, WheelEvent
+from scenex.app.events._events import (
+    EventFilter,
+    MouseButton,
+    MouseDoublePressEvent,
+    MouseMoveEvent,
+    MousePressEvent,
+    MouseReleaseEvent,
+    WheelEvent,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -43,8 +51,7 @@ class JupyterEventFilter(EventFilter):
                     canvas_pos = (ev["x"], ev["y"])
                     if world_ray := filter._model_canvas.to_world(canvas_pos):
                         filter._model_canvas.handle(
-                            MouseEvent(
-                                type="move",
+                            MouseMoveEvent(
                                 canvas_pos=canvas_pos,
                                 world_ray=world_ray,
                                 buttons=filter._active_button,
@@ -56,8 +63,7 @@ class JupyterEventFilter(EventFilter):
                     filter._active_button |= btn
                     if world_ray := filter._model_canvas.to_world(canvas_pos):
                         filter._model_canvas.handle(
-                            MouseEvent(
-                                type="press",
+                            MousePressEvent(
                                 canvas_pos=canvas_pos,
                                 world_ray=world_ray,
                                 buttons=btn,
@@ -72,8 +78,7 @@ class JupyterEventFilter(EventFilter):
                         # This could cause unintended behavior. See
                         # https://github.com/vispy/jupyter_rfb/blob/62831dd5a87bc19b4fd5f921d802ed21141e61ec/js/lib/widget.js#L270
                         filter._model_canvas.handle(
-                            MouseEvent(
-                                type="double_press",
+                            MouseDoublePressEvent(
                                 canvas_pos=canvas_pos,
                                 world_ray=world_ray,
                                 buttons=btn,
@@ -85,8 +90,7 @@ class JupyterEventFilter(EventFilter):
                     filter._active_button &= ~btn
                     if world_ray := filter._model_canvas.to_world(canvas_pos):
                         filter._model_canvas.handle(
-                            MouseEvent(
-                                type="release",
+                            MouseReleaseEvent(
                                 canvas_pos=canvas_pos,
                                 world_ray=world_ray,
                                 buttons=btn,
@@ -97,7 +101,6 @@ class JupyterEventFilter(EventFilter):
                     if world_ray := filter._model_canvas.to_world(canvas_pos):
                         filter._model_canvas.handle(
                             WheelEvent(
-                                type="wheel",
                                 canvas_pos=canvas_pos,
                                 world_ray=world_ray,
                                 buttons=filter._active_button,

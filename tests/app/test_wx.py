@@ -9,7 +9,14 @@ import pytest
 
 import scenex as snx
 from scenex.app import GuiFrontend, determine_app
-from scenex.app.events import MouseButton, MouseEvent, Ray, WheelEvent
+from scenex.app.events import (
+    MouseButton,
+    MouseMoveEvent,
+    MousePressEvent,
+    MouseReleaseEvent,
+    Ray,
+    WheelEvent,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -74,11 +81,10 @@ def test_mouse_press(evented_canvas: snx.Canvas) -> None:
     # Press the left button
     _processEvent(wx.EVT_LEFT_DOWN, native, pos=wx.Point(*press_point))
     mock.assert_called_once_with(
-        MouseEvent(
-            "press",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT,
+        MousePressEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -87,11 +93,10 @@ def test_mouse_press(evented_canvas: snx.Canvas) -> None:
     # Now press the right button
     _processEvent(wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point))
     mock.assert_called_once_with(
-        MouseEvent(
-            "press",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.RIGHT,
+        MousePressEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.RIGHT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -106,11 +111,10 @@ def test_mouse_release(evented_canvas: snx.Canvas) -> None:
     press_point = (5, 10)
     _processEvent(wx.EVT_LEFT_UP, native, pos=wx.Point(*press_point))
     mock.assert_called_once_with(
-        MouseEvent(
-            "release",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT,
+        MouseReleaseEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -129,11 +133,10 @@ def test_mouse_move(evented_canvas: snx.Canvas) -> None:
     mock.reset_mock()
     _processEvent(wx.EVT_MOTION, native, pos=wx.Point(*press_point))
     mock.assert_called_once_with(
-        MouseEvent(
-            "move",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT | MouseButton.RIGHT,
+        MouseMoveEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT | MouseButton.RIGHT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -149,10 +152,9 @@ def test_mouse_wheel(evented_canvas: snx.Canvas) -> None:
     _processEvent(wx.EVT_MOUSEWHEEL, native, pos=wx.Point(*press_point), rot=(0, 120))
     mock.assert_called_once_with(
         WheelEvent(
-            "wheel",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.NONE,
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.NONE,
             angle_delta=(0, 120),
         ),
         evented_canvas.views[0].camera,

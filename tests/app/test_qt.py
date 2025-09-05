@@ -9,7 +9,14 @@ import pytest
 
 import scenex as snx
 from scenex.app import GuiFrontend, determine_app
-from scenex.app.events import MouseButton, MouseEvent, Ray
+from scenex.app.events import (
+    MouseButton,
+    MouseDoublePressEvent,
+    MouseMoveEvent,
+    MousePressEvent,
+    MouseReleaseEvent,
+    Ray,
+)
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
@@ -56,11 +63,10 @@ def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     # Press the left button
     qtbot.mousePress(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
     mock.assert_called_once_with(
-        MouseEvent(
-            "press",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT,
+        MousePressEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -69,11 +75,10 @@ def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     # Now press the right button
     qtbot.mousePress(native, Qt.MouseButton.RightButton, pos=QPoint(*press_point))
     mock.assert_called_once_with(
-        MouseEvent(
-            "press",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.RIGHT,
+        MousePressEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.RIGHT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -88,11 +93,10 @@ def test_mouse_release(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     press_point = (5, 10)
     qtbot.mouseRelease(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
     mock.assert_called_once_with(
-        MouseEvent(
-            "release",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT,
+        MouseReleaseEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -111,11 +115,10 @@ def test_mouse_move(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     mock.reset_mock()
     qtbot.mouseMove(native, pos=QPoint(*press_point))
     mock.assert_called_once_with(
-        MouseEvent(
-            "move",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT | MouseButton.RIGHT,
+        MouseMoveEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT | MouseButton.RIGHT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -130,20 +133,18 @@ def test_mouse_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     press_point = (5, 10)
     qtbot.mouseClick(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
     assert mock.call_args_list[0].args == (
-        MouseEvent(
-            "press",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT,
+        MousePressEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
         ),
         evented_canvas.views[0].camera,
     )
     assert mock.call_args_list[1].args == (
-        MouseEvent(
-            "release",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT,
+        MouseReleaseEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -159,11 +160,10 @@ def test_mouse_double_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     # Note that in Qt a double click does NOT implicitly imply a release as well.
     qtbot.mouseDClick(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
     assert mock.call_args_list[0].args == (
-        MouseEvent(
-            "double_press",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT,
+        MouseDoublePressEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
         ),
         evented_canvas.views[0].camera,
     )

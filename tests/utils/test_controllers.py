@@ -6,7 +6,13 @@ import numpy as np
 import pylinalg as la
 
 import scenex as snx
-from scenex.app.events import MouseButton, MouseEvent, Ray, WheelEvent
+from scenex.app.events import (
+    MouseButton,
+    MouseMoveEvent,
+    MousePressEvent,
+    Ray,
+    WheelEvent,
+)
 from scenex.model._transform import Transform
 from scenex.utils.controllers import OrbitController, PanZoomController
 
@@ -21,16 +27,14 @@ def test_panzoomcontroller_pan() -> None:
     controller = PanZoomController()
     cam = snx.Camera(interactive=True, controller=controller)
     # Simulate mouse press
-    press_event = MouseEvent(
-        type="press",
+    press_event = MousePressEvent(
         canvas_pos=(0, 0),
         world_ray=Ray((10, 10, 0), (0, 0, -1)),
         buttons=MouseButton.LEFT,
     )
     controller(press_event, cam)
     # Simulate mouse move
-    move_event = MouseEvent(
-        type="move",
+    move_event = MouseMoveEvent(
         canvas_pos=(0, 0),
         world_ray=Ray((15, 20, 0), (0, 0, -1)),
         buttons=MouseButton.LEFT,
@@ -48,7 +52,6 @@ def test_panzoomcontroller_zoom() -> None:
     cam.set_event_filter(controller)
     # Simulate wheel event
     wheel_event = WheelEvent(
-        type="wheel",
         canvas_pos=(0, 0),
         world_ray=Ray((0, 0, 0), (0, 0, -1)),
         buttons=MouseButton.NONE,
@@ -82,8 +85,7 @@ def test_orbitcontroller_orbit() -> None:
     pos_before = cam.transform.map((0, 0, 0))[:3]
     # Simulate mouse press
     click_pos = (view.layout.width / 2, view.layout.height / 2)
-    press_event = MouseEvent(
-        type="press",
+    press_event = MousePressEvent(
         canvas_pos=click_pos,
         world_ray=_validate_ray(canvas.to_world(click_pos)),
         buttons=MouseButton.LEFT,
@@ -91,16 +93,14 @@ def test_orbitcontroller_orbit() -> None:
     controller(press_event, cam)
     # Simulate mouse move (orbit) of one horizontal pixel
     move_pos = (click_pos[0] + 1, click_pos[1])
-    move_event = MouseEvent(
-        type="move",
+    move_event = MouseMoveEvent(
         canvas_pos=move_pos,
         world_ray=_validate_ray(canvas.to_world(move_pos)),
         buttons=MouseButton.LEFT,
     )
     controller(move_event, cam)
     move_pos = (click_pos[0] + 1, click_pos[1] + 1)
-    move_event = MouseEvent(
-        type="move",
+    move_event = MouseMoveEvent(
         canvas_pos=move_pos,
         world_ray=_validate_ray(canvas.to_world(move_pos)),
         buttons=MouseButton.LEFT,
@@ -128,7 +128,6 @@ def test_orbitcontroller_zoom() -> None:
     tform_before = cam.transform
     # Simulate wheel event
     wheel_event = WheelEvent(
-        type="wheel",
         canvas_pos=(0, 0),
         world_ray=Ray((0, 0, 10), (0, 0, -1)),
         buttons=MouseButton.NONE,
@@ -142,7 +141,6 @@ def test_orbitcontroller_zoom() -> None:
 
     # Simulate wheel event in other direction
     wheel_event = WheelEvent(
-        type="wheel",
         canvas_pos=(0, 0),
         world_ray=Ray((0, 0, 10), (0, 0, -1)),
         buttons=MouseButton.NONE,
@@ -177,8 +175,7 @@ def test_orbitcontroller_pan() -> None:
     click_pos = (view.layout.width / 2, view.layout.height / 2)
     world_ray_before = canvas.to_world(click_pos)
     assert world_ray_before is not None
-    press_event = MouseEvent(
-        type="press",
+    press_event = MousePressEvent(
         canvas_pos=click_pos,
         world_ray=world_ray_before,
         buttons=MouseButton.RIGHT,
@@ -188,8 +185,7 @@ def test_orbitcontroller_pan() -> None:
     click_pos = (click_pos[0], click_pos[1] + view.layout.height // 2)
     world_ray_after = canvas.to_world(click_pos)
     assert world_ray_after is not None
-    move_event = MouseEvent(
-        type="move",
+    move_event = MouseMoveEvent(
         canvas_pos=click_pos,
         world_ray=world_ray_after,
         buttons=MouseButton.RIGHT,

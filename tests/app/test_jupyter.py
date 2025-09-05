@@ -10,7 +10,15 @@ import pytest
 import scenex as snx
 from scenex.adaptors._auto import determine_backend
 from scenex.app import GuiFrontend, determine_app
-from scenex.app.events import MouseButton, MouseEvent, Ray, WheelEvent
+from scenex.app.events import (
+    MouseButton,
+    MouseDoublePressEvent,
+    MouseMoveEvent,
+    MousePressEvent,
+    MouseReleaseEvent,
+    Ray,
+    WheelEvent,
+)
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
@@ -71,11 +79,10 @@ def test_pointer_down(evented_canvas: snx.Canvas) -> None:
         }
     )
     mock.assert_called_once_with(
-        MouseEvent(
-            "press",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT,
+        MousePressEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -91,11 +98,10 @@ def test_pointer_down(evented_canvas: snx.Canvas) -> None:
         }
     )
     mock.assert_called_once_with(
-        MouseEvent(
-            "press",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.RIGHT,
+        MousePressEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.RIGHT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -117,11 +123,10 @@ def test_pointer_up(evented_canvas: snx.Canvas) -> None:
         }
     )
     mock.assert_called_once_with(
-        MouseEvent(
-            "release",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT,
+        MouseReleaseEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -143,11 +148,10 @@ def test_pointer_move(evented_canvas: snx.Canvas) -> None:
         }
     )
     mock.assert_called_once_with(
-        MouseEvent(
-            "move",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT,
+        MouseMoveEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -162,11 +166,10 @@ def test_pointer_move(evented_canvas: snx.Canvas) -> None:
         }
     )
     mock.assert_called_once_with(
-        MouseEvent(
-            "move",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT | MouseButton.RIGHT,
+        MouseMoveEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT | MouseButton.RIGHT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -188,11 +191,10 @@ def test_mouse_double_click(evented_canvas: snx.Canvas) -> None:
         }
     )
     mock.assert_called_once_with(
-        MouseEvent(
-            "double_press",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.LEFT,
+        MouseDoublePressEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
         ),
         evented_canvas.views[0].camera,
     )
@@ -216,10 +218,9 @@ def test_wheel(evented_canvas: snx.Canvas) -> None:
     )
     mock.assert_called_once_with(
         WheelEvent(
-            "wheel",
-            press_point,
-            _validate_ray(evented_canvas.to_world(press_point)),
-            MouseButton.NONE,
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.NONE,
             angle_delta=(0, 120),
         ),
         evented_canvas.views[0].camera,
