@@ -5,7 +5,14 @@ from typing import TYPE_CHECKING
 import glfw
 
 from scenex.app._auto import App
-from scenex.app.events._events import EventFilter, MouseButton, MouseEvent, WheelEvent
+from scenex.app.events import (
+    EventFilter,
+    MouseButton,
+    MouseMoveEvent,
+    MousePressEvent,
+    MouseReleaseEvent,
+    WheelEvent,
+)
 
 if TYPE_CHECKING:
     from typing import Any
@@ -52,8 +59,7 @@ class GlfwEventFilter(EventFilter):
         canvas_pos = (xpos, ypos)
         if ray := self._canvas.to_world(canvas_pos):
             self._canvas.handle(
-                MouseEvent(
-                    type="move",
+                MouseMoveEvent(
                     canvas_pos=canvas_pos,
                     world_ray=ray,
                     buttons=self._active_button,
@@ -81,8 +87,7 @@ class GlfwEventFilter(EventFilter):
             if action == glfw.PRESS:
                 self._active_button |= BUTTONMAP[button]
                 self._canvas.handle(
-                    MouseEvent(
-                        type="press",
+                    MousePressEvent(
                         canvas_pos=pos,
                         world_ray=ray,
                         buttons=self._active_button,
@@ -91,8 +96,7 @@ class GlfwEventFilter(EventFilter):
             elif action == glfw.RELEASE:
                 self._active_button &= ~BUTTONMAP[button]
                 self._canvas.handle(
-                    MouseEvent(
-                        type="release",
+                    MouseReleaseEvent(
                         canvas_pos=pos,
                         world_ray=ray,
                         buttons=self._active_button,
@@ -109,7 +113,6 @@ class GlfwEventFilter(EventFilter):
         # Mouse wheel event
         self._canvas.handle(
             WheelEvent(
-                type="scroll",
                 canvas_pos=pos,
                 world_ray=ray,
                 buttons=self._active_button,

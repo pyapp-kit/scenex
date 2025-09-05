@@ -35,7 +35,7 @@ def test_transform_defaults(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
     node = adaptor._vispy_node
     assert isinstance(node, BaseCamera)
 
-    w, h = node.viewbox.size
+    w, h = node.viewbox.size  # pyright: ignore[reportOptionalMemberAccess]
     # Vispy wants to map [-1, 1] to [0, 0]
     # Vispy wants to map [1, -1] to [w, h]
     exp_tform_mat = np.asarray(
@@ -58,7 +58,7 @@ def test_transform_translate(camera: tuple[snx.Camera, adaptors.Camera]) -> None
     # Move the camera
     model.transform = Transform().translated((1, 1))
 
-    w, h = node.viewbox.size
+    w, h = node.viewbox.size  # pyright: ignore[reportOptionalMemberAccess]
     # Vispy wants to map [0, 2] to [0, 0]
     # Vispy wants to map [2, 0] to [w, h]
     exp_tform_mat = np.asarray(
@@ -81,7 +81,7 @@ def test_transform_scale(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
     # Widen the projection matrix
     model.projection = projections.orthographic(4, 4, 4)
 
-    w, h = node.viewbox.size
+    w, h = node.viewbox.size  # pyright: ignore[reportOptionalMemberAccess]
     # Vispy wants to map [-2, 2] to [0, 0]
     # Vispy wants to map [2, -2] to [10, 10]
     exp_tform_mat = np.asarray(

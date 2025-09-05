@@ -12,7 +12,7 @@ img = snx.Image(
     interactive=True,
 )
 
-view = snx.View(blending="default", scene=snx.Scene(children=[img]))
+view = snx.View(scene=snx.Scene(children=[img]))
 
 
 def _img_filter(event: Event, node: snx.Node) -> bool:
