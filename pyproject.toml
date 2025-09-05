@@ -75,7 +75,7 @@ docs = [
 dev = [
     { include-group = "test" },
     { include-group = "docs" },
-    "scenex[pygfx,vispy,imgui,jupyter,pyqt]", # FIXME: Add wx (and prevent it from breaking pre-commit)
+    "scenex[pygfx,vispy,imgui,jupyter,pyqt,wx]",
     "imageio[tifffile] >=2.20",
     "ipython",
     "mypy",

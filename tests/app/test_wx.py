@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from scenex.adaptors._base import CanvasAdaptor
 
 if determine_app() == GuiFrontend.WX:
-    import wx  # pyright: ignore[reportMissingImports]
+    import wx
 else:
     pytest.skip(
         "Skipping WxPython tests as WxPython will not be used in this environment",
