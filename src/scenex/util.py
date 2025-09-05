@@ -8,6 +8,8 @@ from contextlib import suppress
 from typing import TYPE_CHECKING, Any, Protocol
 
 from scenex import model
+from scenex.app import app
+from scenex.utils import projections
 
 if TYPE_CHECKING:
     from typing import TypeAlias
@@ -123,9 +125,9 @@ def show(
     canvas.visible = True
     reg = get_adaptor_registry(backend=backend)
     reg.get_adaptor(canvas, create=True)
+    app().create_app()
     for view in canvas.views:
-        cam = reg.get_adaptor(view.camera)
-        cam._snx_zoom_to_fit(0.1)
+        projections.zoom_to_fit(view, zoom_factor=0.9)
 
         # logger.debug("SHOW MODEL  %s", tree_repr(view.scene))
         # native_scene = view.scene._get_native()

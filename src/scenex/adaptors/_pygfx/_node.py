@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Generic, TypeVar, cast
 
 from scenex.adaptors._base import NodeAdaptor, TNode
 
@@ -26,9 +26,6 @@ class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj, TMat, TGeo]):
     _material: TMat
     _geometry: TGeo
     _name: str
-
-    def _snx_get_native(self) -> Any:
-        return self._pygfx_node
 
     def _snx_set_name(self, arg: str) -> None:
         # not sure pygfx has a name attribute...
@@ -66,7 +63,7 @@ class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj, TMat, TGeo]):
     def _snx_add_node(self, node: model.Node) -> None:
         # create if it doesn't exist
         adaptor = cast("Node", get_adaptor(node))
-        self._pygfx_node.add(adaptor._snx_get_native())
+        self._pygfx_node.add(adaptor._pygfx_node)
 
     def _snx_force_update(self) -> None:
         pass
