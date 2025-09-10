@@ -76,7 +76,8 @@ def test_orbitcontroller_orbit() -> None:
     canvas.views.append(view)
     # Position the camera along the x-axis, looking in the negative x direction at the
     # center
-    cam.transform = Transform().rotated(90, (0, 1, 0)).translated((10, 0, 0))
+    cam.transform = Transform().translated((10, 0, 0))
+    cam.look_at((0, 0, 0), up=(0, 0, 1))
     ray = canvas.to_world((view.layout.width / 2, view.layout.height / 2))
     assert ray is not None
     np.testing.assert_allclose(ray.origin, (10, 0, 0), atol=1e-7)
@@ -91,14 +92,7 @@ def test_orbitcontroller_orbit() -> None:
         buttons=MouseButton.LEFT,
     )
     controller(press_event, cam)
-    # Simulate mouse move (orbit) of one horizontal pixel
-    move_pos = (click_pos[0] + 1, click_pos[1])
-    move_event = MouseMoveEvent(
-        canvas_pos=move_pos,
-        world_ray=_validate_ray(canvas.to_world(move_pos)),
-        buttons=MouseButton.LEFT,
-    )
-    controller(move_event, cam)
+    # Simulate mouse move (orbit) of one horizontal pixel and one vertical pixel
     move_pos = (click_pos[0] + 1, click_pos[1] + 1)
     move_event = MouseMoveEvent(
         canvas_pos=move_pos,
@@ -106,7 +100,8 @@ def test_orbitcontroller_orbit() -> None:
         buttons=MouseButton.LEFT,
     )
     controller(move_event, cam)
-    # Assert camera position conforms to expectation (rotated 1 degree around z axis)
+    # Assert camera position conforms to expectation
+    # (one degree around y axis and one degree around z axis)
     pos_after_exp = la.vec_transform_quat(
         pos_before,
         la.quat_mul(
@@ -117,7 +112,7 @@ def test_orbitcontroller_orbit() -> None:
         ),
     )
     pos_after_act = cam.transform.map((0, 0, 0))[:3]
-    np.testing.assert_allclose(pos_after_exp, pos_after_act)
+    np.testing.assert_allclose(pos_after_act, pos_after_exp)
 
 
 def test_orbitcontroller_zoom() -> None:

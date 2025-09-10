@@ -74,17 +74,12 @@ class OrbitController:
             #   d. Translating by the centerpoint, to reorient the camera around
             #           that centerpoint.
 
-            # FIXME: There's a problem evident when going crazy with orbit where the
-            # up vector gets distorted (i.e. is not in the plane of forward and
-            # polar axes). May arise from leaving and re-entering the view while the
-            # mouse is held.
-
             # Step 0: Gather transform components, relative to camera center
             orbit_mat = node.transform.translated(-self.center)
-            position, rotation, _scale = la.mat_decompose(orbit_mat.T)
+            position, _rotation, _scale = la.mat_decompose(orbit_mat.T)
             # TODO: Make this a controller parameter
             camera_polar = (0, 0, 1)
-            camera_right = np.cross(camera_polar, position)
+            camera_right = np.cross(node.forward, node.up)
 
             # Step 1
             d_azimuth = self._last_canvas_pos[0] - event.canvas_pos[0]
