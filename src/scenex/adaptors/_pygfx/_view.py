@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
     from scenex import model
 
-    from . import _camera, _canvas, _scene
+    from . import _camera, _scene
 
 logger = logging.getLogger("scenex.adaptors.pygfx")
 
@@ -31,16 +31,17 @@ class View(ViewAdaptor):
 
     def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
         self._model = view
-        canvas_adaptor = cast("_canvas.Canvas", get_adaptor(view.canvas))
-        wgpu_canvas = canvas_adaptor._wgpu_canvas
-        self._renderer = pygfx.renderers.WgpuRenderer(wgpu_canvas)
-        size = tuple(wgpu_canvas.get_logical_size())
-        self._rect = (0, 0, float(size[0]), float(size[1]))
+        self._renderer: pygfx.renderers.WgpuRenderer | None = None
+        self._rect: tuple[float, float, float, float] | None = None
 
         self._snx_set_scene(view.scene)
         self._snx_set_camera(view.camera)
         # TODO: this is needed... but breaks tests until we deal with Layout better.
         # self._snx_set_background_color(view.layout.background_color)
+
+    def _set_pygfx_canvas(self, canvas: Any) -> None:
+        self._renderer = pygfx.renderers.WgpuRenderer(canvas)
+        self._rect = (0, 0, canvas.size[0], canvas.size[1])
 
     def _snx_get_native(self) -> pygfx.Viewport:
         return pygfx.Viewport(self._renderer)
@@ -57,8 +58,9 @@ class View(ViewAdaptor):
         self._pygfx_cam = self._cam_adaptor._pygfx_node
 
     def _draw(self) -> None:
-        self._renderer.render(self._pygfx_scene, self._pygfx_cam, rect=self._rect)
-        self._renderer.request_draw()
+        if self._renderer:
+            self._renderer.render(self._pygfx_scene, self._pygfx_cam, rect=self._rect)
+            self._renderer.request_draw()
 
     def _snx_set_position(self, arg: tuple[float, float]) -> None:
         logger.warning("View.set_position not implemented for pygfx")

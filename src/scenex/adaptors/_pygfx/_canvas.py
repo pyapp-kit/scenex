@@ -92,6 +92,9 @@ class Canvas(CanvasAdaptor):
             return
         self._views.append(view)
 
+        view_adaptor = cast("View", get_adaptor(view))
+        view_adaptor._set_pygfx_canvas(self._wgpu_canvas)
+
         # FIXME: Allow customization
         x = 0.0
         dx = float(self._wgpu_canvas.get_logical_size()[0]) / len(self._views)
