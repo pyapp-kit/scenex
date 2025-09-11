@@ -5,16 +5,22 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 import numpy as np
 import vispy.scene
 
+from scenex import model
 from scenex.adaptors._base import NodeAdaptor, TNode
 
 from ._adaptor_registry import get_adaptor
 
 if TYPE_CHECKING:
-    from scenex import model
     from scenex.model import Transform
 
 
 TObj = TypeVar("TObj", bound="vispy.scene.Node")
+
+BLEND_MODES = {
+    model.BlendMode.OPAQUE: "opaque",
+    model.BlendMode.ALPHA: "translucent",
+    model.BlendMode.ADDITIVE: "additive",
+}
 
 
 class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj]):
@@ -55,6 +61,14 @@ class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj]):
         self._vispy_node.transform = vispy.scene.transforms.MatrixTransform(
             np.asarray(arg)
         )
+
+    def _snx_set_blending(self, arg: model.BlendMode) -> None:
+        if hasattr(self._vispy_node, "set_gl_state"):
+            if arg == model.BlendMode.OPAQUE:
+                # for opaque, we need to disable blending
+                self._vispy_node.set_gl_state(None, blend=False)  # pyright: ignore
+            else:
+                self._vispy_node.set_gl_state(BLEND_MODES[arg])  # pyright: ignore
 
     def _snx_add_node(self, node: model.Node) -> None:
         # create if it doesn't exist

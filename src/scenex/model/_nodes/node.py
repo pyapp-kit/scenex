@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Iterable, Iterator
+from enum import Enum
 from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, Union, cast
 
 import numpy as np
@@ -58,6 +59,34 @@ AnyNode = Annotated[
 AABB: TypeAlias = tuple[tuple[float, float, float], tuple[float, float, float]]
 
 
+class BlendMode(Enum):
+    """
+    A set of available blending modes.
+
+    Blending modes determine how the colors of rendered objects are combined with the
+    colors already present in the framebuffer. More practically, if two objects overlap
+    from the camera's perspective in the scene, the blending mode of the new object
+    determines how its colors are combined with those of the object previously rendered.
+
+    Note that the draw order plays a crucial role in blending.
+    """
+
+    OPAQUE = "opaque"
+    """The object's color value, multiplied by its alpha value, overwrites the
+    background color.
+    """
+    ALPHA = "alpha"
+    """
+    The object's color is blended with the background using standard alpha compositing.
+    The resulting color is a weighted combination of the foreground and background,
+    where weights are determined by alpha values.
+    """
+    ADDITIVE = "additive"
+    """The object's color value, multiplied by its alpha value, is added to the
+    background color.
+    """
+
+
 class Node(EventedBase):
     """Base class for all nodes.  Also a [`Container[Node]`][collections.abc.Container].
 
@@ -87,6 +116,10 @@ class Node(EventedBase):
         default_factory=Transform,
         description="Transform that maps the local coordinate frame to the coordinate "
         "frame of the parent.",
+    )
+    blending: BlendMode = Field(
+        default=BlendMode.OPAQUE,
+        description="Describes how this node interacts with nodes behind it.",
     )
 
     _filter: Callable[[Event, Node], bool] | None = PrivateAttr(default=None)

@@ -8,7 +8,7 @@ import pytest
 import scenex as snx
 import scenex.adaptors._vispy as adaptors
 from scenex.adaptors._auto import get_adaptor_registry
-from scenex.model._transform import Transform
+from scenex.model import BlendMode, Transform
 
 if TYPE_CHECKING:
     from vispy.visuals import VolumeVisual
@@ -63,6 +63,24 @@ def test_transform(volume: snx.Volume, adaptor: adaptors.Volume) -> None:
     bb = _bounds(adaptor._vispy_node)
     assert bb is not None
     assert np.array_equal(exp_bounds, bb)
+
+
+def test_blending(volume: snx.Volume, adaptor: adaptors.Volume) -> None:
+    # Test blending modes
+    from unittest.mock import MagicMock
+
+    # Note that we can't just get the gl state, so we should assert that the correct
+    # settings were set.
+    adaptor._vispy_node.set_gl_state = MagicMock()
+
+    volume.blending = BlendMode.ADDITIVE
+    adaptor._vispy_node.set_gl_state.assert_called_with("additive")
+
+    volume.blending = BlendMode.ADDITIVE
+    adaptor._vispy_node.set_gl_state.assert_called_with("translucent")
+
+    volume.blending = BlendMode.OPAQUE
+    adaptor._vispy_node.set_gl_state.assert_called_with(None, blend=False)
 
 
 def _bounds(node: VolumeVisual) -> np.ndarray:
