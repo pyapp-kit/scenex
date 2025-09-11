@@ -76,7 +76,7 @@ def test_blending(volume: snx.Volume, adaptor: adaptors.Volume) -> None:
     volume.blending = BlendMode.ADDITIVE
     adaptor._vispy_node.set_gl_state.assert_called_with("additive")
 
-    volume.blending = BlendMode.ADDITIVE
+    volume.blending = BlendMode.ALPHA
     adaptor._vispy_node.set_gl_state.assert_called_with("translucent")
 
     volume.blending = BlendMode.OPAQUE
