@@ -138,6 +138,6 @@ def zoom_to_fit(
         # the camera must be a units away from the front plane (at z=(center[2] + d/2))
         z_bound = center[2] + (d / 2) + a
         view.camera.transform = Transform().translated((center[0], center[1], z_bound))
-        view.camera.projection = perspective(fov, a, far=1_000_000)
+        view.camera.projection = perspective(fov, near=1, far=1_000_000)
     else:
         raise TypeError(f"Unrecognized projection type: {type}")
