@@ -60,26 +60,15 @@ class Canvas(CanvasAdaptor):
     def _snx_add_view(self, view: model.View) -> None:
         if view in self._views:
             return
-        self._views.append(view)
-        # FIXME: Allow customization
-        x = 0.0
-        dx = float(self._canvas.size[0]) / len(self._views)
-
-        for view in self._views:
-            view.layout.x = x
-            view.layout.y = 0
-            view.layout.width = dx
-            view.layout.height = self._canvas.size[1]
-            x += dx
 
         self._grid.add_widget(cast("View", get_adaptor(view))._vispy_viewbox)
         get_adaptor(view.camera)._set_view(view.layout.width, view.layout.height)  # type:ignore
 
     def _snx_set_width(self, arg: int) -> None:
-        self._canvas.size = (self._canvas.size[0], arg)
+        self._canvas.size = (arg, self._canvas.size[1])
 
     def _snx_set_height(self, arg: int) -> None:
-        self._canvas.size = (arg, self._canvas.size[1])
+        self._canvas.size = (self._canvas.size[0], arg)
 
     def _snx_set_background_color(self, arg: Color | None) -> None:
         if arg is None:

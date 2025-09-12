@@ -4,17 +4,18 @@ import sys
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from qtpy.QtCore import QEvent, QObject, Qt, QTimer
-from qtpy.QtGui import QMouseEvent, QWheelEvent
+from qtpy.QtGui import QMouseEvent, QResizeEvent, QWheelEvent
 from qtpy.QtWidgets import QApplication, QWidget
 
 from scenex.app._auto import App
-from scenex.app.events._events import (
+from scenex.app.events import (
     EventFilter,
     MouseButton,
     MouseDoublePressEvent,
     MouseMoveEvent,
     MousePressEvent,
     MouseReleaseEvent,
+    ResizeEvent,
     WheelEvent,
 )
 
@@ -90,6 +91,7 @@ class QtEventFilter(QObject, EventFilter):
                     world_ray=ray,
                     buttons=btn,
                 )
+
         elif isinstance(qevent, QWheelEvent):
             # TODO: Figure out the buttons
             pos = qevent.position()
@@ -101,6 +103,13 @@ class QtEventFilter(QObject, EventFilter):
                 world_ray=ray,
                 buttons=self._active_buttons,
                 angle_delta=(qevent.angleDelta().x(), qevent.angleDelta().y()),
+            )
+
+        elif isinstance(qevent, QResizeEvent):
+            size = qevent.size()
+            return ResizeEvent(
+                width=size.width(),
+                height=size.height(),
             )
 
         return None

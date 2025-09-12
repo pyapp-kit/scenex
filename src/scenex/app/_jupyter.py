@@ -14,6 +14,7 @@ from scenex.app.events._events import (
     MouseMoveEvent,
     MousePressEvent,
     MouseReleaseEvent,
+    ResizeEvent,
     WheelEvent,
 )
 
@@ -108,6 +109,13 @@ class JupyterEventFilter(EventFilter):
                                 angle_delta=(ev["dx"], -ev["dy"]),
                             )
                         )
+                elif etype == "resize":
+                    filter._model_canvas.handle(
+                        ResizeEvent(
+                            width=ev["width"],
+                            height=ev["height"],
+                        )
+                    )
 
             return _handle_event
 

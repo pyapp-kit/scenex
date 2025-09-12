@@ -38,6 +38,14 @@ class Ray(NamedTuple):
 
 
 @dataclass
+class ResizeEvent(Event):
+    """A window resize event."""
+
+    width: int  # in pixels
+    height: int  # in pixels
+
+
+@dataclass
 class MouseEvent(Event):
     """Base class for mouse interaction events."""
 

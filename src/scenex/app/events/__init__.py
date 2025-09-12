@@ -10,6 +10,7 @@ from ._events import (
     MousePressEvent,
     MouseReleaseEvent,
     Ray,
+    ResizeEvent,
     WheelEvent,
 )
 
@@ -23,5 +24,6 @@ __all__ = [
     "MousePressEvent",
     "MouseReleaseEvent",
     "Ray",
+    "ResizeEvent",
     "WheelEvent",
 ]

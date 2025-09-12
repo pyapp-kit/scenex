@@ -225,3 +225,23 @@ def test_wheel(evented_canvas: snx.Canvas) -> None:
         ),
         evented_canvas.views[0].camera,
     )
+
+
+def test_resize(evented_canvas: snx.Canvas) -> None:
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    mock = MagicMock()
+    evented_canvas.views[0].camera.set_event_filter(mock)
+    new_size = (400, 300)
+    assert evented_canvas.width != new_size[0]
+    assert evented_canvas.height != new_size[1]
+    native.handle_event(
+        {
+            "event_type": "resize",
+            "width": new_size[0],
+            "height": new_size[1],
+        }
+    )
+    assert evented_canvas.width == new_size[0]
+    assert evented_canvas.height == new_size[1]

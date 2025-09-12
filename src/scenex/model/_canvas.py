@@ -8,7 +8,7 @@ import pylinalg as la
 from cmap import Color
 from pydantic import ConfigDict, Field
 
-from scenex.app.events._events import Event, MouseEvent, Ray
+from scenex.app.events import Event, MouseEvent, Ray, ResizeEvent
 
 from ._base import EventedBase
 from ._evented_list import EventedList
@@ -47,6 +47,28 @@ class Canvas(EventedBase):
         self.views.item_inserted.connect(self._on_view_inserted)
         self.views.item_changed.connect(self._on_view_changed)
         self.views.item_removed.connect(self._on_view_removed)
+
+        self.events.width.connect(self._recompute_layout)
+        self.events.height.connect(self._recompute_layout)
+
+        self._recompute_layout()
+
+    def _recompute_layout(self, dont_use: int | None = None) -> None:
+        if not len(self.views):
+            # Nothing to do
+            return
+        # The parameter is EITHER width or height - just use the model values instead
+        width, height = self.size
+        # FIXME: Allow customization
+        x = 0.0
+        dx = float(width) / len(self.views)
+
+        for view in self.views:
+            view.layout.x = x
+            view.layout.y = 0
+            view.layout.width = dx
+            view.layout.height = height
+            x += dx
 
     def _on_view_inserted(self, idx: int, view: View) -> None:
         view._canvas = self
@@ -104,6 +126,8 @@ class Canvas(EventedBase):
                 # No nodes in the view handled the event - pass it to the camera
                 if not handled and view.camera.interactive:
                     handled |= view.camera.filter_event(event, view.camera)
+        elif isinstance(event, ResizeEvent):
+            self.size = (event.width, event.height)
         return handled
 
     @staticmethod
@@ -143,6 +167,7 @@ class Canvas(EventedBase):
         x = pos_rel[0] / width * 2 - 1
         y = -(pos_rel[1] / height * 2 - 1)
         pos_ndc = (x, y)
+        print(pos_ndc)
 
         # Note that the camera matrix is the matrix multiplication of:
         # * The projection matrix, which projects local space (the rectangular

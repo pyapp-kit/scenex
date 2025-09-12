@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 import vispy
 import vispy.app
-import vispy.color
 import vispy.scene
 import vispy.scene.subscene
+from vispy.geometry import Rect
 
 from scenex.adaptors._base import ViewAdaptor
 
@@ -33,10 +33,19 @@ class View(ViewAdaptor):
     _vispy_camera: vispy.scene.BaseCamera
 
     def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
+        self._model = view
         self._vispy_viewbox = vispy.scene.ViewBox()
 
         self._snx_set_camera(view.camera)
         self._snx_set_scene(view.scene)
+
+        view.layout.events.all.connect(self._on_layout_changed)
+
+    def _on_layout_changed(self, event: Any) -> None:
+        rect = Rect(self._model.layout.content_rect)
+        self._vispy_viewbox.rect = rect
+        self._vispy_viewbox.update()
+        self._cam_adaptor._set_view(rect.width, rect.height)
 
     def _snx_get_native(self) -> Any:
         return self._vispy_viewbox
@@ -73,6 +82,7 @@ class View(ViewAdaptor):
             self._vispy_viewbox.camera = self._vispy_camera
             # Vispy camera transforms need knowledge of viewbox
             # (specifically, its size)
+            self._vispy_viewbox.update()
             self._cam_adaptor._set_view(*self._vispy_viewbox.size)
 
     def _draw(self) -> None:

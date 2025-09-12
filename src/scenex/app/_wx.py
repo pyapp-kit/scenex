@@ -11,6 +11,7 @@ from scenex.app.events._events import (
     MouseMoveEvent,
     MousePressEvent,
     MouseReleaseEvent,
+    ResizeEvent,
     WheelEvent,
 )
 
@@ -41,6 +42,7 @@ class WxEventFilter(EventFilter):
         self._canvas.Bind(wx.EVT_MIDDLE_UP, handler=self._on_mouse_up)
         self._canvas.Bind(wx.EVT_MOTION, handler=self._on_mouse_move)
         self._canvas.Bind(wx.EVT_MOUSEWHEEL, handler=self._on_wheel)
+        self._canvas.Bind(wx.EVT_SIZE, handler=self._on_resize)
 
     def uninstall(self) -> None:
         self._canvas.Unbind(wx.EVT_LEFT_DOWN)
@@ -51,6 +53,16 @@ class WxEventFilter(EventFilter):
         self._canvas.Unbind(wx.EVT_MIDDLE_UP)
         self._canvas.Unbind(wx.EVT_MOTION)
         self._canvas.Unbind(wx.EVT_MOUSEWHEEL)
+        self._canvas.Unbind(wx.EVT_SIZE)
+
+    def _on_resize(self, event: wx.SizeEvent) -> None:
+        self._model_canvas.handle(
+            ResizeEvent(
+                width=event.GetSize().GetWidth(),
+                height=event.GetSize().GetHeight(),
+            )
+        )
+        event.Skip()
 
     def _on_mouse_down(self, event: wx.MouseEvent) -> None:
         btn = self._map_button(event)

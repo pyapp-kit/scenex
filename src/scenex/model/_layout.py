@@ -75,6 +75,18 @@ class Layout(EventedBase):
         """Return the width, height of the layout as a tuple."""
         return self.width, self.height
 
+    @computed_field  # type: ignore [prop-decorator]
+    @property
+    def content_rect(self) -> tuple[float, float, float, float]:
+        """Return the (x, y, width, height) of the content area."""
+        offset = self.padding + self.border_width + self.margin
+        return (
+            self.x + offset,
+            self.y + offset,
+            self.width - 2 * offset,
+            self.height - 2 * offset,
+        )
+
     def __contains__(self, pos: tuple[float, float]) -> bool:
         offset = self.padding + self.border_width + self.margin
 

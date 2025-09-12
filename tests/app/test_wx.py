@@ -46,9 +46,8 @@ def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None
     Note that wx.UIActionSimulator is an alternative to this approach.
     It seems to actually move the cursor around though, which is really annoying :)
     """
-    if evt == wx.EVT_ACTIVATE:
-        active = kwargs.get("active", True)
-        ev = wx.ActivateEvent(eventType=evt.typeId, active=active)
+    if evt == wx.EVT_SIZE:
+        ev = wx.SizeEvent(kwargs["sz"], evt.typeId)
     else:
         ev = wx.MouseEvent(evt.typeId)
         ev.SetPosition(kwargs["pos"])
@@ -159,3 +158,16 @@ def test_mouse_wheel(evented_canvas: snx.Canvas) -> None:
         ),
         evented_canvas.views[0].camera,
     )
+
+
+def test_resize(evented_canvas: snx.Canvas) -> None:
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    mock = MagicMock()
+    evented_canvas.views[0].camera.set_event_filter(mock)
+    new_size = (400, 300)
+    # Note that the widget must be visible for a resize event to fire
+    _processEvent(wx.EVT_SIZE, native, sz=wx.Size(*new_size))
+    assert evented_canvas.width == new_size[0]
+    assert evented_canvas.height == new_size[1]

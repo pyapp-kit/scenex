@@ -32,7 +32,6 @@ class View(ViewAdaptor):
     def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
         self._model = view
         self._renderer: pygfx.renderers.WgpuRenderer | None = None
-        self._rect: tuple[float, float, float, float] | None = None
 
         self._snx_set_scene(view.scene)
         self._snx_set_camera(view.camera)
@@ -41,7 +40,6 @@ class View(ViewAdaptor):
 
     def _set_pygfx_canvas(self, canvas: Any, x: int, y: int) -> None:
         self._renderer = pygfx.renderers.WgpuRenderer(canvas)
-        self._rect = (0, 0, x, y)
 
     def _snx_get_native(self) -> pygfx.Viewport:
         return pygfx.Viewport(self._renderer)
@@ -59,7 +57,9 @@ class View(ViewAdaptor):
 
     def _draw(self) -> None:
         if self._renderer:
-            self._renderer.render(self._pygfx_scene, self._pygfx_cam, rect=self._rect)
+            self._renderer.render(
+                self._pygfx_scene, self._pygfx_cam, rect=self._model.layout.content_rect
+            )
             self._renderer.request_draw()
 
     def _snx_set_position(self, arg: tuple[float, float]) -> None:

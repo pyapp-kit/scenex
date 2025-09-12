@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 import pytest
 
 import scenex as snx
-from scenex.app import GuiFrontend, determine_app
+from scenex.app import GuiFrontend, app, determine_app
 from scenex.app.events import (
     MouseButton,
     MouseDoublePressEvent,
@@ -27,6 +27,7 @@ if determine_app() == GuiFrontend.QT:
 
     if TYPE_CHECKING:
         from pytestqt.qtbot import QtBot  # pyright: ignore[reportMissingImports]
+        from qtpy.QtWidgets import QWidget
 else:
     pytest.skip(
         "Skipping Qt tests as Qt will not be used in this environment",
@@ -167,6 +168,23 @@ def test_mouse_double_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
         ),
         evented_canvas.views[0].camera,
     )
+
+
+def test_resize(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    mock = MagicMock()
+    evented_canvas.views[0].camera.set_event_filter(mock)
+    new_size = (400, 300)
+    assert evented_canvas.width != new_size[0]
+    assert evented_canvas.height != new_size[1]
+    # Note that the widget must be visible for a resize event to fire
+    cast("QWidget", native).setVisible(True)
+    cast("QWidget", native).resize(*new_size)
+    app().process_events()
+    assert evented_canvas.width == new_size[0]
+    assert evented_canvas.height == new_size[1]
 
 
 # TODO: Implement when Qt new enough

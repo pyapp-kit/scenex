@@ -120,7 +120,12 @@ def show(
             scene = model.Scene(children=[obj])
             view = model.View(scene=scene)
 
-        canvas = model.Canvas(views=[view])  # pyright: ignore[reportArgumentType]
+        canvas = model.Canvas(
+            views=[view],  # pyright: ignore[reportArgumentType]
+            # Respect the view size if provided
+            width=view.layout.width,  # pyright: ignore[reportArgumentType]
+            height=view.layout.height,  # pyright: ignore[reportArgumentType]
+        )  # pyright: ignore[reportArgumentType]
 
     canvas.visible = True
     reg = get_adaptor_registry(backend=backend)
