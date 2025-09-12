@@ -39,9 +39,9 @@ class View(ViewAdaptor):
         # TODO: this is needed... but breaks tests until we deal with Layout better.
         # self._snx_set_background_color(view.layout.background_color)
 
-    def _set_pygfx_canvas(self, canvas: Any) -> None:
+    def _set_pygfx_canvas(self, canvas: Any, x: int, y: int) -> None:
         self._renderer = pygfx.renderers.WgpuRenderer(canvas)
-        self._rect = (0, 0, canvas.size[0], canvas.size[1])
+        self._rect = (0, 0, x, y)
 
     def _snx_get_native(self) -> pygfx.Viewport:
         return pygfx.Viewport(self._renderer)
