@@ -56,6 +56,8 @@ class Volume(Node, VolumeAdaptor):
     def _snx_set_data(self, data: ArrayLike) -> None:
         self._texture = self._create_texture(np.asanyarray(data))
         self._geometry = pygfx.Geometry(grid=self._texture)
+        if hasattr(self, "_pygfx_node"):
+            self._pygfx_node.geometry = self._geometry
 
     def _snx_set_render_mode(
         self,

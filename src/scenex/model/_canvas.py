@@ -167,7 +167,6 @@ class Canvas(EventedBase):
         x = pos_rel[0] / width * 2 - 1
         y = -(pos_rel[1] / height * 2 - 1)
         pos_ndc = (x, y)
-        print(pos_ndc)
 
         # Note that the camera matrix is the matrix multiplication of:
         # * The projection matrix, which projects local space (the rectangular

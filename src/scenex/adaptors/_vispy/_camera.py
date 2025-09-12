@@ -43,6 +43,10 @@ class Camera(Node, CameraAdaptor):
         self._vispy_node = vispy.scene.BaseCamera()
 
     def _set_view(self, w: float, h: float) -> None:
+        # FIXME: For some reason, width can quickly become zero in NDV when switching
+        # channel mode...
+        if w == 0 or h == 0:
+            return
         # map [-1, -1] to [0, h]
         # map [1, 1] to [w, 0]
         self._from_NDC = Transform().translated((1, -1)).scaled((w / 2, -h / 2, 1))
