@@ -74,3 +74,16 @@ def test_to_world_projection() -> None:
     ray = canvas.to_world((0, 0))
     assert ray == Ray(origin=(-0.5, 0.5, 0), direction=(0, 0, -1))
     camera.projection = snx.Transform()
+
+
+def test_canvas_layout() -> None:
+    """Tests adding an incompatible view to a canvas results in a logical scenario"""
+    # TODO: Is this actually the logical scenario?
+    canvas = snx.Canvas()
+    view = snx.View(scene=snx.Scene(children=[]), camera=snx.Camera())
+    view.layout.width = canvas.width + 100
+    view.layout.height = canvas.height + 100
+    canvas.views.append(view)
+
+    assert view.layout.width == canvas.width
+    assert view.layout.height == canvas.height

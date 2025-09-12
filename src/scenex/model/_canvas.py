@@ -72,9 +72,11 @@ class Canvas(EventedBase):
 
     def _on_view_inserted(self, idx: int, view: View) -> None:
         view._canvas = self
+        self._recompute_layout()
 
     def _on_view_removed(self, idx: int, view: View) -> None:
         view._canvas = None
+        self._recompute_layout()
 
     def _on_view_changed(
         self,
@@ -91,6 +93,7 @@ class Canvas(EventedBase):
             new_view = [new_view]
         for view in new_view:
             view._canvas = self
+        self._recompute_layout()
 
     @property
     def size(self) -> tuple[int, int]:
