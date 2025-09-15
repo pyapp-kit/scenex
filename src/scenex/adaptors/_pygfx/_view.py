@@ -57,9 +57,23 @@ class View(ViewAdaptor):
 
     def _draw(self) -> None:
         if self._renderer:
-            self._renderer.render(
-                self._pygfx_scene, self._pygfx_cam, rect=self._model.layout.content_rect
-            )
+            rect = self._model.layout.content_rect
+            # FIXME: On Qt, for HiDPI screens, the logical screen size (the rect
+            # variable above) can, through rounding error during resizing, become
+            # slightly larger than the physical size, which causes pygfx to error.
+            # This code "fixes" it but I think we could do better...maybe upstream?
+            ratio = self._renderer.physical_size[1] / self._renderer.logical_size[1]  # pyright:ignore
+            if rect[2] * ratio > self._renderer.physical_size[0]:
+                # content rect is too wide for the canvas - adjust width
+                new_width = int(self._renderer.physical_size[0] / ratio)
+                rect = (rect[0], rect[1], new_width, rect[3])
+            if rect[3] * ratio > self._renderer.physical_size[1]:
+                # content rect is too tall for the canvas - adjust height
+                new_height = int(self._renderer.physical_size[1] / ratio)
+                rect = (rect[0], rect[1], rect[2], new_height)
+            # End FIXME
+
+            self._renderer.render(self._pygfx_scene, self._pygfx_cam, rect=rect)
             self._renderer.request_draw()
 
     def _snx_set_position(self, arg: tuple[float, float]) -> None:

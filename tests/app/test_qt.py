@@ -174,6 +174,7 @@ def test_resize(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
+    qtbot.add_widget(native)
     mock = MagicMock()
     evented_canvas.views[0].camera.set_event_filter(mock)
     new_size = (400, 300)

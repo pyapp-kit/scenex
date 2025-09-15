@@ -130,6 +130,7 @@ class Canvas(EventedBase):
                 if not handled and view.camera.interactive:
                     handled |= view.camera.filter_event(event, view.camera)
         elif isinstance(event, ResizeEvent):
+            # TODO: How might some event filter tap into the resize?
             self.size = (event.width, event.height)
         return handled
 
