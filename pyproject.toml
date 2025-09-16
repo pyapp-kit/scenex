@@ -75,7 +75,7 @@ docs = [
 dev = [
     { include-group = "test" },
     { include-group = "docs" },
-    "scenex[pygfx,vispy,imgui,jupyter,pyqt]",
+    "scenex[pygfx,vispy,imgui,jupyter,pyqt, wx]",
     "imageio[tifffile] >=2.20",
     "ipython",
     "mypy",
@@ -84,7 +84,6 @@ dev = [
     "rich",
     "ruff",
     "pyright>=1.1.392",
-    "types-wxpython",
 ]
 
 [project.urls]

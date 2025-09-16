@@ -22,16 +22,14 @@ jobs:
       - run: pipx run check-manifest
 
   lint:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
           python-version: "3.13"
-      - uses: tox-dev/action-pre-commit-uv@v1
-        with:
-          extra_args: --all-files --verbose
+      - run: uvx pre-commit run --all-files --verbose
 
   test:
     name: test ${{ matrix.os }} py${{ matrix.python-version }} ${{ matrix.gfx }} ${{ matrix.canvas }}
