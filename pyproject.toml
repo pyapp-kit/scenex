@@ -84,6 +84,7 @@ dev = [
     "rich",
     "ruff",
     "pyright>=1.1.392",
+    "types-wxpython",
 ]
 
 [project.urls]
