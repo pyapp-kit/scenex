@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 import os
 import sys
+from contextlib import contextmanager
 from enum import Enum
 from typing import TYPE_CHECKING, cast
 
@@ -76,6 +77,11 @@ class App:
 
     def call_later(self, msec: int, func: Callable[[], None]) -> None:
         """Call `func` after `msec` milliseconds."""
+        raise NotImplementedError("Must be implemented by subclasses.")
+
+    @contextmanager
+    def block_events(self, window: Any) -> Iterator[None]:
+        """Context manager to block events for a window."""
         raise NotImplementedError("Must be implemented by subclasses.")
 
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any
 
 import wx
@@ -16,7 +17,7 @@ from scenex.app.events._events import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
 
     from scenex import Canvas
     from scenex.adaptors._base import CanvasAdaptor
@@ -166,3 +167,9 @@ class WxAppWrap(App):
     def call_later(self, msec: int, func: Callable[[], None]) -> None:
         """Call `func` after `msec` milliseconds."""
         wx.CallLater(msec, func)
+
+    @contextmanager
+    def block_events(self, window: Any) -> Iterator[None]:
+        """Context manager to block events for a window."""
+        with wx.EventBlocker(window):
+            yield

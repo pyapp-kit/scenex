@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from types import MethodType
 from typing import TYPE_CHECKING, Any, cast
 
@@ -19,7 +20,7 @@ from scenex.app.events._events import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
 
     from scenex import Canvas
     from scenex.adaptors._base import CanvasAdaptor
@@ -189,3 +190,14 @@ class JupyterAppWrap(App):
         from threading import Timer
 
         Timer(msec / 1000, func).start()
+
+    @contextmanager
+    def block_events(self, window: Any) -> Iterator[None]:
+        """Context manager to block events for a window."""
+        if hasattr(window, "handle_event"):
+            old = window.handle_event
+            window.handle_event = lambda *args, **kwargs: None
+            yield
+            window.handle_event = old
+        else:
+            yield

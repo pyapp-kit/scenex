@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import sys
+from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from qtpy.QtCore import QEvent, QObject, Qt, QTimer
 from qtpy.QtGui import QMouseEvent, QResizeEvent, QWheelEvent
 from qtpy.QtWidgets import QApplication, QWidget
+from superqt.utils import signals_blocked
 
 from scenex.app._auto import App
 from scenex.app.events import (
@@ -20,7 +22,7 @@ from scenex.app.events import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
     from typing import Any
 
     from scenex import Canvas
@@ -160,3 +162,9 @@ class QtAppWrap(App):
     def call_later(self, msec: int, func: Callable[[], None]) -> None:
         """Call `func` after `msec` milliseconds."""
         QTimer.singleShot(msec, Qt.TimerType.PreciseTimer, func)
+
+    @contextmanager
+    def block_events(self, window: Any) -> Iterator[None]:
+        """Context manager to block events for a window."""
+        with signals_blocked(window):
+            yield
