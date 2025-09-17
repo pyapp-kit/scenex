@@ -50,6 +50,8 @@ def add_imgui_controls(view: View) -> None:
         raise NotImplementedError(
             "Imgui controls can currently only be added to a canvas backed by pygfx."
         )
+    if not snx_view_adaptor._renderer:
+        raise RuntimeError("The pygfx renderer has not been initialized yet.")
 
     imgui_renderer = ImguiRenderer(
         device=snx_view_adaptor._renderer.device,
