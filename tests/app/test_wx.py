@@ -46,7 +46,14 @@ def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None
     Note that wx.UIActionSimulator is an alternative to this approach.
     It seems to actually move the cursor around though, which is really annoying :)
     """
+    evtLoop = wx.App.Get().GetTraits().CreateEventLoop()
+    wx.EventLoopActivator(evtLoop)
     if evt == wx.EVT_SIZE:
+        if not wdg.IsShown():
+            wdg.Show(True)
+
+            wx.MilliSleep(50)
+            evtLoop.YieldFor(wx.EVT_CATEGORY_ALL)  # pyright: ignore[reportAttributeAccessIssue]
         ev = wx.SizeEvent(kwargs["sz"], evt.typeId)
     else:
         ev = wx.MouseEvent(evt.typeId)
@@ -58,10 +65,7 @@ def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None
     wx.PostEvent(wdg.GetEventHandler(), ev)
     # Borrowed from:
     # https://github.com/wxWidgets/Phoenix/blob/master/unittests/wtc.py#L41
-    wdg.Show(True)
     wx.MilliSleep(50)
-    evtLoop = wx.App.Get().GetTraits().CreateEventLoop()
-    wx.EventLoopActivator(evtLoop)
     evtLoop.YieldFor(wx.EVT_CATEGORY_ALL)  # pyright: ignore[reportAttributeAccessIssue]
 
 
