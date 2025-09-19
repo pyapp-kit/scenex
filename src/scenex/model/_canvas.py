@@ -116,18 +116,19 @@ class Canvas(EventedBase):
         handled = False
         if isinstance(event, MouseEvent):
             if view := self._containing_view(event.canvas_pos):
-                through: list[tuple[Node, float]] = []
-                for child in view.scene.children:
-                    if (d := child.passes_through(event.world_ray)) is not None:
-                        through.append((child, d))
+                # Give the view a chance to observe the result
+                if view.filter_event(event):
+                    return True
 
+                intersections = event.world_ray.intersections(view.scene)
                 # FIXME: Consider only reporting the first?
                 # Or do we only report until we hit a node with opacity=1?
-                for node, _depth in sorted(through, key=lambda e: e[1]):
+                for node, _distance in intersections:
                     # Filter through parent scenes to child
-                    handled |= Canvas._filter_through(event, node, node)
+                    if Canvas._filter_through(event, node, node):
+                        return True
                 # No nodes in the view handled the event - pass it to the camera
-                if not handled and view.camera.interactive:
+                if view.camera.interactive:
                     handled |= view.camera.filter_event(event, view.camera)
         elif isinstance(event, ResizeEvent):
             # TODO: How might some event filter tap into the resize?

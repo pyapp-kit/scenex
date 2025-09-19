@@ -13,9 +13,12 @@ from ._nodes.camera import Camera
 from ._nodes.scene import Scene
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     import numpy as np
 
     from scenex.adaptors._base import ViewAdaptor
+    from scenex.app.events import Event
 
     from ._canvas import Canvas
 
@@ -71,3 +74,24 @@ class View(EventedBase):
         if adaptors := self._get_adaptors():
             return cast("ViewAdaptor", adaptors[0])._snx_render()
         raise RuntimeError("No adaptor found for View.")
+
+    _filter: Callable[[Event], bool] | None = PrivateAttr(default=None)
+
+    def set_event_filter(
+        self, callable: Callable[[Event], bool] | None
+    ) -> Callable[[Event], bool] | None:
+        old, self._filter = self._filter, callable
+        return old
+
+    def filter_event(self, event: Event) -> bool:
+        """
+        Filters the event.
+
+        This method allows the larger view to react to events that:
+        1. Require summarization of multiple smaller event responses.
+        2. Could not be picked up by a node (e.g. mouse leaving an image).
+
+        Note the name has parity with Node.filter_event, but there's much filtering
+        going on.
+        """
+        return self._filter(event) if self._filter else False

@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import IntFlag, auto
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple, TypeAlias
+
+if TYPE_CHECKING:
+    from scenex import Node
 
 
 # Note that scenex follows the inheritance pattern for event subtypes.
@@ -24,6 +27,9 @@ class MouseButton(IntFlag):
     RIGHT = auto()
 
 
+Intersection: TypeAlias = tuple["Node", float]
+
+
 class Ray(NamedTuple):
     """A ray passing through the world."""
 
@@ -35,6 +41,19 @@ class Ray(NamedTuple):
         y = self.origin[1] + self.direction[1] * distance
         z = self.origin[2] + self.direction[2] * distance
         return (x, y, z)
+
+    def intersections(self, graph: Node) -> list[Intersection]:
+        """
+        Find all intersections of this ray with the given scene graph.
+
+        Returns a list of (node, distance) tuples, sorted by distance.
+        """
+        through: list[Intersection] = []
+        for child in graph.children:
+            if (d := child.passes_through(self)) is not None:
+                through.append((child, d))
+                through.extend(self.intersections(child))
+        return sorted(through, key=lambda inter: inter[1])
 
 
 @dataclass
