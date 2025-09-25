@@ -19,15 +19,20 @@ def test_bounding_box(volume: snx.Volume) -> None:
 
 
 def test_passes_through(volume: snx.Volume) -> None:
-    # Check a ray that passes through the volume
+    # Check a ray that passes through the volume hits
     ray = Ray(origin=(50, 50, -1), direction=(0, 0, 1))
     # Note that it intersects at -0.5 because pixel centers are at integer coordinates
     assert volume.passes_through(ray) == 0.5
 
-    # Check a ray that grazes the edge of the volume
+    # Check a ray that grazes the left edge of the volume hits
     ray = Ray(origin=(-0.5, 0, -1), direction=(0, 0, 1))
     assert volume.passes_through(ray) == 0.5
 
-    # Check a ray that does not pass through the volume
+    # Check a ray that grazes the right edge of the volume misses (the front face)
+    ray = Ray(origin=(99.5, 0, -1), direction=(0, 0, 1))
+    # Because of symmetry, we miss the front face of the volume but hit the back face
+    assert volume.passes_through(ray) == 60.5
+
+    # Check a ray that does not pass through the volume misses
     ray = Ray(origin=(-50, -50, -1), direction=(0, 0, 1))
     assert volume.passes_through(ray) is None

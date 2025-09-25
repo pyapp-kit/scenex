@@ -24,18 +24,22 @@ def test_bounding_box(image: snx.Image) -> None:
 
 
 def test_passes_through(image: Image) -> None:
-    # Check a ray that passes through the image
+    # Check a ray that passes through the image hits
     ray = Ray(origin=(50, 50, 1), direction=(0, 0, -1))
     assert image.passes_through(ray) == 1
 
-    # Check a ray that grazes the edge of the image
+    # Check a ray that grazes the left edge of the image hits
     ray = Ray(origin=(-0.5, 0, 1), direction=(0, 0, -1))
     assert image.passes_through(ray) == 1
 
-    # Check a ray that does not pass through the image
+    # Check a ray that grazes the right edge of the image misses
+    ray = Ray(origin=(99.5, 0, 1), direction=(0, 0, -1))
+    assert image.passes_through(ray) is None
+
+    # Check a ray that does not pass through the image misses
     ray = Ray(origin=(-50, -50, 1), direction=(0, 0, -1))
     assert image.passes_through(ray) is None
 
-    # Check a ray that is perpendicular to the image
+    # Check a ray that is perpendicular to the image misses
     ray = Ray(origin=(50, 50, 1), direction=(-1, 0, 0))
     assert image.passes_through(ray) is None

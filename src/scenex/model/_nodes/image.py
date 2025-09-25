@@ -116,8 +116,18 @@ def _passes_through_parallelogram(
 
     # We need to determine whether the planar intersection is within the image
     # interval bounds. In other words, the intersection point should be within
-    # [0, magnitude(u)] units away from the image origin along the u axis and
-    # [0, magnitude(v)] units away from the image origin along the v axis.
+    # [0, magnitude(u)) units away from the image origin along the u axis and
+    # [0, magnitude(v)) units away from the image origin along the v axis.
+    #
+    # Note the open right bound: if the ray intersects exactly on the far edge of the
+    # image, we consider that a miss. This approach serves two important purposes:
+    #
+    # 1. Adjacent image handling: When images are tiled side-by-side, this prevents
+    #    ambiguity at shared boundaries (only one image reports intersection).
+    #
+    # 2. Array indexing safety: The [0, 1) bounds ensure that subsequent coordinate-to-
+    #    array-index mapping never produces out-of-bounds indices. Alternatively we'd
+    #    require clamping logic during array access.
     offset = intersection - origin
 
     # We use some fancy math derived from the link above to convert offset into...
@@ -128,8 +138,8 @@ def _passes_through_parallelogram(
     # ...and the component of offset in direction of v
     beta = np.dot(w, np.cross(u, offset))
 
-    # Our ray passes through the image if alpha and beta are within [0, 1]
-    is_inside = alpha >= 0 and alpha <= 1 and beta >= 0 and beta <= 1
+    # Our ray passes through the image if alpha and beta are within [0, 1)
+    is_inside = alpha >= 0 and alpha < 1 and beta >= 0 and beta < 1
 
     # If the ray passes through node, return the depth of the intersection.
     return t if is_inside else None
