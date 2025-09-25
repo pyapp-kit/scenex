@@ -31,13 +31,14 @@ class Volume(Image):
 
     def passes_through(self, ray: Ray) -> float | None:
         # The ray passes through our volume if it passes through any of the six faces
+        mi, ma = self.bounding_box
         d, w, h = self.data.shape
 
         # We can describe each face using a parallelogram using:
         # A point for the Top, Left, and Front faces
-        tlf = self.transform.map((0, 0, 0, 1))[:3]
+        tlf = self.transform.map((mi[0], mi[1], mi[2], 1))[:3]
         # Or a point for the Bottom, Right, and Back faces
-        brb = self.transform.map((w, h, d, 1))[:3]
+        brb = self.transform.map((ma[0], ma[1], ma[2], 1))[:3]
         # As well as vectors describing the three edges eminating from tlf
         u = self.transform.map((w, 0, 0, 0))[:3]
         v = self.transform.map((0, h, 0, 0))[:3]

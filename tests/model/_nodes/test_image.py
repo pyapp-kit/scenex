@@ -28,6 +28,10 @@ def test_passes_through(image: Image) -> None:
     ray = Ray(origin=(50, 50, 1), direction=(0, 0, -1))
     assert image.passes_through(ray) == 1
 
+    # Check a ray that grazes the edge of the image
+    ray = Ray(origin=(-0.5, 0, 1), direction=(0, 0, -1))
+    assert image.passes_through(ray) == 1
+
     # Check a ray that does not pass through the image
     ray = Ray(origin=(-50, -50, 1), direction=(0, 0, -1))
     assert image.passes_through(ray) is None

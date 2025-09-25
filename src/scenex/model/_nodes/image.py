@@ -51,7 +51,8 @@ class Image(Node):
         return (tuple(mi), tuple(ma))  # type: ignore
 
     def passes_through(self, ray: Ray) -> float | None:
-        origin = self.transform.map((0, 0, 0, 1))[:3]
+        mi, _ma = self.bounding_box
+        origin = self.transform.map(mi)[:3]
         u = self.transform.map((self.data.shape[0], 0, 0, 0))[:3]
         v = self.transform.map((0, self.data.shape[1], 0, 0))[:3]
         return _passes_through_parallelogram(ray, origin, u, v)
