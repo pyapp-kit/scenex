@@ -13,6 +13,8 @@ from scenex.app import GuiFrontend, determine_app
 from scenex.app.events import (
     MouseButton,
     MouseDoublePressEvent,
+    MouseEnterEvent,
+    MouseLeaveEvent,
     MouseMoveEvent,
     MousePressEvent,
     MouseReleaseEvent,
@@ -58,6 +60,7 @@ def _validate_ray(maybe_ray: Ray | None) -> Ray:
 
 
 # See jupyter_rfb.events
+NONE = 0
 LEFT_MOUSE = 1
 RIGHT_MOUSE = 2
 
@@ -245,3 +248,56 @@ def test_resize(evented_canvas: snx.Canvas) -> None:
     )
     assert evented_canvas.width == new_size[0]
     assert evented_canvas.height == new_size[1]
+
+
+def test_pointer_enter(evented_canvas: snx.Canvas) -> None:
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    view_mock = MagicMock()
+    evented_canvas.views[0].set_event_filter(view_mock)
+    enter_point = (0, 0)
+    native.handle_event(
+        {
+            "event_type": "pointer_enter",
+            "x": enter_point[0],
+            "y": enter_point[1],
+            "button": NONE,
+        }
+    )
+    # Verify MouseEnterEvent was passed to view filter
+    view_mock.assert_called_once_with(
+        MouseEnterEvent(
+            canvas_pos=enter_point,
+            world_ray=_validate_ray(evented_canvas.to_world(enter_point)),
+            buttons=MouseButton.NONE,
+        )
+    )
+
+
+def test_pointer_leave(evented_canvas: snx.Canvas) -> None:
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    view_mock = MagicMock()
+    evented_canvas.views[0].set_event_filter(view_mock)
+    enter_point = (0, 0)
+    native.handle_event(
+        {
+            "event_type": "pointer_enter",
+            "x": enter_point[0],
+            "y": enter_point[1],
+            "button": NONE,
+        }
+    )
+    view_mock.reset_mock()
+
+    # Now leave
+    native.handle_event(
+        {
+            "event_type": "pointer_leave",
+        }
+    )
+
+    # Verify MouseLeaveEvent was passed to view filter
+    view_mock.assert_called_once_with(MouseLeaveEvent())

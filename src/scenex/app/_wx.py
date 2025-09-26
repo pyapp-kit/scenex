@@ -9,6 +9,8 @@ from scenex.app._auto import App
 from scenex.app.events._events import (
     EventFilter,
     MouseButton,
+    MouseEnterEvent,
+    MouseLeaveEvent,
     MouseMoveEvent,
     MousePressEvent,
     MouseReleaseEvent,
@@ -43,6 +45,8 @@ class WxEventFilter(EventFilter):
         self._canvas.Bind(wx.EVT_MIDDLE_UP, handler=self._on_mouse_up)
         self._canvas.Bind(wx.EVT_MOTION, handler=self._on_mouse_move)
         self._canvas.Bind(wx.EVT_MOUSEWHEEL, handler=self._on_wheel)
+        self._canvas.Bind(wx.EVT_LEAVE_WINDOW, handler=self._on_leave_window)
+        self._canvas.Bind(wx.EVT_ENTER_WINDOW, handler=self._on_enter_window)
         self._canvas.Bind(wx.EVT_SIZE, handler=self._on_resize)
 
     def uninstall(self) -> None:
@@ -55,6 +59,22 @@ class WxEventFilter(EventFilter):
         self._canvas.Unbind(wx.EVT_MOTION)
         self._canvas.Unbind(wx.EVT_MOUSEWHEEL)
         self._canvas.Unbind(wx.EVT_SIZE)
+
+    def _on_leave_window(self, event: wx.MouseEvent) -> None:
+        self._model_canvas.handle(MouseLeaveEvent())
+        event.Skip()
+
+    def _on_enter_window(self, event: wx.MouseEvent) -> None:
+        pos = event.GetPosition()
+        if ray := self._model_canvas.to_world((pos.x, pos.y)):
+            self._model_canvas.handle(
+                MouseEnterEvent(
+                    canvas_pos=(pos.x, pos.y),
+                    world_ray=ray,
+                    buttons=self._active_button,
+                )
+            )
+            event.Skip()
 
     def _on_resize(self, event: wx.SizeEvent) -> None:
         self._model_canvas.handle(

@@ -2,7 +2,7 @@ import cmap
 import numpy as np
 
 import scenex as snx
-from scenex.app.events import Event, MouseMoveEvent
+from scenex.app.events import Event, MouseEnterEvent, MouseLeaveEvent, MouseMoveEvent
 
 img = snx.Image(
     data=np.zeros((200, 200)).astype(np.uint8),
@@ -38,6 +38,17 @@ def _view_filter(event: Event) -> bool:
 
             data[min_x:max_x, min_y:max_y] = 255
             node.data = data
+    if isinstance(event, MouseEnterEvent):
+        # Restore original colormap and clear the image when mouse enters
+        img.data = np.zeros((200, 200), dtype=np.uint8)
+    if isinstance(event, MouseLeaveEvent):
+        # Add a bright border when mouse leaves the view
+        data = np.zeros((200, 200), dtype=np.uint8)
+        data[0:3, :] = 255  # Top border
+        data[-3:, :] = 255  # Bottom border
+        data[:, 0:3] = 255  # Left border
+        data[:, -3:] = 255  # Right border
+        img.data = data
     return True
 
 

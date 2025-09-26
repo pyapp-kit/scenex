@@ -71,6 +71,7 @@ class Camera(Node):
     _filter: Callable[[Event, Node], bool] | None = PrivateAttr(default=None)
 
     def passes_through(self, ray: Ray) -> float | None:
+        # Cameras are not rendered objects
         return None
 
     @property

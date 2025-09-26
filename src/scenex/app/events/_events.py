@@ -74,6 +74,23 @@ class MouseEvent(Event):
 
 
 @dataclass
+class MouseLeaveEvent(Event):
+    """Mouse leave event.
+
+    Note that this does not inherit from MouseEvent, as no position or buttons are
+    """
+
+    pass
+
+
+@dataclass
+class MouseEnterEvent(MouseEvent):
+    """Mouse enter event."""
+
+    pass
+
+
+@dataclass
 class MouseMoveEvent(MouseEvent):
     """Mouse move event."""
 

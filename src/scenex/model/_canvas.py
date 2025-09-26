@@ -6,9 +6,16 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 import pylinalg as la
 from cmap import Color
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, PrivateAttr
 
-from scenex.app.events import Event, MouseEvent, Ray, ResizeEvent
+from scenex.app.events import (
+    Event,
+    MouseEnterEvent,
+    MouseEvent,
+    MouseLeaveEvent,
+    Ray,
+    ResizeEvent,
+)
 
 from ._base import EventedBase
 from ._evented_list import EventedList
@@ -35,6 +42,9 @@ class Canvas(EventedBase):
     visible: bool = Field(default=False, description="Whether the canvas is visible.")
     title: str = Field(default="", description="The title of the canvas.")
     views: EventedList[View] = Field(default_factory=EventedList, frozen=True)
+
+    # Private state for tracking mouse view transitions
+    _last_mouse_view: View | None = PrivateAttr(default=None)
 
     model_config = ConfigDict(extra="forbid")
 
@@ -115,12 +125,36 @@ class Canvas(EventedBase):
         """Handle the passed event."""
         handled = False
         if isinstance(event, MouseEvent):
-            if view := self._containing_view(event.canvas_pos):
+            current_view = self._containing_view(event.canvas_pos)
+
+            # Check if we've moved between views and handle transitions
+            # BEGIN UNTESTED CODE!
+            # TODO: Add a test for this once multiple views are better supported
+            if self._last_mouse_view != current_view:
+                # Send leave event to the previous view
+                if self._last_mouse_view is not None:
+                    leave_event = MouseLeaveEvent()
+                    self._last_mouse_view.filter_event(leave_event)
+
+                    # Send enter event to the new view (if any)
+                    if current_view is not None:
+                        enter_event = MouseEnterEvent(
+                            canvas_pos=event.canvas_pos,
+                            world_ray=event.world_ray,
+                            buttons=event.buttons,
+                        )
+                        current_view.filter_event(enter_event)
+
+            self._last_mouse_view = current_view
+            # END UNTESTED CODE!
+
+            # Handle the original mouse event in the current view
+            if current_view is not None:
                 # Give the view a chance to observe the result
-                if view.filter_event(event):
+                if current_view.filter_event(event):
                     return True
 
-                intersections = event.world_ray.intersections(view.scene)
+                intersections = event.world_ray.intersections(current_view.scene)
                 # FIXME: Consider only reporting the first?
                 # Or do we only report until we hit a node with opacity=1?
                 for node, _distance in intersections:
@@ -128,8 +162,15 @@ class Canvas(EventedBase):
                     if Canvas._filter_through(event, node, node):
                         return True
                 # No nodes in the view handled the event - pass it to the camera
-                if view.camera.interactive:
-                    handled |= view.camera.filter_event(event, view.camera)
+                if current_view.camera.interactive:
+                    handled |= current_view.camera.filter_event(
+                        event, current_view.camera
+                    )
+        elif isinstance(event, MouseLeaveEvent):
+            # Mouse left the entire canvas
+            if self._last_mouse_view is not None:
+                handled = self._last_mouse_view.filter_event(event)
+                self._last_mouse_view = None
         elif isinstance(event, ResizeEvent):
             # TODO: How might some event filter tap into the resize?
             self.size = (event.width, event.height)

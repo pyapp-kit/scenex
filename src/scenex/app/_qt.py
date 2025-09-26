@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from qtpy.QtCore import QEvent, QObject, Qt, QTimer
-from qtpy.QtGui import QMouseEvent, QResizeEvent, QWheelEvent
+from qtpy.QtGui import QEnterEvent, QMouseEvent, QResizeEvent, QWheelEvent
 from qtpy.QtWidgets import QApplication, QWidget
 from superqt.utils import signals_blocked
 
@@ -14,6 +14,8 @@ from scenex.app.events import (
     EventFilter,
     MouseButton,
     MouseDoublePressEvent,
+    MouseEnterEvent,
+    MouseLeaveEvent,
     MouseMoveEvent,
     MousePressEvent,
     MouseReleaseEvent,
@@ -58,7 +60,7 @@ class QtEventFilter(QObject, EventFilter):
 
     def _convert_event(self, qevent: QEvent) -> Event | None:
         """Convert a QEvent to a SceneX Event."""
-        if isinstance(qevent, QMouseEvent):
+        if isinstance(qevent, QMouseEvent | QEnterEvent):
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
             if not (ray := self._model_canvas.to_world(canvas_pos)):
@@ -93,6 +95,15 @@ class QtEventFilter(QObject, EventFilter):
                     world_ray=ray,
                     buttons=btn,
                 )
+            elif etype == QEvent.Type.Enter:
+                return MouseEnterEvent(
+                    canvas_pos=canvas_pos,
+                    world_ray=ray,
+                    buttons=self._active_buttons,
+                )
+
+        elif qevent.type() == QEvent.Type.Leave:
+            return MouseLeaveEvent()
 
         elif isinstance(qevent, QWheelEvent):
             # TODO: Figure out the buttons

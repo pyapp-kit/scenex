@@ -11,6 +11,8 @@ import scenex as snx
 from scenex.app import GuiFrontend, determine_app
 from scenex.app.events import (
     MouseButton,
+    MouseEnterEvent,
+    MouseLeaveEvent,
     MouseMoveEvent,
     MousePressEvent,
     MouseReleaseEvent,
@@ -46,14 +48,7 @@ def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None
     Note that wx.UIActionSimulator is an alternative to this approach.
     It seems to actually move the cursor around though, which is really annoying :)
     """
-    evtLoop = wx.App.Get().GetTraits().CreateEventLoop()
-    wx.EventLoopActivator(evtLoop)
     if evt == wx.EVT_SIZE:
-        if not wdg.IsShown():
-            wdg.Show(True)
-
-            wx.MilliSleep(50)
-            evtLoop.YieldFor(wx.EVT_CATEGORY_ALL)  # pyright: ignore[reportAttributeAccessIssue]
         ev = wx.SizeEvent(kwargs["sz"], evt.typeId)
     else:
         ev = wx.MouseEvent(evt.typeId)
@@ -65,7 +60,10 @@ def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None
     wx.PostEvent(wdg.GetEventHandler(), ev)
     # Borrowed from:
     # https://github.com/wxWidgets/Phoenix/blob/master/unittests/wtc.py#L41
+    wdg.Show(True)
     wx.MilliSleep(50)
+    evtLoop = wx.App.Get().GetTraits().CreateEventLoop()
+    wx.EventLoopActivator(evtLoop)
     evtLoop.YieldFor(wx.EVT_CATEGORY_ALL)  # pyright: ignore[reportAttributeAccessIssue]
 
 
@@ -175,3 +173,39 @@ def test_resize(evented_canvas: snx.Canvas) -> None:
     _processEvent(wx.EVT_SIZE, native, sz=wx.Size(*new_size))
     assert evented_canvas.width == new_size[0]
     assert evented_canvas.height == new_size[1]
+
+
+def test_mouse_enter(evented_canvas: snx.Canvas) -> None:
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    view_mock = MagicMock()
+    evented_canvas.views[0].set_event_filter(view_mock)
+    enter_point = (0, 15)
+    _processEvent(wx.EVT_ENTER_WINDOW, native, pos=wx.Point(*enter_point))
+
+    # Verify MouseEnterEvent was passed to view filter
+    view_mock.assert_called_once_with(
+        MouseEnterEvent(
+            canvas_pos=enter_point,
+            world_ray=_validate_ray(evented_canvas.to_world(enter_point)),
+            buttons=MouseButton.NONE,
+        )
+    )
+
+
+def test_mouse_leave(evented_canvas: snx.Canvas) -> None:
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    view_mock = MagicMock()
+    evented_canvas.views[0].set_event_filter(view_mock)
+    # NOTE: We need to first enter to establish the view as active
+    enter_point = (0, 15)
+    _processEvent(wx.EVT_ENTER_WINDOW, native, pos=wx.Point(*enter_point))
+    view_mock.reset_mock()
+
+    # Now leave
+    _processEvent(wx.EVT_LEAVE_WINDOW, native, pos=wx.Point(0, 0))
+    # Verify MouseLeaveEvent was passed to view filter
+    view_mock.assert_called_once_with(MouseLeaveEvent())

@@ -12,6 +12,8 @@ from scenex.app.events._events import (
     EventFilter,
     MouseButton,
     MouseDoublePressEvent,
+    MouseEnterEvent,
+    MouseLeaveEvent,
     MouseMoveEvent,
     MousePressEvent,
     MouseReleaseEvent,
@@ -98,6 +100,24 @@ class JupyterEventFilter(EventFilter):
                                 buttons=btn,
                             )
                         )
+                elif etype == "pointer_enter":
+                    canvas_pos = (ev["x"], ev["y"])
+                    filter._active_button = MouseButton.NONE
+                    if btn := ev.get("button", None):
+                        filter._active_button |= JupyterEventFilter.mouse_btn(btn)
+                    elif btns := ev.get("buttons", None):
+                        for b in btns:
+                            filter._active_button |= JupyterEventFilter.mouse_btn(b)
+                    if world_ray := filter._model_canvas.to_world(canvas_pos):
+                        filter._model_canvas.handle(
+                            MouseEnterEvent(
+                                canvas_pos=canvas_pos,
+                                world_ray=world_ray,
+                                buttons=filter._active_button,
+                            )
+                        )
+                elif etype == "pointer_leave":
+                    filter._model_canvas.handle(MouseLeaveEvent())
                 elif etype == "wheel":
                     canvas_pos = (ev["x"], ev["y"])
                     if world_ray := filter._model_canvas.to_world(canvas_pos):
