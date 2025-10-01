@@ -1,10 +1,20 @@
 from __future__ import annotations
 
 import sys
+from concurrent.futures import Future
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
-from qtpy.QtCore import QEvent, QObject, Qt, QTimer
+from qtpy.QtCore import (
+    QCoreApplication,
+    QEvent,
+    QMetaObject,
+    QObject,
+    Qt,
+    QThread,
+    QTimer,
+    pyqtSlot,
+)
 from qtpy.QtGui import QEnterEvent, QMouseEvent, QResizeEvent, QWheelEvent
 from qtpy.QtWidgets import QApplication, QWidget
 from superqt.utils import signals_blocked
@@ -29,6 +39,7 @@ if TYPE_CHECKING:
 
     from scenex import Canvas
     from scenex.adaptors._base import CanvasAdaptor
+    from scenex.app._auto import P, T
     from scenex.app.events import Event
 
 
@@ -174,8 +185,66 @@ class QtAppWrap(App):
         """Call `func` after `msec` milliseconds."""
         QTimer.singleShot(msec, Qt.TimerType.PreciseTimer, func)
 
+    def call_in_main_thread(
+        self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+    ) -> Future[T]:
+        return call_in_main_thread(func, *args, **kwargs)
+
     @contextmanager
     def block_events(self, window: Any) -> Iterator[None]:
         """Context manager to block events for a window."""
         with signals_blocked(window):
             yield
+
+
+class MainThreadInvoker(QObject):
+    _current_callable: Callable | None = None
+    _moved: bool = False
+
+    def invoke(
+        self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+    ) -> Future[T]:
+        """Invokes a function in the main thread and returns a Future."""
+        future: Future[T] = Future()
+
+        def wrapper() -> None:
+            try:
+                result = func(*args, **kwargs)
+                future.set_result(result)
+            except Exception as e:
+                future.set_exception(e)
+
+        self._current_callable = wrapper
+        QMetaObject.invokeMethod(
+            self, "_invoke_current", Qt.ConnectionType.QueuedConnection
+        )
+        return future
+
+    @pyqtSlot()
+    def _invoke_current(self) -> None:
+        """Invokes the current callable."""
+        if (cb := self._current_callable) is not None:
+            cb()
+            _INVOKERS.discard(self)
+
+
+if (QAPP := QCoreApplication.instance()) is None:
+    raise RuntimeError("QApplication must be created before this module is imported.")
+
+_APP_THREAD = QAPP.thread()
+
+_INVOKERS = set()
+
+
+def call_in_main_thread(
+    func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+) -> Future[T]:
+    if QThread.currentThread() is not _APP_THREAD:
+        invoker = MainThreadInvoker()
+        invoker.moveToThread(_APP_THREAD)
+        _INVOKERS.add(invoker)
+        return invoker.invoke(func, *args, **kwargs)
+
+    future: Future[T] = Future()
+    future.set_result(func(*args, **kwargs))
+    return future

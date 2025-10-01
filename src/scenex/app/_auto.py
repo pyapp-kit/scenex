@@ -3,17 +3,24 @@ from __future__ import annotations
 import importlib
 import os
 import sys
+from concurrent.futures import Executor, Future, ThreadPoolExecutor
 from contextlib import contextmanager
 from enum import Enum
+from functools import cache
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
     from typing import Any
 
+    from typing_extensions import ParamSpec, TypeVar
+
     from scenex.adaptors._base import CanvasAdaptor
     from scenex.app.events._events import EventFilter
     from scenex.model import Canvas
+
+    T = TypeVar("T")
+    P = ParamSpec("P")
 
 
 GUI_ENV_VAR = "SCENEX_WIDGET_BACKEND"
@@ -75,14 +82,31 @@ class App:
         """Process events."""
         raise NotImplementedError("Must be implemented by subclasses.")
 
+    def call_in_main_thread(
+        self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+    ) -> Future[T]:
+        """Call `func` in the main gui thread."""
+        future: Future[T] = Future()
+        future.set_result(func(*args, **kwargs))
+        return future
+
     def call_later(self, msec: int, func: Callable[[], None]) -> None:
         """Call `func` after `msec` milliseconds."""
         raise NotImplementedError("Must be implemented by subclasses.")
+
+    def get_executor(self) -> Executor:
+        """Return an executor for running tasks in the background."""
+        return _thread_pool_executor()
 
     @contextmanager
     def block_events(self, window: Any) -> Iterator[None]:
         """Context manager to block events for a window."""
         raise NotImplementedError("Must be implemented by subclasses.")
+
+
+@cache
+def _thread_pool_executor() -> ThreadPoolExecutor:
+    return ThreadPoolExecutor(max_workers=2)
 
 
 def _running_apps() -> Iterator[GuiFrontend]:

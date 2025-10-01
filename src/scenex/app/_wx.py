@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from concurrent.futures import Future
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any
 
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
 
     from scenex import Canvas
     from scenex.adaptors._base import CanvasAdaptor
+    from scenex.app._auto import P, T
 
 
 class WxEventFilter(EventFilter):
@@ -188,8 +190,53 @@ class WxAppWrap(App):
         """Call `func` after `msec` milliseconds."""
         wx.CallLater(msec, func)
 
+    def call_in_main_thread(
+        self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+    ) -> Future[T]:
+        return call_in_main_thread(func, *args, **kwargs)
+
     @contextmanager
     def block_events(self, window: Any) -> Iterator[None]:
         """Context manager to block events for a window."""
         with wx.EventBlocker(window):
             yield
+
+
+class MainThreadInvoker:
+    def __init__(self) -> None:
+        """Utility for invoking functions in the main thread."""
+        # Ensure this is initialized from the main thread
+        if not wx.IsMainThread():  # pyright: ignore[reportCallIssue]
+            raise RuntimeError(
+                "MainThreadInvoker must be initialized in the main thread"
+            )
+
+    def invoke(
+        self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+    ) -> Future[T]:
+        """Invokes a function in the main thread and returns a Future."""
+        future: Future[T] = Future()
+
+        def wrapper() -> None:
+            try:
+                result = func(*args, **kwargs)
+                future.set_result(result)
+            except Exception as e:
+                future.set_exception(e)
+
+        wx.CallAfter(wrapper)
+        return future
+
+
+_MAIN_THREAD_INVOKER = MainThreadInvoker()
+
+
+def call_in_main_thread(
+    func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+) -> Future[T]:
+    if not wx.IsMainThread():  # pyright: ignore[reportCallIssue]
+        return _MAIN_THREAD_INVOKER.invoke(func, *args, **kwargs)
+
+    future: Future[T] = Future()
+    future.set_result(func(*args, **kwargs))
+    return future
