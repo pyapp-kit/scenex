@@ -13,7 +13,6 @@ from qtpy.QtCore import (
     Qt,
     QThread,
     QTimer,
-    pyqtSlot,
 )
 from qtpy.QtGui import QEnterEvent, QMouseEvent, QResizeEvent, QWheelEvent
 from qtpy.QtWidgets import QApplication, QWidget
@@ -32,6 +31,17 @@ from scenex.app.events import (
     ResizeEvent,
     WheelEvent,
 )
+
+# NOTE: PyQt and PySide have different names for the Slot decorator
+# but they're more or less interchangeable
+try:
+    from qtpy.QtCore import Slot as slot  # type: ignore[attr-defined]
+except ImportError:
+    try:
+        from qtpy.QtCore import pyqtSlot as slot
+    except ImportError as e:
+        raise Exception("Could not import Slot or pyqtSlot from qtpy.QtCore") from e
+
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
@@ -188,7 +198,7 @@ class QtAppWrap(App):
     def call_in_main_thread(
         self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
     ) -> Future[T]:
-        return call_in_main_thread(func, *args, **kwargs)
+        return _call_in_main_thread(func, *args, **kwargs)
 
     @contextmanager
     def block_events(self, window: Any) -> Iterator[None]:
@@ -220,7 +230,7 @@ class MainThreadInvoker(QObject):
         )
         return future
 
-    @pyqtSlot()
+    @slot()  # type: ignore[misc]
     def _invoke_current(self) -> None:
         """Invokes the current callable."""
         if (cb := self._current_callable) is not None:
@@ -228,20 +238,18 @@ class MainThreadInvoker(QObject):
             _INVOKERS.discard(self)
 
 
-if (QAPP := QCoreApplication.instance()) is None:
-    raise RuntimeError("QApplication must be created before this module is imported.")
-
-_APP_THREAD = QAPP.thread()
-
 _INVOKERS = set()
 
 
-def call_in_main_thread(
+def _call_in_main_thread(
     func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
 ) -> Future[T]:
-    if QThread.currentThread() is not _APP_THREAD:
+    if (app := QCoreApplication.instance()) is None:
+        raise RuntimeError("No Qt application instance is running")
+    app_thread = app.thread()
+    if QThread.currentThread() is not app_thread:
         invoker = MainThreadInvoker()
-        invoker.moveToThread(_APP_THREAD)
+        invoker.moveToThread(app_thread)
         _INVOKERS.add(invoker)
         return invoker.invoke(func, *args, **kwargs)
 
