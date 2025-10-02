@@ -22,6 +22,7 @@ TCamera = TypeVar("TCamera", bound="model.Camera", covariant=True)
 TImage = TypeVar("TImage", bound="model.Image", covariant=True)
 TVolume = TypeVar("TVolume", bound="model.Volume", covariant=True)
 TPoints = TypeVar("TPoints", bound="model.Points", covariant=True)
+TMesh = TypeVar("TMesh", bound="model.Mesh", covariant=True)
 TCanvas = TypeVar("TCanvas", bound="model.Canvas", covariant=True)
 TView = TypeVar("TView", bound="model.View", covariant=True)
 TLayout = TypeVar("TLayout", bound="model.Layout", covariant=True)
@@ -160,6 +161,17 @@ class PointsAdaptor(NodeAdaptor[TPoints, TNative]):
     def _snx_set_scaling(self, arg: model.ScalingMode, /) -> None: ...
     @abstractmethod
     def _snx_set_antialias(self, arg: float, /) -> None: ...
+
+
+class MeshAdaptor(NodeAdaptor[TMesh, TNative]):
+    """Protocol for a backend Mesh adaptor object."""
+
+    @abstractmethod
+    def _snx_set_vertices(self, arg: NDArray) -> None: ...
+    @abstractmethod
+    def _snx_set_faces(self, arg: NDArray, /) -> None: ...
+    @abstractmethod
+    def _snx_set_color(self, arg: model.Color, /) -> None: ...
 
 
 class CanvasAdaptor(SupportsVisibility[TCanvas, TNative]):

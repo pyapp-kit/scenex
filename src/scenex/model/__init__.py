@@ -17,6 +17,7 @@ from ._canvas import Canvas
 from ._layout import Layout
 from ._nodes.camera import Camera, CameraType
 from ._nodes.image import Image, InterpolationMode
+from ._nodes.mesh import Mesh
 from ._nodes.node import AnyNode, BlendMode, Node
 from ._nodes.points import Points, ScalingMode, SymbolName
 from ._nodes.scene import Scene
@@ -36,6 +37,7 @@ __all__ = [
     "Image",
     "InterpolationMode",
     "Layout",
+    "Mesh",
     "Node",
     "Points",
     "RenderMode",
