@@ -80,6 +80,25 @@ class View(EventedBase):
     def set_event_filter(
         self, callable: Callable[[Event], bool] | None
     ) -> Callable[[Event], bool] | None:
+        """
+        Registers a callable to filter events.
+
+        Parameters
+        ----------
+        callable : Callable[[Event], bool] | None
+            A callable that takes an Event and returns True if the event was handled,
+            False otherwise. Passing None is equivalent to removing any existing filter.
+            By returning True, the callable indicates that the event has been handled
+            and should not be propagated to subsequent handlers.
+
+        Returns
+        -------
+        Callable[[Event], bool] | None
+            The previous event filter, or None if there was no filter.
+
+        Note the name has parity with Node.filter_event, but there's not much filtering
+        going on.
+        """
         old, self._filter = self._filter, callable
         return old
 
@@ -91,7 +110,33 @@ class View(EventedBase):
         1. Require summarization of multiple smaller event responses.
         2. Could not be picked up by a node (e.g. mouse leaving an image).
 
-        Note the name has parity with Node.filter_event, but there's much filtering
+        Note the name has parity with Node.filter_event, but there's not much filtering
         going on.
+
+        Parameters
+        ----------
+        event : Event
+            An event occurring in the view.
+
+        Returns
+        -------
+        bool
+            True iff the event should not be propagated to other handlers.
         """
-        return self._filter(event) if self._filter else False
+        if self._filter:
+            handled = self._filter(event)
+            if not isinstance(handled, bool):
+                # Some widget frameworks (i.e. Qt) get upset when non-booleans are
+                # returned. If the event-filter does not return a boolean, rather than
+                # letting that propagate upwards, we log a warning and return False.
+                logger.warning(
+                    f"Event filter {self._filter} did not return a boolean. "
+                    "Returning False."
+                )
+                # Return False. We assume that if the user wanted to block future
+                # processing, they'd be less likely to forget a boolean return.
+                # Further, allowing downstream processing is a clear sign to the author
+                # that they forgot to block propagation.
+                handled = False
+            return handled
+        return False
