@@ -135,7 +135,7 @@ class View(EventedBase):
                 )
                 # Return False. We assume that if the user wanted to block future
                 # processing, they'd be less likely to forget a boolean return.
-                # Further, allowing downstream processing is a clear sign to the author
+                # Further, allowing downstream processing is a clear sign to they author
                 # that they forgot to block propagation.
                 handled = False
             return handled

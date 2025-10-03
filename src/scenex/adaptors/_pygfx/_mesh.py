@@ -23,28 +23,48 @@ class Mesh(Node, MeshAdaptor):
     """pygfx backend adaptor for an Mesh node."""
 
     _pygfx_node: pygfx.Mesh
-    _material: pygfx.MeshBasicMaterial
-    _geometry: pygfx.Geometry
 
     def __init__(self, mesh: model.Mesh, **backend_kwargs: Any) -> None:
         self._model = mesh
-        self._material = pygfx.MeshBasicMaterial(
-            color=mesh.color.rgba if mesh.color else (1, 1, 1, 1)
+        self._pygfx_node = pygfx.Mesh(
+            material=pygfx.MeshBasicMaterial(
+                color=mesh.color.rgba if mesh.color else (1, 1, 1, 1)
+            ),
+            geometry=pygfx.Geometry(
+                positions=np.asarray(mesh.vertices, dtype=np.float32),
+                indices=np.asarray(mesh.faces, dtype=np.uint32),
+            ),
         )
-        self._geometry = pygfx.Geometry(
-            positions=np.asarray(mesh.vertices, dtype=np.float32),
-            indices=np.asarray(mesh.faces, dtype=np.int32),
-        )
-        self._pygfx_node = pygfx.Mesh(self._geometry, self._material)
 
     def _snx_set_vertices(self, arg: ArrayLike) -> None:
-        return
-        self._geometry.positions = np.asarray(arg)
+        # Number of vertices unchanged - reuse existing geometry for performance
+        arg = np.asarray(arg, dtype=np.float32)
+        geom = self._pygfx_node.geometry
+        positions: pygfx.resources.Buffer = geom.positions  # pyright: ignore
+        if (data := positions.data) is not None and (arg.shape == data.shape):
+            data[:, :] = arg
+            positions.update_range()
+        # Number of vertices changed - must create new geometry
+        else:
+            self._pygfx_node.geometry = pygfx.Geometry(
+                positions=arg,
+                indices=geom.indices,  # pyright: ignore
+            )
 
     def _snx_set_faces(self, arg: ArrayLike) -> None:
-        return
-        self._geometry.indices = np.asarray(arg)
+        # Number of faces unchanged - reuse existing geometry for performance
+        arg = np.asarray(arg, dtype=np.uint32)
+        geom = self._pygfx_node.geometry
+        indices: pygfx.resources.Buffer = geom.indices  # pyright: ignore
+        if (data := indices.data) is not None and (arg.shape == data.shape):
+            data[:, :] = arg
+            indices.update_range()
+        # Number of faces changed - must create new geometry
+        else:
+            self._pygfx_node.geometry = pygfx.Geometry(
+                positions=geom.positions,  # pyright: ignore
+                indices=arg,
+            )
 
     def _snx_set_color(self, arg: cmap.Color) -> None:
-        return
-        self._material.color = arg.rgba
+        self._pygfx_node.material.color = arg.rgba  # pyright: ignore
