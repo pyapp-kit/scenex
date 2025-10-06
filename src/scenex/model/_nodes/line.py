@@ -9,8 +9,6 @@ from pydantic import Field, computed_field
 from .node import AABB, Node
 
 if TYPE_CHECKING:
-    from numpy.typing import ArrayLike
-
     from scenex.app.events._events import Ray
 
 
@@ -42,10 +40,7 @@ class Line(Node):
 
     def passes_through(self, ray: Ray) -> float | None:
         """
-        Check if the ray passes through this line and return the closest distance.
-
-        For lines, this checks intersection with line segments formed by
-        consecutive vertices.
+        Check if the ray passes through this line.
 
         Parameters
         ----------
@@ -57,72 +52,38 @@ class Line(Node):
         float | None
             The distance to the closest intersection, or None if no intersection.
         """
-        vertices = np.asarray(self.vertices)
-        if len(vertices) < 2:
-            return None
+        verts = np.asarray(self.vertices)
+        # Convert vertices to canvas space
+        canvas_vertices = Line._world_to_canvas(ray, self.vertices)
+        canvas_ray = Line._world_to_canvas(ray, np.array([ray.origin]))[0]
 
-        min_distance = float("inf")
-        found_intersection = False
+        starts = canvas_vertices[:-1]
+        ends = canvas_vertices[1:]
 
-        # Check each line segment
-        for i in range(len(vertices) - 1):
-            v1 = vertices[i]
-            v2 = vertices[i + 1]
-
-            # Calculate intersection with line segment
-            distance = self._ray_line_segment_intersection(ray, v1, v2)
-            if distance is not None and distance < min_distance:
-                min_distance = distance
-                found_intersection = True
-
-        return float(min_distance) if found_intersection else None
-
-    def _ray_line_segment_intersection(
-        self, ray: Ray, v1: np.ndarray, v2: np.ndarray
-    ) -> float | None:
-        """
-        Calculate intersection distance between a ray and a line segment.
-
-        Uses the closest point approach for 3D line-line intersection.
-        """
-        if ray.source is None:
-            return None
-
-        def to_canvas(point: ArrayLike) -> tuple[float, float]:
-            """Convert a 3D point to 2D canvas coordinates."""
-            cam = ray.source.camera
-            ndc = cam.projection.map(cam.transform.imap(point))
-            layout = ray.source.layout
-            return (
-                (ndc[0] + 1) / 2 * layout.width,
-                (ndc[1] + 1) / 2 * layout.height,
-            )
-
-        v1_canvas = to_canvas(v1)
-        v2_canvas = to_canvas(v2)
-        ray_canvas = to_canvas(ray.origin)
-
+        # Compute the distance from the ray ON THE CANVAS to the closest point the line
+        # associated with each line segment.
+        #
+        # Equation loaned from https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line#Line_defined_by_two_points
         num = np.abs(
-            (v2_canvas[1] - v1_canvas[1]) * ray_canvas[0]
-            - (v2_canvas[0] - v1_canvas[0]) * ray_canvas[1]
-            + v2_canvas[0] * v1_canvas[1]
-            - v2_canvas[1] * v1_canvas[0]
+            (ends[:, 1] - starts[:, 1]) * canvas_ray[0]
+            - (ends[:, 0] - starts[:, 0]) * canvas_ray[1]
+            + ends[:, 0] * starts[:, 1]
+            - ends[:, 1] * starts[:, 0]
         )
         den = np.sqrt(
-            (v2_canvas[1] - v1_canvas[1]) ** 2 + (v2_canvas[0] - v1_canvas[0]) ** 2
+            (ends[:, 1] - starts[:, 1]) ** 2 + (ends[:, 0] - starts[:, 0]) ** 2
         )
+        den[den == 0] = float("inf")  # Avoid division by zero
+        distance = num / den
 
-        distance = num / den if den != 0 else float("inf")
-        print(distance)
-        if distance > self.width:
-            return None
-        # Calculate distance along the ray direction
-        a = np.subtract(ray_canvas, v1_canvas)
-        b = np.subtract(v2_canvas, v1_canvas)
-        t = np.dot(a, b) / np.dot(b, b)
-        if t < 0 or t > 1:
-            return None
-        intersect_world = v1 + t * (v2 - v1)
+        # Determine the corresponding point in world space corresponding to that closest
+        # point. Note that this point is only on the line segment if 0 <= t <= 1.
+        # (We check this at the end.)
+        a = np.subtract(canvas_ray, starts)
+        b = np.subtract(ends, starts)
+        # Vectorized version of dot product
+        t = np.sum(a * b, axis=1) / np.sum(b * b, axis=1)
+        intersect_world = verts[1:] + t[:, np.newaxis] * (verts[:-1] - verts[1:])
 
         # Calculate the distance along the ray to the intersection point
         # The ray is defined as: ray.origin + d * ray.direction
@@ -138,5 +99,20 @@ class Line(Node):
 
         d = np.dot(ray_to_intersect, ray.direction) / ray_dir_squared
 
-        # Only return positive distances (intersections in front of the ray)
-        return float(d) if d >= 0 else None
+        # Our ray intersects the line if:
+        # 1. The distance from the ray to the line is less than the line width
+        # 2. The intersection point is within the line segment (0 <= t <= 1)
+        # 3. The intersection point is in front of the ray origin (d >= 0)
+        condition = (distance <= self.width) & (t >= 0) & (t <= 1) & (d >= 0)
+        valid_intersections = d[condition]
+        if len(valid_intersections):
+            return float(np.min(valid_intersections))
+        else:
+            return None
+
+    @staticmethod
+    def _world_to_canvas(ray: Ray, points: np.ndarray) -> np.ndarray:
+        cam = ray.source.camera
+        layout = ray.source.layout
+        ndc_points = cam.projection.map(cam.transform.imap(points))[:, :2]
+        return (ndc_points + 1) / 2 * (layout.width, layout.height)

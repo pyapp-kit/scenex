@@ -27,7 +27,7 @@ def test_line_ray_intersection() -> None:
     """
 
     # Simple horizontal line
-    vertices = np.array([[0, 1, 0], [2, 1, 0]])
+    vertices = np.array([[0, 1, 1], [2, 1, -1]])
     line = snx.Line(vertices=vertices, width=2)
     # Since ray-line intersections are computed in canvas space, we need view+canvas
     view = snx.View(scene=snx.Scene(children=[line]))
@@ -45,6 +45,14 @@ def test_line_ray_intersection() -> None:
     assert ray is not None
     distance = line.passes_through(ray)
     assert distance is not None and np.isclose(distance, 1)
+
+    # Ray going through the edge of the line
+    canvas_center = (canvas.width, canvas.height // 2)
+    ray = canvas.to_world(canvas_center)
+    assert ray is not None
+    distance = line.passes_through(ray)
+    # Note that the distance is larger because the line is at z=-1 at this point
+    assert distance is not None and np.isclose(distance, 2)
 
     # Ray going 1 pixel off center should hit
     canvas_center = (canvas.width // 2, canvas.height // 2 + 1)
