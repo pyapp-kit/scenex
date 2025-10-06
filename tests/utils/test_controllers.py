@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from unittest.mock import MagicMock
 
 import numpy as np
 import pylinalg as la
@@ -29,14 +30,14 @@ def test_panzoomcontroller_pan() -> None:
     # Simulate mouse press
     press_event = MousePressEvent(
         canvas_pos=(0, 0),
-        world_ray=Ray((10, 10, 0), (0, 0, -1)),
+        world_ray=Ray((10, 10, 0), (0, 0, -1), source=MagicMock(spec=snx.View)),
         buttons=MouseButton.LEFT,
     )
     controller(press_event, cam)
     # Simulate mouse move
     move_event = MouseMoveEvent(
         canvas_pos=(0, 0),
-        world_ray=Ray((15, 20, 0), (0, 0, -1)),
+        world_ray=Ray((15, 20, 0), (0, 0, -1), source=MagicMock(spec=snx.View)),
         buttons=MouseButton.LEFT,
     )
     controller(move_event, cam)
@@ -53,7 +54,7 @@ def test_panzoomcontroller_zoom() -> None:
     # Simulate wheel event
     wheel_event = WheelEvent(
         canvas_pos=(0, 0),
-        world_ray=Ray((0, 0, 0), (0, 0, -1)),
+        world_ray=Ray((0, 0, 0), (0, 0, -1), source=MagicMock(spec=snx.View)),
         buttons=MouseButton.NONE,
         angle_delta=(0, 120),
     )
@@ -124,7 +125,7 @@ def test_orbitcontroller_zoom() -> None:
     # Simulate wheel event
     wheel_event = WheelEvent(
         canvas_pos=(0, 0),
-        world_ray=Ray((0, 0, 10), (0, 0, -1)),
+        world_ray=Ray((0, 0, 10), (0, 0, -1), source=MagicMock(spec=snx.View)),
         buttons=MouseButton.NONE,
         angle_delta=(0, 120),
     )
@@ -137,7 +138,7 @@ def test_orbitcontroller_zoom() -> None:
     # Simulate wheel event in other direction
     wheel_event = WheelEvent(
         canvas_pos=(0, 0),
-        world_ray=Ray((0, 0, 10), (0, 0, -1)),
+        world_ray=Ray((0, 0, 10), (0, 0, -1), source=MagicMock(spec=snx.View)),
         buttons=MouseButton.NONE,
         angle_delta=(0, -120),
     )

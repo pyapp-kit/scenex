@@ -5,7 +5,7 @@ from enum import IntFlag, auto
 from typing import TYPE_CHECKING, NamedTuple, TypeAlias
 
 if TYPE_CHECKING:
-    from scenex import Node
+    from scenex import Node, View
 
 
 # Note that scenex follows the inheritance pattern for event subtypes.
@@ -35,6 +35,7 @@ class Ray(NamedTuple):
 
     origin: tuple[float, float, float]
     direction: tuple[float, float, float]
+    source: View
 
     def point_at_distance(self, distance: float) -> tuple[float, float, float]:
         x = self.origin[0] + self.direction[0] * distance

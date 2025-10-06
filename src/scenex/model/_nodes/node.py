@@ -32,6 +32,7 @@ if TYPE_CHECKING:
 
     from .camera import Camera
     from .image import Image
+    from .line import Line
     from .points import Points
     from .scene import Scene
 
@@ -52,7 +53,8 @@ logger = logging.getLogger(__name__)
 
 # improve me... Read up on: https://docs.pydantic.dev/latest/concepts/unions/
 AnyNode = Annotated[
-    Union["Image", "Points", "Camera", "Scene"], Field(discriminator="node_type")
+    Union["Image", "Points", "Line", "Camera", "Scene"],
+    Field(discriminator="node_type"),
 ]
 
 # Axis-Aligned Bounding Box

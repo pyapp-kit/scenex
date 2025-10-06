@@ -1,10 +1,11 @@
+from unittest.mock import MagicMock
+
 import cmap
 import numpy as np
 import pytest
 
 import scenex as snx
 from scenex.app.events import Ray
-from scenex.model._nodes.image import Image
 
 
 @pytest.fixture
@@ -23,23 +24,29 @@ def test_bounding_box(image: snx.Image) -> None:
     assert np.array_equal(exp_bounding_box, image.bounding_box)
 
 
-def test_passes_through(image: Image) -> None:
+def test_passes_through(image: snx.Image) -> None:
     # Check a ray that passes through the image hits
-    ray = Ray(origin=(50, 50, 1), direction=(0, 0, -1))
+    ray = Ray(origin=(50, 50, 1), direction=(0, 0, -1), source=MagicMock(spec=snx.View))
     assert image.passes_through(ray) == 1
 
     # Check a ray that grazes the left edge of the image hits
-    ray = Ray(origin=(-0.5, 0, 1), direction=(0, 0, -1))
+    ray = Ray(
+        origin=(-0.5, 0, 1), direction=(0, 0, -1), source=MagicMock(spec=snx.View)
+    )
     assert image.passes_through(ray) == 1
 
     # Check a ray that grazes the right edge of the image misses
-    ray = Ray(origin=(99.5, 0, 1), direction=(0, 0, -1))
+    ray = Ray(
+        origin=(99.5, 0, 1), direction=(0, 0, -1), source=MagicMock(spec=snx.View)
+    )
     assert image.passes_through(ray) is None
 
     # Check a ray that does not pass through the image misses
-    ray = Ray(origin=(-50, -50, 1), direction=(0, 0, -1))
+    ray = Ray(
+        origin=(-50, -50, 1), direction=(0, 0, -1), source=MagicMock(spec=snx.View)
+    )
     assert image.passes_through(ray) is None
 
     # Check a ray that is perpendicular to the image misses
-    ray = Ray(origin=(50, 50, 1), direction=(-1, 0, 0))
+    ray = Ray(origin=(50, 50, 1), direction=(-1, 0, 0), source=MagicMock(spec=snx.View))
     assert image.passes_through(ray) is None

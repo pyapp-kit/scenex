@@ -13,6 +13,7 @@ from .adaptors import run, use
 from .model._canvas import Canvas
 from .model._nodes.camera import Camera
 from .model._nodes.image import Image
+from .model._nodes.line import Line
 from .model._nodes.node import Node
 from .model._nodes.points import Points
 from .model._nodes.scene import Scene
@@ -25,6 +26,7 @@ __all__ = [
     "Camera",
     "Canvas",
     "Image",
+    "Line",
     "Node",
     "Points",
     "Scene",
