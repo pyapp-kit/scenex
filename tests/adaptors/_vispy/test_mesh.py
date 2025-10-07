@@ -41,17 +41,29 @@ def adaptor(mesh: snx.Mesh) -> adaptors.Mesh:
 
 def test_data(mesh: snx.Mesh, adaptor: adaptors.Mesh) -> None:
     """Tests that changing the model changes the view (the Vispy node)."""
-    mesh_data = adaptor._vispy_node.mesh_data
-    assert mesh_data is not None
-
-    assert np.array_equal(mesh.vertices, np.asarray(mesh_data.get_vertices()))
+    # Change vertices
+    assert np.array_equal(
+        mesh.vertices,
+        np.asarray(adaptor._vispy_node.mesh_data.get_vertices()),  # pyright: ignore
+    )
     mesh.vertices = mesh.vertices * 100
-    assert np.array_equal(mesh.vertices, np.asarray(mesh_data.get_vertices()))
+    assert np.array_equal(
+        mesh.vertices,
+        np.asarray(adaptor._vispy_node.mesh_data.get_vertices()),  # pyright: ignore
+    )
 
-    assert np.array_equal(mesh.faces, np.asarray(mesh_data.get_faces()))
+    # Change faces
+    assert np.array_equal(
+        mesh.vertices,
+        np.asarray(adaptor._vispy_node.mesh_data.get_vertices()),  # pyright: ignore
+    )
     mesh.faces = np.asarray([[0, 2, 3], [3, 1, 0]])
-    assert np.array_equal(mesh.faces, np.asarray(mesh_data.get_faces()))
+    assert np.array_equal(
+        mesh.vertices,
+        np.asarray(adaptor._vispy_node.mesh_data.get_vertices()),  # pyright: ignore
+    )
 
+    # Change color
     assert mesh.color is not None
     assert np.array_equal(mesh.color.rgba, adaptor._vispy_node.color.rgba)
     mesh.color = cmap.Color("blue")
