@@ -33,10 +33,16 @@ class Line(Node):
     @property  # TODO: Cache?
     def bounding_box(self) -> AABB:
         arr = np.asarray(self.vertices)
-        return (
-            tuple(float(d) for d in np.min(arr, axis=0)),
-            tuple(float(d) for d in np.max(arr, axis=0)),
-        )  # type: ignore
+
+        min_vals = tuple(float(d) for d in np.min(arr, axis=0))
+        max_vals = tuple(float(d) for d in np.max(arr, axis=0))
+
+        # Ensure we have at least 3 dimensions by padding with zeros if needed
+        if len(min_vals) == 2:
+            min_vals = (*min_vals, 0.0)
+            max_vals = (*max_vals, 0.0)
+
+        return (min_vals, max_vals)  # type: ignore
 
     def passes_through(self, ray: Ray) -> float | None:
         """
