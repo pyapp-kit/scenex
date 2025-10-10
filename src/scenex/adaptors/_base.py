@@ -22,6 +22,7 @@ TCamera = TypeVar("TCamera", bound="model.Camera", covariant=True)
 TImage = TypeVar("TImage", bound="model.Image", covariant=True)
 TVolume = TypeVar("TVolume", bound="model.Volume", covariant=True)
 TPoints = TypeVar("TPoints", bound="model.Points", covariant=True)
+TText = TypeVar("TText", bound="model.Text", covariant=True)
 TCanvas = TypeVar("TCanvas", bound="model.Canvas", covariant=True)
 TView = TypeVar("TView", bound="model.View", covariant=True)
 TLayout = TypeVar("TLayout", bound="model.Layout", covariant=True)
@@ -160,6 +161,17 @@ class PointsAdaptor(NodeAdaptor[TPoints, TNative]):
     def _snx_set_scaling(self, arg: model.ScalingMode, /) -> None: ...
     @abstractmethod
     def _snx_set_antialias(self, arg: float, /) -> None: ...
+
+
+class TextAdaptor(NodeAdaptor[TText, TNative]):
+    """Protocol for a backend Text adaptor object."""
+
+    @abstractmethod
+    def _snx_set_text(self, arg: str, /) -> None: ...
+    @abstractmethod
+    def _snx_set_color(self, arg: model.Color, /) -> None: ...
+    @abstractmethod
+    def _snx_set_size(self, arg: int, /) -> None: ...
 
 
 class CanvasAdaptor(SupportsVisibility[TCanvas, TNative]):
