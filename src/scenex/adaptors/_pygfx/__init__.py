@@ -9,6 +9,7 @@ from ._mesh import Mesh
 from ._node import Node
 from ._points import Points
 from ._scene import Scene
+from ._text import Text
 from ._view import View
 from ._volume import Volume
 
@@ -21,6 +22,7 @@ __all__ = [
     "Node",
     "Points",
     "Scene",
+    "Text",
     "View",
     "Volume",
     "adaptors",
