@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
 from scenex.adaptors._base import CanvasAdaptor
+from scenex.app import app
 
 from ._adaptor_registry import adaptors
 
@@ -60,12 +61,24 @@ class Canvas(CanvasAdaptor):
         # self._views.append(adaptor)
 
     def _snx_set_width(self, arg: int) -> None:
-        _, height = cast("tuple[float, float]", self._wgpu_canvas.get_logical_size())
-        self._wgpu_canvas.set_logical_size(arg, height)
+        width, height = cast(
+            "tuple[float, float]", self._wgpu_canvas.get_logical_size()
+        )
+        # FIXME: For some reason, on wx the size has already been updated, and
+        # updating it again causes erratic resizing behavior
+        if width != arg:
+            with app().block_events(self._snx_get_native()):
+                self._wgpu_canvas.set_logical_size(arg, height)
 
     def _snx_set_height(self, arg: int) -> None:
-        width, _ = cast("tuple[float, float]", self._wgpu_canvas.get_logical_size())
-        self._wgpu_canvas.set_logical_size(width, arg)
+        width, height = cast(
+            "tuple[float, float]", self._wgpu_canvas.get_logical_size()
+        )
+        # FIXME: For some reason, on wx the size has already been updated, and
+        # updating it again causes erratic resizing behavior
+        if height != arg:
+            with app().block_events(self._snx_get_native()):
+                self._wgpu_canvas.set_logical_size(width, arg)
 
     def _snx_set_background_color(self, arg: Color | None) -> None:
         # not sure if pygfx has both a canavs and view background color...

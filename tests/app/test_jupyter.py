@@ -1,0 +1,294 @@
+"""Tests pertaining to Jupyter event generation"""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, cast
+from unittest.mock import patch
+
+import pytest
+
+import scenex as snx
+from scenex.adaptors._auto import determine_backend
+from scenex.app import GuiFrontend, determine_app
+from scenex.app.events import (
+    MouseButton,
+    MouseDoublePressEvent,
+    MouseEnterEvent,
+    MouseLeaveEvent,
+    MouseMoveEvent,
+    MousePressEvent,
+    MouseReleaseEvent,
+    Ray,
+    WheelEvent,
+)
+from scenex.model._transform import Transform
+
+if TYPE_CHECKING:
+    from scenex.adaptors._base import CanvasAdaptor
+
+if determine_app() != GuiFrontend.JUPYTER:
+    pytest.skip(
+        "Skipping Jupyter tests as Jupyter will not be used in this environment",
+        allow_module_level=True,
+    )
+
+# HACK: Enable tests inside vispy
+if determine_backend() == "vispy":
+    import asyncio
+    import os
+
+    os.environ["_VISPY_TESTING_APP"] = "jupyter_rfb"
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
+    os.environ["SCENEX_WIDGET_BACKEND"] = "jupyter"
+
+
+@pytest.fixture
+def evented_canvas() -> snx.Canvas:
+    # IPython.getIPython().run_line_magic("gui", "inline")
+    camera = snx.Camera(transform=Transform(), interactive=True)
+    scene = snx.Scene(children=[])
+    view = snx.View(scene=scene, camera=camera)
+    canvas = snx.Canvas()
+    canvas.views.append(view)
+    return canvas
+
+
+def _validate_ray(maybe_ray: Ray | None) -> Ray:
+    assert maybe_ray is not None
+    return maybe_ray
+
+
+# See jupyter_rfb.events
+NONE = 0
+LEFT_MOUSE = 1
+RIGHT_MOUSE = 2
+
+
+def test_pointer_down(evented_canvas: snx.Canvas) -> None:
+    """Test that Jupyter mouse down events are converted and given to the canvas."""
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    press_point = (0, 0)
+    with patch("scenex.model._canvas.Canvas.handle") as mock:
+        # Press the left button
+        native.handle_event(
+            {
+                "event_type": "pointer_down",
+                "x": press_point[0],
+                "y": press_point[1],
+                "button": LEFT_MOUSE,
+            }
+        )
+    mock.assert_called_once_with(
+        MousePressEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
+        )
+    )
+
+    with patch("scenex.model._canvas.Canvas.handle") as mock:
+        # Now press the right button as well
+        native.handle_event(
+            {
+                "event_type": "pointer_down",
+                "x": press_point[0],
+                "y": press_point[1],
+                "button": RIGHT_MOUSE,
+            }
+        )
+    mock.assert_called_once_with(
+        MousePressEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.RIGHT,
+        )
+    )
+
+
+def test_pointer_up(evented_canvas: snx.Canvas) -> None:
+    """Test that Jupyter mouse up events are converted and given to the canvas."""
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    press_point = (0, 0)
+    with patch("scenex.model._canvas.Canvas.handle") as mock:
+        native.handle_event(
+            {
+                "event_type": "pointer_up",
+                "x": press_point[0],
+                "y": press_point[1],
+                "button": LEFT_MOUSE,
+            }
+        )
+    mock.assert_called_once_with(
+        MouseReleaseEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
+        )
+    )
+
+
+def test_pointer_move(evented_canvas: snx.Canvas) -> None:
+    """Test that Jupyter mouse move events are converted and given to the canvas."""
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    press_point = (0, 0)
+    with patch("scenex.model._canvas.Canvas.handle") as mock:
+        native.handle_event(
+            {
+                "event_type": "pointer_move",
+                "x": press_point[0],
+                "y": press_point[1],
+                "button": LEFT_MOUSE,
+            }
+        )
+    mock.assert_called_once_with(
+        MouseMoveEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
+        )
+    )
+
+    with patch("scenex.model._canvas.Canvas.handle") as mock:
+        native.handle_event(
+            {
+                "event_type": "pointer_move",
+                "x": press_point[0],
+                "y": press_point[1],
+                "buttons": (LEFT_MOUSE, RIGHT_MOUSE),
+            }
+        )
+    mock.assert_called_once_with(
+        MouseMoveEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT | MouseButton.RIGHT,
+        )
+    )
+
+
+def test_mouse_double_click(evented_canvas: snx.Canvas) -> None:
+    """Test that Jupyter double click events are converted and given to the canvas."""
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    press_point = (0, 0)
+    with patch("scenex.model._canvas.Canvas.handle") as mock:
+        native.handle_event(
+            {
+                "event_type": "double_click",
+                "x": press_point[0],
+                "y": press_point[1],
+                "button": LEFT_MOUSE,
+            }
+        )
+    mock.assert_called_once_with(
+        MouseDoublePressEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.LEFT,
+        )
+    )
+
+
+def test_wheel(evented_canvas: snx.Canvas) -> None:
+    """Test that Jupyter wheel events are converted and given to the canvas."""
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    press_point = (0, 0)
+    with patch("scenex.model._canvas.Canvas.handle") as mock:
+        native.handle_event(
+            {
+                "event_type": "wheel",
+                "x": press_point[0],
+                "y": press_point[1],
+                "dx": 0,
+                "dy": -120,  # Note that Jupyter_rfb uses a different y convention
+            }
+        )
+    mock.assert_called_once_with(
+        WheelEvent(
+            canvas_pos=press_point,
+            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            buttons=MouseButton.NONE,
+            angle_delta=(0, 120),
+        )
+    )
+
+
+def test_resize(evented_canvas: snx.Canvas) -> None:
+    """Test that Jupyter resize events are converted and given to the canvas."""
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    new_size = (400, 300)
+    assert evented_canvas.width != new_size[0]
+    assert evented_canvas.height != new_size[1]
+    native.handle_event(
+        {
+            "event_type": "resize",
+            "width": new_size[0],
+            "height": new_size[1],
+        }
+    )
+    assert evented_canvas.width == new_size[0]
+    assert evented_canvas.height == new_size[1]
+
+
+def test_pointer_enter(evented_canvas: snx.Canvas) -> None:
+    """Test that Jupyter pointer enter events are converted and given to the canvas."""
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    enter_point = (0, 0)
+    with patch("scenex.model._canvas.Canvas.handle") as mock:
+        native.handle_event(
+            {
+                "event_type": "pointer_enter",
+                "x": enter_point[0],
+                "y": enter_point[1],
+                "button": NONE,
+            }
+        )
+    # Verify MouseEnterEvent was passed to view filter
+    mock.assert_called_once_with(
+        MouseEnterEvent(
+            canvas_pos=enter_point,
+            world_ray=_validate_ray(evented_canvas.to_world(enter_point)),
+            buttons=MouseButton.NONE,
+        )
+    )
+
+
+def test_pointer_leave(evented_canvas: snx.Canvas) -> None:
+    """Test that Jupyter pointer leave events are converted and given to the canvas."""
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    enter_point = (0, 0)
+    native.handle_event(
+        {
+            "event_type": "pointer_enter",
+            "x": enter_point[0],
+            "y": enter_point[1],
+            "button": NONE,
+        }
+    )
+
+    # Now leave
+    with patch("scenex.model._canvas.Canvas.handle") as mock:
+        native.handle_event(
+            {
+                "event_type": "pointer_leave",
+            }
+        )
+
+    # Verify MouseLeaveEvent was passed to view filter
+    mock.assert_called_once_with(MouseLeaveEvent())
