@@ -35,11 +35,17 @@ class View(ViewAdaptor):
     def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
         self._model = view
         self._vispy_viewbox = vispy.scene.ViewBox()
+        self._vispy_viewbox.events.resize.connect(self._on_vispy_viewbox_resized)  # pyright: ignore
 
         self._snx_set_camera(view.camera)
         self._snx_set_scene(view.scene)
 
         view.layout.events.all.connect(self._on_layout_changed)
+
+    def _on_vispy_viewbox_resized(self, event: Any) -> None:
+        # Update camera's _from_NDC transform
+        w, h = self._vispy_viewbox.rect.size
+        self._cam_adaptor._set_view(w, h)
 
     def _on_layout_changed(self, event: Any) -> None:
         rect = Rect(self._model.layout.content_rect)
@@ -74,6 +80,7 @@ class View(ViewAdaptor):
         # Add the camera to the scene
         if hasattr(self, "_vispy_cam"):
             self._vispy_camera.parent = new
+        self._vispy_scene = new
 
     def _snx_set_camera(self, cam: model.Camera) -> None:
         self._cam_adaptor = cast("_camera.Camera", get_adaptor(cam))
