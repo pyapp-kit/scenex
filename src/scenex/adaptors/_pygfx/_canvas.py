@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
+import pygfx
+
 from scenex.adaptors._base import CanvasAdaptor
 from scenex.app import GuiFrontend, app, determine_app
 
@@ -71,6 +73,8 @@ class Canvas(CanvasAdaptor):
         for view in canvas.views:
             self._snx_add_view(view)
         self._filter = app().install_event_filter(self._snx_get_native(), canvas)
+        self._renderer = pygfx.renderers.WgpuRenderer(self._wgpu_canvas)
+        self._renderer.request_draw(self._draw)
 
     def _snx_get_native(self) -> Any:
         if subwdg := getattr(self._wgpu_canvas, "_subwidget", None):
@@ -84,18 +88,15 @@ class Canvas(CanvasAdaptor):
 
     def _draw(self) -> None:
         for view in self._views:
-            cast("View", get_adaptor(view))._draw()
+            cast("View", get_adaptor(view))._draw(self._renderer)
+        self._renderer.flush()
+        self._renderer.request_draw(self._draw)
 
     def _snx_add_view(self, view: model.View) -> None:
         # This logic should go in the canvas node, I think
         if view in self._views:
             return
         self._views.append(view)
-
-        view_adaptor = cast("View", get_adaptor(view))
-        view_adaptor._set_pygfx_canvas(
-            self._wgpu_canvas, self._canvas.width, self._canvas.height
-        )
 
     def _snx_set_width(self, arg: int) -> None:
         width, height = cast(
