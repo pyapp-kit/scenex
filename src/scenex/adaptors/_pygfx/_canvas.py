@@ -40,6 +40,8 @@ class Canvas(CanvasAdaptor):
         self._wgpu_canvas.set_title(canvas.title)
         self._views = canvas.views
 
+        self._event_filter = app().install_event_filter(self._wgpu_canvas, canvas)
+
     def _snx_get_native(self) -> BaseRenderCanvas:
         return self._wgpu_canvas
 

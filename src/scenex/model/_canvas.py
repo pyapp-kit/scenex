@@ -3,10 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, cast
 
 from cmap import Color
-from pydantic import ConfigDict, Field, PrivateAttr
+from pydantic import ConfigDict, Field
 
-from scenex.adaptors import get_adaptor_registry
-from scenex.app import app
 from scenex.app.events import Ray, ResizeEvent
 
 from ._base import EventedBase
@@ -17,7 +15,7 @@ if TYPE_CHECKING:
     import numpy as np
 
     from scenex.adaptors._base import CanvasAdaptor
-    from scenex.app.events import Event, EventFilter
+    from scenex.app.events import Event
 
 
 class Canvas(EventedBase):
@@ -36,7 +34,6 @@ class Canvas(EventedBase):
     visible: bool = Field(default=False, description="Whether the canvas is visible.")
     title: str = Field(default="", description="The title of the canvas.")
     views: EventedList[View] = Field(default_factory=EventedList, frozen=True)
-    _event_filter: EventFilter | None = PrivateAttr()
 
     model_config = ConfigDict(extra="forbid")
 
@@ -44,9 +41,6 @@ class Canvas(EventedBase):
         """Post-initialization hook for the model."""
         for view in self.views:
             view._canvas = self
-
-        native = get_adaptor_registry().get_adaptor(self)._snx_get_native()
-        self._event_filter = app().install_event_filter(native, self)
 
     @property
     def size(self) -> tuple[int, int]:

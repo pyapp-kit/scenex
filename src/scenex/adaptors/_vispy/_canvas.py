@@ -41,6 +41,8 @@ class Canvas(CanvasAdaptor):
             self._snx_add_view(view)
         self._views = canvas.views
 
+        self._event_filter = app().install_event_filter(self._canvas.native, canvas)
+
     def _snx_get_native(self) -> Any:
         return self._canvas.native
 
