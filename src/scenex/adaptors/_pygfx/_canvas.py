@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
 from scenex.adaptors._base import CanvasAdaptor
-from scenex.app import app
+from scenex.app import app, determine_app, GuiFrontend
 
 from ._adaptor_registry import adaptors
 
@@ -25,13 +25,41 @@ def supports_hide_show(obj: Any) -> TypeGuard[SupportsHideShow]:
     return hasattr(obj, "show") and hasattr(obj, "hide")
 
 
+def _rendercanvas_class() -> BaseRenderCanvas:
+    """Obtains the appropriate class for the current GUI backend.
+
+    Explicit since PyGFX's backend selection process may be different from ours.
+    """
+    frontend = determine_app()
+
+    if frontend == GuiFrontend.QT:
+        from qtpy.QtCore import QSize  # pyright: ignore[reportMissingImports]
+        from rendercanvas.qt import QRenderWidget
+
+        class _QRenderWidget(QRenderWidget):
+            def sizeHint(self) -> QSize:
+                return QSize(self.width(), self.height())
+
+        # Init Qt Application - otherwise we can't create the widget
+        app()
+        return _QRenderWidget()  # type: ignore[no-untyped-call]
+
+    if frontend == GuiFrontend.JUPYTER:
+        import rendercanvas.jupyter
+
+        return rendercanvas.jupyter.JupyterRenderCanvas()
+    if frontend == GuiFrontend.WX:
+        import rendercanvas.wx
+
+        return rendercanvas.wx.WxRenderCanvas()
+
+    raise ValueError("No suitable render canvas found")
+
 class Canvas(CanvasAdaptor):
     """Canvas interface for pygfx Backend."""
 
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
-        from rendercanvas.auto import RenderCanvas
-
-        self._wgpu_canvas = RenderCanvas()
+        self._wgpu_canvas = _rendercanvas_class()
         # Qt RenderCanvas calls show() in its __init__ method, so we need to hide it
         if supports_hide_show(self._wgpu_canvas):
             self._wgpu_canvas.hide()
