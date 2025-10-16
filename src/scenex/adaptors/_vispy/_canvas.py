@@ -34,8 +34,8 @@ class Canvas(CanvasAdaptor):
             title=canvas.title, size=(canvas.width, canvas.height)
         )
         # Qt RenderCanvas calls show() in its __init__ method, so we need to hide it
-        if supports_hide_show(self._canvas.native):
-            self._canvas.native.hide()
+        # if supports_hide_show(self._canvas.native):
+        #     self._canvas.native.hide()
         self._grid = cast("Grid", self._canvas.central_widget.add_grid())
         for view in canvas.views:
             self._snx_add_view(view)
@@ -46,6 +46,7 @@ class Canvas(CanvasAdaptor):
 
     def _snx_set_visible(self, arg: bool) -> None:
         app().show(self, arg)
+        self._canvas.update()
 
     def _draw(self) -> None:
         self._canvas.update()
