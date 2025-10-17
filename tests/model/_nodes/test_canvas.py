@@ -20,12 +20,12 @@ def test_to_world() -> None:
     # Test center of canvas
     canvas_pos = (view.layout.width // 2, view.layout.height // 2)
     ray = canvas.to_world(canvas_pos)
-    assert ray == Ray(origin=(0, 0, 0), direction=(0, 0, -1))
+    assert ray == Ray(origin=(0, 0, 0), direction=(0, 0, -1), source=view)
 
     # Test top-left corner
     canvas_pos = (0, 0)
     ray = canvas.to_world(canvas_pos)
-    assert ray == Ray(origin=(-1, 1, 0), direction=(0, 0, -1))
+    assert ray == Ray(origin=(-1, 1, 0), direction=(0, 0, -1), source=view)
 
     # Test outside the view
     canvas_pos = (view.layout.width * 2, view.layout.height * 2)
@@ -46,7 +46,7 @@ def test_to_world_translated() -> None:
     canvas.views.append(view)
 
     ray = canvas.to_world((0, 0))
-    assert ray == Ray(origin=(0, 2, 1), direction=(0, 0, -1))
+    assert ray == Ray(origin=(0, 2, 1), direction=(0, 0, -1), source=view)
     # Rotate counter-clockwise around +Z - we see a clockwise rotation
     # i.e. (-1, 1, 0) moves to the top right corner and (-1, -1, 0) moves to the
     # top left corner
@@ -56,6 +56,7 @@ def test_to_world_translated() -> None:
     assert ray is not None
     assert np.allclose(ray.origin, (-1, -1, 0), atol=1e-7)
     assert np.array_equal(ray.direction, (0, 0, -1))
+    assert ray.source == view
     camera.transform = snx.Transform()
 
 
@@ -72,7 +73,7 @@ def test_to_world_projection() -> None:
     canvas.views.append(view)
 
     ray = canvas.to_world((0, 0))
-    assert ray == Ray(origin=(-0.5, 0.5, 0), direction=(0, 0, -1))
+    assert ray == Ray(origin=(-0.5, 0.5, 0), direction=(0, 0, -1), source=view)
     camera.projection = snx.Transform()
 
 

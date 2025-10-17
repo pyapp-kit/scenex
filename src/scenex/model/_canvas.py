@@ -193,10 +193,8 @@ class Canvas(EventedBase):
         # Recursively filter the event through node's parent.
         return Canvas._filter_through(event, parent, target)
 
-    def to_world(self, canvas_pos: tuple[float, float]) -> Ray | None:
-        """Map XY canvas position (pixels) to XYZ coordinate in world space."""
-        # Code adapted from:
-        # https://github.com/pygfx/pygfx/pull/753/files#diff-173d643434d575e67f8c0a5bf2d7ea9791e6e03a4e7a64aa5fa2cf4172af05cdR395
+    def to_ndc(self, canvas_pos: tuple[float, float]) -> tuple[float, float] | None:
+        """Map XY canvas position (pixels) to normalized device coordinates (NDC)."""
         view = self._containing_view(canvas_pos)
         if view is None:
             return None
@@ -212,7 +210,18 @@ class Canvas(EventedBase):
         # Convert position to Normalized Device Coordinates (NDC) - i.e., within [-1, 1]
         x = pos_rel[0] / width * 2 - 1
         y = -(pos_rel[1] / height * 2 - 1)
-        pos_ndc = (x, y)
+        return (x, y)
+
+    def to_world(self, canvas_pos: tuple[float, float]) -> Ray | None:
+        """Map XY canvas position (pixels) to a Ray traveling through world space."""
+        # Code adapted from:
+        # https://github.com/pygfx/pygfx/pull/753/files#diff-173d643434d575e67f8c0a5bf2d7ea9791e6e03a4e7a64aa5fa2cf4172af05cdR395
+        view = self._containing_view(canvas_pos)
+        if view is None:
+            return None
+
+        # Convert position to Normalized Device Coordinates (NDC) - i.e., within [-1, 1]
+        pos_ndc = self.to_ndc(canvas_pos)
 
         # Note that the camera matrix is the matrix multiplication of:
         # * The projection matrix, which projects local space (the rectangular
@@ -232,6 +241,7 @@ class Canvas(EventedBase):
         ray = Ray(
             origin=tuple(pos_world),
             direction=tuple(direction),
+            source=view,
         )
         return ray
 

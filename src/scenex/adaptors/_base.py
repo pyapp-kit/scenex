@@ -23,6 +23,7 @@ TImage = TypeVar("TImage", bound="model.Image", covariant=True)
 TVolume = TypeVar("TVolume", bound="model.Volume", covariant=True)
 TPoints = TypeVar("TPoints", bound="model.Points", covariant=True)
 TMesh = TypeVar("TMesh", bound="model.Mesh", covariant=True)
+TLine = TypeVar("TLine", bound="model.Line", covariant=True)
 TCanvas = TypeVar("TCanvas", bound="model.Canvas", covariant=True)
 TView = TypeVar("TView", bound="model.View", covariant=True)
 TLayout = TypeVar("TLayout", bound="model.Layout", covariant=True)
@@ -172,6 +173,17 @@ class MeshAdaptor(NodeAdaptor[TMesh, TNative]):
     def _snx_set_faces(self, arg: NDArray, /) -> None: ...
     @abstractmethod
     def _snx_set_color(self, arg: model.Color, /) -> None: ...
+
+
+class LineAdaptor(NodeAdaptor[TLine, TNative]):
+    """Protocol for a backend Line adaptor object."""
+
+    @abstractmethod
+    def _snx_set_vertices(self, arg: NDArray) -> None: ...
+    @abstractmethod
+    def _snx_set_color(self, arg: model.Color, /) -> None: ...
+    @abstractmethod
+    def _snx_set_width(self, arg: float, /) -> None: ...
 
 
 class CanvasAdaptor(SupportsVisibility[TCanvas, TNative]):

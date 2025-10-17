@@ -10,7 +10,8 @@ from pydantic import Field, computed_field
 from .node import AABB, Node
 
 if TYPE_CHECKING:
-    from scenex.app.events._events import Ray
+    from scenex import Camera
+    from scenex.app.events import Ray
 
 SymbolName = Literal[
     "disc",
@@ -68,7 +69,7 @@ class Points(Node):
             tuple(float(d) for d in np.max(arr, axis=0)),
         )  # type: ignore
 
-    def passes_through(self, ray: Ray) -> float | None:
+    def passes_through(self, ray: Ray, camera: Camera | None = None) -> float | None:
         # Math graciously adapted from:
         # https://raytracing.github.io/books/RayTracingInOneWeekend.html#addingasphere/ray-sphereintersection
 
