@@ -85,10 +85,13 @@ class Camera(Node):
     @forward.setter
     def forward(self, arg: Vector3D) -> None:
         """Sets the forward direction of the camera."""
+        # Check for no change - avoid divide-by-zeroes
+        mag_old = np.linalg.norm(self.forward)
+        mag_new = np.linalg.norm(arg)
+        if abs(np.dot(self.forward, arg) / (mag_old * mag_new) - 1) < 1e-3:
+            return  # No change needed
         # Compute the quaternion needed to rotate from the current forward direction to
         # the desired forward direction
-        if np.dot(self.forward, arg) == 1:
-            return  # No change needed
         rot_quat = la.quat_from_vecs(self.forward, arg)
         rot_axis, rot_angle = la.quat_to_axis_angle(rot_quat)
 
@@ -112,7 +115,10 @@ class Camera(Node):
         Does not affect the forward direction of the camera so long as the new up
         direction is perpendicular to the existing forward direction.
         """
-        if np.dot(self.up, arg) == 1:
+        # Check for no change - avoid divide-by-zeroes
+        mag_old = np.linalg.norm(self.up)
+        mag_new = np.linalg.norm(arg)
+        if abs(np.dot(self.up, arg) / (mag_old * mag_new) - 1) < 1e-3:
             return  # No change needed
         # Compute the quaternion needed to rotate from the current up direction to
         # the desired up direction
