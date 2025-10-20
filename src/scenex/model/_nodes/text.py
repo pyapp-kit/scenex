@@ -33,7 +33,7 @@ class Text(Node):
         # overly complicated for now.
         #
         # Let's just return a point bounding box for now.
-        return ((-1e6, -1e6, -1e6), (1e6, 1e6, 1e6))
+        return ((-1e-6, -1e-6, -1e-6), (1e-6, 1e-6, 1e-6))
 
     def passes_through(self, ray: Ray) -> float | None:
         # TODO: This faces similar issues to the bounding box problem.
