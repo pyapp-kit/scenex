@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 import pylinalg as la
 from cmap import Color
 from pydantic import ConfigDict, Field, PrivateAttr
+from typing_extensions import Unpack
 
 from scenex.app.events import (
     Event,
@@ -22,8 +23,19 @@ from ._evented_list import EventedList
 from ._view import View  # noqa: TC001
 
 if TYPE_CHECKING:
+    from typing_extensions import TypedDict
+
     from scenex import Node
     from scenex.adaptors._base import CanvasAdaptor
+
+    class CanvasKwargs(TypedDict, total=False):
+        """TypedDict for Canvas kwargs."""
+
+        width: int
+        height: int
+        background_color: Color
+        visible: bool
+        title: str
 
 
 class Canvas(EventedBase):
@@ -47,6 +59,16 @@ class Canvas(EventedBase):
     _last_mouse_view: View | None = PrivateAttr(default=None)
 
     model_config = ConfigDict(extra="forbid")
+
+    # tell mypy and pyright that this takes children, just like Node
+    if TYPE_CHECKING:
+
+        def __init__(
+            self,
+            *,
+            views: Iterable[View] = (),
+            **data: Unpack[CanvasKwargs],
+        ) -> None: ...
 
     def model_post_init(self, __context: Any) -> None:
         """Post-initialization hook for the model."""

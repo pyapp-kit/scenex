@@ -31,18 +31,11 @@ class View(ViewAdaptor):
 
     def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
         self._model = view
-        self._renderer: pygfx.renderers.WgpuRenderer | None = None
 
         self._snx_set_scene(view.scene)
         self._snx_set_camera(view.camera)
         # TODO: this is needed... but breaks tests until we deal with Layout better.
         # self._snx_set_background_color(view.layout.background_color)
-
-    def _set_pygfx_canvas(self, canvas: Any, x: int, y: int) -> None:
-        self._renderer = pygfx.renderers.WgpuRenderer(canvas)
-
-    def _snx_get_native(self) -> pygfx.Viewport:
-        return pygfx.Viewport(self._renderer)
 
     def _snx_set_visible(self, arg: bool) -> None:
         pass
@@ -55,39 +48,30 @@ class View(ViewAdaptor):
         self._cam_adaptor = cast("_camera.Camera", get_adaptor(cam))
         self._pygfx_cam = self._cam_adaptor._pygfx_node
 
-    def _draw(self) -> None:
-        if self._renderer:
-            rect = self._model.layout.content_rect
-            # FIXME: On Qt, for HiDPI screens, the logical screen size (the rect
-            # variable above) can, through rounding error during resizing, become
-            # slightly larger than the physical size, which causes pygfx to error.
-            # This code "fixes" it but I think we could do better...maybe upstream?
-            ratio = self._renderer.physical_size[1] / self._renderer.logical_size[1]  # pyright:ignore
-            if rect[2] * ratio > self._renderer.physical_size[0]:
-                # content rect is too wide for the canvas - adjust width
-                new_width = int(self._renderer.physical_size[0] / ratio)
-                rect = (rect[0], rect[1], new_width, rect[3])
-            if rect[3] * ratio > self._renderer.physical_size[1]:
-                # content rect is too tall for the canvas - adjust height
-                new_height = int(self._renderer.physical_size[1] / ratio)
-                rect = (rect[0], rect[1], rect[2], new_height)
-            # End FIXME
+    def _draw(self, renderer: pygfx.renderers.WgpuRenderer) -> None:
+        rect = self._model.layout.content_rect
+        # FIXME: On Qt, for HiDPI screens, the logical screen size (the rect
+        # variable above) can, through rounding error during resizing, become
+        # slightly larger than the physical size, which causes pygfx to error.
+        # This code "fixes" it but I think we could do better...maybe upstream?
+        ratio = renderer.physical_size[1] / renderer.logical_size[1]  # pyright:ignore
+        if (rect[0] + rect[2]) * ratio > renderer.physical_size[0]:
+            # content rect is too wide for the canvas - adjust width
+            new_width = int(renderer.physical_size[0] / ratio - rect[0])
+            rect = (rect[0], rect[1], new_width, rect[3])
+        if (rect[1] + rect[3]) * ratio > renderer.physical_size[1]:
+            # content rect is too tall for the canvas - adjust height
+            new_height = int(renderer.physical_size[1] / ratio - rect[1])
+            rect = (rect[0], rect[1], rect[2], new_height)
+        # End FIXME
 
-            self._renderer.render(self._pygfx_scene, self._pygfx_cam, rect=rect)
-            self._renderer.request_draw()
+        renderer.render(self._pygfx_scene, self._pygfx_cam, rect=rect, flush=False)
 
     def _snx_set_position(self, arg: tuple[float, float]) -> None:
         logger.warning("View.set_position not implemented for pygfx")
 
     def _snx_set_size(self, arg: tuple[float, float] | None) -> None:
-        if arg is None:
-            logger.warning(
-                "Ignoring View.set_size(None): Don't know how to handle this..."
-            )
-        else:
-            r = self._snx_get_native().rect
-            self._snx_get_native().rect = (r[0], r[1], arg[0], arg[1])
-            # FIXME: Camera projection transform should also be updated...
+        logger.warning("Ignoring View.set_size(None): Don't know how to handle this...")
 
     def _snx_set_background_color(self, color: Color | None) -> None:
         colors = (color.rgba,) if color is not None else ()
