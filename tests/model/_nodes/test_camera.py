@@ -14,6 +14,14 @@ def test_camera_forward_property() -> None:
     new_fwd /= np.linalg.norm(new_fwd)
     np.testing.assert_allclose(new_fwd, (0, 0, 1), atol=1e-6)
 
+    # Test that setting camera forward to the same value does not change anything
+    # (cover divide-by-zero cases)
+    cam.forward = (0, 0, 1)
+    # Test that the camera transform STILL maps (0, 0, -1) to our new forward
+    new_fwd = cam.transform.map((0, 0, -1))[:3]
+    new_fwd /= np.linalg.norm(new_fwd)
+    np.testing.assert_allclose(new_fwd, (0, 0, 1), atol=1e-6)
+
 
 def test_camera_up_property() -> None:
     cam = snx.Camera(transform=snx.Transform())
@@ -29,6 +37,14 @@ def test_camera_up_property() -> None:
     new_fwd = cam.transform.map((0, 0, -1))[:3]
     new_fwd /= np.linalg.norm(new_fwd)
     np.testing.assert_allclose(new_fwd, (0, 0, -1), atol=1e-6)
+
+    # Test that setting camera up to the same value does not change anything
+    # (cover divide-by-zero cases)
+    cam.up = (1, 0, 0)
+    # Test that the camera transform STILL maps (0, 1, 0) to our new up
+    new_fwd = cam.transform.map((0, 1, 0))[:3]
+    new_fwd /= np.linalg.norm(new_fwd)
+    np.testing.assert_allclose(new_fwd, (1, 0, 0), atol=1e-6)
 
 
 def test_camera_look_at() -> None:
