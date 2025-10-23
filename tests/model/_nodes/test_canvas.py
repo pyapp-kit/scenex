@@ -15,7 +15,7 @@ def test_to_world() -> None:
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
     canvas = snx.Canvas(width=int(view.layout.width), height=int(view.layout.height))
-    canvas.views.append(view)
+    canvas.grid.add(view)
 
     # Test center of canvas
     canvas_pos = (view.layout.width // 2, view.layout.height // 2)
@@ -43,7 +43,7 @@ def test_to_world_translated() -> None:
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
     canvas = snx.Canvas(width=int(view.layout.width), height=int(view.layout.height))
-    canvas.views.append(view)
+    canvas.grid.add(view)
 
     ray = canvas.to_world((0, 0))
     assert ray == Ray(origin=(0, 2, 1), direction=(0, 0, -1))
@@ -69,21 +69,36 @@ def test_to_world_projection() -> None:
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
     canvas = snx.Canvas(width=int(view.layout.width), height=int(view.layout.height))
-    canvas.views.append(view)
+    canvas.grid.add(view)
 
     ray = canvas.to_world((0, 0))
     assert ray == Ray(origin=(-0.5, 0.5, 0), direction=(0, 0, -1))
     camera.projection = snx.Transform()
 
 
-def test_canvas_layout() -> None:
-    """Tests adding an incompatible view to a canvas results in a logical scenario"""
-    # TODO: Is this actually the logical scenario?
+def test_grid() -> None:
+    # Create a canvas with two views
     canvas = snx.Canvas()
-    view = snx.View(scene=snx.Scene(children=[]), camera=snx.Camera())
-    view.layout.width = canvas.width + 100
-    view.layout.height = canvas.height + 100
-    canvas.views.append(view)
+    view1 = snx.View()
+    view2 = snx.View()
+    canvas.grid.add(view1, row=0, col=0)
+    canvas.grid.add(view2, row=1, col=1)
+    # Assert that by default the row/columns are equally sized
+    assert len(canvas.grid.row_sizes) == 2
+    assert canvas.grid.row_sizes[0] == canvas.grid.row_sizes[1]
+    assert len(canvas.grid.col_sizes) == 2
+    assert canvas.grid.col_sizes[0] == canvas.grid.col_sizes[1]
 
-    assert view.layout.width == canvas.width
-    assert view.layout.height == canvas.height
+    # Which means that the views have the same size
+    assert view1.layout.width == view2.layout.width
+    assert view1.layout.height == view2.layout.height
+
+    # Now change the row size and assert a change in the view heights
+    canvas.grid.row_sizes = [0.7, 0.3]
+    assert view1.layout.height == 7 / 3 * view2.layout.height
+
+    # Now change the column size and assert a change in the view widths
+    # (and assert that the row size change is still in effect)
+    canvas.grid.col_sizes = [0.7, 0.3]
+    assert view1.layout.height == 7 / 3 * view2.layout.height
+    assert view1.layout.width == 7 / 3 * view2.layout.width

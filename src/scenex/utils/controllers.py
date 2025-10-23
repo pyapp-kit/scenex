@@ -155,6 +155,8 @@ class PanZoomController:
 
     def __init__(self) -> None:
         self._drag_pos: tuple[float, float] | None = None
+        self.lock_x = False
+        self.lock_y = False
 
     def __call__(self, event: Event, node: Node) -> bool:
         """Handle mouse and wheel events to pan/zoom the camera."""
@@ -178,8 +180,11 @@ class PanZoomController:
         ):
             new_pos = event.world_ray.origin[:2]
             dx = self._drag_pos[0] - new_pos[0]
+            if not self.lock_x:
+                node.transform = node.transform.translated((dx, 0))
             dy = self._drag_pos[1] - new_pos[1]
-            node.transform = node.transform.translated((dx, dy))
+            if not self.lock_y:
+                node.transform = node.transform.translated((0, dy))
             handled = True
 
         # Note that while panning adjusts the camera's transform matrix, zooming
@@ -190,7 +195,9 @@ class PanZoomController:
             if dy:
                 # Step 1: Adjust the projection matrix to zoom in or out.
                 zoom = self._zoom_factor(dy)
-                node.projection = node.projection.scaled((zoom, zoom, 1.0))
+                node.projection = node.projection.scaled(
+                    (1 if self.lock_x else zoom, 1 if self.lock_y else zoom, 1.0)
+                )
 
                 # Step 2: Adjust the transform matrix to maintain the position
                 # under the cursor. The math is largely borrowed from
@@ -205,7 +212,12 @@ class PanZoomController:
                 delta_screen2 = delta_screen1 * zoom
                 # The pan is the difference between the two
                 pan = (delta_screen2 - delta_screen1) / zoom
-                node.transform = node.transform.translated(pan)
+                node.transform = node.transform.translated(
+                    (
+                        pan[0] if not self.lock_x else 0,
+                        pan[1] if not self.lock_y else 0,
+                    )
+                )
                 handled = True
 
         return handled

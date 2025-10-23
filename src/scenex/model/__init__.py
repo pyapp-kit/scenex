@@ -14,6 +14,7 @@ from cmap import Color, Colormap  # re-export
 
 from ._base import EventedBase, objects
 from ._canvas import Canvas
+from ._grid import Grid
 from ._layout import Layout
 from ._nodes.camera import Camera, CameraType
 from ._nodes.image import Image, InterpolationMode
@@ -33,6 +34,7 @@ __all__ = [
     "Color",
     "Colormap",
     "EventedBase",
+    "Grid",
     "Image",
     "InterpolationMode",
     "Layout",

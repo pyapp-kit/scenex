@@ -41,13 +41,14 @@ class View(ViewAdaptor):
         self._snx_set_scene(view.scene)
 
         view.layout.events.all.connect(self._on_layout_changed)
+        self._on_layout_changed()
 
     def _on_vispy_viewbox_resized(self, event: Any) -> None:
         # Update camera's _from_NDC transform
         w, h = self._vispy_viewbox.rect.size
         self._cam_adaptor._set_view(w, h)
 
-    def _on_layout_changed(self, event: Any) -> None:
+    def _on_layout_changed(self, event: Any | None = None) -> None:
         rect = Rect(self._model.layout.content_rect)
         self._vispy_viewbox.rect = rect
         self._vispy_viewbox.update()

@@ -27,7 +27,7 @@ def test_events() -> None:
 
     # Put it on a canvas
     canvas = snx.Canvas(width=int(view.layout.width), height=int(view.layout.height))
-    canvas.views.append(view)
+    canvas.grid.add(view)
 
     # Mouse over that image in the top right corner
     canvas_pos = (view.layout.width, 0)
@@ -78,7 +78,7 @@ def test_filter_returning_None() -> None:
 
     # ...put it on a canvas...
     canvas = snx.Canvas(width=int(view.layout.width), height=int(view.layout.height))
-    canvas.views.append(view)
+    canvas.grid.add(view)
 
     # ...and create a mock event...
     canvas_pos = (0, 0)
