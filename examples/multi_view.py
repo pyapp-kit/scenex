@@ -62,8 +62,10 @@ view2 = snx.View(
 )
 
 # And put them on the same canvas
-# canvas = snx.Canvas(views=[view1])
-canvas = snx.Canvas(views=[view1, view2])
+view_size = 400
+canvas = snx.Canvas(width=2 * view_size, height=view_size)
+canvas.grid.add(view1, col=0)
+canvas.grid.add(view2, col=1)
 
 
 # Interaction: when hovering over the volume in view1, show the corresponding slice

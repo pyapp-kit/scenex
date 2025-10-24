@@ -30,7 +30,7 @@ class Canvas(CanvasAdaptor):
     """Canvas interface for vispy Backend."""
 
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
-        from vispy.scene import Grid, SceneCanvas, VisualNode
+        from vispy.scene import SceneCanvas, VisualNode
 
         self._canvas = SceneCanvas(
             title=canvas.title, size=(canvas.width, canvas.height)
@@ -38,7 +38,6 @@ class Canvas(CanvasAdaptor):
         # Qt RenderCanvas calls show() in its __init__ method, so we need to hide it
         if supports_hide_show(self._canvas.native):
             self._canvas.native.hide()
-        self._grid = cast("Grid", self._canvas.central_widget.add_grid())
         self._views: list[model.View] = []
         for view in canvas.views:
             self._snx_add_view(view)
@@ -61,7 +60,12 @@ class Canvas(CanvasAdaptor):
         if view in self._views:
             return
 
-        self._grid.add_widget(cast("View", get_adaptor(view))._vispy_viewbox)
+        vis_view = cast("View", get_adaptor(view))
+        # NOTE: canvas.central_widget.add_widget exists but
+        # messes with the layout constantly. The docs specify that setting the parent
+        # directly also works.
+        vis_view._vispy_viewbox.parent = self._canvas.central_widget
+
         get_adaptor(view.camera)._set_view(view.layout.width, view.layout.height)  # type:ignore
         self._views.append(view)
 
