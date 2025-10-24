@@ -50,7 +50,7 @@ def evented_canvas() -> snx.Canvas:
     scene = snx.Scene(children=[])
     view = snx.View(scene=scene, camera=camera)
     canvas = snx.Canvas()
-    canvas.views.append(view)
+    canvas.grid.add(view)
     return canvas
 
 
