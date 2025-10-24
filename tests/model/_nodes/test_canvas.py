@@ -94,11 +94,11 @@ def test_grid() -> None:
     assert view1.layout.height == view2.layout.height
 
     # Now change the row size and assert a change in the view heights
-    canvas.grid.row_sizes = [0.7, 0.3]
+    canvas.grid.row_sizes = (0.7, 0.3)
     assert view1.layout.height == 7 / 3 * view2.layout.height
 
     # Now change the column size and assert a change in the view widths
     # (and assert that the row size change is still in effect)
-    canvas.grid.col_sizes = [0.7, 0.3]
+    canvas.grid.col_sizes = (0.7, 0.3)
     assert view1.layout.height == 7 / 3 * view2.layout.height
     assert view1.layout.width == 7 / 3 * view2.layout.width

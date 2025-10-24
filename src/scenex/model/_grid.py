@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import ConfigDict, Field, PrivateAttr, computed_field
+from pydantic import ConfigDict, Field
 
 from ._evented_list import EventedList
 from ._layout import Layout
@@ -37,40 +37,20 @@ class Grid(Layout):
 
     grid: EventedList[GridAssignment] = Field(default_factory=EventedList)
 
-    # Private attributes for row and column sizes
-    # Allows for setting via EventedList or regular list
-    _col_sizes: EventedList[float] = PrivateAttr(default_factory=EventedList)
-    _row_sizes: EventedList[float] = PrivateAttr(default_factory=EventedList)
-
-    @computed_field()  # type: ignore
-    @property
-    def row_sizes(self) -> EventedList[float]:
-        """Weights forming the height of each row in the grid.
-
-        Each row i will have height=(row_sizes[i] / sum(row_sizes) * total_height)
-        """
-        return self._row_sizes
-
-    @row_sizes.setter
-    def row_sizes(self, value: list[float] | EventedList) -> None:
-        if isinstance(value, EventedList):
-            self._row_sizes = value
-        self._row_sizes = EventedList(value)
-
-    @computed_field()  # type: ignore
-    @property
-    def col_sizes(self) -> EventedList[float]:
-        """Weights forming the width of each column in the grid.
-
-        Each column i will have width=(col_sizes[i] / sum(col_sizes) * total_width)
-        """
-        return self._col_sizes
-
-    @col_sizes.setter
-    def col_sizes(self, value: list[float] | EventedList) -> None:
-        if isinstance(value, EventedList):
-            self._col_sizes = value
-        self._col_sizes = EventedList(value)
+    row_sizes: tuple[float, ...] = Field(
+        default_factory=tuple,
+        description="""
+            Weights forming the height of each row in the grid.
+            Each row i will have height=(row_sizes[i] / sum(row_sizes) * total_height)
+        """,
+    )
+    col_sizes: tuple[float, ...] = Field(
+        default_factory=tuple,
+        description="""
+            Weights forming the width of each column in the grid.
+            Each column i will have width=(col_sizes[i] / sum(col_sizes) * total_width)
+        """,
+    )
 
     def add(
         self,
@@ -81,29 +61,40 @@ class Grid(Layout):
         colspan: int = 1,
     ) -> None:
         """Add a view to the grid at the specified position."""
+        if row is None and col is None:
+            row = 0
+            col = 0
+        if row is None:
+            views_in_col = [a for a in self.grid if a.col == col]
+            if len(views_in_col) == 0:
+                row = 0
+            else:
+                row = max(a.row + a.rowspan for a in views_in_col)
+        if col is None:
+            views_in_row = [a for a in self.grid if a.row == row]
+            if len(views_in_row) == 0:
+                col = 0
+            else:
+                col = max(a.col + a.colspan for a in views_in_row)
+
         # Ensure row_sizes length - pad additional rows with previous average size.
         # e.g. if there were 5 rows and the addition requires 7 rows, 2 more rows will
         #     be added with the average of the existing 5 row sizes.
         # This is done first so that the grid layout computation that happens on
         # grid.append can use the correct row/col sizes.
-        if row is None:
-            row = 0
-        if col is None:
-            col = len(self.col_sizes)
-
         if len(self.row_sizes) < row + rowspan:
             avg_row_size = (
                 sum(self.row_sizes) / len(self.row_sizes) if self.row_sizes else 1.0
             )
             for _ in range(len(self.row_sizes), row + rowspan):
-                self.row_sizes.append(avg_row_size)
+                self.row_sizes += (avg_row_size,)
         # Ensure col_sizes length - pad additional columns with previous average size.
         if len(self.col_sizes) < col + colspan:
             avg_col_size = (
                 sum(self.col_sizes) / len(self.col_sizes) if self.col_sizes else 1.0
             )
             for _ in range(len(self.col_sizes), col + colspan):
-                self.col_sizes.append(avg_col_size)
+                self.col_sizes += (avg_col_size,)
 
         # Add the assignment (and recompute the layout)
         self.grid.append(
