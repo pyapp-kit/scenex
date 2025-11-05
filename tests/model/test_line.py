@@ -104,7 +104,7 @@ def test_line_ray_intersection_transformed() -> None:
         )
     )
     canvas = snx.Canvas()
-    canvas.views.append(view)
+    canvas.grid.add(view)
 
     # Just barely fit the line into view
     view.camera.transform = projections.orthographic(2, 2, 1e5).translated((1, 1, 1))
