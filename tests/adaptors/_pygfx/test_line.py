@@ -21,7 +21,7 @@ def line() -> snx.Line:
     )
     return snx.Line(
         vertices=vertices,
-        color=cmap.Color("red"),
+        color=snx.ColorModel(type="uniform", color=cmap.Color("red")),
         width=1,
     )
 
@@ -49,6 +49,22 @@ def test_data(line: snx.Line, adaptor: adaptors.Line) -> None:
     assert line.width == mat.thickness  # pyright: ignore
 
     assert line.color is not None
-    assert np.array_equal(line.color.rgba, mat.color.rgba)  # pyright: ignore
-    line.color = cmap.Color("blue")
-    assert np.array_equal(line.color.rgba, mat.color.rgba)  # pyright: ignore
+    assert np.array_equal(line.color.color.rgba, mat.color.rgba)  # type: ignore
+    line.color = snx.ColorModel(type="uniform", color=cmap.Color("blue"))
+    assert np.array_equal(
+        line.color.color.rgba,  # type: ignore
+        adaptor._pygfx_node.material.color.rgba,  # pyright: ignore
+    )
+    line.color = snx.ColorModel(
+        type="vertex",
+        color=[
+            cmap.Color("green"),
+            cmap.Color("yellow"),
+            cmap.Color("blue"),
+            cmap.Color("red"),
+        ],
+    )
+    assert np.array_equal(
+        np.asarray([c.rgba for c in line.color.color], dtype=np.float32),  # type: ignore
+        adaptor._pygfx_node.geometry.colors.data,  # pyright: ignore
+    )

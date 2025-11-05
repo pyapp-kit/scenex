@@ -21,7 +21,7 @@ def line() -> snx.Line:
     )
     return snx.Line(
         vertices=vertices,
-        color=cmap.Color("red"),
+        color=snx.ColorModel(type="uniform", color=cmap.Color("red")),
         width=1,
     )
 
@@ -44,6 +44,16 @@ def test_data(line: snx.Line, adaptor: adaptors.Line) -> None:
     assert line.width == adaptor._vispy_node.width
 
     assert line.color is not None
-    assert line.color.hex == adaptor._vispy_node.color
-    line.color = cmap.Color("blue")
-    assert line.color.hex == adaptor._vispy_node.color
+    assert line.color.color.hex == adaptor._vispy_node.color  # type: ignore
+    line.color = snx.ColorModel(type="uniform", color=cmap.Color("blue"))
+    assert line.color.color.hex == adaptor._vispy_node.color  # type: ignore
+    line.color = snx.ColorModel(
+        type="vertex",
+        color=[
+            cmap.Color("green"),
+            cmap.Color("yellow"),
+            cmap.Color("blue"),
+            cmap.Color("red"),
+        ],
+    )
+    assert np.array_equal([c.hex for c in line.color.color], adaptor._vispy_node.color)  # type: ignore

@@ -11,6 +11,7 @@ except PackageNotFoundError:
 
 from .adaptors import run, use
 from .model._canvas import Canvas
+from .model._color import ColorModel
 from .model._grid import Grid
 from .model._nodes.camera import Camera
 from .model._nodes.image import Image
@@ -28,6 +29,7 @@ from .util import show
 __all__ = [
     "Camera",
     "Canvas",
+    "ColorModel",
     "Grid",
     "Image",
     "Line",
