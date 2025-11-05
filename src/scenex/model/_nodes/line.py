@@ -12,6 +12,7 @@ from .node import AABB, Node
 
 if TYPE_CHECKING:
     from scenex.app.events._events import Ray
+    from scenex.model._view import View
 
 
 class Line(Node):
@@ -70,7 +71,8 @@ class Line(Node):
         """
         verts = np.asarray(self.vertices)
         # Convert vertices to canvas space
-        canvas_vertices = Line._world_to_canvas(ray, self.vertices)
+        canvas_vertices = self._node_to_canvas(ray.source)
+        # Convert ray to canvas space
         canvas_ray = Line._world_to_canvas(ray, np.array([ray.origin]))[0]
 
         starts = canvas_vertices[:-1]
@@ -131,4 +133,11 @@ class Line(Node):
         cam = ray.source.camera
         layout = ray.source.layout
         ndc_points = cam.projection.map(cam.transform.imap(points))[:, :2]
+        return (ndc_points + 1) / 2 * (layout.width, layout.height)
+
+    def _node_to_canvas(self, view: View) -> np.ndarray:
+        cam = view.camera
+        layout = view.layout
+        tform_to_camera = cam.transform_to_node(self)  # Account for parent transforms
+        ndc_points = cam.projection.map(tform_to_camera.imap(self.vertices))[:, :2]
         return (ndc_points + 1) / 2 * (layout.width, layout.height)
