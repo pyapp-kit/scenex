@@ -1,6 +1,8 @@
 """Basic test to verify Line node implementation."""
 
+import cmap
 import numpy as np
+import pytest
 
 import scenex as snx
 from scenex.utils import projections
@@ -17,6 +19,24 @@ def test_line_bounding_box() -> None:
 
     assert bbox[0] == expected_min
     assert bbox[1] == expected_max
+
+
+def test_line_color() -> None:
+    """Test that line color is set correctly."""
+    # Test that uniform color works
+    line = snx.Line(
+        vertices=np.array([[0, 0], [1, 1]]),
+        color=snx.ColorModel(type="uniform", color=cmap.Color("red")),
+    )
+    # Test that vertex color works
+    line.color = snx.ColorModel(
+        type="vertex", color=[cmap.Color("blue"), cmap.Color("green")]
+    )
+    # Test that invalid color type raises error
+    with pytest.raises(ValueError):
+        line.color = snx.ColorModel(
+            type="face", color=[cmap.Color("blue"), cmap.Color("green")]
+        )
 
 
 def test_line_ray_intersection() -> None:

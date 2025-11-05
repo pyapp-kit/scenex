@@ -23,7 +23,16 @@ def _create_line_data(angle: float = 0) -> np.ndarray:
 # Create the mesh
 original_vertices = _create_line_data()
 
-line = snx.Line(vertices=original_vertices, color=cmap.Color("cyan"))
+
+line_color_model = snx.ColorModel(type="uniform", color=cmap.Color("cyan"))
+pressed_color_model = snx.ColorModel(
+    type="vertex",
+    color=[
+        cmap.Color("blue") if i % 2 == 0 else cmap.Color("yellow")
+        for i in range(len(original_vertices))
+    ],
+)
+line = snx.Line(vertices=original_vertices, color=line_color_model)
 
 view = snx.View(
     scene=snx.Scene(children=[line]),
@@ -47,15 +56,11 @@ def _view_event_filter(event: Event) -> bool:
             # Find mesh intersection
             for node, _distance in intersections:
                 if isinstance(node, snx.Line):
-                    line.color = cmap.Color("red")
+                    line.color = pressed_color_model
                     return True
-        line.color = cmap.Color("cyan")
+        line.color = line_color_model
     elif isinstance(event, MousePressEvent):
-        if event.buttons & MouseButton.RIGHT:
-            # Randomize the mesh on right click
-            line.vertices = original_vertices.copy()
-            return True
-        elif event.buttons & MouseButton.LEFT:
+        if event.buttons & MouseButton.LEFT:
             if intersections := event.world_ray.intersections(view.scene):
                 # Find mesh intersection
                 for node, _distance in intersections:
@@ -72,6 +77,5 @@ def _view_event_filter(event: Event) -> bool:
 view.set_event_filter(_view_event_filter)
 
 # Show and position camera
-snx.use("pygfx")
 snx.show(view)
 snx.run()

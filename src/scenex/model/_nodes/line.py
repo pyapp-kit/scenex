@@ -4,7 +4,9 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 from cmap import Color
-from pydantic import Field, computed_field
+from pydantic import Field, computed_field, field_validator
+
+from scenex.model._color import ColorModel
 
 from .node import AABB, Node
 
@@ -23,8 +25,9 @@ class Line(Node):
     # numpy array of 2D/3D vertices, shape (N, 2) or (N, 3)
     vertices: Any = Field(default=None, repr=False, exclude=True)
 
-    color: Color | None = Field(
-        default=Color("white"), description="The color of the line."
+    color: ColorModel = Field(
+        default=ColorModel(type="uniform", color=Color("white")),
+        description="The color of the line.",
     )
     width: float = Field(default=1.0, ge=0.0, description="The width of the line.")
     antialias: float = Field(default=1.0, description="Anti-aliasing factor, in px.")
@@ -43,6 +46,13 @@ class Line(Node):
             max_vals = (*max_vals, 0.0)
 
         return (min_vals, max_vals)  # type: ignore
+
+    @field_validator("color", mode="after")
+    @classmethod
+    def validate_color(cls, color: ColorModel) -> ColorModel:
+        if color.type not in ("uniform", "vertex"):
+            raise ValueError("Line color type must be 'uniform' or 'vertex'")
+        return color
 
     def passes_through(self, ray: Ray) -> float | None:
         """
