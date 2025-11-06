@@ -84,7 +84,11 @@ class Points(Node, PointsAdaptor):
         return pygfx.Buffer(colors.astype(np.float32))
 
     def _snx_set_face_color(self, face_color: Color | None) -> None:
-        self._pygfx_node.geometry.colors = self._color_buffer(face_color)  # pyright: ignore[reportOptionalMemberAccess]
+        shape = (len(self._model.coords), 1)
+        self._pygfx_node.geometry.colors.data[:, :] = np.tile(  # pyright: ignore
+            np.asarray(face_color), shape
+        )
+        self._pygfx_node.geometry.colors.update_range()  # pyright: ignore
 
     def _snx_set_edge_color(self, edge_color: Color | None) -> None:
         self._pygfx_node.geometry.edge_color = self._color_buffer(edge_color)  # pyright: ignore[reportOptionalMemberAccess]

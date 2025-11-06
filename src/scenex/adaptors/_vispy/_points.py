@@ -19,12 +19,12 @@ if TYPE_CHECKING:
 
     from scenex import model
 
-SPACE_MAP: Mapping[model.ScalingMode, Literal["model", "screen", "world"]] = {
-    True: "world",
-    False: "screen",
-    "fixed": "screen",
-    "scene": "world",
-    "visual": "model",
+SPACE_MAP: Mapping[model.ScalingMode, Literal["scene", "fixed", "visual"]] = {
+    True: "scene",
+    False: "fixed",
+    "fixed": "fixed",
+    "scene": "scene",
+    "visual": "visual",
 }
 
 
@@ -36,22 +36,19 @@ class Points(Node, PointsAdaptor):
 
     def __init__(self, points: model.Points, **backend_kwargs: Any) -> None:
         self._model = points
-        self._vispy_node = vispy.scene.Markers(
-            pos=np.asarray(points.coords),
-            size=points.size,
-            symbol=points.symbol,
-            scaling=points.scaling,  # pyright: ignore
-            antialias=points.antialias,  # pyright: ignore
-            edge_color=points.edge_color,
-            edge_width=points.edge_width,
-            face_color=points.face_color,
-        )
+        self._vispy_node = vispy.scene.Markers()
+        self._update_vispy_data()
 
     def _snx_set_coords(self, coords: npt.NDArray) -> None:
-        # TODO: Will this overwrite our other parameters?
         self._update_vispy_data()
 
     def _snx_set_size(self, size: float) -> None:
+        # FIXME: There seems to be a limit on the maximum size of points in vispy.
+        # i.e. suppose you have "scene" scaling, and an orthographic camera
+        # showing [-2, 2] in x and y.  If you set the size to 0.5 (taking up 1/4
+        # of the view), things work nicely. But if you set the size to 2 (taking up the
+        # entire width/height) or 1 for that matter, the point does not actually get
+        # that big on screen.
         self._update_vispy_data()
 
     def _snx_set_face_color(self, face_color: Color) -> None:
@@ -67,6 +64,7 @@ class Points(Node, PointsAdaptor):
         self._update_vispy_data()
 
     def _snx_set_scaling(self, scaling: model.ScalingMode) -> None:
+        self._vispy_node.scaling = SPACE_MAP[scaling]
         self._update_vispy_data()
 
     def _snx_set_antialias(self, antialias: float) -> None:
@@ -91,8 +89,8 @@ class Points(Node, PointsAdaptor):
 
         self._vispy_node.set_data(
             pos=np.asarray(self._model.coords),
+            size=self._model.size,
             symbol=self._model.symbol,
-            scaling=self._model.scaling,  # pyright: ignore
             face_color=face_color,
             edge_color=edge_color,
             edge_width=self._model.edge_width,
