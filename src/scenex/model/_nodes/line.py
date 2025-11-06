@@ -139,5 +139,7 @@ class Line(Node):
         cam = view.camera
         layout = view.layout
         tform_to_root_scene = self.transform_to_node(view.scene)
-        ndc_points = cam.projection.map(tform_to_root_scene.imap(self.vertices))[:, :2]
+        ndc_points = cam.projection.map(
+            cam.transform.imap(tform_to_root_scene.imap(self.vertices))
+        )[:, :2]
         return (ndc_points + 1) / 2 * (layout.width, layout.height)
