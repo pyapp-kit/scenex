@@ -51,9 +51,11 @@ class Ray(NamedTuple):
         """
         through: list[Intersection] = []
         for child in graph.children:
+            # First check the node itself...
             if (d := child.passes_through(self)) is not None:
                 through.append((child, d))
-                through.extend(self.intersections(child))
+            # ...then check its children...
+            through.extend(self.intersections(child))
         return sorted(through, key=lambda inter: inter[1])
 
 

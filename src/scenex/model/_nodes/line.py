@@ -138,6 +138,6 @@ class Line(Node):
     def _node_to_canvas(self, view: View) -> np.ndarray:
         cam = view.camera
         layout = view.layout
-        tform_to_camera = cam.transform_to_node(self)  # Account for parent transforms
-        ndc_points = cam.projection.map(tform_to_camera.imap(self.vertices))[:, :2]
+        tform_to_root_scene = self.transform_to_node(view.scene)
+        ndc_points = cam.projection.map(tform_to_root_scene.imap(self.vertices))[:, :2]
         return (ndc_points + 1) / 2 * (layout.width, layout.height)
