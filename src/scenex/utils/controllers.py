@@ -15,6 +15,7 @@ from scenex.app.events._events import (
     WheelEvent,
 )
 from scenex.model import Camera, Node
+from scenex.model._view import View
 
 
 class OrbitController:
@@ -153,10 +154,39 @@ class PanZoomController:
     under the mouse during zoom.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, lock_x: bool = False, lock_y: bool = False) -> None:
         self._drag_pos: tuple[float, float] | None = None
-        self.lock_x = False
-        self.lock_y = False
+        self.lock_x = lock_x
+        self.lock_y = lock_y
+
+        self._view: View | None = None
+        self._old_view_size: tuple[int, int] | None = None
+
+    def maintain_aspect_against(self, view: View | None = None) -> None:
+        """Sets up the controller to maintain aspect ratio against the given view."""
+        if self._view is not None:
+            self._view.layout.events.width.disconnect(self._on_layout_resize)
+            self._view.layout.events.height.disconnect(self._on_layout_resize)
+        self._view = view
+        if self._view is not None:
+            self._old_view_size = (
+                int(self._view.layout.width),
+                int(self._view.layout.height),
+            )
+            self._view.layout.events.width.connect(self._on_layout_resize)
+            self._view.layout.events.height.connect(self._on_layout_resize)
+
+    def _on_layout_resize(self, _: int) -> None:
+        """Event filter that scales content proportionally with window size."""
+        if self._view is None or self._old_view_size is None:
+            return
+        new_size = (int(self._view.layout.width), int(self._view.layout.height))
+        width_ratio = self._old_view_size[0] / new_size[0]
+        height_ratio = self._old_view_size[1] / new_size[1]
+        self._view.camera.projection = self._view.camera.projection.scaled(
+            (width_ratio, height_ratio)
+        )
+        self._old_view_size = new_size
 
     def __call__(self, event: Event, node: Node) -> bool:
         """Handle mouse and wheel events to pan/zoom the camera."""

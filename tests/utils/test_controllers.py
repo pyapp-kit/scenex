@@ -15,6 +15,7 @@ from scenex.app.events import (
     WheelEvent,
 )
 from scenex.model._transform import Transform
+from scenex.utils import projections
 from scenex.utils.controllers import OrbitController, PanZoomController
 
 
@@ -64,6 +65,24 @@ def test_panzoomcontroller_zoom() -> None:
     zoom = controller._zoom_factor(wheel_event.angle_delta[1])
     expected = before.scaled((zoom, zoom, 1))
     np.testing.assert_allclose(cam.projection.root, expected.root)
+
+
+def test_panzoomcontroller_maintain_aspect() -> None:
+    """Tests PanZoomController's ability to maintain its aspect."""
+    controller = PanZoomController()
+    cam = snx.Camera(interactive=True)
+    cam.set_event_filter(controller)
+    cam.projection = projections.orthographic(1, 1)
+
+    view = snx.View(camera=cam)
+    view.layout.width = 400
+    view.layout.height = 400
+    controller.maintain_aspect_against(view)
+
+    view.layout.width = 800
+    assert np.array_equal(cam.projection, projections.orthographic(2, 1))
+    view.layout.height = 800
+    assert np.array_equal(cam.projection, projections.orthographic(2, 2))
 
 
 def test_orbitcontroller_orbit() -> None:

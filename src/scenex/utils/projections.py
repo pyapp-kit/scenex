@@ -97,12 +97,11 @@ def perspective(fov: float, near: float, far: float) -> Transform:
     return Transform(root=matrix)
 
 
-# TODO: perspective mode?
-# TODO: Preserve some camera state?
 def zoom_to_fit(
     view: View,
     type: Literal["perspective", "orthographic"] = "orthographic",
     zoom_factor: float = 1.0,
+    preserve_aspect_ratio: bool = False,
 ) -> None:
     """Adjusts the Camera to fit the entire scene.
 
@@ -119,12 +118,25 @@ def zoom_to_fit(
         approaches 0, the scene will linearly decrease in size. As the zoom factor
         increases beyond 1.0, the bounds of the scene will expand linearly beyond the
         view.
-    """
-    # TODO: Test whether the camera can affect the bounding box...
+    preserve_aspect_ratio: bool
+        Whether to apply aspect ratio correction to prevent distortion. When True,
+        squares will appear as squares regardless of view dimensions. When False,
+        content may be stretched to fill the view. Default False.
 
+        FIXME: Is this the correct name for this behavior?
+    """
     bb = view.scene.bounding_box
     center = np.mean(bb, axis=0) if bb else (0, 0, 0)
     w, h, d = np.ptp(bb, axis=0) if bb else (1, 1, 1)
+
+    # Apply aspect ratio correction only if requested
+    if preserve_aspect_ratio:
+        aspect_ratio = view.layout.width / view.layout.height
+        if aspect_ratio is not None:
+            if w / h > aspect_ratio:
+                h = w / aspect_ratio
+            else:
+                w = h * aspect_ratio
     if type == "orthographic":
         view.camera.transform = Transform().translated(center)
         view.camera.projection = orthographic(w, h, d).scaled([zoom_factor] * 3)
