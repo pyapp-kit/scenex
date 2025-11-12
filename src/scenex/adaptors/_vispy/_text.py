@@ -14,6 +14,7 @@ from ._node import Node
 if TYPE_CHECKING:
     import cmap
 
+    from scenex.model import BlendMode
     from scenex.model import Text as TextModel
 
 
@@ -37,3 +38,7 @@ class Text(Node, TextAdaptor):
 
     def _snx_set_size(self, arg: int) -> None:
         self._vispy_node.font_size = arg
+
+    def _snx_set_blending(self, arg: BlendMode) -> None:
+        # Blending text makes it look very blocky
+        pass
