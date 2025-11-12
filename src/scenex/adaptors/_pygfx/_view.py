@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
     from scenex import model
 
-    from . import _camera, _canvas, _scene
+    from . import _camera, _scene
 
 logger = logging.getLogger("scenex.adaptors.pygfx")
 
@@ -30,14 +30,16 @@ class View(ViewAdaptor):
     _pygfx_cam: pygfx.Camera
 
     def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
-        canvas_adaptor = cast("_canvas.Canvas", get_adaptor(view.canvas))
-        wgpu_canvas = canvas_adaptor._snx_get_native()
-        self._renderer = pygfx.renderers.WgpuRenderer(wgpu_canvas)
+        self._model = view
+        self._renderer: pygfx.renderers.WgpuRenderer | None = None
 
         self._snx_set_scene(view.scene)
         self._snx_set_camera(view.camera)
         # TODO: this is needed... but breaks tests until we deal with Layout better.
         # self._snx_set_background_color(view.layout.background_color)
+
+    def _set_pygfx_canvas(self, canvas: Any, x: int, y: int) -> None:
+        self._renderer = pygfx.renderers.WgpuRenderer(canvas)
 
     def _snx_get_native(self) -> pygfx.Viewport:
         return pygfx.Viewport(self._renderer)
@@ -52,18 +54,40 @@ class View(ViewAdaptor):
     def _snx_set_camera(self, cam: model.Camera) -> None:
         self._cam_adaptor = cast("_camera.Camera", get_adaptor(cam))
         self._pygfx_cam = self._cam_adaptor._pygfx_node
-        self._cam_adaptor.pygfx_controller.register_events(self._renderer)
 
     def _draw(self) -> None:
-        renderer = self._renderer
-        renderer.render(self._pygfx_scene, self._pygfx_cam)
-        renderer.request_draw()
+        if self._renderer:
+            rect = self._model.layout.content_rect
+            # FIXME: On Qt, for HiDPI screens, the logical screen size (the rect
+            # variable above) can, through rounding error during resizing, become
+            # slightly larger than the physical size, which causes pygfx to error.
+            # This code "fixes" it but I think we could do better...maybe upstream?
+            ratio = self._renderer.physical_size[1] / self._renderer.logical_size[1]  # pyright:ignore
+            if rect[2] * ratio > self._renderer.physical_size[0]:
+                # content rect is too wide for the canvas - adjust width
+                new_width = int(self._renderer.physical_size[0] / ratio)
+                rect = (rect[0], rect[1], new_width, rect[3])
+            if rect[3] * ratio > self._renderer.physical_size[1]:
+                # content rect is too tall for the canvas - adjust height
+                new_height = int(self._renderer.physical_size[1] / ratio)
+                rect = (rect[0], rect[1], rect[2], new_height)
+            # End FIXME
+
+            self._renderer.render(self._pygfx_scene, self._pygfx_cam, rect=rect)
+            self._renderer.request_draw()
 
     def _snx_set_position(self, arg: tuple[float, float]) -> None:
         logger.warning("View.set_position not implemented for pygfx")
 
     def _snx_set_size(self, arg: tuple[float, float] | None) -> None:
-        logger.warning("View.set_size not implemented for pygfx")
+        if arg is None:
+            logger.warning(
+                "Ignoring View.set_size(None): Don't know how to handle this..."
+            )
+        else:
+            r = self._snx_get_native().rect
+            self._snx_get_native().rect = (r[0], r[1], arg[0], arg[1])
+            # FIXME: Camera projection transform should also be updated...
 
     def _snx_set_background_color(self, color: Color | None) -> None:
         colors = (color.rgba,) if color is not None else ()

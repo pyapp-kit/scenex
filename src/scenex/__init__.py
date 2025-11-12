@@ -16,6 +16,7 @@ from .model._nodes.image import Image
 from .model._nodes.node import Node
 from .model._nodes.points import Points
 from .model._nodes.scene import Scene
+from .model._nodes.text import Text
 from .model._nodes.volume import Volume
 from .model._transform import Transform
 from .model._view import View
@@ -28,6 +29,7 @@ __all__ = [
     "Node",
     "Points",
     "Scene",
+    "Text",
     "Transform",
     "View",
     "Volume",
