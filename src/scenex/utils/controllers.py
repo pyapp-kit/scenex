@@ -181,6 +181,9 @@ class PanZoomController:
         if self._view is None or self._old_view_size is None:
             return
         new_size = (int(self._view.layout.width), int(self._view.layout.height))
+        if any(s == 0 for s in new_size):
+            # Canvas is being hidden; skip resize
+            return
         width_ratio = self._old_view_size[0] / new_size[0]
         height_ratio = self._old_view_size[1] / new_size[1]
         self._view.camera.projection = self._view.camera.projection.scaled(
