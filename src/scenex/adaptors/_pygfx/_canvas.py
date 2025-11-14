@@ -52,8 +52,20 @@ def _rendercanvas_class() -> BaseRenderCanvas:
         return rendercanvas.jupyter.JupyterRenderCanvas()
     if frontend == GuiFrontend.WX:
         import rendercanvas.wx
+        import wx
 
-        return rendercanvas.wx.WxRenderCanvas()
+        # FIXME: Ideally, we would return a rendercanvas.wx.WxRenderWidget,
+        # however doing so throws a bug in the creation of the WgpuRenderer.
+        # We can get away with returning a RenderCanvas directly, but we have to
+        # override its Destroy method to avoid it trying to clean up the widget
+        # if the user reparents it.
+        class _RenderCanvas(rendercanvas.wx.RenderCanvas):
+            def Destroy(self) -> None:
+                # Overridden to avoid cleaning up the renderCanvas widget, IF it got
+                # reparented. This is likely wrong.
+                super(wx.Frame, self).Destroy()  # type: ignore
+
+        return _RenderCanvas()  # type: ignore
 
     raise ValueError("No suitable render canvas found")
 
