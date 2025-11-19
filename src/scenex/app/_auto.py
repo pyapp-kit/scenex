@@ -6,7 +6,7 @@ import sys
 from concurrent.futures import Executor, Future, ThreadPoolExecutor
 from contextlib import contextmanager
 from enum import Enum
-from functools import cache
+from functools import cache, wraps
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
@@ -132,6 +132,16 @@ def _load_app(module: str, cls_name: str) -> App:
     mod = importlib.import_module(module)
     cls = getattr(mod, cls_name)
     return cast("App", cls())
+
+
+def ensure_main_thread(func: Callable[P, T]) -> Callable[P, Future[T]]:
+    """Decorator that ensures a function is called in the main thread."""
+
+    @wraps(func)
+    def _wrapper(*args: P.args, **kwargs: P.kwargs) -> Future[T]:
+        return app().call_in_main_thread(func, *args, **kwargs)
+
+    return _wrapper
 
 
 def determine_app() -> GuiFrontend:
