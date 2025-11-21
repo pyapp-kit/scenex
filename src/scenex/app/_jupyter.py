@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, cast
 from IPython import display
 from jupyter_rfb import RemoteFrameBuffer
 
-from scenex.app._auto import App
+from scenex.app._auto import App, CursorType
 from scenex.app.events._events import (
     EventFilter,
     MouseButton,
@@ -221,3 +221,21 @@ class JupyterAppWrap(App):
             window.handle_event = old
         else:
             yield
+
+    def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
+        adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
+        native = cast("RemoteFrameBuffer", adaptor._snx_get_native())
+        # remote frame buffer exposes style via layout
+        native.cursor = self._cursor_to_jupyter(cursor)
+
+    def _cursor_to_jupyter(self, cursor: CursorType) -> str:
+        """Convert abstract CursorType to Jupyter cursor string."""
+        return {
+            CursorType.DEFAULT: "default",
+            CursorType.CROSS: "crosshair",
+            CursorType.V_ARROW: "ns-resize",
+            CursorType.H_ARROW: "ew-resize",
+            CursorType.ALL_ARROW: "move",
+            CursorType.BDIAG_ARROW: "nesw-resize",
+            CursorType.FDIAG_ARROW: "nwse-resize",
+        }[cursor]

@@ -18,7 +18,7 @@ from qtpy.QtGui import QEnterEvent, QMouseEvent, QResizeEvent, QWheelEvent
 from qtpy.QtWidgets import QApplication, QWidget
 from superqt.utils import signals_blocked
 
-from scenex.app._auto import App
+from scenex.app._auto import App, CursorType
 from scenex.app.events import (
     EventFilter,
     MouseButton,
@@ -205,6 +205,22 @@ class QtAppWrap(App):
         """Context manager to block events for a window."""
         with signals_blocked(window):
             yield
+
+    def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
+        adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
+        cast("QWidget", adaptor._snx_get_native()).setCursor(self._cursor_to_qt(cursor))
+
+    def _cursor_to_qt(self, cursor: CursorType) -> Qt.CursorShape:
+        """Convert abstract CursorType to Qt CursorShape."""
+        return {
+            CursorType.DEFAULT: Qt.CursorShape.ArrowCursor,
+            CursorType.CROSS: Qt.CursorShape.CrossCursor,
+            CursorType.V_ARROW: Qt.CursorShape.SizeVerCursor,
+            CursorType.H_ARROW: Qt.CursorShape.SizeHorCursor,
+            CursorType.ALL_ARROW: Qt.CursorShape.SizeAllCursor,
+            CursorType.BDIAG_ARROW: Qt.CursorShape.SizeBDiagCursor,
+            CursorType.FDIAG_ARROW: Qt.CursorShape.SizeFDiagCursor,
+        }[cursor]
 
 
 class MainThreadInvoker(QObject):

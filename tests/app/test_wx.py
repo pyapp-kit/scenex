@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 import pytest
 
 import scenex as snx
-from scenex.app import GuiFrontend, determine_app
+from scenex.app import CursorType, GuiFrontend, app, determine_app
 from scenex.app.events import (
     MouseButton,
     MouseEnterEvent,
@@ -209,3 +209,13 @@ def test_mouse_leave(evented_canvas: snx.Canvas) -> None:
     _processEvent(wx.EVT_LEAVE_WINDOW, native, pos=wx.Point(0, 0))
     # Verify MouseLeaveEvent was passed to view filter
     view_mock.assert_called_once_with(MouseLeaveEvent())
+
+
+def test_set_cursor(evented_canvas: snx.Canvas) -> None:
+    adaptor = cast("CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0])
+    native = cast("wx.Window", adaptor._snx_get_native())
+    # Wx doesn't really give us a way to assert the right thing happened...
+    # ...the best we can do is assert a change.
+    old = native.GetCursor()
+    app().set_cursor(evented_canvas, CursorType.CROSS)
+    assert not native.GetCursor().IsSameAs(old)

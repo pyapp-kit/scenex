@@ -9,7 +9,7 @@ import pytest
 
 import scenex as snx
 from scenex.adaptors._auto import determine_backend
-from scenex.app import GuiFrontend, determine_app
+from scenex.app import CursorType, GuiFrontend, app, determine_app
 from scenex.app.events import (
     MouseButton,
     MouseDoublePressEvent,
@@ -301,3 +301,10 @@ def test_pointer_leave(evented_canvas: snx.Canvas) -> None:
 
     # Verify MouseLeaveEvent was passed to view filter
     view_mock.assert_called_once_with(MouseLeaveEvent())
+
+
+def test_set_cursor(evented_canvas: snx.Canvas) -> None:
+    adaptor = evented_canvas._get_adaptors(create=True)[0]
+    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    app().set_cursor(evented_canvas, CursorType.CROSS)
+    assert native.cursor == "crosshair"

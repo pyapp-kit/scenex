@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from concurrent.futures import Future
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import wx
 
-from scenex.app._auto import App
+from scenex.app._auto import App, CursorType
 from scenex.app.events._events import (
     EventFilter,
     MouseButton,
@@ -200,6 +200,24 @@ class WxAppWrap(App):
         """Context manager to block events for a window."""
         with wx.EventBlocker(window):
             yield
+
+    def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
+        adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
+        native = cast("wx.Window", adaptor._snx_get_native())
+        # wx Cursor objects are immutable; just set a new one
+        native.SetCursor(self._cursor_to_wx(cursor))
+
+    def _cursor_to_wx(self, cursor: CursorType) -> wx.Cursor:
+        """Convert abstract CursorType to wx.Cursor."""
+        return {
+            CursorType.DEFAULT: wx.Cursor(wx.CURSOR_ARROW),
+            CursorType.CROSS: wx.Cursor(wx.CURSOR_CROSS),
+            CursorType.V_ARROW: wx.Cursor(wx.CURSOR_SIZENS),
+            CursorType.H_ARROW: wx.Cursor(wx.CURSOR_SIZEWE),
+            CursorType.ALL_ARROW: wx.Cursor(wx.CURSOR_SIZING),
+            CursorType.BDIAG_ARROW: wx.Cursor(wx.CURSOR_SIZENESW),
+            CursorType.FDIAG_ARROW: wx.Cursor(wx.CURSOR_SIZENWSE),
+        }[cursor]
 
 
 class MainThreadInvoker:

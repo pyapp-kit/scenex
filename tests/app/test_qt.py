@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 import pytest
 
 import scenex as snx
-from scenex.app import GuiFrontend, app, determine_app
+from scenex.app import CursorType, GuiFrontend, app, determine_app
 from scenex.app.events import (
     MouseButton,
     MouseDoublePressEvent,
@@ -256,6 +256,16 @@ def test_mouse_leave(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
     # Verify MouseLeaveEvent was passed to view filter
     view_mock.assert_called_once_with(MouseLeaveEvent())
+
+
+def test_set_cursor(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    qtbot.addWidget(native)
+    app().set_cursor(evented_canvas, CursorType.CROSS)
+
+    assert cast("QWidget", native).cursor().shape() == Qt.CursorShape.CrossCursor
 
 
 # TODO: Implement when Qt new enough

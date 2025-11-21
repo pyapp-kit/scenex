@@ -5,7 +5,7 @@ import os
 import sys
 from concurrent.futures import Executor, Future, ThreadPoolExecutor
 from contextlib import contextmanager
-from enum import Enum
+from enum import Enum, auto
 from functools import cache, wraps
 from typing import TYPE_CHECKING, cast
 
@@ -56,6 +56,18 @@ GUI_PROVIDERS: dict[GuiFrontend, tuple[str, str]] = {
 }
 
 
+class CursorType(Enum):
+    """Abstract stock cursors."""
+
+    DEFAULT = auto()
+    CROSS = auto()
+    V_ARROW = auto()
+    H_ARROW = auto()
+    ALL_ARROW = auto()
+    BDIAG_ARROW = auto()
+    FDIAG_ARROW = auto()
+
+
 class App:
     """
     Base class for application wrappers.
@@ -101,6 +113,21 @@ class App:
     @contextmanager
     def block_events(self, window: Any) -> Iterator[None]:
         """Context manager to block events for a window."""
+        raise NotImplementedError("Must be implemented by subclasses.")
+
+    # ------------------------------ cursor API -------------------------------
+    def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
+        """Set the cursor for the given canvas.
+
+        Backends override this to translate the abstract cursor into native form.
+
+        Parameters
+        ----------
+        canvas : Canvas
+            The canvas on which to set the cursor.
+        cursor : CursorType
+            The type of cursor to set.
+        """
         raise NotImplementedError("Must be implemented by subclasses.")
 
 
