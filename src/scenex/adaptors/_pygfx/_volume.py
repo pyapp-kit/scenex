@@ -67,6 +67,7 @@ class Volume(Node, VolumeAdaptor):
             kwargs["interpolation"] = interpolation
         elif self._material is not None:
             kwargs["interpolation"] = self._material.interpolation
+            kwargs["clim"] = self._material.clim
 
         if data == "mip":
             self._material = pygfx.VolumeMipMaterial(**kwargs)
