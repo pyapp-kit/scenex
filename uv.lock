@@ -1937,6 +1937,7 @@ dependencies = [
     { name = "numpy", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "psygnal" },
     { name = "pydantic" },
+    { name = "pylinalg" },
 ]
 
 [package.optional-dependencies]
@@ -1997,6 +1998,7 @@ requires-dist = [
     { name = "psygnal", specifier = ">=0.11.1" },
     { name = "pydantic", specifier = ">=2.10" },
     { name = "pygfx", marker = "extra == 'pygfx'", specifier = ">=0.9.0" },
+    { name = "pylinalg" },
     { name = "pyopengl", marker = "extra == 'vispy'" },
     { name = "vispy", marker = "extra == 'vispy'", specifier = ">=0.15.0" },
 ]
