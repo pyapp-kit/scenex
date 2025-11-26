@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Any, cast
 from cmap import Color
 from pydantic import ConfigDict, Field
 
+from scenex.app.events import Ray, ResizeEvent
+
 from ._base import EventedBase
 from ._evented_list import EventedList
 from ._view import View  # noqa: TC001
@@ -13,6 +15,7 @@ if TYPE_CHECKING:
     import numpy as np
 
     from scenex.adaptors._base import CanvasAdaptor
+    from scenex.app.events import Event
 
 
 class Canvas(EventedBase):
@@ -48,6 +51,21 @@ class Canvas(EventedBase):
     def size(self, value: tuple[int, int]) -> None:
         """Set the size of the canvas."""
         self.width, self.height = value
+
+    def handle(self, event: Event) -> bool:
+        # TODO: Implement the rest in a later PR
+        if isinstance(event, ResizeEvent):
+            # TODO: How might some event filter tap into the resize?
+            self.size = (event.width, event.height)
+        return False
+
+    def to_world(self, canvas_pos: tuple[float, float]) -> Ray | None:
+        """Map XY canvas position (pixels) to XYZ coordinate in world space."""
+        # TODO: Implement in a later PR
+        return Ray(
+            origin=(0, 0, 0),
+            direction=(0.0, 0.0, -1.0),
+        )
 
     def render(self) -> np.ndarray:
         """Show the canvas."""

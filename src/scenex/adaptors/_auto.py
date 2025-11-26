@@ -6,6 +6,8 @@ import sys
 from contextlib import suppress
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, TypeGuard, cast, get_args
 
+from scenex.app import app
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
@@ -83,4 +85,4 @@ def use(backend: KnownBackend | None = None) -> None:
 
 def run() -> None:
     """Enter the native GUI event loop."""
-    get_adaptor_registry().start_event_loop()
+    app().run()
