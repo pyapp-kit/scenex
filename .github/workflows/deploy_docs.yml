@@ -42,12 +42,16 @@ jobs:
           fi
         env:
           DOCS_DEV: false
+          # TODO: Remove once maturin supports 3.14
+          UV_PYTHON: "3.13"
 
       - name: Deploy dev docs
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         run: uv run mike deploy --push --update-aliases dev
         env:
           DOCS_DEV: true
+          # TODO: Remove once maturin supports 3.14
+          UV_PYTHON: "3.13"
 
       # - name: Update default release docs
       #   run: mike set-default --push latest
