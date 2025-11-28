@@ -36,15 +36,20 @@ class Image(Node, ImageAdaptor):
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
         self._vispy_node.cmap = arg.to_vispy()
+        self._vispy_node.update()
 
     def _snx_set_clims(self, arg: tuple[float, float] | None) -> None:
         self._vispy_node.clim = arg
+        self._vispy_node.update()
 
     def _snx_set_gamma(self, arg: float) -> None:
         self._vispy_node.gamma = arg
+        self._vispy_node.update()
 
     def _snx_set_interpolation(self, arg: model.InterpolationMode) -> None:
         self._vispy_node.interpolation = arg
+        self._vispy_node.update()
 
     def _snx_set_data(self, data: ArrayLike) -> None:
         self._vispy_node.set_data(data)
+        self._vispy_node.update()

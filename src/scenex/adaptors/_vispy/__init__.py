@@ -4,6 +4,7 @@ from ._adaptor_registry import adaptors
 from ._camera import Camera
 from ._canvas import Canvas
 from ._image import Image
+from ._line import Line
 from ._node import Node
 from ._points import Points
 from ._scene import Scene
@@ -14,6 +15,7 @@ __all__ = [
     "Camera",
     "Canvas",
     "Image",
+    "Line",
     "Node",
     "Points",
     "Scene",

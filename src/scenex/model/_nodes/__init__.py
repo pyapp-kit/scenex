@@ -6,9 +6,10 @@
 from .node import Node  # noqa: I001  must be imported first to avoid circular imports
 from .camera import Camera
 from .image import Image
+from .line import Line
 from .points import Points
 from .scene import Scene
 
 Node.model_rebuild()
 
-__all__ = ["Camera", "Image", "Node", "Points", "Scene"]
+__all__ = ["Camera", "Image", "Line", "Node", "Points", "Scene"]

@@ -24,15 +24,19 @@ class Image(Node, ImageAdaptor):
 
     _pygfx_node: pygfx.Image
     _material: pygfx.ImageBasicMaterial
+    _geometry: pygfx.Geometry
 
     def __init__(self, image: model.Image, **backend_kwargs: Any) -> None:
-        self._material = pygfx.ImageBasicMaterial(clim=image.clims)
-        self._pygfx_node = pygfx.Image(None, self._material)
         self._model = image
+        self._material = pygfx.ImageBasicMaterial(clim=image.clims)
         self._snx_set_data(image.data)
+        self._pygfx_node = pygfx.Image(self._geometry, self._material)
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
-        self._material.map = arg.to_pygfx()
+        if np.asarray(self._model.data).ndim == 3:
+            self._material.map = None
+        else:
+            self._material.map = arg.to_pygfx()
 
     def _snx_set_clims(self, arg: tuple[float, float] | None) -> None:
         self._material.clim = arg
@@ -64,4 +68,10 @@ class Image(Node, ImageAdaptor):
 
     def _snx_set_data(self, data: ArrayLike) -> None:
         self._texture = self._create_texture(data)
-        self._pygfx_node.geometry = pygfx.Geometry(grid=self._texture)
+        self._geometry = pygfx.Geometry(grid=self._texture)
+        if hasattr(self, "_pygfx_node"):
+            self._pygfx_node.geometry = self._geometry
+        if np.asarray(data).ndim == 3:
+            self._material.map = None
+        else:
+            self._material.map = self._model.cmap.to_pygfx()
