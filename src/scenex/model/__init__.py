@@ -14,10 +14,11 @@ from cmap import Color, Colormap  # re-export
 
 from ._base import EventedBase, objects
 from ._canvas import Canvas
+from ._grid import Grid
 from ._layout import Layout
 from ._nodes.camera import Camera, CameraType
 from ._nodes.image import Image, InterpolationMode
-from ._nodes.node import AnyNode, Node
+from ._nodes.node import AnyNode, BlendMode, Node
 from ._nodes.points import Points, ScalingMode, SymbolName
 from ._nodes.scene import Scene
 from ._nodes.volume import RenderMode, Volume
@@ -26,12 +27,14 @@ from ._view import View
 
 __all__ = [
     "AnyNode",
+    "BlendMode",
     "Camera",
     "CameraType",
     "Canvas",
     "Color",
     "Colormap",
     "EventedBase",
+    "Grid",
     "Image",
     "InterpolationMode",
     "Layout",
