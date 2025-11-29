@@ -41,10 +41,6 @@ class Adaptor(ABC, Generic[TModel, TNative]):
     def __init__(self, obj: TModel) -> None:
         """All backend adaptor objects receive the object they are adapting."""
 
-    @abstractmethod
-    def _snx_get_native(self) -> TNative:
-        """Return the native object for the ."""
-
     def handle_event(self, info: EmissionInfo) -> None:
         """Receive info from psygnal callback and convert to adaptor call."""
         signal_name = info.signal.name
@@ -99,6 +95,8 @@ class NodeAdaptor(SupportsVisibility[TNode, TNative]):
     @abstractmethod
     def _snx_set_transform(self, arg: model.Transform, /) -> None: ...
     @abstractmethod
+    def _snx_set_blending(self, arg: model.BlendMode, /) -> None: ...
+    @abstractmethod
     def _snx_add_node(self, node: model.Node) -> None: ...
 
     @abstractmethod
@@ -120,11 +118,7 @@ class CameraAdaptor(NodeAdaptor[TCamera, TNative]):
     @abstractmethod
     def _snx_set_type(self, arg: model.CameraType, /) -> None: ...
     @abstractmethod
-    def _snx_set_zoom(self, arg: float, /) -> None: ...
-    @abstractmethod
-    def _snx_set_center(self, arg: tuple[float, ...], /) -> None: ...
-    @abstractmethod
-    def _snx_zoom_to_fit(self, arg: float, /) -> None: ...
+    def _snx_set_projection(self, arg: model.Transform, /) -> None: ...
 
 
 class ImageAdaptor(NodeAdaptor[TImage, TNative]):
@@ -177,6 +171,10 @@ class CanvasAdaptor(SupportsVisibility[TCanvas, TNative]):
     def _snx_set_height(self, arg: int, /) -> None: ...
     @abstractmethod
     def _snx_set_background_color(self, arg: model.Color | None, /) -> None: ...
+    @abstractmethod
+    def _snx_get_native(self) -> Any:
+        """Returns an object understood by the backend widget toolkit."""
+
     @abstractmethod
     def _snx_set_title(self, arg: str, /) -> None: ...
     @abstractmethod

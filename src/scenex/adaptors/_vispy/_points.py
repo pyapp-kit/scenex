@@ -38,6 +38,7 @@ class Points(Node, PointsAdaptor):
         self._model = points
         self._vispy_node = vispy.scene.Markers(
             pos=np.asarray(points.coords),
+            size=points.size,
             symbol=points.symbol,
             scaling=points.scaling,  # pyright: ignore
             antialias=points.antialias,  # pyright: ignore
@@ -96,3 +97,4 @@ class Points(Node, PointsAdaptor):
             edge_color=edge_color,
             edge_width=self._model.edge_width,
         )
+        self._vispy_node.update()
