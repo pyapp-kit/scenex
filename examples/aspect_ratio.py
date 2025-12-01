@@ -2,7 +2,6 @@ import cmap
 import numpy as np
 
 import scenex as snx
-from scenex.utils.controllers import PanZoomController
 
 view = snx.View(
     scene=snx.Scene(
@@ -16,15 +15,19 @@ view = snx.View(
             ),
         ]
     ),
-    camera=snx.Camera(interactive=True),
+    camera=snx.Camera(controller=snx.PanZoomController(), interactive=True),
 )
-camera_controller = PanZoomController()
-camera_controller.maintain_aspect_against(view)
-view.camera.set_event_filter(camera_controller)
 
-# both are optional, just for example
-# snx.use("pygfx")
-# snx.use("vispy")
+# TODO: The new declarative PanZoomController doesn't yet support maintaining aspect.
+# This example is temporarily disabled until that feature is implemented.
+# The old implementation used imperative event listeners to adjust projection on resize.
+
+# The maintain_aspect_against feature needs to be re-implemented
+# in the new declarative controller system.
+# Old code:
+# camera_controller = PanZoomController()
+# camera_controller.maintain_aspect_against(view)
+# view.camera.set_event_filter(camera_controller)
 
 snx.show(view)
 snx.run()

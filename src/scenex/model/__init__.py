@@ -15,6 +15,11 @@ from cmap import Color, Colormap  # re-export
 from ._base import EventedBase, objects
 from ._canvas import Canvas
 from ._color import ColorModel
+from ._controller import (
+    Controller,
+    OrbitController,
+    PanZoomController,
+)
 from ._grid import Grid
 from ._layout import Layout
 from ._nodes.camera import Camera, CameraType
@@ -38,6 +43,7 @@ __all__ = [
     "Color",
     "ColorModel",
     "Colormap",
+    "Controller",
     "EventedBase",
     "Grid",
     "Image",
@@ -46,6 +52,8 @@ __all__ = [
     "Line",
     "Mesh",
     "Node",
+    "OrbitController",
+    "PanZoomController",
     "Points",
     "RenderMode",
     "ScalingMode",

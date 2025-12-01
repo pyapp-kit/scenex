@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 import pylinalg as la
-from pydantic import Field, PrivateAttr, computed_field
+from pydantic import Field, computed_field
 
 from scenex.model._transform import Transform
 from scenex.utils import projections
@@ -13,9 +13,8 @@ from scenex.utils import projections
 from .node import Node
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
-    from scenex.app.events._events import Event, Ray
+    from scenex.app.events._events import Ray
+    from scenex.model._controller import Controller
     from scenex.model._transform import Transform
 
 CameraType = Literal["panzoom", "perspective"]
@@ -43,14 +42,14 @@ class Camera(Node):
     the right, and the positive y-axis points up.
     """
 
-    def __init__(
-        self, controller: Callable[[Event, Node], bool] | None = None, **kwargs: Any
-    ) -> None:
-        super().__init__(**kwargs)
-        self.set_event_filter(controller)
-
     node_type: Literal["camera"] = "camera"
 
+    controller: Controller | None = Field(
+        default=None,
+        description="The controller that handles user interaction with this camera. "
+        "Controllers are pydantic models that define how the camera responds to "
+        "mouse and keyboard events.",
+    )
     interactive: bool = Field(
         default=True,
         description="Whether the camera responds to user interaction, "
@@ -67,8 +66,6 @@ class Camera(Node):
     def bounding_box(self) -> None:
         # Prevent cameras from distorting scene bounding boxes
         return None
-
-    _filter: Callable[[Event, Node], bool] | None = PrivateAttr(default=None)
 
     def passes_through(self, ray: Ray) -> float | None:
         # Cameras are not rendered objects

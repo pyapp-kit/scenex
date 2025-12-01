@@ -1,13 +1,12 @@
 import cmap
 
 import scenex as snx
-from scenex.utils.controllers import PanZoomController
 
 view = snx.View(
     scene=snx.Scene(
         children=[snx.Text(text="Hello, Scenex!", color=cmap.Color("cyan"), size=24)]
     ),
-    camera=snx.Camera(controller=PanZoomController(), interactive=True),
+    camera=snx.Camera(controller=snx.PanZoomController(), interactive=True),
 )
 
 

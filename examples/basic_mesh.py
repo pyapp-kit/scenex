@@ -8,7 +8,6 @@ from scenex.app.events import (
     MouseMoveEvent,
     MousePressEvent,
 )
-from scenex.utils.controllers import PanZoomController
 
 
 # Create a more complex mesh - a grid of vertices
@@ -52,7 +51,7 @@ mesh = snx.Mesh(
 
 view = snx.View(
     scene=snx.Scene(children=[mesh]),
-    camera=snx.Camera(controller=PanZoomController(), interactive=True),
+    camera=snx.Camera(controller=snx.PanZoomController(), interactive=True),
 )
 
 

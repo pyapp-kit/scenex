@@ -3,7 +3,8 @@ import numpy as np
 import scenex as snx
 from scenex.model._transform import Transform
 from scenex.utils import projections
-from scenex.utils.controllers import OrbitController
+
+# OrbitController is now part of the main scenex module
 
 try:
     from imageio.v2 import volread
@@ -40,7 +41,7 @@ view.camera.projection = projections.perspective(
     near=1,
     far=1_000_000,  # Just need something big
 )
-view.camera.set_event_filter(OrbitController(orbit_center))
+view.camera.controller = snx.OrbitController(center=orbit_center)
 
 
 snx.run()

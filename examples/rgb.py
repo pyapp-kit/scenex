@@ -10,7 +10,6 @@ import numpy as np
 
 import scenex as snx
 import scenex.app.events as events
-from scenex.utils.controllers import PanZoomController
 
 try:
     from imageio.v3 import imread
@@ -35,7 +34,7 @@ view = snx.View(
             img,
         ]
     ),
-    camera=snx.Camera(controller=PanZoomController(), interactive=True),
+    camera=snx.Camera(controller=snx.PanZoomController(), interactive=True),
 )
 
 idx = 0

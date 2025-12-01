@@ -3,7 +3,8 @@ import numpy as np
 import scenex as snx
 from scenex.app import CursorType, app
 from scenex.app.events import Event, MouseMoveEvent
-from scenex.utils.controllers import PanZoomController
+
+# PanZoomController is now part of the main scenex module
 
 # Points data
 coords = np.array(
@@ -24,7 +25,7 @@ points = snx.Points(
 )
 
 view = snx.View(scene=snx.Scene(children=[points]))
-view.camera.set_event_filter(PanZoomController())
+view.camera.controller = snx.PanZoomController()
 canvas = snx.show(view)
 
 

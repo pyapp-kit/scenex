@@ -9,7 +9,6 @@ from scenex.app.events import (
     MousePressEvent,
     MouseReleaseEvent,
 )
-from scenex.utils.controllers import PanZoomController
 
 
 def _create_line_data(angle: float = 0) -> np.ndarray:
@@ -36,7 +35,7 @@ line = snx.Line(vertices=original_vertices, color=line_color_model)
 
 view = snx.View(
     scene=snx.Scene(children=[line]),
-    camera=snx.Camera(controller=PanZoomController(), interactive=False),
+    camera=snx.Camera(controller=snx.PanZoomController(), interactive=True),
 )
 
 

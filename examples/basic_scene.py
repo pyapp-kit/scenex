@@ -2,7 +2,6 @@ import cmap
 import numpy as np
 
 import scenex as snx
-from scenex.utils.controllers import PanZoomController
 
 try:
     from scenex.imgui import add_imgui_controls
@@ -29,7 +28,7 @@ view = snx.View(
             ),
         ]
     ),
-    camera=snx.Camera(controller=PanZoomController(), interactive=True),
+    camera=snx.Camera(controller=snx.PanZoomController(), interactive=True),
 )
 
 # example of adding an object to a scene
