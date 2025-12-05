@@ -1,4 +1,4 @@
-"""Base class for camera controllers."""
+"""Camera controllers and resizers."""
 
 from __future__ import annotations
 
@@ -6,34 +6,134 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
-from pydantic import Field, PrivateAttr
+from pydantic import Field, PrivateAttr, model_validator
 
+from scenex.app.events import (
+    MouseButton,
+    MouseMoveEvent,
+    MousePressEvent,
+    MouseReleaseEvent,
+    WheelEvent,
+)
 from scenex.model._base import EventedBase
 
 if TYPE_CHECKING:
-    from numpy.typing import NDArray
-
-    from scenex.app.events._events import Event
+    from scenex import Transform, View
+    from scenex.app.events import Event
 
     from ._nodes.camera import Camera
 
 
-class Controller(EventedBase):
-    """
-    Base class for camera controllers.
+class ResizeStrategy(EventedBase):
+    """Defines how the camera should respond to view resizing."""
 
-    Controllers are declarative, pydantic-based classes that define how a camera
-    responds to user input events. They are attached to a Camera model and handle
-    events such as mouse clicks, drags, and wheel scrolls.
+    view: View | None = Field(default=None)
 
-    Unlike the imperative controller pattern, these controllers are part of the
-    scene graph model and can be serialized, modified, and observed via events.
+    @model_validator(mode="after")
+    def _connect_view_layout(self) -> ResizeStrategy:
+        """Connect view layout changes to handle_resize when view is set."""
+        if self.view is not None:
+            self.view.layout.events.width.connect(self._on_view_size_changed)
+            self.view.layout.events.height.connect(self._on_view_size_changed)
+        return self
+
+    def _on_view_size_changed(self) -> None:
+        if view := self.view:
+            self.handle_resize(
+                (int(view.layout.width), int(view.layout.height)),
+                view.camera,
+            )
+
+    @abstractmethod
+    def handle_resize(self, size: tuple[int, int], camera: Camera) -> None:
+        """
+        Controls the camera in response to a resize event.
+
+        Parameters
+        ----------
+        size : tuple[int, int]
+            New view size as (width, height) in pixels.
+        camera : Camera
+            The camera whose projection will be updated.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def handle_event(self, event: Event, camera: Camera) -> bool:
+        raise NotImplementedError
+
+
+class NoOpResizeStrategy(ResizeStrategy):
+    """A resize strategy that does nothing on resize events."""
+
+    def handle_event(self, event: Event, camera: Camera) -> bool:
+        return False
+
+    def handle_resize(self, size: tuple[int, int], camera: Camera) -> None:
+        pass
+
+
+class LetterboxResizeStrategy(ResizeStrategy):
+    """Preserve aspect ratio by expanding the narrower dimension.
+
+    Adjusts the camera's projection matrix to fit the new view size while
+    preserving the original content bounds. When the view aspect ratio differs
+    from the content aspect ratio, the projection is expanded (not cropped) in
+    the narrower dimension to ensure all original content remains visible.
+
+    This follows the approach used in vispy's PanZoomCamera and pygfx's
+    PerspectiveCamera: letterbox/pillarbox rather than crop.
     """
+
+    _projection: Transform | None = PrivateAttr(default=None)
+
+    def handle_event(self, event: Event, camera: Camera) -> bool:
+        if isinstance(event, (MouseReleaseEvent, WheelEvent)):
+            self._projection = camera.projection
+        return False
+
+    def handle_resize(self, size: tuple[int, int], camera: Camera) -> None:
+        """Handle view resize by adjusting projection to maintain aspect ratio."""
+        # Capture the initial projection as the reference on first resize
+        self._projection = self._projection or camera.projection
+
+        view_width, view_height = size
+        if view_height == 0 or self._projection is None:
+            return
+
+        # Extract projection scales that define the content aspect ratio
+        ref_mat = self._projection.root
+        ref_x_scale = ref_mat[0, 0]
+        ref_y_scale = ref_mat[1, 1]
+        if ref_y_scale == 0:
+            return
+
+        # Compute aspect ratios
+        # Note: projection scales are inversely proportional to the displayed region,
+        # so content_aspect = y_scale / x_scale
+        view_aspect = view_width / view_height
+        content_aspect = abs(ref_y_scale / ref_x_scale)
+
+        # Expand the narrower dimension to match the view aspect
+        if content_aspect < view_aspect:
+            # View is wider: expand horizontal frustum (reduce x scale)
+            camera.projection = self._projection.scaled(
+                (content_aspect / view_aspect, 1.0, 1.0)
+            )
+        else:
+            # View is taller: expand vertical frustum (reduce y scale)
+            camera.projection = self._projection.scaled(
+                (1.0, view_aspect / content_aspect, 1.0)
+            )
+
+
+class MouseStrategy(EventedBase):
+    """Defines how the camera should respond to mouse events."""
 
     @abstractmethod
     def handle_event(self, event: Event, camera: Camera) -> bool:
         """
-        Handle an event for the given camera.
+        Controls the camera in response to a mouse event.
 
         Parameters
         ----------
@@ -51,7 +151,14 @@ class Controller(EventedBase):
         raise NotImplementedError
 
 
-class PanZoomController(Controller):
+class NoOpMouseStrategy(MouseStrategy):
+    """A mouse strategy that does nothing on mouse events."""
+
+    def handle_event(self, event: Event, camera: Camera) -> bool:
+        return False
+
+
+class PanZoomMouseStrategy(MouseStrategy):
     """
     Controller for handling pan and zoom interactions with a Camera node.
 
@@ -82,13 +189,6 @@ class PanZoomController(Controller):
 
     def handle_event(self, event: Event, camera: Camera) -> bool:
         """Handle mouse and wheel events to pan/zoom the camera."""
-        from scenex.app.events._events import (
-            MouseButton,
-            MouseMoveEvent,
-            MousePressEvent,
-            WheelEvent,
-        )
-
         if not camera.interactive:
             return False
 
@@ -155,7 +255,7 @@ class PanZoomController(Controller):
         return 2 ** (delta * 0.001)
 
 
-class OrbitController(Controller):
+class OrbitMouseStrategy(MouseStrategy):
     """
     Orbits a Camera node around a fixed point.
 
@@ -222,9 +322,7 @@ class OrbitController(Controller):
             return False
 
         handled = False
-        center_array: NDArray[np.floating[Any]] = object.__getattribute__(
-            self, "_center_array"
-        )
+        center_array = np.asarray(self.center)
 
         # Orbit on mouse move with left button held
         if (

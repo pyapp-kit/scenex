@@ -16,9 +16,9 @@ from ._base import EventedBase, objects
 from ._canvas import Canvas
 from ._color import ColorModel
 from ._controller import (
-    Controller,
-    OrbitController,
-    PanZoomController,
+    LetterboxResizeStrategy,
+    OrbitMouseStrategy,
+    PanZoomMouseStrategy,
 )
 from ._grid import Grid
 from ._layout import Layout
@@ -43,17 +43,17 @@ __all__ = [
     "Color",
     "ColorModel",
     "Colormap",
-    "Controller",
     "EventedBase",
     "Grid",
     "Image",
     "InterpolationMode",
     "Layout",
+    "LetterboxResizeStrategy",
     "Line",
     "Mesh",
     "Node",
-    "OrbitController",
-    "PanZoomController",
+    "OrbitMouseStrategy",
+    "PanZoomMouseStrategy",
     "Points",
     "RenderMode",
     "ScalingMode",

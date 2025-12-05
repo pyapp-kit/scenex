@@ -12,7 +12,11 @@ except PackageNotFoundError:
 from .adaptors import run, use
 from .model._canvas import Canvas
 from .model._color import ColorModel
-from .model._controller import Controller, OrbitController, PanZoomController
+from .model._controller import (
+    LetterboxResizeStrategy,
+    OrbitMouseStrategy,
+    PanZoomMouseStrategy,
+)
 from .model._grid import Grid
 from .model._nodes.camera import Camera
 from .model._nodes.image import Image
@@ -31,14 +35,14 @@ __all__ = [
     "Camera",
     "Canvas",
     "ColorModel",
-    "Controller",
     "Grid",
     "Image",
+    "LetterboxResizeStrategy",
     "Line",
     "Mesh",
     "Node",
-    "OrbitController",
-    "PanZoomController",
+    "OrbitMouseStrategy",
+    "PanZoomMouseStrategy",
     "Points",
     "Scene",
     "Text",

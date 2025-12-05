@@ -41,7 +41,7 @@ points = snx.Points(
 # Since ray-point intersections are computed in canvas space, we need view+canvas
 view = snx.View(scene=snx.Scene(children=[points]))
 
-view.camera.controller = snx.PanZoomController()
+view.camera.mouse = snx.PanZoomMouseStrategy()
 
 
 def _on_view_event(event: Event) -> bool:

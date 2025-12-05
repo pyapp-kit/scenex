@@ -205,8 +205,10 @@ class Canvas(EventedBase):
                         return True
                 # No nodes in the view handled the event - pass it to the camera
                 if current_view.camera.interactive:
-                    if controller := current_view.camera.controller:
-                        handled |= controller.handle_event(event, current_view.camera)
+                    if on_mouse := current_view.camera.mouse:
+                        handled |= on_mouse.handle_event(event, current_view.camera)
+                    if on_resize := current_view.camera.resize:
+                        handled |= on_resize.handle_event(event, current_view.camera)
         elif isinstance(event, MouseLeaveEvent):
             # Mouse left the entire canvas
             if self._last_mouse_view is not None:

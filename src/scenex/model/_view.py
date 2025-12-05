@@ -43,6 +43,8 @@ class View(EventedBase):
     visible: bool = Field(default=True, description="Whether the view is visible.")
 
     _canvas: Canvas | None = PrivateAttr(None)
+    _layout_width_callback: Any = PrivateAttr(default=None)
+    _layout_height_callback: Any = PrivateAttr(default=None)
 
     model_config = ConfigDict(extra="forbid")
 
@@ -66,8 +68,9 @@ class View(EventedBase):
     @canvas.setter
     def canvas(self, value: Canvas) -> None:
         self._canvas = value
+        # If this view is not already on the canvas, just add it to the end
         if self not in value.views:
-            value.views.append(self)
+            value.grid.add(self)
 
     def render(self) -> np.ndarray:
         """Render the view to an array."""

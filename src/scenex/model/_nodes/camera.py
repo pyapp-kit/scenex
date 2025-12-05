@@ -7,6 +7,11 @@ import numpy as np
 import pylinalg as la
 from pydantic import Field, computed_field
 
+from scenex.model._controller import (
+    MouseStrategy,
+    NoOpMouseStrategy,
+    ResizeStrategy,
+)
 from scenex.model._transform import Transform
 from scenex.utils import projections
 
@@ -14,7 +19,6 @@ from .node import Node
 
 if TYPE_CHECKING:
     from scenex.app.events._events import Ray
-    from scenex.model._controller import Controller
     from scenex.model._transform import Transform
 
 CameraType = Literal["panzoom", "perspective"]
@@ -44,12 +48,9 @@ class Camera(Node):
 
     node_type: Literal["camera"] = "camera"
 
-    controller: Controller | None = Field(
-        default=None,
-        description="The controller that handles user interaction with this camera. "
-        "Controllers are pydantic models that define how the camera responds to "
-        "mouse and keyboard events.",
-    )
+    # TODO: Maybe this should be on the view...
+    resize: ResizeStrategy | None = Field(default=None)
+    mouse: MouseStrategy | None = Field(default_factory=NoOpMouseStrategy)
     interactive: bool = Field(
         default=True,
         description="Whether the camera responds to user interaction, "

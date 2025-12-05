@@ -13,6 +13,7 @@ from ._events import (
     MouseReleaseEvent,
     Ray,
     ResizeEvent,
+    ViewResizeEvent,
     WheelEvent,
 )
 
@@ -29,5 +30,6 @@ __all__ = [
     "MouseReleaseEvent",
     "Ray",
     "ResizeEvent",
+    "ViewResizeEvent",
     "WheelEvent",
 ]

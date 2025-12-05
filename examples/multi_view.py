@@ -102,7 +102,7 @@ view1.camera.projection = projections.perspective(
     near=1,
     far=1_000_000,  # Just need something big
 )
-view1.camera.controller = snx.OrbitController(center=orbit_center)
+view1.camera.mouse = snx.OrbitMouseStrategy(center=orbit_center)
 
 # The second camera can just look down (-z) at the center of the volume
 view2.camera.transform = Transform().translated(orbit_center).translated((0, 0, 300))
