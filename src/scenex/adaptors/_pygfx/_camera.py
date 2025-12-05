@@ -11,7 +11,6 @@ from ._node import Node
 
 if TYPE_CHECKING:
     from scenex import model
-    from scenex.model import Transform
 
 logger = logging.getLogger("scenex.adaptors.pygfx")
 
@@ -36,5 +35,8 @@ class Camera(Node, CameraAdaptor):
         logger.warning("'Camera._view_size' not implemented for pygfx")
         return None
 
-    def _snx_set_projection(self, arg: Transform) -> None:
+    def _snx_set_projection(self, arg: model.Transform) -> None:
         self._pygfx_node.projection_matrix = arg.root  # pyright: ignore[reportAttributeAccessIssue]
+
+    def _snx_set_controller(self, arg: model.CameraController | None) -> None:
+        pass

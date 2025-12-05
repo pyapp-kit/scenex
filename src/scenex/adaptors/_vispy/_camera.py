@@ -75,6 +75,9 @@ class Camera(Node, CameraAdaptor):
         # Transforms
         self._update_vispy_node_tform()
 
+    def _snx_set_controller(self, arg: model.CameraController | None) -> None:
+        pass
+
     def _update_vispy_node_tform(self) -> None:
         mat = self._transform @ self._projection.T @ self._from_NDC
         self._vispy_node.transform = vispy.scene.transforms.MatrixTransform(mat.root)
