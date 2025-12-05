@@ -24,6 +24,7 @@ view = snx.View(
         ]
     ),
     camera=snx.Camera(interactive=True),
+    resize=snx.LetterboxResizeStrategy(),
 )
 
 snx.use("vispy")
