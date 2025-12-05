@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
-from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 
@@ -69,44 +69,44 @@ def test_pointer_down(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    mock = MagicMock()
-    evented_canvas.views[0].camera.set_event_filter(mock)
+
     press_point = (0, 0)
-    # Press the left button
-    native.handle_event(
-        {
-            "event_type": "pointer_down",
-            "x": press_point[0],
-            "y": press_point[1],
-            "button": LEFT_MOUSE,
-        }
-    )
-    mock.assert_called_once_with(
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        # Press the left button
+        native.handle_event(
+            {
+                "event_type": "pointer_down",
+                "x": press_point[0],
+                "y": press_point[1],
+                "button": LEFT_MOUSE,
+            }
+        )
+
+    mock_handle.assert_called_once_with(
         MousePressEvent(
             canvas_pos=press_point,
             world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
         ),
-        evented_canvas.views[0].camera,
     )
-    mock.reset_mock()
 
-    # Now press the right button as well
-    native.handle_event(
-        {
-            "event_type": "pointer_down",
-            "x": press_point[0],
-            "y": press_point[1],
-            "button": RIGHT_MOUSE,
-        }
-    )
-    mock.assert_called_once_with(
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        # Now press the right button as well
+        native.handle_event(
+            {
+                "event_type": "pointer_down",
+                "x": press_point[0],
+                "y": press_point[1],
+                "button": RIGHT_MOUSE,
+            }
+        )
+
+    mock_handle.assert_called_once_with(
         MousePressEvent(
             canvas_pos=press_point,
             world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.RIGHT,
         ),
-        evented_canvas.views[0].camera,
     )
 
 
@@ -114,24 +114,24 @@ def test_pointer_up(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    mock = MagicMock()
-    evented_canvas.views[0].camera.set_event_filter(mock)
+
     press_point = (0, 0)
-    native.handle_event(
-        {
-            "event_type": "pointer_up",
-            "x": press_point[0],
-            "y": press_point[1],
-            "button": LEFT_MOUSE,
-        }
-    )
-    mock.assert_called_once_with(
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        native.handle_event(
+            {
+                "event_type": "pointer_up",
+                "x": press_point[0],
+                "y": press_point[1],
+                "button": LEFT_MOUSE,
+            }
+        )
+
+    mock_handle.assert_called_once_with(
         MouseReleaseEvent(
             canvas_pos=press_point,
             world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
         ),
-        evented_canvas.views[0].camera,
     )
 
 
@@ -139,67 +139,67 @@ def test_pointer_move(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    mock = MagicMock()
-    evented_canvas.views[0].camera.set_event_filter(mock)
-    press_point = (0, 0)
-    native.handle_event(
-        {
-            "event_type": "pointer_move",
-            "x": press_point[0],
-            "y": press_point[1],
-            "button": LEFT_MOUSE,
-        }
-    )
-    mock.assert_called_once_with(
-        MouseMoveEvent(
-            canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
-            buttons=MouseButton.LEFT,
-        ),
-        evented_canvas.views[0].camera,
-    )
-    mock.reset_mock()
 
-    native.handle_event(
-        {
-            "event_type": "pointer_move",
-            "x": press_point[0],
-            "y": press_point[1],
-            "buttons": (LEFT_MOUSE, RIGHT_MOUSE),
-        }
-    )
-    mock.assert_called_once_with(
-        MouseMoveEvent(
-            canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
-            buttons=MouseButton.LEFT | MouseButton.RIGHT,
-        ),
-        evented_canvas.views[0].camera,
-    )
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        press_point = (0, 0)
+        native.handle_event(
+            {
+                "event_type": "pointer_move",
+                "x": press_point[0],
+                "y": press_point[1],
+                "button": LEFT_MOUSE,
+            }
+        )
+
+        mock_handle.assert_called_once_with(
+            MouseMoveEvent(
+                canvas_pos=press_point,
+                world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+                buttons=MouseButton.LEFT,
+            ),
+        )
+        mock_handle.reset_mock()
+
+        native.handle_event(
+            {
+                "event_type": "pointer_move",
+                "x": press_point[0],
+                "y": press_point[1],
+                "buttons": (LEFT_MOUSE, RIGHT_MOUSE),
+            }
+        )
+
+        mock_handle.assert_called_once_with(
+            MouseMoveEvent(
+                canvas_pos=press_point,
+                world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+                buttons=MouseButton.LEFT | MouseButton.RIGHT,
+            ),
+        )
 
 
 def test_mouse_double_click(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    mock = MagicMock()
-    evented_canvas.views[0].camera.set_event_filter(mock)
+
     press_point = (0, 0)
-    native.handle_event(
-        {
-            "event_type": "double_click",
-            "x": press_point[0],
-            "y": press_point[1],
-            "button": LEFT_MOUSE,
-        }
-    )
-    mock.assert_called_once_with(
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        native.handle_event(
+            {
+                "event_type": "double_click",
+                "x": press_point[0],
+                "y": press_point[1],
+                "button": LEFT_MOUSE,
+            }
+        )
+
+    mock_handle.assert_called_once_with(
         MouseDoublePressEvent(
             canvas_pos=press_point,
             world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
         ),
-        evented_canvas.views[0].camera,
     )
 
 
@@ -207,26 +207,26 @@ def test_wheel(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    mock = MagicMock()
-    evented_canvas.views[0].camera.set_event_filter(mock)
+
     press_point = (0, 0)
-    native.handle_event(
-        {
-            "event_type": "wheel",
-            "x": press_point[0],
-            "y": press_point[1],
-            "dx": 0,
-            "dy": -120,  # Note that Jupyter_rfb uses a different y convention
-        }
-    )
-    mock.assert_called_once_with(
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        native.handle_event(
+            {
+                "event_type": "wheel",
+                "x": press_point[0],
+                "y": press_point[1],
+                "dx": 0,
+                "dy": -120,  # Note that Jupyter_rfb uses a different y convention
+            }
+        )
+
+    mock_handle.assert_called_once_with(
         WheelEvent(
             canvas_pos=press_point,
             world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.NONE,
             angle_delta=(0, 120),
         ),
-        evented_canvas.views[0].camera,
     )
 
 
@@ -234,8 +234,7 @@ def test_resize(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    mock = MagicMock()
-    evented_canvas.views[0].camera.set_event_filter(mock)
+
     new_size = (400, 300)
     assert evented_canvas.width != new_size[0]
     assert evented_canvas.height != new_size[1]
@@ -254,19 +253,20 @@ def test_pointer_enter(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    view_mock = MagicMock()
-    evented_canvas.views[0].set_event_filter(view_mock)
+
     enter_point = (0, 0)
-    native.handle_event(
-        {
-            "event_type": "pointer_enter",
-            "x": enter_point[0],
-            "y": enter_point[1],
-            "button": NONE,
-        }
-    )
-    # Verify MouseEnterEvent was passed to view filter
-    view_mock.assert_called_once_with(
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        native.handle_event(
+            {
+                "event_type": "pointer_enter",
+                "x": enter_point[0],
+                "y": enter_point[1],
+                "button": NONE,
+            }
+        )
+
+    # Verify MouseEnterEvent was passed to Canvas.handle
+    mock_handle.assert_called_once_with(
         MouseEnterEvent(
             canvas_pos=enter_point,
             world_ray=_validate_ray(evented_canvas.to_world(enter_point)),
@@ -279,28 +279,28 @@ def test_pointer_leave(evented_canvas: snx.Canvas) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    view_mock = MagicMock()
-    evented_canvas.views[0].set_event_filter(view_mock)
-    enter_point = (0, 0)
-    native.handle_event(
-        {
-            "event_type": "pointer_enter",
-            "x": enter_point[0],
-            "y": enter_point[1],
-            "button": NONE,
-        }
-    )
-    view_mock.reset_mock()
 
-    # Now leave
-    native.handle_event(
-        {
-            "event_type": "pointer_leave",
-        }
-    )
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        enter_point = (0, 0)
+        native.handle_event(
+            {
+                "event_type": "pointer_enter",
+                "x": enter_point[0],
+                "y": enter_point[1],
+                "button": NONE,
+            }
+        )
+        mock_handle.reset_mock()
 
-    # Verify MouseLeaveEvent was passed to view filter
-    view_mock.assert_called_once_with(MouseLeaveEvent())
+        # Now leave
+        native.handle_event(
+            {
+                "event_type": "pointer_leave",
+            }
+        )
+
+    # Verify MouseLeaveEvent was passed to Canvas.handle
+    mock_handle.assert_called_once_with(MouseLeaveEvent())
 
 
 def test_set_cursor(evented_canvas: snx.Canvas) -> None:

@@ -1,9 +1,9 @@
-"""Tests pertaining to VisPy adaptors"""
+"""Tests pertaining to Qt adaptors"""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
-from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 
@@ -62,30 +62,30 @@ def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    mock = MagicMock()
-    evented_canvas.views[0].camera.set_event_filter(mock)
+
     press_point = (5, 10)
-    # Press the left button
-    qtbot.mousePress(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
-    mock.assert_called_once_with(
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        # Press the left button
+        qtbot.mousePress(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
+
+    mock_handle.assert_called_once_with(
         MousePressEvent(
             canvas_pos=press_point,
             world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
-        ),
-        evented_canvas.views[0].camera,
+        )
     )
-    mock.reset_mock()
 
-    # Now press the right button
-    qtbot.mousePress(native, Qt.MouseButton.RightButton, pos=QPoint(*press_point))
-    mock.assert_called_once_with(
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        # Now press the right button
+        qtbot.mousePress(native, Qt.MouseButton.RightButton, pos=QPoint(*press_point))
+
+    mock_handle.assert_called_once_with(
         MousePressEvent(
             canvas_pos=press_point,
             world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.RIGHT,
-        ),
-        evented_canvas.views[0].camera,
+        )
     )
 
 
@@ -93,17 +93,17 @@ def test_mouse_release(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    mock = MagicMock()
-    evented_canvas.views[0].camera.set_event_filter(mock)
+
     press_point = (5, 10)
-    qtbot.mouseRelease(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
-    mock.assert_called_once_with(
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        qtbot.mouseRelease(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
+
+    mock_handle.assert_called_once_with(
         MouseReleaseEvent(
             canvas_pos=press_point,
             world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
         ),
-        evented_canvas.views[0].camera,
     )
 
 
@@ -111,47 +111,44 @@ def test_mouse_move(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    mock = MagicMock()
-    evented_canvas.views[0].camera.set_event_filter(mock)
-    press_point = (5, 10)
-    # FIXME: For some reason the mouse press is necessary for processing events?
-    qtbot.mousePress(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
-    qtbot.mousePress(native, Qt.MouseButton.RightButton, pos=QPoint(*press_point))
-    mock.reset_mock()
-    qtbot.mouseMove(native, pos=QPoint(*press_point))
-    mock.assert_called_once_with(
-        MouseMoveEvent(
-            canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
-            buttons=MouseButton.LEFT | MouseButton.RIGHT,
-        ),
-        evented_canvas.views[0].camera,
-    )
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        press_point = (5, 10)
+        # FIXME: For some reason the mouse press is necessary for processing events?
+        qtbot.mousePress(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
+        qtbot.mousePress(native, Qt.MouseButton.RightButton, pos=QPoint(*press_point))
+        mock_handle.reset_mock()
+        qtbot.mouseMove(native, pos=QPoint(*press_point))
+        mock_handle.assert_called_once_with(
+            MouseMoveEvent(
+                canvas_pos=press_point,
+                world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+                buttons=MouseButton.LEFT | MouseButton.RIGHT,
+            ),
+        )
 
 
 def test_mouse_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    mock = MagicMock()
-    evented_canvas.views[0].camera.set_event_filter(mock)
+
     press_point = (5, 10)
-    qtbot.mouseClick(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
-    assert mock.call_args_list[0].args == (
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        qtbot.mouseClick(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
+
+    assert mock_handle.call_args_list[0].args == (
         MousePressEvent(
             canvas_pos=press_point,
             world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
         ),
-        evented_canvas.views[0].camera,
     )
-    assert mock.call_args_list[1].args == (
+    assert mock_handle.call_args_list[1].args == (
         MouseReleaseEvent(
             canvas_pos=press_point,
             world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
         ),
-        evented_canvas.views[0].camera,
     )
 
 
@@ -159,18 +156,18 @@ def test_mouse_double_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
-    mock = MagicMock()
-    evented_canvas.views[0].camera.set_event_filter(mock)
+
     press_point = (5, 10)
-    # Note that in Qt a double click does NOT implicitly imply a release as well.
-    qtbot.mouseDClick(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
-    assert mock.call_args_list[0].args == (
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        # Note that in Qt a double click does NOT implicitly imply a release as well.
+        qtbot.mouseDClick(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
+
+    assert mock_handle.call_args_list[0].args == (
         MouseDoublePressEvent(
             canvas_pos=press_point,
             world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
         ),
-        evented_canvas.views[0].camera,
     )
 
 
@@ -179,8 +176,6 @@ def test_resize(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
     qtbot.add_widget(native)
-    mock = MagicMock()
-    evented_canvas.views[0].camera.set_event_filter(mock)
     new_size = (400, 300)
     assert evented_canvas.width != new_size[0]
     assert evented_canvas.height != new_size[1]
@@ -198,10 +193,6 @@ def test_mouse_enter(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     )._snx_get_native()
     qtbot.add_widget(native)
 
-    # Mock view filter to capture enter events
-    mock = MagicMock()
-    evented_canvas.views[0].set_event_filter(mock)
-
     # Simulate mouse enter event by posting to event queue
     # Note that qtbot does not have a method for this
     enter_point = (0, 0)
@@ -212,11 +203,12 @@ def test_mouse_enter(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     )
     app = QApplication.instance()
     assert app is not None
-    app.postEvent(native, enter_event)
-    app.processEvents()
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        app.postEvent(native, enter_event)
+        app.processEvents()
 
-    # Verify MouseEnterEvent was passed to view filter
-    mock.assert_called_once_with(
+    # Verify MouseEnterEvent was passed to Canvas.handle
+    mock_handle.assert_called_once_with(
         MouseEnterEvent(
             canvas_pos=enter_point,
             world_ray=_validate_ray(evented_canvas.to_world(enter_point)),
@@ -231,31 +223,26 @@ def test_mouse_leave(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     )._snx_get_native()
     qtbot.add_widget(native)
 
-    # Mock view filter to capture leave events
-    view_mock = MagicMock()
-    evented_canvas.views[0].set_event_filter(view_mock)
-
-    # NOTE: We need to first enter to establish the view as active
     enter_point = (10, 15)
     enter_event = QEnterEvent(
         QPointF(*enter_point), QPointF(*enter_point), QPointF(*enter_point)
     )
     app = QApplication.instance()
     assert app is not None
-    app.postEvent(native, enter_event)
-    app.processEvents()
-    view_mock.reset_mock()
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        # NOTE: We need to first enter to establish the view as active
+        app.postEvent(native, enter_event)
+        app.processEvents()
+        mock_handle.reset_mock()
+        # Now simulate leave event
+        leave_event = QEvent(QEvent.Type.Leave)
+        app.postEvent(native, leave_event)
+        # Process events to ensure the event is handled
+        app.processEvents()
+        qtbot.wait(10)
 
-    # Now simulate leave event
-    leave_event = QEvent(QEvent.Type.Leave)
-    app.postEvent(native, leave_event)
-
-    # Process events to ensure the event is handled
-    app.processEvents()
-    qtbot.wait(10)
-
-    # Verify MouseLeaveEvent was passed to view filter
-    view_mock.assert_called_once_with(MouseLeaveEvent())
+    # Verify MouseLeaveEvent was passed to Canvas.handle
+    mock_handle.assert_called_once_with(MouseLeaveEvent())
 
 
 def test_set_cursor(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
