@@ -1,3 +1,5 @@
+"""Demonstrates 3D volume rendering with orbit camera controls."""
+
 import numpy as np
 
 import scenex as snx
@@ -27,7 +29,6 @@ view = snx.View(
     resize=snx.LetterboxResizeStrategy(),
 )
 
-snx.use("vispy")
 snx.show(view)
 
 # Orbit around the center of the volume

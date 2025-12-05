@@ -1,3 +1,5 @@
+"""Demonstrates a basic scene with multiple visual elements and imgui controls."""
+
 import cmap
 import numpy as np
 

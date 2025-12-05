@@ -2,9 +2,7 @@
 
 Unaltered, each channel of the volume is blended additively, resulting in transparency.
 
-By clicking on the volume, the blend mode will alternate to an opaque strategy. In this
-case, fragments written by the nuclei channel will always be visible over fragments
-written by the membranes channel (because its draw order is higher).
+By clicking on the green volume, the blend mode will cycle through the available modes.
 """
 
 import cmap

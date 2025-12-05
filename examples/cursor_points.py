@@ -1,10 +1,10 @@
+"""Shows how event filters can be used to change the cursor bitmap."""
+
 import numpy as np
 
 import scenex as snx
 from scenex.app import CursorType, app
 from scenex.app.events import Event, MouseMoveEvent
-
-# PanZoomController is now part of the main scenex module
 
 # Points data
 coords = np.array(

@@ -1,3 +1,5 @@
+"""Demonstrates rendering a mesh whose faces vanish on mouse hover. Click to reset."""
+
 import cmap
 import numpy as np
 

@@ -1,3 +1,11 @@
+"""Demonstrates multiple views of volumetric data with interactive slicing.
+
+Shows two channels of volumetric data: the left view displays the full volume
+with a perspective camera where mousing over the volume extracts and displays
+a 2D slice from the other channel in pink at the intersection point. The right
+view shows an orthographic top-down perspective with no interaction.
+"""
+
 import cmap
 import numpy as np
 
@@ -67,8 +75,11 @@ canvas.grid.add(view1, col=0)
 canvas.grid.add(view2, col=1)
 
 
-# Interaction: when hovering over the volume in view1, show the corresponding slice
-# of the image at the mouse height.
+# Interaction: The left view shows the full gray volume with a perspective camera.
+# When mousing over it, we find where the ray intersects the volume, extract the
+# 2D slice from the other channel at that z-position, and display it in pink at
+# the intersection. The right view uses an orthographic camera looking down the
+# -z axis and has no mouse interaction.
 def _view1_event_filter(event: Event) -> bool:
     if isinstance(event, MouseMoveEvent):
         for node, distance in event.world_ray.intersections(view1.scene):
@@ -87,7 +98,6 @@ def _view1_event_filter(event: Event) -> bool:
 
 view1.set_event_filter(_view1_event_filter)
 
-snx.use("pygfx")
 snx.show(canvas)
 
 # Orbit around the center of the volume

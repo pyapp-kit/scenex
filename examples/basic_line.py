@@ -1,3 +1,5 @@
+"""Demonstrates a line with a vertex colormap iff the user hovers over it."""
+
 import cmap
 import numpy as np
 
@@ -12,8 +14,6 @@ from scenex.app.events import (
 
 
 def _create_line_data(angle: float = 0) -> np.ndarray:
-    # x = [0, 1]
-    # y = [0, 1]
     x = np.arange(0, 10, 0.05)
     y = 1 * np.sin(x + angle)
     return np.column_stack((x, y, np.zeros_like(x)))

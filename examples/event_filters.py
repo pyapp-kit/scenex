@@ -1,3 +1,10 @@
+"""Demonstrates how event filters can be used to interact with a scene.
+
+In this example, a yellow square is drawn under the mouse cursor when it
+hovers over an image. When the mouse leaves the image, a bright border is
+drawn around it.
+"""
+
 import cmap
 import numpy as np
 
@@ -36,7 +43,7 @@ def _view_filter(event: Event) -> bool:
             min_y = max(0, y - 5)
             max_y = min(data.shape[1], y + 5)
 
-            data[min_x:max_x, min_y:max_y] = 255
+            data[min_y:max_y, min_x:max_x] = 255
             node.data = data
     if isinstance(event, MouseEnterEvent):
         # Restore original colormap and clear the image when mouse enters

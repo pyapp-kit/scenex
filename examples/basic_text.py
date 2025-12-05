@@ -1,3 +1,5 @@
+"""Demonstrates rendering text."""
+
 import cmap
 
 import scenex as snx

@@ -1,3 +1,5 @@
+"""Demonstrates rendering points with different sizing modes."""
+
 import cmap
 import numpy as np
 
