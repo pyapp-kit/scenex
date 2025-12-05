@@ -57,20 +57,24 @@ view = snx.View(
 blend_modes = list(scenex.model.BlendMode)
 
 
-def change_blend_mode(event: Event, node: snx.Node) -> bool:
+def change_blend_mode(event: Event) -> bool:
     """Change the blend mode of a volume when it is clicked."""
-    if isinstance(event, MousePressEvent):
-        idx = blend_modes.index(node.blending)
-        next_idx = (idx + 1) % len(blend_modes)
+    if not isinstance(event, (MousePressEvent)):
+        return False
+    intersected_nodes = [node for node, _ in event.world_ray.intersections(view.scene)]
+    if volume1 not in intersected_nodes:
+        return False
+    idx = blend_modes.index(volume1.blending)
+    next_idx = (idx + 1) % len(blend_modes)
 
-        print(f"Changing blend mode to {blend_modes[next_idx]}")
+    print(f"Changing blend mode to {blend_modes[next_idx]}")
 
-        volume1.blending = blend_modes[next_idx]
-        volume2.blending = blend_modes[next_idx]
+    volume1.blending = blend_modes[next_idx]
+    volume2.blending = blend_modes[next_idx]
     return False
 
 
-volume1.set_event_filter(change_blend_mode)
+view.set_event_filter(change_blend_mode)
 
 
 snx.use("vispy")

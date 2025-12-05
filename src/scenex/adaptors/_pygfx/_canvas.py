@@ -111,9 +111,7 @@ class Canvas(CanvasAdaptor):
         self._views.append(view)
 
     def _snx_set_width(self, arg: int) -> None:
-        width, height = cast(
-            "tuple[float, float]", self._wgpu_canvas.get_logical_size()
-        )
+        width, height = self._wgpu_canvas.get_logical_size()
         # FIXME: For some reason, on wx the size has already been updated, and
         # updating it again causes erratic resizing behavior
         if width != arg:
@@ -121,9 +119,7 @@ class Canvas(CanvasAdaptor):
                 self._wgpu_canvas.set_logical_size(arg, height)
 
     def _snx_set_height(self, arg: int) -> None:
-        width, height = cast(
-            "tuple[float, float]", self._wgpu_canvas.get_logical_size()
-        )
+        width, height = self._wgpu_canvas.get_logical_size()
         # FIXME: For some reason, on wx the size has already been updated, and
         # updating it again causes erratic resizing behavior
         if height != arg:

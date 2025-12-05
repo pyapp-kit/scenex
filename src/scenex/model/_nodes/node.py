@@ -23,12 +23,12 @@ from scenex.model._base import EventedBase
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Iterator
+    from collections.abc import Iterable, Iterator
 
     import numpy.typing as npt
     from typing_extensions import Self, TypedDict, Unpack
 
-    from scenex.app.events import Event, Ray
+    from scenex.app.events import Ray
 
     from .camera import Camera
     from .image import Image
@@ -123,17 +123,6 @@ class Node(EventedBase):
         default=BlendMode.OPAQUE,
         description="Describes how this node interacts with nodes behind it.",
     )
-
-    _filter: Callable[[Event, Node], bool] | None = PrivateAttr(default=None)
-
-    def set_event_filter(
-        self, callable: Callable[[Event, Node], bool] | None
-    ) -> Callable[[Event, Node], bool] | None:
-        old, self._filter = self._filter, callable
-        return old
-
-    def filter_event(self, event: Event, target: Node) -> bool:
-        return self._filter(event, target) if self._filter else False
 
     model_config = ConfigDict(extra="forbid")
 

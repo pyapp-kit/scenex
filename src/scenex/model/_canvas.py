@@ -25,7 +25,6 @@ from ._view import View  # noqa: TC001
 if TYPE_CHECKING:
     from typing_extensions import TypedDict
 
-    from scenex import Node
     from scenex.adaptors._base import CanvasAdaptor
 
     class CanvasKwargs(TypedDict, total=False):
@@ -196,13 +195,6 @@ class Canvas(EventedBase):
                 if current_view.filter_event(event):
                     return True
 
-                intersections = event.world_ray.intersections(current_view.scene)
-                # FIXME: Consider only reporting the first?
-                # Or do we only report until we hit a node with opacity=1?
-                for node, _distance in intersections:
-                    # Filter through parent scenes to child
-                    if Canvas._filter_through(event, node, node):
-                        return True
                 # No nodes in the view handled the event - pass it to the camera
                 if current_view.camera.interactive:
                     if on_mouse := current_view.camera.controller:
@@ -218,23 +210,6 @@ class Canvas(EventedBase):
             # TODO: How might some event filter tap into the resize?
             self.size = (event.width, event.height)
         return handled
-
-    @staticmethod
-    def _filter_through(event: Any, node: Node, target: Node) -> bool:
-        """Filter the event through the scene graph to the target node."""
-        # TODO: Suppose a scene is not interactive. If the node is interactive, should
-        # it receive the event?
-
-        # First give this node a chance to filter the event.
-
-        if node.interactive and node.filter_event(event, target):
-            # Node filtered out the event, so we stop here.
-            return True
-        if (parent := node.parent) is None:
-            # Node did not filter out the event, and we've reached the top of the graph.
-            return False
-        # Recursively filter the event through node's parent.
-        return Canvas._filter_through(event, parent, target)
 
     def to_ndc(self, canvas_pos: tuple[float, float]) -> tuple[float, float] | None:
         """Map XY canvas position (pixels) to normalized device coordinates (NDC)."""
