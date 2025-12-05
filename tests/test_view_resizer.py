@@ -11,8 +11,7 @@ def test_view_resizer_integration() -> None:
     camera = Camera(
         projection=projections.orthographic(100, 100, 100),
     )
-    view = View(camera=camera)
-    camera.resize = LetterboxResizeStrategy(view=view)
+    view = View(camera=camera, resize=LetterboxResizeStrategy())
 
     # Initial aspect should be 1.0 (square)
     # Note that the aspect ratio is stored inversely in the projection matrix,
@@ -34,11 +33,10 @@ def test_view_resizer_integration() -> None:
 def test_view_resizer_removed() -> None:
     """Test that removing resizer disconnects the callback."""
     camera = Camera(projection=projections.orthographic(100, 100, 100))
-    view = View(camera=camera)
-    camera.resize = LetterboxResizeStrategy(view=view)
+    view = View(camera=camera, resize=LetterboxResizeStrategy())
 
     # Remove resizer
-    camera.resize = None
+    view.resize = None
 
     # Get initial projection
     initial_projection = camera.projection.root.copy()
@@ -54,8 +52,7 @@ def test_view_resizer_removed() -> None:
 def test_view_resizer_multiple_size_changes() -> None:
     """Test that resizer responds to multiple size changes."""
     camera = Camera(projection=projections.orthographic(100, 100, 100))
-    view = View(camera=camera)
-    camera.resize = LetterboxResizeStrategy(view=view)
+    view = View(camera=camera, resize=LetterboxResizeStrategy())
 
     # First resize: 2:1
     view.layout.width = 400

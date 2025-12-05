@@ -6,7 +6,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
-from pydantic import Field, PrivateAttr, model_validator
+from pydantic import Field, PrivateAttr
 
 from scenex.app.events import (
     MouseButton,
@@ -18,31 +18,14 @@ from scenex.app.events import (
 from scenex.model._base import EventedBase
 
 if TYPE_CHECKING:
-    from scenex import Transform, View
+    from scenex import Transform
     from scenex.app.events import Event
 
     from ._nodes.camera import Camera
 
 
-class ResizeStrategy(EventedBase):
+class CameraResizer(EventedBase):
     """Defines how the camera should respond to view resizing."""
-
-    view: View | None = Field(default=None)
-
-    @model_validator(mode="after")
-    def _connect_view_layout(self) -> ResizeStrategy:
-        """Connect view layout changes to handle_resize when view is set."""
-        if self.view is not None:
-            self.view.layout.events.width.connect(self._on_view_size_changed)
-            self.view.layout.events.height.connect(self._on_view_size_changed)
-        return self
-
-    def _on_view_size_changed(self) -> None:
-        if view := self.view:
-            self.handle_resize(
-                (int(view.layout.width), int(view.layout.height)),
-                view.camera,
-            )
 
     @abstractmethod
     def handle_resize(self, size: tuple[int, int], camera: Camera) -> None:
@@ -63,7 +46,7 @@ class ResizeStrategy(EventedBase):
         raise NotImplementedError
 
 
-class NoOpResizeStrategy(ResizeStrategy):
+class NoOpResizeStrategy(CameraResizer):
     """A resize strategy that does nothing on resize events."""
 
     def handle_event(self, event: Event, camera: Camera) -> bool:
@@ -73,7 +56,7 @@ class NoOpResizeStrategy(ResizeStrategy):
         pass
 
 
-class LetterboxResizeStrategy(ResizeStrategy):
+class LetterboxResizeStrategy(CameraResizer):
     """Preserve aspect ratio by expanding the narrower dimension.
 
     Adjusts the camera's projection matrix to fit the new view size while
@@ -127,7 +110,7 @@ class LetterboxResizeStrategy(ResizeStrategy):
             )
 
 
-class MouseStrategy(EventedBase):
+class CameraController(EventedBase):
     """Defines how the camera should respond to mouse events."""
 
     @abstractmethod
@@ -151,14 +134,7 @@ class MouseStrategy(EventedBase):
         raise NotImplementedError
 
 
-class NoOpMouseStrategy(MouseStrategy):
-    """A mouse strategy that does nothing on mouse events."""
-
-    def handle_event(self, event: Event, camera: Camera) -> bool:
-        return False
-
-
-class PanZoomMouseStrategy(MouseStrategy):
+class PanZoomController(CameraController):
     """
     Controller for handling pan and zoom interactions with a Camera node.
 
@@ -255,7 +231,7 @@ class PanZoomMouseStrategy(MouseStrategy):
         return 2 ** (delta * 0.001)
 
 
-class OrbitMouseStrategy(MouseStrategy):
+class OrbitController(CameraController):
     """
     Orbits a Camera node around a fixed point.
 

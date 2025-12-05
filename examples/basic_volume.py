@@ -41,7 +41,7 @@ view.camera.projection = projections.perspective(
     near=1,
     far=1_000_000,  # Just need something big
 )
-view.camera.mouse = snx.OrbitMouseStrategy(center=orbit_center)
+view.camera.controller = snx.OrbitController(center=orbit_center)
 
 
 snx.run()

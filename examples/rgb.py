@@ -34,7 +34,7 @@ view = snx.View(
             img,
         ]
     ),
-    camera=snx.Camera(mouse=snx.PanZoomMouseStrategy(), interactive=True),
+    camera=snx.Camera(controller=snx.PanZoomController(), interactive=True),
 )
 
 idx = 0

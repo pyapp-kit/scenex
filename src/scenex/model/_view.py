@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, cast
 
-from pydantic import ConfigDict, Field, PrivateAttr
+from pydantic import Field, PrivateAttr
 
 from ._base import EventedBase
 from ._layout import Layout
@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from scenex.app.events import Event
 
     from ._canvas import Canvas
+    from ._controller import CameraResizer
 
 logger = logging.getLogger(__name__)
 
@@ -39,19 +40,27 @@ class View(EventedBase):
 
     scene: Scene = Field(default_factory=Scene)
     camera: Camera = Field(default_factory=Camera)
+    resize: CameraResizer | None = Field(
+        default=None, description="Describes how resizing the view affects the camera."
+    )
     layout: Layout = Field(default_factory=Layout, frozen=True)
     visible: bool = Field(default=True, description="Whether the view is visible.")
 
     _canvas: Canvas | None = PrivateAttr(None)
-    _layout_width_callback: Any = PrivateAttr(default=None)
-    _layout_height_callback: Any = PrivateAttr(default=None)
-
-    model_config = ConfigDict(extra="forbid")
 
     def model_post_init(self, __context: Any) -> None:
         """Post-initialization hook for the model."""
         super().model_post_init(__context)
         self.camera.parent = self.scene
+
+        # FIXME: Reconnect this when the layout is changed
+        self.layout.events.width.connect(self._on_layout_change)
+        self.layout.events.height.connect(self._on_layout_change)
+
+    def _on_layout_change(self, *args: Any) -> None:
+        if resize := self.resize:
+            new_size = (int(self.layout.width), int(self.layout.height))
+            resize.handle_resize(new_size, self.camera)
 
     @property
     def canvas(self) -> Canvas:

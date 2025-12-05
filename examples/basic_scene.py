@@ -28,9 +28,9 @@ view = snx.View(
             ),
         ]
     ),
-    camera=snx.Camera(mouse=snx.PanZoomMouseStrategy(), interactive=True),
+    camera=snx.Camera(controller=snx.PanZoomController(), interactive=True),
+    resize=snx.LetterboxResizeStrategy(),
 )
-view.camera.resize = snx.LetterboxResizeStrategy(view=view)
 
 # example of adding an object to a scene
 X, Y = np.meshgrid(np.linspace(-10, 10, 100), np.linspace(-10, 10, 100))

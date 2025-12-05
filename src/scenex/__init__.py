@@ -14,8 +14,8 @@ from .model._canvas import Canvas
 from .model._color import ColorModel
 from .model._controller import (
     LetterboxResizeStrategy,
-    OrbitMouseStrategy,
-    PanZoomMouseStrategy,
+    OrbitController,
+    PanZoomController,
 )
 from .model._grid import Grid
 from .model._nodes.camera import Camera
@@ -41,8 +41,8 @@ __all__ = [
     "Line",
     "Mesh",
     "Node",
-    "OrbitMouseStrategy",
-    "PanZoomMouseStrategy",
+    "OrbitController",
+    "PanZoomController",
     "Points",
     "Scene",
     "Text",
