@@ -1,24 +1,29 @@
-"""Camera controllers and resize strategies.
+"""Interaction strategies and resize strategies.
 
 This module contains two related but distinct concepts:
 
+**InteractionStrategy**: Defines how a camera responds to user interaction events.
+Interaction strategies handle user input (mouse, keyboard, etc.) to control the camera.
+Attached to Camera nodes via `camera.controller`.
+
 **ResizeStrategy**: Defines how resizing a view affects the camera's projection.
-**CameraController**: Defines how a camera responds to mouse events.
+Resize strategies adjust the projection matrix to maintain aspect ratios or fit content
+when the view's dimensions change. Attached to View instances via `view.resize`.
 
 The key distinction:
-- A ResizeStrategy responds to VIEW GEOMETRY changes (layout dimensions)
-- A CameraController responds to USER ACTIONS (input events)
+- InteractionStrategy responds to USER ACTIONS (input events)
+- ResizeStrategy responds to VIEW GEOMETRY changes (layout dimensions)
 
 Examples
 --------
 Common combinations:
 
 2D image viewer with pan/zoom and letterbox aspect fitting:
-    >>> camera = Camera(controller=PanZoomController())
+    >>> camera = Camera(controller=PanZoom())
     >>> view = View(camera=camera, resize=LetterboxResizeStrategy())
 
 3D scene with orbit controls and no aspect adjustment:
-    >>> camera = Camera(controller=OrbitController())
+    >>> camera = Camera(controller=Orbit())
     >>> view = View(camera=camera, resize=None)
 """
 
@@ -123,13 +128,13 @@ class LetterboxResizeStrategy(ResizeStrategy):
         view.camera.projection = self._last_adjustment = adjusted_proj
 
 
-class CameraController(EventedBase):
-    """Defines how the camera should respond to mouse events."""
+class InteractionStrategy(EventedBase):
+    """Defines how the camera should respond to user interaction events."""
 
     @abstractmethod
     def handle_event(self, event: Event, camera: Camera) -> bool:
         """
-        Controls the camera in response to a mouse event.
+        Controls the camera in response to a user interaction event.
 
         Parameters
         ----------
@@ -147,11 +152,11 @@ class CameraController(EventedBase):
         raise NotImplementedError
 
 
-class PanZoomController(CameraController):
+class PanZoom(InteractionStrategy):
     """
-    Controller for handling pan and zoom interactions with a Camera node.
+    Interaction strategy for handling pan and zoom interactions with a Camera node.
 
-    This controller enables intuitive mouse-based panning and zooming in a 2D scene.
+    This strategy enables intuitive mouse-based panning and zooming in a 2D scene.
     It tracks mouse events to allow dragging (panning) the camera view and
     scroll wheel events to zoom in and out, keeping the cursor position fixed
     under the mouse during zoom.
@@ -244,9 +249,9 @@ class PanZoomController(CameraController):
         return 2 ** (delta * 0.001)
 
 
-class OrbitController(CameraController):
+class Orbit(InteractionStrategy):
     """
-    Orbits a Camera node around a fixed point.
+    Interaction strategy for orbiting a Camera node around a fixed point.
 
     Rotation direction follows pygfx precedent, where foreground objects (between the
     camera and the center of rotation) move in the direction of mouse movement i.e.

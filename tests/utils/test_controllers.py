@@ -24,8 +24,8 @@ def _validate_ray(maybe_ray: Ray | None) -> Ray:
 
 
 def test_panzoomcontroller_pan() -> None:
-    """Tests panning behavior of the PanZoomController."""
-    controller = snx.PanZoomController()
+    """Tests panning behavior of the PanZoom interaction strategy."""
+    controller = snx.PanZoom()
     cam = snx.Camera(interactive=True, controller=controller)
     # Simulate mouse press
     press_event = MousePressEvent(
@@ -48,7 +48,7 @@ def test_panzoomcontroller_pan() -> None:
 
 def test_panzoomcontroller_zoom() -> None:
     """Tests zooming behavior of the PanZoomController."""
-    controller = snx.PanZoomController()
+    controller = snx.PanZoom()
     cam = snx.Camera(interactive=True, controller=controller)
     # Simulate wheel event
     wheel_event = WheelEvent(
@@ -78,7 +78,7 @@ def test_panzoomcontroller_maintain_aspect() -> None:
 def test_orbitcontroller_orbit() -> None:
     """Tests orbiting behavior of the OrbitController."""
     # Camera is along the x axis, looking in the negative x direction at the center
-    controller = snx.OrbitController(center=(0, 0, 0))
+    controller = snx.Orbit(center=(0, 0, 0))
     cam = snx.Camera(interactive=True, controller=controller)
     # Add cam to the canvas
     canvas = snx.Canvas()
@@ -127,7 +127,7 @@ def test_orbitcontroller_orbit() -> None:
 
 def test_orbitcontroller_zoom() -> None:
     center = (0.0, 0.0, 0.0)
-    controller = snx.OrbitController(center=center)
+    controller = snx.Orbit(center=center)
     cam = snx.Camera(
         interactive=True,
         transform=Transform().translated((0, 0, 10)),
@@ -163,7 +163,7 @@ def test_orbitcontroller_zoom() -> None:
 
 def test_orbitcontroller_pan() -> None:
     # Camera is along the x axis, looking in the negative x direction at the center
-    controller = snx.OrbitController(center=(0, 0, 0))
+    controller = snx.Orbit(center=(0, 0, 0))
     cam = snx.Camera(interactive=True, controller=controller)
     # Add cam to the canvas
     canvas = snx.Canvas()

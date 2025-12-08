@@ -16,10 +16,10 @@ from ._base import EventedBase, objects
 from ._canvas import Canvas
 from ._color import ColorModel
 from ._controller import (
-    CameraController,
+    InteractionStrategy,
     LetterboxResizeStrategy,
-    OrbitController,
-    PanZoomController,
+    Orbit,
+    PanZoom,
     ResizeStrategy,
 )
 from ._grid import Grid
@@ -40,7 +40,6 @@ __all__ = [
     "AnyNode",
     "BlendMode",
     "Camera",
-    "CameraController",
     "CameraType",
     "Canvas",
     "Color",
@@ -49,14 +48,15 @@ __all__ = [
     "EventedBase",
     "Grid",
     "Image",
+    "InteractionStrategy",
     "InterpolationMode",
     "Layout",
     "LetterboxResizeStrategy",
     "Line",
     "Mesh",
     "Node",
-    "OrbitController",
-    "PanZoomController",
+    "Orbit",
+    "PanZoom",
     "Points",
     "RenderMode",
     "ResizeStrategy",

@@ -13,10 +13,10 @@ from .adaptors import run, use
 from .model._canvas import Canvas
 from .model._color import ColorModel
 from .model._controller import (
-    CameraController,
+    InteractionStrategy,
     LetterboxResizeStrategy,
-    OrbitController,
-    PanZoomController,
+    Orbit,
+    PanZoom,
     ResizeStrategy,
 )
 from .model._grid import Grid
@@ -35,17 +35,17 @@ from .util import show
 
 __all__ = [
     "Camera",
-    "CameraController",
     "Canvas",
     "ColorModel",
     "Grid",
     "Image",
+    "InteractionStrategy",
     "LetterboxResizeStrategy",
     "Line",
     "Mesh",
     "Node",
-    "OrbitController",
-    "PanZoomController",
+    "Orbit",
+    "PanZoom",
     "Points",
     "ResizeStrategy",
     "Scene",

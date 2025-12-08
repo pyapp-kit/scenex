@@ -14,7 +14,7 @@ from .node import Node
 
 if TYPE_CHECKING:
     from scenex.app.events._events import Ray
-    from scenex.model._controller import CameraController
+    from scenex.model._controller import InteractionStrategy
     from scenex.model._transform import Transform
 
 CameraType = Literal["panzoom", "perspective"]
@@ -44,7 +44,7 @@ class Camera(Node):
 
     node_type: Literal["camera"] = "camera"
 
-    controller: CameraController | None = Field(default=None)
+    controller: InteractionStrategy | None = Field(default=None)
     interactive: bool = Field(
         default=True,
         description="Whether the camera responds to user interaction, "
