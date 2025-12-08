@@ -17,10 +17,10 @@ from ._canvas import Canvas
 from ._color import ColorModel
 from ._controller import (
     CameraController,
-    CameraResizer,
     LetterboxResizeStrategy,
     OrbitController,
     PanZoomController,
+    ResizeStrategy,
 )
 from ._grid import Grid
 from ._layout import Layout
@@ -41,7 +41,6 @@ __all__ = [
     "BlendMode",
     "Camera",
     "CameraController",
-    "CameraResizer",
     "CameraType",
     "Canvas",
     "Color",
@@ -60,6 +59,7 @@ __all__ = [
     "PanZoomController",
     "Points",
     "RenderMode",
+    "ResizeStrategy",
     "ScalingMode",
     "Scene",
     "SymbolName",

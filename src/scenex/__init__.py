@@ -14,10 +14,10 @@ from .model._canvas import Canvas
 from .model._color import ColorModel
 from .model._controller import (
     CameraController,
-    CameraResizer,
     LetterboxResizeStrategy,
     OrbitController,
     PanZoomController,
+    ResizeStrategy,
 )
 from .model._grid import Grid
 from .model._nodes.camera import Camera
@@ -36,7 +36,6 @@ from .util import show
 __all__ = [
     "Camera",
     "CameraController",
-    "CameraResizer",
     "Canvas",
     "ColorModel",
     "Grid",
@@ -48,6 +47,7 @@ __all__ = [
     "OrbitController",
     "PanZoomController",
     "Points",
+    "ResizeStrategy",
     "Scene",
     "Text",
     "Transform",

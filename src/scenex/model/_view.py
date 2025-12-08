@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from scenex.app.events import Event
 
     from ._canvas import Canvas
-    from ._controller import CameraResizer
+    from ._controller import ResizeStrategy
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class View(EventedBase):
 
     scene: Scene = Field(default_factory=Scene)
     camera: Camera = Field(default_factory=Camera)
-    resize: CameraResizer | None = Field(
+    resize: ResizeStrategy | None = Field(
         default=None, description="Describes how resizing the view affects the camera."
     )
     layout: Layout = Field(default_factory=Layout, frozen=True)
@@ -59,8 +59,7 @@ class View(EventedBase):
 
     def _on_layout_change(self, *args: Any) -> None:
         if resize := self.resize:
-            new_size = (int(self.layout.width), int(self.layout.height))
-            resize.handle_resize(new_size, self.camera)
+            resize.handle_resize(self)
 
     @property
     def canvas(self) -> Canvas:

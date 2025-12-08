@@ -1,4 +1,4 @@
-"""Tests for View + CameraResizer integration."""
+"""Tests for View + ResizeStrategy integration."""
 
 import pytest
 

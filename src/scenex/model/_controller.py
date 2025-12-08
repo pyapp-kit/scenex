@@ -1,4 +1,26 @@
-"""Camera controllers and resizers."""
+"""Camera controllers and resize strategies.
+
+This module contains two related but distinct concepts:
+
+**ResizeStrategy**: Defines how resizing a view affects the camera's projection.
+**CameraController**: Defines how a camera responds to mouse events.
+
+The key distinction:
+- A ResizeStrategy responds to VIEW GEOMETRY changes (layout dimensions)
+- A CameraController responds to USER ACTIONS (input events)
+
+Examples
+--------
+Common combinations:
+
+2D image viewer with pan/zoom and letterbox aspect fitting:
+    >>> camera = Camera(controller=PanZoomController())
+    >>> view = View(camera=camera, resize=LetterboxResizeStrategy())
+
+3D scene with orbit controls and no aspect adjustment:
+    >>> camera = Camera(controller=OrbitController())
+    >>> view = View(camera=camera, resize=None)
+"""
 
 from __future__ import annotations
 
@@ -12,7 +34,6 @@ from scenex.app.events import (
     MouseButton,
     MouseMoveEvent,
     MousePressEvent,
-    MouseReleaseEvent,
     WheelEvent,
 )
 from scenex.model._base import EventedBase
@@ -22,41 +43,27 @@ if TYPE_CHECKING:
     from scenex.app.events import Event
 
     from ._nodes.camera import Camera
+    from ._view import View
 
 
-class CameraResizer(EventedBase):
+class ResizeStrategy(EventedBase):
     """Defines how the camera should respond to view resizing."""
 
     @abstractmethod
-    def handle_resize(self, size: tuple[int, int], camera: Camera) -> None:
+    def handle_resize(self, view: View) -> None:
         """
         Controls the camera in response to a resize event.
 
         Parameters
         ----------
-        size : tuple[int, int]
-            New view size as (width, height) in pixels.
-        camera : Camera
-            The camera whose projection will be updated.
+        view : View
+            The view being resized. The strategy can access view.layout for dimensions
+            and view.camera for the camera to modify.
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def handle_event(self, event: Event, camera: Camera) -> bool:
-        raise NotImplementedError
 
-
-class NoOpResizeStrategy(CameraResizer):
-    """A resize strategy that does nothing on resize events."""
-
-    def handle_event(self, event: Event, camera: Camera) -> bool:
-        return False
-
-    def handle_resize(self, size: tuple[int, int], camera: Camera) -> None:
-        pass
-
-
-class LetterboxResizeStrategy(CameraResizer):
+class LetterboxResizeStrategy(ResizeStrategy):
     """Preserve aspect ratio by expanding the narrower dimension.
 
     Adjusts the camera's projection matrix to fit the new view size while
@@ -68,31 +75,34 @@ class LetterboxResizeStrategy(CameraResizer):
     PerspectiveCamera: letterbox/pillarbox rather than crop.
     """
 
-    _projection: Transform | None = PrivateAttr(default=None)
+    # Consider the context of a sequence of resizes (i.e. the user is clicking and
+    # dragging the window corner).
+    # This is the transform at the beginning of the resize sequence...
+    _reference: Transform | None = PrivateAttr(default=None)
+    # ...and this is the transform we applied in response to the last resize event.
+    _last_adjustment: Transform | None = PrivateAttr(default=None)
 
-    def handle_event(self, event: Event, camera: Camera) -> bool:
-        if isinstance(event, (MouseReleaseEvent, WheelEvent)):
-            self._projection = camera.projection
-        return False
-
-    def handle_resize(self, size: tuple[int, int], camera: Camera) -> None:
+    def handle_resize(self, view: View) -> None:
         """Handle view resize by adjusting projection to maintain aspect ratio."""
-        # Capture the initial projection as the reference on first resize
-        self._projection = self._projection or camera.projection
+        # If the current projection differs from the last adjustment, or if there is no
+        # reference to begin with, this is a new resize sequence.
+        if view.camera.projection != self._last_adjustment or self._reference is None:
+            self._reference = view.camera.projection
 
-        view_width, view_height = size
-        if view_height == 0 or self._projection is None:
+        view_width = int(view.layout.width)
+        view_height = int(view.layout.height)
+        if view_height == 0 or self._reference is None:
             return
 
         # Extract projection scales that define the content aspect ratio
-        ref_mat = self._projection.root
+        ref_mat = self._reference.root
         ref_x_scale = ref_mat[0, 0]
         ref_y_scale = ref_mat[1, 1]
         if ref_y_scale == 0:
             return
 
         # Compute aspect ratios
-        # Note: projection scales are inversely proportional to the displayed region,
+        # NOTE: projection scales are inversely proportional to the displayed region,
         # so content_aspect = y_scale / x_scale
         view_aspect = view_width / view_height
         content_aspect = abs(ref_y_scale / ref_x_scale)
@@ -100,14 +110,17 @@ class LetterboxResizeStrategy(CameraResizer):
         # Expand the narrower dimension to match the view aspect
         if content_aspect < view_aspect:
             # View is wider: expand horizontal frustum (reduce x scale)
-            camera.projection = self._projection.scaled(
+            adjusted_proj = self._reference.scaled(
                 (content_aspect / view_aspect, 1.0, 1.0)
             )
         else:
             # View is taller: expand vertical frustum (reduce y scale)
-            camera.projection = self._projection.scaled(
+            adjusted_proj = self._reference.scaled(
                 (1.0, view_aspect / content_aspect, 1.0)
             )
+
+        # Store the adjustment before applying it
+        view.camera.projection = self._last_adjustment = adjusted_proj
 
 
 class CameraController(EventedBase):
