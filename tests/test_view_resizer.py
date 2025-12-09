@@ -2,7 +2,7 @@
 
 import pytest
 
-from scenex.model import Camera, LetterboxResizeStrategy, View
+from scenex.model import Camera, Letterbox, View
 from scenex.utils import projections
 
 
@@ -11,7 +11,7 @@ def test_view_resizer_integration() -> None:
     camera = Camera(
         projection=projections.orthographic(100, 100, 100),
     )
-    view = View(camera=camera, resize=LetterboxResizeStrategy())
+    view = View(camera=camera, resize=Letterbox())
 
     # Initial aspect should be 1.0 (square)
     # Note that the aspect ratio is stored inversely in the projection matrix,
@@ -33,7 +33,7 @@ def test_view_resizer_integration() -> None:
 def test_view_resizer_removed() -> None:
     """Test that removing resizer disconnects the callback."""
     camera = Camera(projection=projections.orthographic(100, 100, 100))
-    view = View(camera=camera, resize=LetterboxResizeStrategy())
+    view = View(camera=camera, resize=Letterbox())
 
     # Remove resizer
     view.resize = None
@@ -52,7 +52,7 @@ def test_view_resizer_removed() -> None:
 def test_view_resizer_multiple_size_changes() -> None:
     """Test that resizer responds to multiple size changes."""
     camera = Camera(projection=projections.orthographic(100, 100, 100))
-    view = View(camera=camera, resize=LetterboxResizeStrategy())
+    view = View(camera=camera, resize=Letterbox())
 
     # First resize: 2:1
     view.layout.width = 400

@@ -45,15 +45,8 @@ except PackageNotFoundError:
 from .adaptors import run, use
 from .model._canvas import Canvas
 from .model._color import ColorModel
-from .model._controller import (
-    InteractionStrategy,
-    LetterboxResizeStrategy,
-    Orbit,
-    PanZoom,
-    ResizeStrategy,
-)
 from .model._grid import Grid
-from .model._nodes.camera import Camera
+from .model._nodes.camera import Camera, InteractionStrategy, Orbit, PanZoom
 from .model._nodes.image import Image
 from .model._nodes.line import Line
 from .model._nodes.mesh import Mesh
@@ -63,7 +56,7 @@ from .model._nodes.scene import Scene
 from .model._nodes.text import Text
 from .model._nodes.volume import Volume
 from .model._transform import Transform
-from .model._view import View
+from .model._view import Letterbox, ResizeStrategy, View
 from .util import show
 
 __all__ = [
@@ -73,7 +66,7 @@ __all__ = [
     "Grid",
     "Image",
     "InteractionStrategy",
-    "LetterboxResizeStrategy",
+    "Letterbox",
     "Line",
     "Mesh",
     "Node",

@@ -6,8 +6,6 @@ import scenex as snx
 from scenex.model._transform import Transform
 from scenex.utils import projections
 
-# OrbitController is now part of the main scenex module
-
 try:
     from imageio.v2 import volread
 
@@ -26,7 +24,7 @@ view = snx.View(
         ]
     ),
     camera=snx.Camera(interactive=True),
-    resize=snx.LetterboxResizeStrategy(),
+    resize=snx.Letterbox(),
 )
 
 snx.show(view)
@@ -43,7 +41,7 @@ view.camera.projection = projections.perspective(
     near=1,
     far=1_000_000,  # Just need something big
 )
-view.camera.controller = snx.OrbitController(center=orbit_center)
+view.camera.controller = snx.Orbit(center=orbit_center)
 
 
 snx.run()

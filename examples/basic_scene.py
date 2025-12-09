@@ -31,7 +31,7 @@ view = snx.View(
         ]
     ),
     camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
-    resize=snx.LetterboxResizeStrategy(),
+    resize=snx.Letterbox(),
 )
 
 # example of adding an object to a scene

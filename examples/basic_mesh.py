@@ -53,7 +53,7 @@ mesh = snx.Mesh(
 
 view = snx.View(
     scene=snx.Scene(children=[mesh]),
-    camera=snx.Camera(controller=snx.PanZoomController(), interactive=True),
+    camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
 )
 
 

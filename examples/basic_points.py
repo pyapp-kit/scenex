@@ -7,8 +7,6 @@ import scenex as snx
 from scenex.app.events import Event, MouseMoveEvent
 from scenex.utils import projections
 
-# PanZoomController is now part of the main scenex module
-
 # Here is our points data
 coords = np.array(
     [
@@ -43,7 +41,7 @@ points = snx.Points(
 # Since ray-point intersections are computed in canvas space, we need view+canvas
 view = snx.View(scene=snx.Scene(children=[points]))
 
-view.camera.controller = snx.PanZoomController()
+view.camera.controller = snx.PanZoom()
 
 
 def _on_view_event(event: Event) -> bool:

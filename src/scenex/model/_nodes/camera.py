@@ -1,20 +1,21 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Literal
+from abc import abstractmethod
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 import pylinalg as la
-from pydantic import Field, computed_field
+from pydantic import Field, PrivateAttr, computed_field
 
-from scenex.model._transform import Transform
+from scenex.model._base import EventedBase
 from scenex.utils import projections
 
 from .node import Node
 
 if TYPE_CHECKING:
+    from scenex.app.events import Event
     from scenex.app.events._events import Ray
-    from scenex.model._controller import InteractionStrategy
     from scenex.model._transform import Transform
 
 CameraType = Literal["panzoom", "perspective"]
@@ -176,3 +177,407 @@ class Camera(Node):
             if np.abs(np.dot(self.forward, up)) > 1e-6:
                 raise ValueError("Up vector must be perpendicular to forward vector.")
             self.up = up
+
+
+# ====================================================================================
+# Interaction Strategies
+# ====================================================================================
+
+
+class InteractionStrategy(EventedBase):
+    """Base class defining how a camera responds to user interaction events.
+
+    An InteractionStrategy handles user input (mouse, keyboard, wheel) to manipulate
+    camera transforms and projections, enabling interactive behaviors like panning,
+    zooming, orbiting, or custom camera controls. Strategies are attached to Camera
+    instances via the `controller` field and automatically receive events when the
+    camera is marked as `interactive=True`.
+
+    Event handlers should return True if they fully handled the event (stopping further
+    propagation) or False if other handlers should continue processing the event.
+
+    Examples
+    --------
+    Create a camera with pan/zoom interaction:
+        >>> camera = Camera(controller=PanZoom(), interactive=True)
+
+    Create a camera with orbit interaction:
+        >>> camera = Camera(controller=Orbit(center=(0, 0, 0)), interactive=True)
+
+    See Also
+    --------
+    PanZoom : 2D pan and zoom interaction strategy
+    Orbit : 3D orbit interaction strategy
+    Camera : Camera class that uses interaction strategies
+    """
+
+    @abstractmethod
+    def handle_event(self, event: Event, camera: Camera) -> bool:
+        """
+        Handle a user interaction event to control the camera.
+
+        This method is called automatically on all events on the camera's view that were
+        not handled by previous handlers during scenex event processing.
+
+        Parameters
+        ----------
+        event : Event
+            The input event to handle (MouseMoveEvent, MousePressEvent, WheelEvent,
+            KeyPressEvent, etc.)
+        camera : Camera
+            The camera node to manipulate.
+
+        Returns
+        -------
+        bool
+            True if the event was fully handled and should not propagate to other
+            handlers, False if not handled or other handlers should process it.
+        """
+        raise NotImplementedError
+
+
+class PanZoom(InteractionStrategy):
+    """2D pan and zoom interaction strategy for orthographic views.
+
+    PanZoom provides intuitive mouse-based navigation for 2D scenes and orthographic
+    projections.
+
+    The strategy operates in two complementary ways:
+    - **Panning** (left mouse drag): Modifies camera.transform to translate the camera
+      position, maintaining the scene coordinates under the cursor.
+    - **Zooming** (mouse wheel): Modifies camera.projection to scale the view, then
+      adjusts camera.transform to keep the zoom centered on the cursor position.
+
+    Optional axis locking allows constraining interaction to horizontal or vertical
+    movement only
+
+    Attributes
+    ----------
+    lock_x : bool
+        If True, prevent horizontal panning and zooming. Movement is constrained to
+        the vertical axis only. Default is False.
+    lock_y : bool
+        If True, prevent vertical panning and zooming. Movement is constrained to
+        the horizontal axis only. Default is False.
+
+    Examples
+    --------
+    Standard 2D pan and zoom:
+        >>> camera = Camera(controller=PanZoom(), interactive=True)
+
+    Lock horizontal movement for vertical scrolling only:
+        >>> camera = Camera(controller=PanZoom(lock_x=True), interactive=True)
+
+    Create an image viewer with pan/zoom:
+        >>> view = View(
+        ...     scene=Scene(children=[Image(data=my_data)]),
+        ...     camera=Camera(
+        ...         controller=PanZoom(),
+        ...         interactive=True,
+        ...         projection=orthographic(width, height, 1),
+        ...     ),
+        ... )
+
+    See Also
+    --------
+    Orbit : 3D orbit interaction strategy for perspective views
+    InteractionStrategy : Base class for interaction strategies
+    Camera : Camera class with controller field
+    """
+
+    lock_x: bool = Field(
+        default=False,
+        description="If True, prevent horizontal panning and zooming.",
+    )
+    lock_y: bool = Field(
+        default=False,
+        description="If True, prevent vertical panning and zooming.",
+    )
+
+    # Private state for tracking interactions
+    _drag_pos: tuple[float, float] | None = PrivateAttr(default=None)
+
+    def handle_event(self, event: Event, camera: Camera) -> bool:
+        """Handle mouse and wheel events to pan/zoom the camera."""
+        from scenex.app.events import (
+            MouseButton,
+            MouseMoveEvent,
+            MousePressEvent,
+            WheelEvent,
+        )
+
+        if not camera.interactive:
+            return False
+
+        handled = False
+
+        # Panning involves keeping a particular position underneath the cursor.
+        # That position is recorded on a left mouse button press.
+        if isinstance(event, MousePressEvent) and MouseButton.LEFT in event.buttons:
+            self._drag_pos = event.world_ray.origin[:2]
+        # Every time the cursor is moved, until the left mouse button is released,
+        # We translate the camera such that the position is back under the cursor
+        # (i.e. under the world ray origin)
+        elif (
+            isinstance(event, MouseMoveEvent)
+            and MouseButton.LEFT in event.buttons
+            and self._drag_pos
+        ):
+            new_pos = event.world_ray.origin[:2]
+            dx = self._drag_pos[0] - new_pos[0]
+            if not self.lock_x:
+                camera.transform = camera.transform.translated((dx, 0))
+            dy = self._drag_pos[1] - new_pos[1]
+            if not self.lock_y:
+                camera.transform = camera.transform.translated((0, dy))
+            handled = True
+
+        # Note that while panning adjusts the camera's transform matrix, zooming
+        # adjusts the projection matrix.
+        elif isinstance(event, WheelEvent):
+            # Zoom while keeping the position under the cursor fixed.
+            _dx, dy = event.angle_delta
+            if dy:
+                # Step 1: Adjust the projection matrix to zoom in or out.
+                zoom = self._zoom_factor(dy)
+                camera.projection = camera.projection.scaled(
+                    (1 if self.lock_x else zoom, 1 if self.lock_y else zoom, 1.0)
+                )
+
+                # Step 2: Adjust the transform matrix to maintain the position
+                # under the cursor. The math is largely borrowed from
+                # https://github.com/pygfx/pygfx/blob/520af2d5bb2038ec309ef645e4a60d502f00d181/pygfx/controllers/_panzoom.py#L164
+
+                # Find the distance between the world ray and the camera
+                zoom_center = np.asarray(event.world_ray.origin)[:2]
+                camera_center = np.asarray(camera.transform.map((0, 0)))[:2]
+                # Compute the world distance before the zoom
+                delta_screen1 = zoom_center - camera_center
+                # Compute the world distance after the zoom
+                delta_screen2 = delta_screen1 * zoom
+                # The pan is the difference between the two
+                pan = (delta_screen2 - delta_screen1) / zoom
+                camera.transform = camera.transform.translated(
+                    (
+                        pan[0] if not self.lock_x else 0,
+                        pan[1] if not self.lock_y else 0,
+                    )
+                )
+                handled = True
+
+        return handled
+
+    def _zoom_factor(self, delta: float) -> float:
+        # Magnifier stolen from pygfx
+        return 2 ** (delta * 0.001)
+
+
+class Orbit(InteractionStrategy):
+    """3D orbit interaction strategy for rotating around a focal point.
+
+    Orbit provides intuitive 3D navigation for perspective views by allowing the camera
+    to rotate around a fixed center point while maintaining its distance.
+
+    The strategy uses spherical coordinates to control camera position:
+    - **Azimuth**: Rotation around the polar axis (typically Z), controlling left/right
+      movement around the scene
+    - **Elevation**: Angle from the polar axis, controlling up/down viewing angle
+    - **Distance**: Radius from the center point, controlled by zooming
+
+    During rotation, foreground objects (between the camera and the center) move in the
+    direction of mouse movement, providing intuitive control where the visible scene
+    appears to rotate under the mouse.
+
+    The right mouse button allows panning the orbit center itself, enabling exploration
+    of large scenes by moving the focal point while maintaining the camera's viewing
+    angle and distance.
+
+    Attributes
+    ----------
+    center : tuple[float, float, float]
+        The point in 3D space around which the camera orbits. This is the focal point
+        that remains stationary during rotation. Default is (0, 0, 0).
+    polar_axis : tuple[float, float, float]
+        The axis defining the "up" direction for orbit calculations. Azimuth rotations
+        occur around this axis. Default is (0, 0, 1) for Z-up orientation.
+
+    Examples
+    --------
+    Orbit around the origin:
+        >>> camera = Camera(
+        ...     controller=Orbit(center=(0, 0, 0)),
+        ...     interactive=True,
+        ...     projection=perspective(fov=60, aspect=1.5, near=0.1, far=1000),
+        ... )
+
+    Orbit around a data volume's center:
+        >>> center = np.mean(volume.bounding_box, axis=0)
+        >>> camera = Camera(controller=Orbit(center=tuple(center)), interactive=True)
+        >>> # Position camera along x-axis looking at center
+        >>> camera.transform = Transform().translated(center).translated((100, 0, 0))
+        >>> camera.look_at(center, up=(0, 0, 1))
+
+    Custom polar axis for Y-up scenes:
+        >>> camera = Camera(
+        ...     controller=Orbit(center=(0, 0, 0), polar_axis=(0, 1, 0)),
+        ...     interactive=True,
+        ... )
+
+    Interactions
+    ------------
+    - **Left mouse drag**: Orbit/rotate the camera around the center point
+    - **Right mouse drag**: Pan the orbit center (translates the focal point)
+    - **Mouse wheel**: Zoom toward/away from center (change radius)
+
+    Notes
+    -----
+    Elevation is automatically clamped to [0°, 180°] to prevent the camera from
+    going upside down. Without this clamping, the camera could rotate past the
+    polar axis, causing horizontal mouse movement to make the foreground rotate
+    in the opposite direction to the actual mouse movement.
+
+    See Also
+    --------
+    PanZoom : 2D pan and zoom strategy for orthographic views
+    InteractionStrategy : Base class for interaction strategies
+    Camera : Camera class with controller field
+    Camera.look_at : Method to orient camera toward a point
+    """
+
+    center: tuple[float, float, float] = Field(
+        default=(0.0, 0.0, 0.0),
+        description="The point in 3D space around which the camera orbits.",
+    )
+    polar_axis: tuple[float, float, float] = Field(
+        default=(0.0, 0.0, 1.0),
+        description='The axis defining the "up" direction for orbit calculations.',
+    )
+
+    # Private state for tracking interactions
+    _last_canvas_pos: tuple[float, float] | None = PrivateAttr(default=None)
+    _pan_ray: Any = PrivateAttr(default=None)  # Ray type
+
+    def model_post_init(self, __context: Any) -> None:
+        """Ensure center and polar_axis are numpy arrays."""
+        super().model_post_init(__context)
+        # Convert to numpy arrays for efficient computation
+        object.__setattr__(self, "_center_array", np.array(self.center, dtype=float))
+        object.__setattr__(
+            self, "_polar_axis_array", np.array(self.polar_axis, dtype=float)
+        )
+
+    def handle_event(self, event: Event, camera: Camera) -> bool:
+        """Handle mouse and wheel events to orbit the camera."""
+        from scenex.app.events import (
+            MouseButton,
+            MouseEvent,
+            MouseMoveEvent,
+            MousePressEvent,
+            WheelEvent,
+        )
+
+        if not camera.interactive:
+            return False
+
+        handled = False
+        center_array = np.asarray(self.center)
+
+        # Orbit on mouse move with left button held
+        if (
+            isinstance(event, MouseMoveEvent)
+            and event.buttons == MouseButton.LEFT
+            and self._last_canvas_pos is not None
+        ):
+            # The process of orbiting is as follows:
+            # 1. Compute the azimuth and elevation changes based on mouse movement.
+            #   - Azimuth describes the angle between the the positive X axis and
+            #       the projection of the camera's position onto the XY plane.
+            #   - Elevation describes the angle between the camera's position and
+            #       the positive Z axis.
+            # 2. Ensure these changes are clamped to valid ranges (only really
+            #   applies to elevation).
+            # 3. Adjust the current transform by:
+            #   a. Translating by the negative of the centerpoint, to take it out of
+            #       the computation.
+            #   b. Rotating to adjust the elevation. The axis of rotation is defined
+            #       by the camera's right vector. Note that this is done before the
+            #       azimuth adjustment because that adjustment will alter the
+            #       camera's right vector.
+            #   c. Rotating to adjust the azimuth. The axis of rotation is always
+            #       the positive Z axis.
+            #   d. Translating by the centerpoint, to reorient the camera around
+            #           that centerpoint.
+
+            # Step 0: Gather transform components, relative to camera center
+            orbit_mat = camera.transform.translated(-center_array)
+            position, _rotation, _scale = la.mat_decompose(orbit_mat.T)
+            # TODO: Make this a controller parameter
+            camera_polar = (0, 0, 1)
+            camera_right = np.cross(camera.forward, camera.up)
+
+            # Step 1
+            d_azimuth = self._last_canvas_pos[0] - event.canvas_pos[0]
+            d_elevation = self._last_canvas_pos[1] - event.canvas_pos[1]
+
+            # Step 2
+            e_bound = float(la.vec_angle(position, (0, 0, 1)) * 180 / math.pi)
+            if e_bound + d_elevation < 0:
+                d_elevation = -e_bound
+            if e_bound + d_elevation > 180:
+                d_elevation = 180 - e_bound
+
+            # Step 3
+            camera.transform = (
+                camera.transform.translated(-center_array)  # 3a
+                .rotated(d_elevation, camera_right)  # 3b
+                .rotated(d_azimuth, camera_polar)  # 3c
+                .translated(center_array)  # 3d
+            )
+
+            handled = True
+
+        # Pan on mouse press with right button
+        elif isinstance(event, MousePressEvent) and event.buttons == MouseButton.RIGHT:
+            self._pan_ray = event.world_ray
+
+        # Pan on mouse move with right button held
+        elif (
+            isinstance(event, MouseMoveEvent)
+            and event.buttons == MouseButton.RIGHT
+            and self._pan_ray is not None
+        ):
+            dr = np.linalg.norm(camera.transform.map((0, 0, 0))[:3] - center_array)
+            old_center = self._pan_ray.origin[:3] + np.multiply(
+                dr, self._pan_ray.direction
+            )
+            new_center = event.world_ray.origin[:3] + np.multiply(
+                dr, event.world_ray.direction
+            )
+            diff = np.subtract(old_center, new_center)
+            camera.transform = camera.transform.translated(diff)
+            # Update the center
+            new_center_array = center_array + diff
+            new_center_tuple = (
+                float(new_center_array[0]),
+                float(new_center_array[1]),
+                float(new_center_array[2]),
+            )
+            self.center = new_center_tuple
+            object.__setattr__(self, "_center_array", new_center_array)
+            handled = True
+
+        elif isinstance(event, WheelEvent):
+            _dx, dy = event.angle_delta
+            if dy:
+                dr = camera.transform.map((0, 0, 0))[:3] - center_array
+                zoom = self._zoom_factor(dy)
+                camera.transform = camera.transform.translated(dr * (zoom - 1))
+            handled = True
+
+        if isinstance(event, MouseEvent):
+            self._last_canvas_pos = event.canvas_pos
+        return handled
+
+    def _zoom_factor(self, delta: float) -> float:
+        # Magnifier stolen from pygfx
+        return 2 ** (-delta * 0.001)

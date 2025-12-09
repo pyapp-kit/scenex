@@ -48,7 +48,7 @@ Main Model Categories
 **Interaction Models**
     - PanZoom: Pan and zoom camera controller
     - Orbit: Orbit camera controller
-    - LetterboxResizeStrategy: Maintain aspect ratio on resize
+    - Letterbox: Maintain aspect ratio on resize
 
 Examples
 --------
@@ -87,16 +87,9 @@ from cmap import Color, Colormap  # re-export
 from ._base import EventedBase, objects
 from ._canvas import Canvas
 from ._color import ColorModel
-from ._controller import (
-    InteractionStrategy,
-    LetterboxResizeStrategy,
-    Orbit,
-    PanZoom,
-    ResizeStrategy,
-)
 from ._grid import Grid
 from ._layout import Layout
-from ._nodes.camera import Camera, CameraType
+from ._nodes.camera import Camera, CameraType, InteractionStrategy, Orbit, PanZoom
 from ._nodes.image import Image, InterpolationMode
 from ._nodes.line import Line
 from ._nodes.mesh import Mesh
@@ -106,7 +99,7 @@ from ._nodes.scene import Scene
 from ._nodes.text import Text
 from ._nodes.volume import RenderMode, Volume
 from ._transform import Transform
-from ._view import View
+from ._view import Letterbox, ResizeStrategy, View
 
 __all__ = [
     "AnyNode",
@@ -123,7 +116,7 @@ __all__ = [
     "InteractionStrategy",
     "InterpolationMode",
     "Layout",
-    "LetterboxResizeStrategy",
+    "Letterbox",
     "Line",
     "Mesh",
     "Node",
