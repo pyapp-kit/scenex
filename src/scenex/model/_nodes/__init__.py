@@ -1,6 +1,66 @@
-"""Nodes are world objects that can be placed in a scene.
+"""Scene graph node classes for visual elements and cameras.
 
-`Scene` is a special node that represents the root of the scene graph.
+This module contains all the node types that can be placed in a scene graph.
+All nodes inherit from the base `Node` class, which provides common functionality
+including transformations, visibility, opacity, parent-child relationships, and
+event handling. Nodes form hierarchical trees where properties like transforms
+propagate from parent to child.
+
+Node Types
+----------
+**Visual Nodes** (renderable objects):
+    - Image: 2D textured rectangles with colormapping
+    - Points: Point markers with customizable symbols
+    - Line: Connected polylines
+    - Mesh: Triangle mesh surfaces
+    - Volume: 3D volumetric data
+    - Text: Screen-space text labels
+
+**Special Nodes**:
+    - Scene: Root container node for the scene graph
+    - Camera: Defines viewing perspective and projection (not rendered)
+
+Node Hierarchy
+--------------
+Nodes organize into parent-child hierarchies::
+
+    Scene (root)
+    ├── Image (with transform)
+    ├── Node (container)
+    │   ├── Points (child 1)
+    │   └── Line (child 2)
+    └── Camera
+
+Node properties are composed during rendering: for example, a child's effective
+transform is the composition of its own transform with all ancestor transforms.
+
+Examples
+--------
+Create a simple image node::
+
+    import numpy as np
+    from scenex.model._nodes import Image
+
+    img = Image(data=np.random.rand(100, 100))
+
+Create a hierarchy with transforms::
+
+    from scenex.model._nodes import Scene, Points
+    from scenex.model import Transform
+
+    # Parent node with transform
+    group = Node(transform=Transform().translated((10, 0, 0)))
+    group.add_child(Points(coords=points1))
+    group.add_child(Points(coords=points2))
+
+    # Add to scene
+    scene = Scene()
+    scene.add_child(group)
+
+See Also
+--------
+scenex.model.Node : Base class for all nodes
+scenex.model.Transform : Transformation matrices
 """
 
 from .node import Node  # noqa: I001  must be imported first to avoid circular imports

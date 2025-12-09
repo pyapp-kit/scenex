@@ -90,38 +90,84 @@ class BlendMode(Enum):
 
 
 class Node(EventedBase):
-    """Base class for all nodes.  Also a [`Container[Node]`][collections.abc.Container].
+    """Base class for all nodes in the scene graph.
 
-    Do not instantiate this class directly. Use a subclass.  GenericNode may
-    be used in place of Node.
+    Node is the fundamental building block of scenex's scene graph architecture. Nodes
+    form a hierarchical tree structure where each node can have a parent and children,
+    creating a parent-child relationship that propagates transformations, visibility,
+    and other properties through the graph.
+
+    Nodes are abstract and should not be instantiated directly. Use concrete subclasses
+    like Image, Points, Line, Mesh, Scene, or Camera instead.
+
+    The scene graph hierarchy allows:
+    - Hierarchical transformations: A node's transform is relative to its parent
+    - Property inheritance: Visibility and opacity affect all descendants
+    - Spatial relationships: Nodes can find paths to other nodes in the graph
+    - Event handling: Interactive nodes can respond to user input
+
+    Attributes
+    ----------
+    parent : Node | None
+        The parent node in the scene graph hierarchy. None for root nodes.
+    name : str | None
+        Optional name for the node, useful for debugging and identification.
+    visible : bool
+        Whether this node and its children should be rendered.
+    interactive : bool
+        Whether this node can receive and respond to mouse and touch events.
+    opacity : float
+        Opacity of the node, from 0.0 (fully transparent) to 1.0 (fully opaque).
+    order : int
+        Drawing order within siblings. Higher values are drawn later (on top).
+        Children are always drawn after their parents.
+    transform : Transform
+        Transformation mapping the node's local coordinate frame to its parent's frame.
+        Applied hierarchically through the scene graph.
+    blending : BlendMode
+        How this node's colors blend with nodes behind it (opaque, alpha, or additive).
+
+    Notes
+    -----
+    Do not instantiate Node directly. Use concrete subclasses instead.
     """
 
-    parent: Node | None = Field(default=None, repr=False, exclude=True)
+    parent: Node | None = Field(
+        default=None,
+        repr=False,
+        exclude=True,
+        description="The parent of this node in the scene graph hierarchy",
+    )
     # see computed field below
     _children: list[AnyNode] = PrivateAttr(default_factory=list)
 
-    name: str | None = Field(default=None, description="Name of the node.")
-    visible: bool = Field(default=True, description="Whether this node is visible.")
+    name: str | None = Field(default=None, description="Name identifying the node")
+    visible: bool = Field(
+        default=True, description="Whether this node and its children are visible"
+    )
     interactive: bool = Field(
         default=False,
-        description="Whether this node accepts mouse and touch events",
+        description="Whether this node can receive mouse and touch events",
         repr=False,
     )
-    opacity: float = Field(default=1.0, ge=0, le=1, description="Opacity of this node.")
+    opacity: float = Field(
+        default=1.0,
+        ge=0,
+        le=1,
+        description="Opacity from 0.0 (transparent) to 1.0 (opaque)",
+    )
     order: int = Field(
         default=0,
         ge=0,
-        description="A value used to determine the order in which nodes are drawn. "
-        "Greater values are drawn later. Children are always drawn after their parent",
+        description="Drawing order within siblings; higher values drawn later (on top)",
     )
     transform: Transform = Field(
         default_factory=Transform,
-        description="Transform that maps the local coordinate frame to the coordinate "
-        "frame of the parent.",
+        description="Transformation from local coordinates to parent coordinates",
     )
     blending: BlendMode = Field(
         default=BlendMode.OPAQUE,
-        description="Describes how this node interacts with nodes behind it.",
+        description="How this node's colors blend with nodes behind it",
     )
 
     model_config = ConfigDict(extra="forbid")

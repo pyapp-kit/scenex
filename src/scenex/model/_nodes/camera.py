@@ -25,35 +25,67 @@ Position = Position2D | Position3D
 
 
 class Camera(Node):
-    """A camera that defines the view and perspective of a scene.
+    """A camera that defines the viewing perspective and projection for a scene.
 
-    The camera lives in, and is a child of, a scene graph.  It defines the view
-    transformation for the scene, mapping it onto a 2D surface.
+    The Camera is a node in the scene graph that determines how 3D world space is
+    projected onto a 2D canvas. It combines a view transformation (positioning the
+    camera in the scene) with a projection transformation (defining the viewing volume
+    and perspective).
 
-    Cameras have two different Transforms. Like all Nodes, it has a transform
-    `transform`, describing how local 3D space is mapped to world 3D space. Its other
-    transform, `projection`, describes how 2D normalized device coordinates
-    {(x, y) | x in [-1, 1], y in [-1, 1]} map to a ray in local 3D space. The inner
-    product of these matrices can convert a 2D canvas position to a 3D ray eminating
-    from the camera node into the world.
+    Cameras use two transforms:
+    - `transform` (inherited from Node): Maps local 3D space to world 3D space,
+      positioning and orienting the camera in the scene.
+    - `projection`: Maps normalized device coordinates [-1, 1] x [-1, 1] to rays in
+      local 3D space, defining the viewing volume and projection type.
 
-    Following OpenGL convention, a scenex camera uses a right-handed coordinate system,
-    where the positive z-axis points out of the screen, the positive x-axis points to
-    the right, and the positive y-axis points up.
+    The camera uses a right-handed coordinate system following OpenGL conventions:
+    the positive x-axis points right, the positive y-axis points up, and the positive
+    z-axis points out of the screen toward the viewer.
+
+    Attributes
+    ----------
+    controller : InteractionStrategy | None
+        Strategy for handling user interactions (e.g., PanZoom, Orbit). If None, no
+        interaction strategy is used.
+    interactive : bool
+        Whether the camera responds to user input events (mouse, keyboard).
+    projection : Transform
+        The projection transformation mapping 2D normalized device coordinates to 3D
+        rays. Default is an orthographic projection of a 2x2x2 cube centered at origin.
+
+    Examples
+    --------
+    Create a camera with pan-zoom interaction:
+        >>> camera = Camera(controller=PanZoom(), interactive=True)
+
+    Create a camera with orbit interaction:
+        >>> camera = Camera(controller=Orbit(center=(0, 0, 0)), interactive=True)
+
+    Position a camera and point it at a target:
+        >>> camera = Camera()
+        >>> camera.transform = Transform().translated((10, 0, 0))
+        >>> camera.look_at((0, 0, 0), up=(0, 0, 1))
+
+    Create a perspective camera:
+        >>> from scenex.utils.projections import perspective
+        >>> camera = Camera(
+        ...     projection=perspective(fov=60, aspect=1.5, near=0.1, far=100)
+        ... )
     """
 
     node_type: Literal["camera"] = "camera"
 
-    controller: InteractionStrategy | None = Field(default=None)
+    controller: InteractionStrategy | None = Field(
+        default=None,
+        description="Strategy for handling user interactions with the camera",
+    )
     interactive: bool = Field(
         default=True,
-        description="Whether the camera responds to user interaction, "
-        "such as mouse and keyboard events.",
+        description="Whether the camera responds to user interaction events",
     )
     projection: Transform = Field(
         default_factory=lambda: projections.orthographic(2, 2, 2),
-        description="Describes how 3D points are mapped to a 2D canvas, "
-        "default is an orthographic projection of a 2x2x2 cube, centered at (0, 0, 0)",
+        description="Projection transformation mapping NDC to 3D rays in local space",
     )
 
     @computed_field  # type: ignore[prop-decorator]

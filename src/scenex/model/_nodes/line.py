@@ -16,22 +16,71 @@ if TYPE_CHECKING:
 
 
 class Line(Node):
-    """A line or polyline defined by a sequence of vertices.
+    """A polyline defined by connected vertices.
 
-    Lines are drawn by connecting consecutive vertices in the order they appear.
+    Line renders a sequence of connected line segments by drawing from each vertex to
+    the next. The line can be colored uniformly or with per-vertex colors that smoothly
+    interpolate along the path. Lines support width control and anti-aliasing for
+    smooth rendering.
+
+    Vertices can be 2D or 3D coordinates. For 2D vertices, the z-coordinate is assumed
+    to be 0, placing the line in the xy-plane.
+
+    Attributes
+    ----------
+    vertices : array-like
+        Array of vertex positions defining the line path. Shape should be (N, 2) for
+        2D lines or (N, 3) for 3D lines, where N is the number of vertices.
+    color : ColorModel
+        Color specification for the line. Can be:
+        - Uniform: Single color for the entire line
+        - Vertex: One color per vertex, interpolated along segments
+        Default is uniform white.
+    width : float
+        Width of the line in pixels. Must be non-negative.
+    antialias : float
+        Anti-aliasing amount in pixels for smoother line rendering.
+
+    Examples
+    --------
+    Create a simple line connecting several points:
+        >>> vertices = np.array([[0, 0], [10, 5], [20, 0]])
+        >>> line = Line(
+        ...     vertices=vertices, color=ColorModel(type="uniform", color=Color("red"))
+        ... )
+
+    Create a line with per-vertex colors:
+        >>> vertices = np.array([[0, 0], [10, 10], [20, 0]])
+        >>> colors = [Color("red"), Color("green"), Color("blue")]
+        >>> line = Line(
+        ...     vertices=vertices,
+        ...     color=ColorModel(type="vertex", color=colors),
+        ...     width=2.0,
+        ... )
+
+    Create a 3D line:
+        >>> vertices = np.array([[0, 0, 0], [10, 5, 3], [20, 0, 6]])
+        >>> line = Line(vertices=vertices, width=3.0)
     """
 
     node_type: Literal["line"] = "line"
 
     # numpy array of 2D/3D vertices, shape (N, 2) or (N, 3)
-    vertices: Any = Field(default=None, repr=False, exclude=True)
+    vertices: Any = Field(
+        default=None,
+        repr=False,
+        exclude=True,
+        description="Array of vertex positions with shape (N, 2) or (N, 3)",
+    )
 
     color: ColorModel = Field(
         default=ColorModel(type="uniform", color=Color("white")),
-        description="The color of the line.",
+        description="Color specification; uniform or per-vertex colors",
     )
-    width: float = Field(default=1.0, ge=0.0, description="The width of the line.")
-    antialias: float = Field(default=1.0, description="Anti-aliasing factor, in px.")
+    width: float = Field(default=1.0, ge=0.0, description="Width of the line in pixels")
+    antialias: float = Field(
+        default=1.0, description="Anti-aliasing amount in pixels for smoother rendering"
+    )
 
     @computed_field  # type: ignore[prop-decorator]
     @property  # TODO: Cache?

@@ -14,11 +14,48 @@ RenderMode = Literal["iso", "mip"]
 
 
 class Volume(Image):
-    """A dense 3-dimensional array of intensity values."""
+    """A 3D volumetric dataset rendered with volume rendering techniques.
+
+    Volume extends Image to support 3D volumetric data. Unlike images which are 2D
+    arrays, volumes are 3D arrays of intensity values that are rendered using volume
+    rendering techniques like maximum intensity projection (MIP) or isosurface
+    rendering.
+
+    The volume uses ZYX dimension ordering, meaning data.shape = (depth, height, width).
+    Like Image, the volume supports colormapping, intensity normalization, and gamma
+    correction. The rendering mode determines how the 3D data is projected onto the 2D
+    viewing plane.
+
+    Attributes
+    ----------
+    render_mode : Literal["iso", "mip"]
+        Volume rendering method:
+        - "mip": Maximum Intensity Projection - shows the maximum value along each ray
+        - "iso": Isosurface rendering - renders a surface at a specific intensity value
+
+    Examples
+    --------
+    Create a volume with MIP rendering:
+        >>> data = np.random.rand(50, 100, 100)  # ZYX dimensions
+        >>> volume = Volume(data=data, render_mode="mip")
+
+    Create a volume with custom colormap and intensity range:
+        >>> volume = Volume(
+        ...     data=my_3d_array,
+        ...     cmap=Colormap("viridis"),
+        ...     clims=(0, 1),
+        ...     render_mode="iso",
+        ... )
+
+    Notes
+    -----
+    Volume inherits all Image attributes including data, cmap, clims, gamma, and
+    interpolation. The data should be a 3D array with shape (depth, height, width)
+    following ZYX convention.
+    """
 
     render_mode: RenderMode = Field(
-        default="mip",
-        description="The method to use in rendering the volume.",
+        default="mip", description="Volume rendering method"
     )
 
     @computed_field  # type: ignore[prop-decorator]

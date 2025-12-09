@@ -38,21 +38,60 @@ if TYPE_CHECKING:
 
 
 class Canvas(EventedBase):
-    """Canvas onto which views are rendered.
+    """A rendering surface that displays one or more views.
 
-    In desktop applications, this will be a window. In web applications, this will be a
-    div.  The canvas has one or more views, which are rendered onto it.  For example,
-    an orthoviewer might be a single canvas with three views, one for each axis.
+    The Canvas represents the top-level rendering context where views are displayed.
+    In desktop applications, a canvas corresponds to a window. In web applications,
+    it corresponds to a DOM element. Multiple views can be arranged on a single canvas
+    using a grid layout system.
+
+    Attributes
+    ----------
+    width : int
+        The width of the canvas in pixels.
+    height : int
+        The height of the canvas in pixels.
+    background_color : Color
+        The background color of the canvas.
+    visible : bool
+        Whether the canvas is visible. Set to True to show the canvas window.
+    title : str
+        The window title (desktop) or label for the canvas.
+    grid : Grid
+        The grid layout system managing view arrangement on the canvas.
+        Views are added to the grid which automatically handles their positioning.
+
+    Examples
+    --------
+    Create a simple canvas with default settings:
+        >>> canvas = Canvas()
+
+    Create a canvas with custom size and title:
+        >>> canvas = Canvas(width=800, height=600, title="My Visualization")
+
+    Create a canvas with multiple views arranged in a grid:
+        >>> canvas = Canvas(width=800, height=400)
+        >>> canvas.grid.add(view1, row=0, col=0)
+        >>> canvas.grid.add(view2, row=0, col=1)
     """
 
-    width: int = Field(default=500, description="The width of the canvas in pixels.")
-    height: int = Field(default=500, description="The height of the canvas in pixels.")
+    width: int = Field(default=500, description="The width of the canvas in pixels")
+    height: int = Field(default=500, description="The height of the canvas in pixels")
     background_color: Color = Field(
-        default=Color("black"), description="The background color."
+        default=Color("black"), description="The background color of the canvas"
     )
-    visible: bool = Field(default=False, description="Whether the canvas is visible.")
-    title: str = Field(default="", description="The title of the canvas.")
-    grid: Grid = Field(default_factory=Grid, frozen=True)
+    visible: bool = Field(
+        default=False, description="Whether the canvas window is visible"
+    )
+    title: str = Field(
+        default="",
+        description="The title displayed on the canvas window",
+    )
+    grid: Grid = Field(
+        default_factory=Grid,
+        frozen=True,
+        description="The grid layout system for arranging views on the canvas",
+    )
 
     # Private state for tracking mouse view transitions
     _last_mouse_view: View | None = PrivateAttr(default=None)

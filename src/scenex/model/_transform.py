@@ -87,11 +87,66 @@ class Matrix3D(np.ndarray):
 
 
 class Transform(RootModel):
-    """A 4x4 transformation matrix placing a 3D object in 3D space."""
+    """A 4x4 homogeneous transformation matrix for 3D affine transformations.
+
+    Transformations use homogeneous coordinates, where 3D points (x, y, z) are
+    represented as 4-vectors (x, y, z, 1). This enables affine transformations
+    (translation, rotation, scaling) to be represented as matrix multiplication.
+
+    The Transform class is immutable (frozen). Operations like translated(), rotated(),
+    and scaled() return new Transform instances rather than modifying the original.
+
+    Attributes
+    ----------
+    root : np.ndarray
+        The underlying 4x4 transformation matrix. Defaults to the identity matrix.
+
+    Examples
+    --------
+    Create an identity transform:
+        >>> transform = Transform()
+
+    Translate an object:
+        >>> transform = Transform().translated((10, 20, 30))
+
+    Rotate 45 degrees around the z-axis:
+        >>> transform = Transform().rotated(45, axis=(0, 0, 1))
+
+    Scale uniformly by 2x:
+        >>> transform = Transform().scaled((2, 2, 2))
+
+    Chain multiple transformations:
+        >>> transform = (
+        ...     Transform()
+        ...     .translated((10, 0, 0))
+        ...     .rotated(45, (0, 0, 1))
+        ...     .scaled((2, 2, 2))
+        ... )
+
+    Rotate around a specific point:
+        >>> transform = Transform().rotated(90, axis=(0, 0, 1), about=(10, 10, 0))
+
+    Transform coordinates:
+        >>> points = np.array([[0, 0, 0], [1, 1, 1]])
+        >>> transformed = transform.map(points)
+
+    Combine two transforms:
+        >>> combined = transform1 @ transform2
+
+    Invert a transform:
+        >>> inverse = transform.inv()
+
+    Notes
+    -----
+    - Transformations are applied in the order they are chained
+    - The transform is immutable; all operations return new instances
+    - Uses right-multiplication convention: point @ matrix
+    - Default rotation axis is (0, 0, 1) - the z-axis
+    """
 
     root: Annotated[np.ndarray, Matrix3D] = Field(
         default_factory=lambda: np.eye(4),
-        description="4x4 Transformation matrix.",
+        description="4x4 transformation matrix in homogeneous coordinates",
     )
 
     model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, validate_default=True)

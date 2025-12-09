@@ -77,12 +77,87 @@ def determine_backend(request: KnownBackend | str | None = None) -> KnownBackend
 
 
 def use(backend: KnownBackend | None = None) -> None:
-    """Set the graphics backend, or `None` to auto-determine."""
+    """Set the graphics backend for rendering scenex visualizations.
+
+    This function allows you to explicitly select which graphics library (backend)
+    scenex should use for rendering. It is the goal of scenex to support the full range
+    of model API for each backend.
+
+    If not called, scenex will automatically select an arbitrary available backend. You
+    can also set the backend via the SCENEX_CANVAS_BACKEND environment variable.
+
+    Parameters
+    ----------
+    backend : Literal["pygfx", "vispy"] | None
+        The graphics backend to use:
+        - "pygfx": Modern WebGPU-based renderer with advanced features
+        - "vispy": OpenGL-based renderer with broad compatibility
+        - None: Reset to auto-detection
+
+    Raises
+    ------
+    ValueError
+        If the specified backend is not one of the known backends.
+
+    Examples
+    --------
+    Use pygfx backend explicitly:
+        >>> import scenex as snx
+        >>> snx.use("pygfx")
+        >>> snx.show(my_view)
+
+    Use vispy backend:
+        >>> snx.use("vispy")
+        >>> snx.show(my_scene)
+
+    Reset to auto-detection:
+        >>> snx.use(None)
+
+    Notes
+    -----
+    The backend selection follows this priority order:
+    1. Backend specified by this function
+    2. SCENEX_CANVAS_BACKEND environment variable
+    3. Auto-detection (pygfx preferred, then vispy)
+
+    This function should be called before creating any visualizations.
+    """
     global _USE
     if backend is None or _ensure_valid_backend(backend):
         _USE = backend
 
 
 def run() -> None:
-    """Enter the native GUI event loop."""
+    """Start the GUI event loop to display interactive visualizations.
+
+    This function enters the native event loop of the graphics backend, allowing
+    interactive visualizations to respond to user input (mouse, keyboard) and remain
+    visible. The function blocks until the visualization window is closed.
+
+    Call this function after creating and showing your visualizations with `show()`.
+    It is only needed for desktop applications; in Jupyter notebooks, visualizations
+    are displayed automatically without calling `run()`.
+
+    Examples
+    --------
+    Basic usage with a scene:
+        >>> import scenex as snx
+        >>> scene = snx.Scene(children=[snx.Image(data=my_array)])
+        >>> snx.show(scene)
+        >>> snx.run()  # Blocks until window is closed
+
+    Create multiple views and run:
+        >>> canvas = snx.Canvas()
+        >>> canvas.grid.add(view1, row=0, col=0)
+        >>> canvas.grid.add(view2, row=0, col=1)
+        >>> canvas.visible = True
+        >>> snx.run()
+
+    Notes
+    -----
+    - This function blocks execution until all visualization windows are closed
+    - Not needed in Jupyter notebooks or other interactive environments
+    - Must be called after `show()` has been used to create visualizations
+    - The event loop handles user interactions like pan, zoom, and picking
+    """
     app().run()

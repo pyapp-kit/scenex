@@ -25,7 +25,7 @@ points = snx.Points(
 )
 
 view = snx.View(scene=snx.Scene(children=[points]))
-view.camera.controller = snx.PanZoomController()
+view.camera.controller = snx.PanZoom()
 canvas = snx.show(view)
 
 

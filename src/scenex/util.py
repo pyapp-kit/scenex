@@ -1,4 +1,13 @@
-"""Utility functions for `scenex`."""
+"""Utility functions for displaying and debugging scenex visualizations.
+
+This module provides helper functions for common visualization tasks including
+displaying models, formatting scene graph trees, and utility functions used
+internally by scenex.
+
+The `show()` function is the primary entry point for creating visualizations,
+handling the details of canvas creation, backend selection, and camera fitting
+automatically for a provided node, view or canvas.
+"""
 
 from __future__ import annotations
 
@@ -95,16 +104,79 @@ def _ensure_iterable(obj: object) -> Iterable[Any]:
 def show(
     obj: model.Node | model.View | model.Canvas, *, backend: str | None = None
 ) -> model.Canvas:
-    """Show a scene or view.
+    """Display a visualization by creating a canvas and making it visible.
+
+    This is the primary function for creating and displaying scenex visualizations.
+    It accepts nodes, views, or canvases, automatically wrapping them in the necessary
+    container objects and creating the appropriate backend adaptors.
+
+    The function automatically fits the camera view to show all visible content and
+    makes the canvas window visible. After calling `show()`, use `run()` to enter
+    the event loop (in desktop applications) or continue working (in notebooks).
 
     Parameters
     ----------
     obj : Node | View | Canvas
-        The scene or view to show. If a Node is provided, it will be wrapped in a Scene
-        and then in a View.
-    backend : str, optional
-        The backend to use for rendering. If not specified, the default backend will be
-        used. Defaults to None.
+        The object to visualize:
+        - Node (Image, Points, Line, etc.): Wrapped in Scene and View automatically
+        - Scene: Wrapped in a View with a default Camera
+        - View: Placed on a new Canvas
+        - Canvas: Displayed directly (already contains Views)
+    backend : str | None, optional
+        Graphics backend to use ("pygfx" or "vispy"). If None, uses the backend
+        specified by `use()`, `SCENEX_CANVAS_BACKEND` environment variable, or
+        auto-detection. Default is `None`.
+
+    Returns
+    -------
+    Canvas
+        The canvas containing the visualization. Can be used to further manipulate
+        the display or access the created views.
+
+    Examples
+    --------
+    Show a simple image:
+        >>> import numpy as np
+        >>> import scenex as snx
+        >>> data = np.random.rand(100, 100)
+        >>> img = snx.Image(data=data)
+        >>> snx.show(img)
+        >>> snx.run()
+
+    Show a scene with multiple objects:
+        >>> scene = snx.Scene(
+        ...     children=[
+        ...         snx.Image(data=image_data),
+        ...         snx.Points(coords=points, face_color=Color("red")),
+        ...     ]
+        ... )
+        >>> canvas = snx.show(scene)
+        >>> snx.run()
+
+    Show a view with interactive camera:
+        >>> view = snx.View(
+        ...     scene=my_scene,
+        ...     camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
+        ... )
+        >>> snx.show(view)
+        >>> snx.run()
+
+    Show with specific backend:
+        >>> snx.show(my_scene, backend="pygfx")
+        >>> snx.run()
+
+    Access the returned canvas:
+        >>> canvas = snx.show(my_image)
+        >>> canvas.background_color = Color("white")
+        >>> canvas.width = 800
+        >>> snx.run()
+
+    Notes
+    -----
+    - The camera is automatically zoomed to fit all visible content with 90% coverage
+    - Canvas size defaults to the view's layout dimensions
+    - Call `run()` after `show()` to enter the event loop in desktop applications
+    - In Jupyter notebooks, visualizations appear automatically without `run()`
     """
     from .adaptors import get_adaptor_registry
 

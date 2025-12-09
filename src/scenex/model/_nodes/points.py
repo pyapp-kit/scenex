@@ -34,31 +34,96 @@ ScalingMode = Literal[True, False, "fixed", "scene", "visual"]
 
 
 class Points(Node):
-    """Coordinates that can be represented in a scene."""
+    """A collection of point markers rendered at specified coordinates.
+
+    Points displays symbols (markers) at 2D or 3D coordinates in the scene. Each point
+    is rendered using a specified symbol shape (disc, square, star, etc.) with
+    customizable size, face color, and edge styling. Points support different scaling
+    modes to control whether they maintain constant screen size or scale with the scene.
+
+    Attributes
+    ----------
+    coords : array-like
+        Array of point coordinates. Shape should be (N, 2) for 2D points or (N, 3) for
+        3D points, where N is the number of points.
+    size : float
+        Diameter of each point marker in pixels. Must be in range [0.5, 500].
+    face_color : Color | None
+        Color of the point symbol's interior. Default is white.
+    edge_color : Color | None
+        Color of the point symbol's border/outline. Default is black.
+    edge_width : float | None
+        Width of the point symbol's border in pixels. Default is 1.0.
+    symbol : str
+        Symbol shape to use for rendering. Available symbols: "disc", "arrow", "ring",
+        "clobber", "square", "x", "diamond", "vbar", "hbar", "cross", "tailed_arrow",
+        "triangle_up", "triangle_down", "star", "cross_lines".
+    scaling : bool | Literal["fixed", "scene", "visual"]
+        How points scale when zooming. True/"scene" scales with scene, False/"fixed"
+        maintains constant screen size, "visual" scales with visual space.
+    antialias : float
+        Anti-aliasing amount in pixels for smoother symbol rendering.
+
+    Examples
+    --------
+    Create simple point markers:
+        >>> coords = np.random.rand(100, 2) * 100
+        >>> points = Points(coords=coords, size=5, face_color=Color("red"))
+
+    Create points with custom symbols and styling:
+        >>> points = Points(
+        ...     coords=my_coords,
+        ...     symbol="star",
+        ...     size=20,
+        ...     face_color=Color("yellow"),
+        ...     edge_color=Color("orange"),
+        ...     edge_width=2,
+        ... )
+
+    Create fixed-size points that don't scale with zoom:
+        >>> points = Points(
+        ...     coords=coords, size=10, scaling=False, face_color=Color("blue")
+        ... )
+
+    Create 3D points:
+        >>> coords_3d = np.random.rand(50, 3) * 100
+        >>> points = Points(coords=coords_3d, symbol="diamond", size=15)
+    """
 
     node_type: Literal["points"] = "points"
 
     # numpy array of 2D/3D point centers, shape (N, 2) or (N, 3)
-    coords: Any = Field(default=None, repr=False, exclude=True)
+    coords: Any = Field(
+        default=None,
+        repr=False,
+        exclude=True,
+        description="Array of point coordinates with shape (N, 2) or (N, 3)",
+    )
     size: Annotated[float, Interval(ge=0.5, le=500)] = Field(
-        default=10.0, description="The diameter of the points."
+        default=10.0, description="Diameter of each point marker in pixels"
     )
     face_color: Color | None = Field(
-        default=Color("white"), description="The color of the faces."
+        default=Color("white"), description="Color of the point symbol's interior"
     )
     edge_color: Color | None = Field(
-        default=Color("black"), description="The color of the edges."
+        default=Color("black"), description="Color of the point symbol's border"
     )
-    edge_width: float | None = Field(default=1.0, description="The width of the edges.")
+    edge_width: float | None = Field(
+        default=1.0, description="Width of the point symbol's border in pixels"
+    )
     symbol: SymbolName = Field(
-        default="disc", description="The symbol to use for the points."
+        default="disc",
+        description="Symbol shape for rendering (disc, square, star, etc.)",
     )
     # TODO: these are vispy-specific names.  Determine more general names
     scaling: ScalingMode = Field(
-        default=True, description="Determines how points scale when zooming."
+        default=True,
+        description="Scaling mode: True/scene scales, False/fixed is constant",
     )
 
-    antialias: float = Field(default=1, description="Anti-aliasing factor, in px.")
+    antialias: float = Field(
+        default=1, description="Anti-aliasing amount in pixels for smoother rendering"
+    )
 
     @computed_field  # type: ignore[prop-decorator]
     @property  # TODO: Cache?

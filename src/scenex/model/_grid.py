@@ -8,48 +8,97 @@ from ._view import View  # noqa: TC001
 
 
 class GridAssignment(Layout):
-    """Assignment of a view to a grid cell (lightweight Evented model).
+    """Assignment of a view to a specific position in a grid layout.
 
-    This holds the reference to the view and its grid placement.
+    A GridAssignment associates a View with a grid cell location, specifying its
+    row, column, and optional spanning across multiple cells. This is used internally
+    by the Grid to manage view placement.
+
+    Attributes
+    ----------
+    view : View
+        The view being assigned to this grid position.
+    row : int
+        The starting row index (0-based) where the view is placed.
+    col : int
+        The starting column index (0-based) where the view is placed.
+    rowspan : int
+        The number of rows the view spans (default 1).
+    colspan : int
+        The number of columns the view spans (default 1).
+
+    Examples
+    --------
+    Create a grid assignment at row 0, column 1:
+        >>> assignment = GridAssignment(view=my_view, row=0, col=1)
+
+    Create a grid assignment spanning 2 rows and 3 columns:
+        >>> assignment = GridAssignment(
+        ...     view=my_view, row=0, col=0, rowspan=2, colspan=3
+        ... )
     """
 
     view: View
-    row: int = Field(default=0)
-    col: int = Field(default=0)
-    rowspan: int = Field(default=1)
-    colspan: int = Field(default=1)
+    row: int = Field(default=0, description="The starting row index (0-based)")
+    col: int = Field(default=0, description="The starting column index (0-based)")
+    rowspan: int = Field(default=1, description="Number of rows the view spans")
+    colspan: int = Field(default=1, description="Number of columns the view spans")
 
     model_config = ConfigDict(extra="forbid")
 
 
 class Grid(Layout):
-    """Grid layout.
+    """A flexible grid layout system for arranging views.
 
-    The grid divides the layout's content rectangle into `rows` x `cols` cells.
-    Row and column sizes are specified as positive numbers which are interpreted
-    as weights. The final pixel size for each row/column is computed by
-    normalizing the weights to the available content size. If `row_sizes` or
-    `col_sizes` is empty, the rows/columns are treated as equally weighted.
+    The Grid divides a rectangular area into rows and columns, allowing views to be
+    positioned at specific grid locations. Row and column sizes are specified as
+    relative weights, which are normalized to fit the available space. Views can span
+    multiple rows and columns.
 
-    Views can be assigned to grid cells via `assignments`, using `GridAssignment`
-    objects. Spanning is supported via `rowspan` and `colspan`.
+    Attributes
+    ----------
+    grid : EventedList[GridAssignment]
+        The list of view assignments in this grid. Each assignment specifies a view
+        and its position (row, col, rowspan, colspan).
+    row_sizes : tuple[float, ...]
+        Relative weights determining the height of each row. Each row's height is
+        proportional to its weight divided by the sum of all row weights. If empty,
+        rows are equally sized.
+    col_sizes : tuple[float, ...]
+        Relative weights determining the width of each column. Each column's width is
+        proportional to its weight divided by the sum of all column weights. If empty,
+        columns are equally sized.
+
+    Examples
+    --------
+    Create a grid with two views side-by-side with equal widths:
+        >>> grid = Grid()
+        >>> grid.add(view1, row=0, col=0)
+        >>> grid.add(view2, row=0, col=1)
+
+    Create a grid with custom column sizes (2:1 ratio):
+        >>> grid = Grid(col_sizes=(2.0, 1.0))
+        >>> grid.add(view1, row=0, col=0)
+        >>> grid.add(view2, row=0, col=1)
+
+    Create a view spanning multiple cells:
+        >>> grid = Grid()
+        >>> grid.add(main_view, row=0, col=0, rowspan=2, colspan=2)
+        >>> grid.add(side_view, row=0, col=2)
     """
 
-    grid: EventedList[GridAssignment] = Field(default_factory=EventedList)
+    grid: EventedList[GridAssignment] = Field(
+        default_factory=EventedList,
+        description="List of view assignments specifying view positions in the grid",
+    )
 
     row_sizes: tuple[float, ...] = Field(
         default_factory=tuple,
-        description="""
-            Weights forming the height of each row in the grid.
-            Each row i will have height=(row_sizes[i] / sum(row_sizes) * total_height)
-        """,
+        description="Relative weights for row heights (proportional to weight sum)",
     )
     col_sizes: tuple[float, ...] = Field(
         default_factory=tuple,
-        description="""
-            Weights forming the width of each column in the grid.
-            Each column i will have width=(col_sizes[i] / sum(col_sizes) * total_width)
-        """,
+        description="Relative weights for column widths (proportional to weight sum)",
     )
 
     def add(

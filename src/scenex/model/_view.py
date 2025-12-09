@@ -27,24 +27,66 @@ logger = logging.getLogger(__name__)
 
 
 class View(EventedBase):
-    """An association of a scene and a camera.
+    """A rectangular viewport that displays a scene through a camera.
 
-    A view represents a rectangular area on a canvas that displays a single scene with a
-    single camera.
+    A View represents a rectangular area on a canvas that renders a scene graph through
+    a specific camera perspective. Each view associates exactly one scene with one
+    camera, defining what is displayed and how it is viewed. Multiple views can exist
+    on a single canvas, each potentially showing different scenes or the same scene from
+    different camera angles.
 
-    A canvas can have one or more views. Each view has a single scene (i.e. a
-    scene graph of nodes) and a single camera. The camera defines the view
-    transformation.  This class just exists to associate a single scene and
-    camera.
+    Attributes
+    ----------
+    scene : Scene
+        The scene graph containing all visual elements to be rendered in this view.
+    camera : Camera
+        The camera defining the viewing perspective and projection for this view.
+    resize : ResizeStrategy | None
+        Strategy for adjusting the camera projection when the view is resized. If None,
+        the camera projection remains unchanged on view resize.
+    layout : Layout
+        The layout defining the view's position, size, and visual styling on the canvas.
+    visible : bool
+        Whether the view is visible and should be rendered.
+
+    Examples
+    --------
+    Create a view with a scene containing an image:
+        >>> scene = Scene(children=[Image(data=my_array)])
+        >>> view = View(scene=scene, camera=Camera())
+
+    Create a view with interactive camera and letterbox resizing:
+        >>> view = View(
+        ...     scene=my_scene,
+        ...     camera=Camera(controller=PanZoom(), interactive=True),
+        ...     resize=LetterboxResizeStrategy(),
+        ... )
+
+    Add a view to a canvas:
+        >>> canvas = Canvas()
+        >>> canvas.grid.add(view, row=0, col=0)
     """
 
-    scene: Scene = Field(default_factory=Scene)
-    camera: Camera = Field(default_factory=Camera)
-    resize: ResizeStrategy | None = Field(
-        default=None, description="Describes how resizing the view affects the camera."
+    scene: Scene = Field(
+        default_factory=Scene,
+        description="The scene graph containing all visual elements to render",
     )
-    layout: Layout = Field(default_factory=Layout, frozen=True)
-    visible: bool = Field(default=True, description="Whether the view is visible.")
+    camera: Camera = Field(
+        default_factory=Camera,
+        description="The camera defining the viewing perspective and projection",
+    )
+    resize: ResizeStrategy | None = Field(
+        default=None,
+        description="Strategy for adjusting camera projection when the view is resized",
+    )
+    layout: Layout = Field(
+        default_factory=Layout,
+        frozen=True,
+        description="The layout defining position, size, and visual styling",
+    )
+    visible: bool = Field(
+        default=True, description="Whether the view is visible and should be rendered"
+    )
 
     _canvas: Canvas | None = PrivateAttr(None)
 

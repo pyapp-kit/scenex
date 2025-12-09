@@ -35,7 +35,7 @@ line = snx.Line(vertices=original_vertices, color=line_color_model)
 
 view = snx.View(
     scene=snx.Scene(children=[line]),
-    camera=snx.Camera(controller=snx.PanZoomController(), interactive=True),
+    camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
 )
 
 

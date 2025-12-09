@@ -16,28 +16,80 @@ InterpolationMode = Literal["nearest", "linear", "bicubic"]
 
 
 class Image(Node):
-    """A dense array of intensity values."""
+    """A 2D image rendered as a textured rectangle.
+
+    Image displays a 2D array of intensity values, mapping them to colors using a
+    colormap. The image is rendered as a rectangle in 3D space, with pixels centered
+    at integer coordinates starting from (0, 0). The image supports various rendering
+    options including colormapping, intensity normalization, gamma correction, and
+    interpolation.
+
+    The image's geometry spans from (-0.5, -0.5) to (width-0.5, height-0.5), meaning
+    that pixel centers are at integer coordinates. This convention aligns with standard
+    image processing practices.
+
+    Attributes
+    ----------
+    data : array-like
+        The 2D array of intensity values to display. Can be any array-like object with
+        a shape attribute (NumPy arrays, Dask arrays, etc.).
+    cmap : Colormap
+        The colormap used to convert intensity values to colors. Default is grayscale.
+    clims : tuple[float, float] | None
+        The (min, max) intensity values for normalization. Values outside this range
+        are clipped. If None, uses the data's min and max values.
+    gamma : float
+        Gamma correction factor applied after normalization. Must be in range (0, 2].
+        Default is 1.0 (no correction).
+    interpolation : Literal["nearest", "linear", "bicubic"]
+        Interpolation method for rendering between pixels. "nearest" shows sharp pixels,
+        "linear" smooths between neighbors, "bicubic" provides smoother results.
+
+    Examples
+    --------
+    Create a simple grayscale image:
+        >>> data = np.random.rand(100, 100)
+        >>> img = Image(data=data)
+
+    Create an image with custom colormap and intensity range:
+        >>> img = Image(data=my_array, cmap=Colormap("viridis"), clims=(0, 255))
+
+    Create a transformed and semi-transparent image:
+        >>> img = Image(
+        ...     data=my_array,
+        ...     transform=Transform().translated((10, 20)).scaled((2, 2)),
+        ...     opacity=0.7,
+        ... )
+
+    Apply gamma correction to brighten dark images:
+        >>> img = Image(data=dark_image, gamma=0.5)
+    """
 
     node_type: Literal["image"] = Field(default="image", repr=False)
 
     # NB: we may want this to be a pure `set_data()` method, rather than a field
     # on the model that stores state.
     data: Any = Field(
-        default=None, repr=False, exclude=True, description="The current image data."
+        default=None,
+        repr=False,
+        exclude=True,
+        description="2D array of intensity values",
     )
     cmap: Colormap = Field(
         default_factory=lambda: Colormap("gray"),
-        description="The colormap to apply when rendering the image.",
+        description="Colormap for converting intensity values to colors",
     )
     clims: tuple[float, float] | None = Field(
         default=None,
-        description="The min and max values to use when normalizing the image.",
+        description="Min/max intensity values for normalization; None uses data range",
     )
     gamma: Annotated[float, Interval(gt=0, le=2)] = Field(
-        default=1.0, description="Gamma correction applied after normalization."
+        default=1.0,
+        description="Gamma correction factor in range (0, 2]",
     )
     interpolation: InterpolationMode = Field(
-        default="nearest", description="Interpolation mode."
+        default="nearest",
+        description="Interpolation method: 'nearest', 'linear', or 'bicubic'",
     )
 
     @computed_field  # type: ignore[prop-decorator]

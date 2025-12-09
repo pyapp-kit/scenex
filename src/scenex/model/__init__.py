@@ -1,13 +1,85 @@
-"""Model objects for the scene graph.
+"""Declarative model classes for building scene graphs.
 
-The entire scene graph is built from these objects.  The scene graph is a
-tree of nodes, where each node is a model object.  The root of the tree is
-a `Scene` object, which contains all the other nodes.  Each node can have
-children, which are also nodes.
+This module provides all the core model objects for constructing interactive 3D
+visualizations. The models form a scene graph - a hierarchical tree structure where
+each node can have children, with transformations, visibility, and other properties
+propagating down the tree.
 
-To "view" a model means to create a backend adaptor for each node in the
-scene graph.  The adaptor is responsible for rendering the node and
-interacting with the backend.  Adaptors live in [`scenex.adaptors`][scenex].
+Scene Graph Structure
+---------------------
+The scene graph follows this hierarchy::
+
+    Canvas (rendering surface)
+    └── Grid (layout manager)
+        └── View (viewport)
+            ├── Scene (root node)
+            │   └── Node (visual elements)
+            │       ├── Image, Points, Line, Mesh, Volume, Text
+            │       └── Child nodes with transforms
+            └── Camera (viewing perspective)
+
+Parent node properties (like transforms, visibility, and opacity) are composed with
+child properties during rendering rather than mutating the children themselves. This
+means the scene graph structure stays immutable—child property values never change,
+but their effective rendered values are computed by composing ancestor properties.
+
+Main Model Categories
+---------------------
+**Container Models**
+    - Canvas: Top-level rendering surface (window or canvas element)
+    - View: Rectangular viewport displaying a scene through a camera
+    - Scene: Root container for visual elements
+    - Grid: Layout system for arranging multiple views on a single canvas
+
+**Visual Nodes**
+    - Image: 2D images with colormapping and intensity normalization
+    - Points: Point markers with customizable symbols
+    - Line: Connected polylines with per-vertex coloring
+    - Mesh: Triangle mesh surfaces
+    - Volume: 3D volumetric rendering
+    - Text: Screen-space text labels
+
+**Supporting Models**
+    - Camera: Viewing perspective and projection
+    - Transform: 4x4 affine transformations
+    - Layout: Position, size, and styling for rectangular areas
+    - ColorModel: Color specification (uniform, per-face, per-vertex)
+
+**Interaction Models**
+    - PanZoom: Pan and zoom camera controller
+    - Orbit: Orbit camera controller
+    - LetterboxResizeStrategy: Maintain aspect ratio on resize
+
+Examples
+--------
+Build a simple scene::
+
+    from scenex.model import Scene, Image, Points
+    import numpy as np
+
+    scene = Scene(
+        children=[
+            Image(data=np.random.rand(100, 100)),
+            Points(coords=np.random.rand(50, 2) * 100),
+        ]
+    )
+
+Create a view with interactive camera::
+
+    from scenex.model import View, Camera, PanZoom
+
+    view = View(scene=scene, camera=Camera(controller=PanZoom(), interactive=True))
+
+Notes
+-----
+To display models, use `scenex.show()` which creates backend adaptors. The adaptors
+handle the actual rendering by translating these declarative models into graphics
+library calls (pygfx, vispy, etc.), and listen for model changes after initial setup.
+
+See Also
+--------
+scenex.adaptors : Backend implementations for rendering
+scenex.show : Function to display models
 """
 
 from cmap import Color, Colormap  # re-export

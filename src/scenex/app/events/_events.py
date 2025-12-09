@@ -69,17 +69,6 @@ class ResizeEvent(Event):
 
 
 @dataclass
-class ViewResizeEvent(Event):
-    """A view resize event.
-
-    Fired when a view's layout changes, allowing controllers to respond
-    to changes in the view's aspect ratio.
-    """
-
-    size: tuple[int, int]  # (width, height) in pixels
-
-
-@dataclass
 class MouseEvent(Event):
     """Base class for mouse interaction events."""
 
