@@ -111,20 +111,24 @@ class Canvas(CanvasAdaptor):
         self._views.append(view)
 
     def _snx_set_width(self, arg: int) -> None:
-        width, height = self._wgpu_canvas.get_logical_size()
+        width, _height = self._wgpu_canvas.get_logical_size()
         # FIXME: For some reason, on wx the size has already been updated, and
         # updating it again causes erratic resizing behavior
         if width != arg:
             with app().block_events(self._snx_get_native()):
-                self._wgpu_canvas.set_logical_size(arg, height)
+                self._wgpu_canvas.set_logical_size(
+                    self._canvas.width, self._canvas.height
+                )
 
     def _snx_set_height(self, arg: int) -> None:
-        width, height = self._wgpu_canvas.get_logical_size()
+        _width, height = self._wgpu_canvas.get_logical_size()
         # FIXME: For some reason, on wx the size has already been updated, and
         # updating it again causes erratic resizing behavior
         if height != arg:
             with app().block_events(self._snx_get_native()):
-                self._wgpu_canvas.set_logical_size(width, arg)
+                self._wgpu_canvas.set_logical_size(
+                    self._canvas.width, self._canvas.height
+                )
 
     def _snx_set_background_color(self, arg: Color | None) -> None:
         # not sure if pygfx has both a canavs and view background color...

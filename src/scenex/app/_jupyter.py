@@ -137,6 +137,9 @@ class JupyterEventFilter(EventFilter):
                             height=ev["height"],
                         )
                     )
+                    # Note: Jupyter_rfb does a lot of stuff under the hood on resize,
+                    # which we will still need to do.
+                    filter._old_event(ev)
 
             return _handle_event
 

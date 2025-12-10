@@ -243,6 +243,7 @@ def test_resize(evented_canvas: snx.Canvas) -> None:
             "event_type": "resize",
             "width": new_size[0],
             "height": new_size[1],
+            "pixel_ratio": 1.0,
         }
     )
     assert evented_canvas.width == new_size[0]

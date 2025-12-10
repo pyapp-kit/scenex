@@ -45,6 +45,7 @@ class Canvas(CanvasAdaptor):
 
         self._visual_to_node: dict[VisualNode, model.Node | None] = {}
         self._last_canvas_pos: tuple[float, float] | None = None
+        self._model = canvas
 
     def _snx_get_native(self) -> Any:
         return self._canvas.native
@@ -70,10 +71,10 @@ class Canvas(CanvasAdaptor):
         self._views.append(view)
 
     def _snx_set_width(self, arg: int) -> None:
-        self._canvas.size = (arg, self._canvas.size[1])
+        self._canvas.size = self._model.size
 
     def _snx_set_height(self, arg: int) -> None:
-        self._canvas.size = (self._canvas.size[0], arg)
+        self._canvas.size = self._model.size
 
     def _snx_set_background_color(self, arg: Color | None) -> None:
         if arg is None:
