@@ -57,7 +57,41 @@ GUI_PROVIDERS: dict[GuiFrontend, tuple[str, str]] = {
 
 
 class CursorType(Enum):
-    """Abstract stock cursors."""
+    """Enumeration of standard cursor types for canvas interaction.
+
+    CursorType provides platform-independent cursor shapes that can be set on
+    canvases to indicate different interaction modes or states. Each cursor type
+    is mapped to the appropriate platform-specific cursor by the GUI backend.
+
+    Attributes
+    ----------
+    DEFAULT : int
+        The standard arrow cursor, typically used for normal selection and interaction.
+    CROSS : int
+        A crosshair cursor, useful for precise positioning or drawing operations.
+    V_ARROW : int
+        A vertical resize arrow cursor, indicating vertical resizing capability.
+    H_ARROW : int
+        A horizontal resize arrow cursor, indicating horizontal resizing capability.
+    ALL_ARROW : int
+        A multi-directional arrow cursor, indicating omnidirectional movement.
+    BDIAG_ARROW : int
+        A diagonal resize arrow cursor (backward diagonal), for diagonal resizing.
+    FDIAG_ARROW : int
+        A diagonal resize arrow cursor (forward diagonal), for diagonal resizing.
+
+    Examples
+    --------
+    Set a crosshair cursor during drawing mode:
+        >>> app().set_cursor(canvas, CursorType.CROSS)
+
+    Restore default cursor after operation:
+        >>> app().set_cursor(canvas, CursorType.DEFAULT)
+
+    See Also
+    --------
+    App.set_cursor : Method to set cursor on a canvas
+    """
 
     DEFAULT = auto()
     CROSS = auto()
@@ -69,50 +103,199 @@ class CursorType(Enum):
 
 
 class App:
-    """
-    Base class for application wrappers.
+    """Base class for GUI application wrappers.
 
-    TODO: Where should this live? Probably doesn't belong in this repo...
+    App provides an abstract interface for integrating scenex with different GUI
+    frameworks (Qt, WxPython, Jupyter). Each GUI backend implements this interface
+    to provide framework-specific application lifecycle management, event handling,
+    and threading operations.
+
+    The App class is typically accessed via the `app()` function, which automatically
+    determines and initializes the appropriate backend based on the environment and
+    available GUI frameworks.
+
+    Notes
+    -----
+    This is an abstract base class. Concrete implementations are provided by
+    backend-specific subclasses (QtAppWrap, WxAppWrap, JupyterAppWrap).
+
+    See Also
+    --------
+    app : Function to get the active application instance
+    GuiFrontend : Enumeration of available GUI backends
+    determine_app : Function to determine which GUI backend to use
     """
 
     def create_app(self) -> Any:
-        """Create the application instance, if not already created."""
+        """Create the application instance, if not already created.
+
+        This method initializes the underlying GUI framework's application object
+        (e.g., QApplication for Qt). If an application instance already exists,
+        this method should return the existing instance.
+
+        Returns
+        -------
+        Any
+            The backend-specific application object.
+
+        Notes
+        -----
+        Must be implemented by subclasses.
+        """
         raise NotImplementedError("Must be implemented by subclasses.")
 
     def run(self) -> None:
-        """Run the application."""
+        """Start the application event loop.
+
+        This method enters the GUI framework's main event loop, which processes
+        user input, window events, and other GUI operations. The method blocks
+        until the application is closed.
+
+        Notes
+        -----
+        Must be implemented by subclasses.
+        """
         raise NotImplementedError("Must be implemented by subclasses.")
 
     def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
-        """Show or hide the canvas."""
+        """Show or hide a canvas window.
+
+        Parameters
+        ----------
+        canvas : CanvasAdaptor
+            The canvas adaptor wrapping the backend-specific canvas widget.
+        visible : bool
+            True to show the canvas window, False to hide it.
+
+        Notes
+        -----
+        Must be implemented by subclasses.
+        """
         raise NotImplementedError("Must be implemented by subclasses.")
 
     def install_event_filter(self, canvas: Any, model_canvas: Canvas) -> EventFilter:
+        """Install an event filter on a canvas to forward events to the model.
+
+        Implementations of this method will capture all events given to the native
+        widget, translated them into scenex events, and route them to `model_canvas`.
+
+        Parameters
+        ----------
+        canvas : Any
+            The backend-specific native canvas widget.
+        model_canvas : Canvas
+            The scenex Canvas model that should receive events.
+
+        Returns
+        -------
+        EventFilter
+            A handle that can be used to uninstall the event filter.
+
+        Notes
+        -----
+        Must be implemented by subclasses.
+        """
         raise NotImplementedError("Must be implemented by subclasses.")
 
     def process_events(self) -> None:
-        """Process events."""
+        """Yields the current thread to process all pending GUI events.
+
+        Notes
+        -----
+        Must be implemented by subclasses.
+        """
         raise NotImplementedError("Must be implemented by subclasses.")
 
     def call_in_main_thread(
         self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
     ) -> Future[T]:
-        """Call `func` in the main gui thread."""
+        """Schedule a function to be called in the main GUI thread.
+
+        Many GUI frameworks require that widget operations occur on the main
+        thread. This method safely schedules a function call on the main thread
+        and returns a Future that will contain the result.
+
+        Parameters
+        ----------
+        func : Callable[P, T]
+            The function to call.
+        *args : P.args
+            Positional arguments to pass to func.
+        **kwargs : P.kwargs
+            Keyword arguments to pass to func.
+
+        Returns
+        -------
+        Future[T]
+            A Future object that will contain the function's return value once
+            the call completes.
+
+        Notes
+        -----
+        The base implementation executes the function immediately and returns
+        a completed Future. Subclasses should override this to provide
+        thread-safe execution.
+        """
         future: Future[T] = Future()
         future.set_result(func(*args, **kwargs))
         return future
 
     def call_later(self, msec: int, func: Callable[[], None]) -> None:
-        """Call `func` after `msec` milliseconds."""
+        """Schedule a function to be called after a delay.
+
+        Parameters
+        ----------
+        msec : int
+            Delay in milliseconds before calling the function.
+        func : Callable[[], None]
+            The function to call. Must take no arguments.
+
+        Notes
+        -----
+        Must be implemented by subclasses.
+        """
         raise NotImplementedError("Must be implemented by subclasses.")
 
     def get_executor(self) -> Executor:
-        """Return an executor for running tasks in the background."""
+        """Return an executor for running tasks in background threads.
+
+        Returns
+        -------
+        Executor
+            A concurrent.futures.Executor instance (typically a ThreadPoolExecutor)
+            for running background tasks.
+
+        Notes
+        -----
+        The default implementation returns a shared ThreadPoolExecutor with 2
+        workers. Subclasses can override this to provide framework-specific
+        executors.
+        """
         return _thread_pool_executor()
 
     @contextmanager
     def block_events(self, window: Any) -> Iterator[None]:
-        """Context manager to block events for a window."""
+        """Context manager to temporarily block events for a window.
+
+        Parameters
+        ----------
+        window : Any
+            The backend-specific window object.
+
+        Yields
+        ------
+        None
+
+        Notes
+        -----
+        Must be implemented by subclasses.
+
+        Examples
+        --------
+        Block events during a long operation:
+            >>> with app().block_events(canvas_widget):
+            ...     perform_long_operation()
+        """
         raise NotImplementedError("Must be implemented by subclasses.")
 
     # ------------------------------ cursor API -------------------------------
@@ -162,7 +345,37 @@ def _load_app(module: str, cls_name: str) -> App:
 
 
 def ensure_main_thread(func: Callable[P, T]) -> Callable[P, Future[T]]:
-    """Decorator that ensures a function is called in the main thread."""
+    """Decorator that ensures a function is called in the main GUI thread.
+
+    This decorator wraps a function so that when called, it is automatically
+    scheduled to run on the main GUI thread rather than the caller's thread.
+    This is essential for GUI operations that must occur on the main thread.
+
+    Parameters
+    ----------
+    func : Callable[P, T]
+        The function to wrap. Can have any signature.
+
+    Returns
+    -------
+    Callable[P, Future[T]]
+        A wrapped version of func that returns a Future instead of the direct
+        result. The Future will contain the function's return value once the
+        call completes on the main thread.
+
+    Examples
+    --------
+    Ensure a GUI operation runs on the main thread:
+        >>> @ensure_main_thread
+        ... def update_widget(value: int) -> None:
+        ...     widget.set_value(value)
+        >>> future = update_widget(42)  # Returns immediately with Future
+        >>> result = future.result()  # Block until completion if needed
+
+    See Also
+    --------
+    App.call_in_main_thread : Underlying method for thread-safe calls
+    """
 
     @wraps(func)
     def _wrapper(*args: P.args, **kwargs: P.kwargs) -> Future[T]:
@@ -172,11 +385,45 @@ def ensure_main_thread(func: Callable[P, T]) -> Callable[P, Future[T]]:
 
 
 def determine_app() -> GuiFrontend:
-    """Returns the [`GuiFrontend`][scenex.app.GuiFrontend].
+    """Determine which GUI backend to use for the application.
 
-    This is determined first by the `NDV_GUI_FRONTEND` environment variable, after which
-    known GUI providers are tried in order until one is found that is either already
-    running, or available.
+    This function selects the appropriate GUI framework backend through a
+    three-tier strategy:
+
+    1. **Explicit request**: If the SCENEX_WIDGET_BACKEND environment variable
+       is set, that backend is used (e.g., "qt", "wx", "jupyter").
+    2. **Running application**: If a GUI application is already running in the
+       process (detected via framework imports), that backend is used.
+    3. **Available backend**: Try importing each backend in a predefined order until one
+       succeeds.
+
+    Returns
+    -------
+    GuiFrontend
+        The determined GUI backend to use.
+
+    Raises
+    ------
+    ValueError
+        If the SCENEX_WIDGET_BACKEND environment variable is set to an invalid
+        value.
+    RuntimeError
+        If no GUI backend can be found or loaded.
+
+    Examples
+    --------
+    Let the function auto-detect the backend:
+        >>> backend = determine_app()
+
+    Force a specific backend via environment variable:
+        >>> import os
+        >>> os.environ["SCENEX_WIDGET_BACKEND"] = "qt"
+        >>> backend = determine_app()  # Will use Qt
+
+    See Also
+    --------
+    app : Get the active App instance using the determined backend
+    GuiFrontend : Enumeration of available backends
     """
     running = list(_running_apps())
 
@@ -211,11 +458,39 @@ def determine_app() -> GuiFrontend:
 
 
 def app() -> App:
-    """Return the active [`GuiFrontend`][ndv.views.GuiFrontend].
+    """Get the active GUI application instance.
 
-    This is determined first by the `NDV_GUI_FRONTEND` environment variable, after which
-    known GUI providers are tried in order until one is found that is either already
-    running, or available.
+    Returns the singleton App instance for the current process, creating and
+    initializing it if necessary. The GUI backend is determined automatically
+    using `determine_app()`.
+
+    This function should be used whenever you need to interact with the GUI
+    application, such as running the event loop, showing windows, or scheduling
+    thread-safe operations.
+
+    Returns
+    -------
+    App
+        The active App instance wrapping the GUI backend.
+
+    Examples
+    --------
+    Get the app and run the event loop:
+        >>> app().run()
+
+    Show a canvas window:
+        >>> from scenex import Canvas
+        >>> canvas = Canvas()
+        >>> app().show(canvas._get_adaptors()[0], visible=True)
+
+    Process pending events without blocking:
+        >>> app().process_events()
+
+    See Also
+    --------
+    determine_app : Function that selects which GUI backend to use
+    GuiFrontend : Enumeration of available backends
+    App : Base class defining the application interface
     """
     global _APP
     if _APP is not None:
