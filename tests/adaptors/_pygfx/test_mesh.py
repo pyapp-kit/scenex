@@ -28,7 +28,7 @@ def mesh() -> snx.Mesh:
     return snx.Mesh(
         vertices=vertices,
         faces=faces,
-        color=cmap.Color("red"),
+        color=snx.ColorModel(type="uniform", color=cmap.Color("red")),
     )
 
 
@@ -40,7 +40,7 @@ def adaptor(mesh: snx.Mesh) -> adaptors.Mesh:
 
 
 def test_data(mesh: snx.Mesh, adaptor: adaptors.Mesh) -> None:
-    """Tests that changing the model changes the view (the PyGfx node)."""
+    """Tests that changing the model data changes the view (the PyGfx node)."""
     geom = adaptor._pygfx_node.geometry
     mat = adaptor._pygfx_node.material
     assert geom is not None
@@ -54,7 +54,29 @@ def test_data(mesh: snx.Mesh, adaptor: adaptors.Mesh) -> None:
     mesh.faces = np.asarray([[0, 2, 3], [3, 1, 0]])
     assert np.array_equal(mesh.faces, geom.indices.data)
 
+
+def test_color(mesh: snx.Mesh, adaptor: adaptors.Mesh) -> None:
+    """Tests that changing the model color changes the view (the PyGfx node)."""
+    geom = adaptor._pygfx_node.geometry
+    mat = adaptor._pygfx_node.material
+    assert geom is not None
+    assert mat is not None
     assert mesh.color is not None
-    assert np.array_equal(mesh.color.rgba, mat.color.rgba)  # pyright: ignore
-    mesh.color = cmap.Color("blue")
-    assert np.array_equal(mesh.color.rgba, mat.color.rgba)  # pyright: ignore
+    assert np.array_equal(mesh.color.color.rgba, mat.color.rgba)  # type: ignore
+    mesh.color = snx.ColorModel(type="uniform", color=cmap.Color("blue"))
+    assert np.array_equal(mesh.color.color.rgba, mat.color.rgba)  # type: ignore
+    assert mat.color_mode == "uniform"  # pyright: ignore
+
+    # Change to vertex colors
+    colors = [
+        cmap.Color("red"),
+        cmap.Color("green"),
+        cmap.Color("blue"),
+        cmap.Color("yellow"),
+    ]
+    mesh.color = snx.ColorModel(type="vertex", color=colors)
+    assert mat.color_mode == "vertex"  # pyright: ignore
+    assert geom.colors is not None
+    expected_colors = np.array([c.rgba for c in colors], dtype=np.float32)
+    np.testing.assert_allclose(geom.colors.data, expected_colors)
+    # TODO: Support face colors

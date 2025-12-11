@@ -23,7 +23,11 @@ def mesh() -> snx.Mesh:
             [0, 1, 2],
         ]
     )
-    return snx.Mesh(vertices=vertices, faces=faces, color=cmap.Color("red"))
+    return snx.Mesh(
+        vertices=vertices,
+        faces=faces,
+        color=snx.ColorModel(type="uniform", color=cmap.Color("red")),
+    )
 
 
 def test_bounding_box(mesh: snx.Mesh) -> None:

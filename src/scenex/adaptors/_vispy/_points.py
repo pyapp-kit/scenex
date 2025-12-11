@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal
 
+import cmap
 import numpy as np
 import vispy.color
 import vispy.scene
@@ -15,7 +16,6 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
     import numpy.typing as npt
-    from cmap import Color
 
     from scenex import model
 
@@ -51,10 +51,10 @@ class Points(Node, PointsAdaptor):
         # that big on screen.
         self._update_vispy_data()
 
-    def _snx_set_face_color(self, face_color: Color) -> None:
+    def _snx_set_face_color(self, face_color: model.ColorModel) -> None:
         self._update_vispy_data()
 
-    def _snx_set_edge_color(self, edge_color: Color) -> None:
+    def _snx_set_edge_color(self, edge_color: model.ColorModel) -> None:
         self._update_vispy_data()
 
     def _snx_set_edge_width(self, edge_width: float) -> None:
@@ -77,22 +77,30 @@ class Points(Node, PointsAdaptor):
         # All of the _snx setters that deal with the "set_data" method pass through
         # here. We must remember and pass through all of these parameters every time,
         # or the node will revert to the defaults.
-        if self._model.edge_color and self._model.edge_color.name:
-            edge_color = self._model.edge_color.name
+        if self._model.edge_color.type == "uniform" and isinstance(
+            self._model.edge_color.color, cmap.Color
+        ):
+            edge_color = self._model.edge_color.color.hex
+        elif self._model.edge_color.type == "vertex":
+            edge_color = [c.hex for c in self._model.edge_color.color]  # type: ignore
         else:
-            edge_color = "black"
+            raise NotImplementedError("Unsupported edge color model")
 
-        if self._model.face_color and self._model.face_color.name:
-            face_color = self._model.face_color.name
+        if self._model.face_color.type == "uniform" and isinstance(
+            self._model.face_color.color, cmap.Color
+        ):
+            face_color = self._model.face_color.color.hex
+        elif self._model.face_color.type == "vertex":
+            face_color = [c.hex for c in self._model.face_color.color]  # type: ignore
         else:
-            face_color = "white"
+            raise NotImplementedError("Unsupported face color model")
 
         self._vispy_node.set_data(
             pos=np.asarray(self._model.coords),
             size=self._model.size,
             symbol=self._model.symbol,
-            face_color=face_color,
-            edge_color=edge_color,
+            face_color=face_color,  # pyright: ignore
+            edge_color=edge_color,  # pyright: ignore
             edge_width=self._model.edge_width,
         )
         self._vispy_node.update()

@@ -5,7 +5,9 @@ from typing import TYPE_CHECKING, Annotated, Any, Literal
 import numpy as np
 from annotated_types import Interval
 from cmap import Color
-from pydantic import Field, computed_field
+from pydantic import Field, field_validator
+
+from scenex.model._color import ColorModel
 
 from .node import AABB, Node
 
@@ -102,13 +104,15 @@ class Points(Node):
     size: Annotated[float, Interval(ge=0.5, le=500)] = Field(
         default=10.0, description="Diameter of each point marker in pixels"
     )
-    face_color: Color | None = Field(
-        default=Color("white"), description="Color of the point symbol's interior"
+    face_color: ColorModel = Field(
+        default=ColorModel(type="uniform", color=Color("white")),
+        description="Color of the point symbol's interior",
     )
-    edge_color: Color | None = Field(
-        default=Color("black"), description="Color of the point symbol's border"
+    edge_color: ColorModel = Field(
+        default=ColorModel(type="uniform", color=Color("black")),
+        description="Color of the point symbol's border",
     )
-    edge_width: float | None = Field(
+    edge_width: float = Field(
         default=1.0, description="Width of the point symbol's border in pixels"
     )
     symbol: SymbolName = Field(
@@ -125,7 +129,13 @@ class Points(Node):
         default=1, description="Anti-aliasing amount in pixels for smoother rendering"
     )
 
-    @computed_field  # type: ignore[prop-decorator]
+    @field_validator("face_color", "edge_color", mode="after")
+    @classmethod
+    def validate_color(cls, color: ColorModel) -> ColorModel:
+        if color.type not in ("uniform", "vertex"):
+            raise ValueError("Points color type must be 'uniform' or 'vertex'")
+        return color
+
     @property  # TODO: Cache?
     def bounding_box(self) -> AABB:
         arr = np.asarray(self.coords)
@@ -167,7 +177,9 @@ class Points(Node):
         )
 
         # Determine effective radius in canvas space (size + edge_width)
-        canvas_radius = self.size / 2 + (self.edge_width if self.edge_width else 0)
+        # FIXME: If we the model offers an edge mode ala pygfx we will need to adjust
+        # this calculation accordingly.
+        canvas_radius = self.size / 2 + (self.edge_width / 2 if self.edge_width else 0)
 
         # Find points that the ray passes through (within radius)
         intersecting_indices = np.where(distances <= canvas_radius)[0]

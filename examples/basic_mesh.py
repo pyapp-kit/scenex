@@ -47,8 +47,22 @@ def create_grid_mesh(
 # Create the mesh
 original_vertices, original_faces = create_grid_mesh(size=15, spacing=0.15)
 
+# Create per-vertex colors (gradient based on position)
+per_vertex_model = snx.ColorModel(
+    type="vertex",
+    color=[
+        cmap.Color(f"hsl({int(v[0] * 50 + v[1] * 50) % 360}, 100%, 50%)")
+        for v in original_vertices
+    ],
+)
+
+# Create uniform colors
+uniform_model = snx.ColorModel(type="uniform", color=cmap.Color("purple"))
+
 mesh = snx.Mesh(
-    vertices=original_vertices, faces=original_faces, color=cmap.Color("cyan")
+    vertices=original_vertices,
+    faces=original_faces,
+    color=per_vertex_model,
 )
 
 view = snx.View(
@@ -59,6 +73,7 @@ view = snx.View(
 
 def event_filter(event: Event) -> bool:
     """Interactive mesh manipulation based on mouse events."""
+    global per_face_model
     if isinstance(event, MouseMoveEvent):
         if intersections := event.world_ray.intersections(view.scene):
             # Find mesh intersection
@@ -74,6 +89,12 @@ def event_filter(event: Event) -> bool:
             mesh.vertices = original_vertices.copy()
             mesh.faces = original_faces.copy()
             return True
+        elif event.buttons & MouseButton.RIGHT:
+            # Right click cycles the colormodel
+            if mesh.color.type == "uniform":
+                mesh.color = per_vertex_model
+            else:
+                mesh.color = uniform_model
 
     return False
 
@@ -82,12 +103,12 @@ def event_filter(event: Event) -> bool:
 view.set_event_filter(event_filter)
 
 # Show and position camera
-snx.use("vispy")
 snx.show(view)
 
 print("Interactive Mesh Demo:")
 print("- Move mouse over mesh to delete intersected faces")
 print("- Left click to reset all faces")
+print("- Right click to cycle color models")
 print("- Use mouse to pan/zoom the camera")
 
 snx.run()

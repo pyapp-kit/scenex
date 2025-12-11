@@ -75,7 +75,7 @@ class Camera(Node, CameraAdaptor):
         # Transforms
         self._update_vispy_node_tform()
 
-    def _snx_set_controller(self, arg: model.CameraController | None) -> None:
+    def _snx_set_controller(self, arg: model.InteractionStrategy | None) -> None:
         pass
 
     def _update_vispy_node_tform(self) -> None:
