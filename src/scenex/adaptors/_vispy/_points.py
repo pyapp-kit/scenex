@@ -87,7 +87,7 @@ class Points(Node, PointsAdaptor):
         face_color: str | list[str]
         if isinstance(self._model.face_color, UniformColor):
             face_color = self._model.face_color.color.hex
-        elif isinstance(self._model.edge_color, VertexColors):
+        elif isinstance(self._model.face_color, VertexColors):
             face_color = [c.hex for c in self._model.face_color.color]
         else:
             raise NotImplementedError("Unsupported face color model")

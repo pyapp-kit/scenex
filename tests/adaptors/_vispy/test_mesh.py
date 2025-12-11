@@ -73,9 +73,7 @@ def test_color(mesh: snx.Mesh, adaptor: adaptors.Mesh) -> None:
     assert np.array_equal(mesh.color.color.rgba, adaptor._vispy_node.color.rgba)
 
     # Change to vertex colors
-    mesh_data = adaptor._vispy_node.mesh_data
-    assert mesh_data is not None
-    stored_colors = mesh_data.get_vertex_colors()
+    stored_colors = adaptor._vispy_node.mesh_data.get_vertex_colors()  # pyright: ignore
     assert stored_colors is None
 
     colors = [
@@ -88,7 +86,7 @@ def test_color(mesh: snx.Mesh, adaptor: adaptors.Mesh) -> None:
     # VisPy stores vertex colors in mesh_data
     # Note: VisPy might return RGBA or just RGB depending on input, but usually RGBA
     # We check if the stored colors match our input
-    stored_colors = mesh_data.get_vertex_colors()
+    stored_colors = adaptor._vispy_node.mesh_data.get_vertex_colors()  # pyright: ignore
     assert stored_colors is not None
     expected_colors = np.array([c.rgba for c in colors])
     np.testing.assert_allclose(stored_colors, expected_colors)
