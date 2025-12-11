@@ -33,8 +33,8 @@ class Line(Node):
         2D lines or (N, 3) for 3D lines, where N is the number of vertices.
     color : UniformColor | VertexColors
         Color specification for the line. Can be:
-        - Uniform: Single color for the entire line
-        - Vertex: One color per vertex, interpolated along segments
+        - UniformColor: Single color for the entire line
+        - VertexColors: One color per vertex, interpolated along segments
         Default is uniform white.
     width : float
         Width of the line in pixels. Must be non-negative.
@@ -46,7 +46,8 @@ class Line(Node):
     Create a simple line connecting several points:
         >>> vertices = np.array([[0, 0], [10, 5], [20, 0]])
         >>> line = Line(
-        ...     vertices=vertices, color=ColorModel(type="uniform", color=Color("red"))
+        ...     vertices=vertices,
+        ...     color=UniformColor(color=Color("red")),
         ... )
 
     Create a line with per-vertex colors:
@@ -54,7 +55,7 @@ class Line(Node):
         >>> colors = [Color("red"), Color("green"), Color("blue")]
         >>> line = Line(
         ...     vertices=vertices,
-        ...     color=ColorModel(type="vertex", color=colors),
+        ...     color=VertexColors(color=colors),
         ...     width=2.0,
         ... )
 

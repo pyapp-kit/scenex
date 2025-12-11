@@ -73,7 +73,7 @@ class VertexColors(ColorModel):
 
     Examples
     --------
-    Per-face coloring:
+    Per-vertex coloring:
         >>> from cmap import Color
         >>> from scenex import VertexColors
         >>> VertexColors(color=[Color("yellow"), Color("purple"), Color("cyan")])

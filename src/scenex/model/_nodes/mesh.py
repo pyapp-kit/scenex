@@ -36,16 +36,20 @@ class Mesh(Node):
         defining a triangle with counter-clockwise winding.
     color : UniformColor | FaceColors | VertexColors
         Color specification for the mesh. Can be:
-        - Uniform: Single color for the entire mesh
-        - Face: One color per face
-        - Vertex: One color per vertex, interpolated across faces
+        - UniformColor: Single color for the entire mesh
+        - FaceColors: One color per face
+        - VertexColors: One color per vertex, interpolated across faces
 
     Examples
     --------
     Create a simple triangle mesh:
         >>> vertices = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]])
         >>> faces = np.array([[0, 1, 2]])
-        >>> mesh = Mesh(vertices=vertices, faces=faces, color=Color("blue"))
+        >>> mesh = Mesh(
+        ...     vertices=vertices,
+        ...     faces=faces,
+        ...     color=UniformColor(color=Color("blue")),
+        ... )
 
     Create a square made of two triangles:
         >>> vertices = np.array(

@@ -51,9 +51,15 @@ class Points(Node):
     size : float
         Diameter of each point marker in pixels. Must be in range [0.5, 500].
     face_color : UniformColor | VertexColors
-        Color of the point symbol's interior. Default is white.
+        Color of the point symbol's interior. Can be:
+        - UniformColor: Single color for all points
+        - VertexColors: One color per point
+        Default is uniform white.
     edge_color : UniformColor | VertexColors
-        Color of the point symbol's border/outline. Default is black.
+        Color of the point symbol's border/outline. Can be:
+        - UniformColor: Single color for all points
+        - VertexColors: One color per point
+        Default is uniform black.
     edge_width : float | None
         Width of the point symbol's border in pixels. Default is 1.0.
     symbol : str
@@ -70,21 +76,28 @@ class Points(Node):
     --------
     Create simple point markers:
         >>> coords = np.random.rand(100, 2) * 100
-        >>> points = Points(coords=coords, size=5, face_color=Color("red"))
+        >>> points = Points(
+        ...     coords=coords,
+        ...     size=5,
+        ...     face_color=UniformColor(color=Color("red")),
+        ... )
 
     Create points with custom symbols and styling:
         >>> points = Points(
         ...     coords=my_coords,
         ...     symbol="star",
         ...     size=20,
-        ...     face_color=Color("yellow"),
-        ...     edge_color=Color("orange"),
+        ...     face_color=UniformColor(color=Color("yellow")),
+        ...     edge_color=UniformColor(color=Color("orange")),
         ...     edge_width=2,
         ... )
 
     Create fixed-size points that don't scale with zoom:
         >>> points = Points(
-        ...     coords=coords, size=10, scaling=False, face_color=Color("blue")
+        ...     coords=coords,
+        ...     size=10,
+        ...     scaling=False,
+        ...     face_color=UniformColor(color=Color("blue")),
         ... )
 
     Create 3D points:
