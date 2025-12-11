@@ -44,7 +44,12 @@ except PackageNotFoundError:
 
 from .adaptors import run, use
 from .model._canvas import Canvas
-from .model._color import ColorModel
+from .model._color import (
+    ColorModel,
+    FaceColors,
+    UniformColor,
+    VertexColors,
+)
 from .model._grid import Grid
 from .model._nodes.camera import Camera, InteractionStrategy, Orbit, PanZoom
 from .model._nodes.image import Image
@@ -63,6 +68,7 @@ __all__ = [
     "Camera",
     "Canvas",
     "ColorModel",
+    "FaceColors",
     "Grid",
     "Image",
     "InteractionStrategy",
@@ -77,6 +83,8 @@ __all__ = [
     "Scene",
     "Text",
     "Transform",
+    "UniformColor",
+    "VertexColors",
     "View",
     "Volume",
     "run",

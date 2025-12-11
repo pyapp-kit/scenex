@@ -24,8 +24,8 @@ view = snx.View(
             snx.Points(
                 coords=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
                 size=5,
-                face_color=snx.ColorModel(type="uniform", color=cmap.Color("coral")),
-                edge_color=snx.ColorModel(type="uniform", color=cmap.Color("purple")),
+                face_color=snx.UniformColor(color=cmap.Color("coral")),
+                edge_color=snx.UniformColor(color=cmap.Color("purple")),
                 transform=snx.Transform().translated((0, -50)),
             ),
         ]

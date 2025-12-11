@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import cmap
 import numpy as np
+import pygfx
 import pytest
 
 import scenex as snx
@@ -28,7 +29,7 @@ def mesh() -> snx.Mesh:
     return snx.Mesh(
         vertices=vertices,
         faces=faces,
-        color=snx.ColorModel(type="uniform", color=cmap.Color("red")),
+        color=snx.UniformColor(color=cmap.Color("red")),
     )
 
 
@@ -60,11 +61,11 @@ def test_color(mesh: snx.Mesh, adaptor: adaptors.Mesh) -> None:
     geom = adaptor._pygfx_node.geometry
     mat = adaptor._pygfx_node.material
     assert geom is not None
-    assert mat is not None
-    assert mesh.color is not None
-    assert np.array_equal(mesh.color.color.rgba, mat.color.rgba)  # type: ignore
-    mesh.color = snx.ColorModel(type="uniform", color=cmap.Color("blue"))
-    assert np.array_equal(mesh.color.color.rgba, mat.color.rgba)  # type: ignore
+    assert isinstance(mat, pygfx.MeshBasicMaterial)
+    assert isinstance(mesh.color, snx.UniformColor)
+    assert np.array_equal(mesh.color.color.rgba, mat.color.rgba)
+    mesh.color = snx.UniformColor(color=cmap.Color("blue"))
+    assert np.array_equal(mesh.color.color.rgba, mat.color.rgba)
     assert mat.color_mode == "uniform"  # pyright: ignore
 
     # Change to vertex colors
@@ -74,8 +75,8 @@ def test_color(mesh: snx.Mesh, adaptor: adaptors.Mesh) -> None:
         cmap.Color("blue"),
         cmap.Color("yellow"),
     ]
-    mesh.color = snx.ColorModel(type="vertex", color=colors)
-    assert mat.color_mode == "vertex"  # pyright: ignore
+    mesh.color = snx.VertexColors(color=colors)
+    assert mat.color_mode == "vertex"
     assert geom.colors is not None
     expected_colors = np.array([c.rgba for c in colors], dtype=np.float32)
     np.testing.assert_allclose(geom.colors.data, expected_colors)

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Literal
 
-import cmap
 import numpy as np
 import pygfx
 
 from scenex.adaptors._base import PointsAdaptor
+from scenex.model._color import ColorModel, UniformColor, VertexColors
 
 from ._node import Node
 
@@ -44,9 +43,10 @@ class Points(Node, PointsAdaptor):
             edge_width=points.edge_width,
             opacity=points.opacity,
         )
-        if points.face_color.type == "uniform":
-            self._material.color = points.face_color.color.rgba  # type: ignore
-            self._material.edge_color = points.edge_color.color.rgba  # type: ignore
+        if isinstance(points.face_color, UniformColor):
+            self._material.color = points.face_color.color.rgba
+        if isinstance(points.edge_color, UniformColor):
+            self._material.edge_color = points.edge_color.color.rgba
 
         # Fill this in empty for now; will be populated in _snx_set_coords
         self._geometry = pygfx.Geometry(positions=np.zeros((1, 3), dtype=np.float32))
@@ -63,35 +63,36 @@ class Points(Node, PointsAdaptor):
         # Coerce dtypes to float32 - suprisingly pygfx is sensitive to this
         coords = coords.astype(np.float32)
         # Update existing buffer if possible for performance
-        positions = self._geometry.positions  # pyright: ignore
+        positions = self._geometry.positions
         if (data := positions.data) is not None and (coords.shape == data.shape):
             data[:, :] = coords
             positions.update_range()
         # Otherwise create a new buffer
         else:
-            self._geometry.positions = pygfx.resources.Buffer(coords)  # pyright: ignore
+            self._geometry.positions = pygfx.resources.Buffer(coords)
 
     def _snx_set_size(self, size: float) -> None:
         self._material.size = size  # pyright: ignore
 
-    def _snx_set_face_color(self, arg: model.ColorModel) -> None:
-        if arg.type == "uniform" and isinstance(arg.color, cmap.Color):
+    def _snx_set_face_color(self, arg: ColorModel) -> None:
+        if isinstance(arg, UniformColor):
             self._material.color_mode = "uniform"
             self._material.color = arg.color.rgba
-        elif arg.type == "vertex" and isinstance(arg.color, Sequence):
+        elif isinstance(arg, VertexColors):
             self._material.color_mode = "vertex"
             self._geometry.colors = pygfx.resources.Buffer(
                 np.asarray([c.rgba for c in arg.color], dtype=np.float32)
-            )  # pyright: ignore
+            )
 
-    def _snx_set_edge_color(self, arg: model.ColorModel) -> None:
-        if arg.type == "uniform" and isinstance(arg.color, cmap.Color):
+    def _snx_set_edge_color(self, arg: ColorModel) -> None:
+        if isinstance(arg, UniformColor):
             self._material.edge_color_mode = "uniform"
             self._material.edge_color = arg.color.rgba
-        elif arg.type == "vertex" and isinstance(arg.color, Sequence):
+        elif isinstance(arg, VertexColors):
+            self._material.edge_color_mode = "vertex"
             self._geometry.edge_colors = pygfx.resources.Buffer(
                 np.asarray([c.rgba for c in arg.color], dtype=np.float32)
-            )  # pyright: ignore
+            )
 
     def _snx_set_edge_width(self, edge_width: float) -> None:
         self._material.edge_width = edge_width

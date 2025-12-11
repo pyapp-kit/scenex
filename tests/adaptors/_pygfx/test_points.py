@@ -16,8 +16,8 @@ def points() -> snx.Points:
     return snx.Points(
         coords=coords,
         size=10,
-        face_color=snx.ColorModel(type="uniform", color=cmap.Color("red")),
-        edge_color=snx.ColorModel(type="uniform", color=cmap.Color("white")),
+        face_color=snx.UniformColor(color=cmap.Color("red")),
+        edge_color=snx.UniformColor(color=cmap.Color("white")),
         edge_width=1.0,
         symbol="disc",
         scaling=False,
@@ -114,18 +114,18 @@ def test_points_color(points: snx.Points, adaptor: adaptors.Points) -> None:
     np.testing.assert_allclose(mat.edge_color, points.edge_color.color.rgba)  # type: ignore
 
     # change face uniform
-    points.face_color = snx.ColorModel(type="uniform", color=cmap.Color("blue"))
+    points.face_color = snx.UniformColor(color=cmap.Color("blue"))
     assert mat.color_mode == "uniform"
-    np.testing.assert_allclose(mat.color, points.face_color.color.rgba)  # type: ignore
+    np.testing.assert_allclose(mat.color, points.face_color.color.rgba)  # pyright: ignore
 
     # change edge uniform
-    points.edge_color = snx.ColorModel(type="uniform", color=cmap.Color("green"))
+    points.edge_color = snx.UniformColor(color=cmap.Color("green"))
     assert mat.edge_color_mode == "uniform"
-    np.testing.assert_allclose(mat.edge_color, points.edge_color.color.rgba)  # type: ignore
+    np.testing.assert_allclose(mat.edge_color, points.edge_color.color.rgba)  # pyright: ignore
 
     # change face vertex
     colors = [cmap.Color("red"), cmap.Color("green"), cmap.Color("blue")]
-    points.face_color = snx.ColorModel(type="vertex", color=colors)
+    points.face_color = snx.VertexColors(color=colors)
     assert mat.color_mode == "vertex"
     np.testing.assert_allclose(
         geom.colors.data, np.array([c.rgba for c in colors], dtype=np.float32)
@@ -133,7 +133,7 @@ def test_points_color(points: snx.Points, adaptor: adaptors.Points) -> None:
 
     # change edge vertex
     edge_colors = [cmap.Color("yellow"), cmap.Color("cyan"), cmap.Color("magenta")]
-    points.edge_color = snx.ColorModel(type="vertex", color=edge_colors)
+    points.edge_color = snx.VertexColors(color=edge_colors)
     assert mat.edge_color_mode == "vertex"
     np.testing.assert_allclose(
         geom.edge_colors.data, np.array([c.rgba for c in edge_colors], dtype=np.float32)

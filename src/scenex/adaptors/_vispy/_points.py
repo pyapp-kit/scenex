@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal
 
-import cmap
 import numpy as np
-import vispy.color
 import vispy.scene
 import vispy.visuals
 
 from scenex.adaptors._base import PointsAdaptor
+from scenex.model._color import UniformColor, VertexColors
 
 from ._node import Node
 
@@ -77,21 +76,19 @@ class Points(Node, PointsAdaptor):
         # All of the _snx setters that deal with the "set_data" method pass through
         # here. We must remember and pass through all of these parameters every time,
         # or the node will revert to the defaults.
-        if self._model.edge_color.type == "uniform" and isinstance(
-            self._model.edge_color.color, cmap.Color
-        ):
+        edge_color: str | list[str]
+        if isinstance(self._model.edge_color, UniformColor):
             edge_color = self._model.edge_color.color.hex
-        elif self._model.edge_color.type == "vertex":
-            edge_color = [c.hex for c in self._model.edge_color.color]  # type: ignore
+        elif isinstance(self._model.edge_color, VertexColors):
+            edge_color = [c.hex for c in self._model.edge_color.color]
         else:
             raise NotImplementedError("Unsupported edge color model")
 
-        if self._model.face_color.type == "uniform" and isinstance(
-            self._model.face_color.color, cmap.Color
-        ):
+        face_color: str | list[str]
+        if isinstance(self._model.face_color, UniformColor):
             face_color = self._model.face_color.color.hex
-        elif self._model.face_color.type == "vertex":
-            face_color = [c.hex for c in self._model.face_color.color]  # type: ignore
+        elif isinstance(self._model.edge_color, VertexColors):
+            face_color = [c.hex for c in self._model.face_color.color]
         else:
             raise NotImplementedError("Unsupported face color model")
 

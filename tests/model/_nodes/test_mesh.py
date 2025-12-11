@@ -26,7 +26,7 @@ def mesh() -> snx.Mesh:
     return snx.Mesh(
         vertices=vertices,
         faces=faces,
-        color=snx.ColorModel(type="uniform", color=cmap.Color("red")),
+        color=snx.UniformColor(color=cmap.Color("red")),
     )
 
 

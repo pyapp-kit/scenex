@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, Annotated, Any, Literal
 import numpy as np
 from annotated_types import Interval
 from cmap import Color
-from pydantic import Field, field_validator
+from pydantic import Field
 
-from scenex.model._color import ColorModel
+from scenex.model._color import UniformColor, VertexColors
 
 from .node import AABB, Node
 
@@ -50,9 +50,9 @@ class Points(Node):
         3D points, where N is the number of points.
     size : float
         Diameter of each point marker in pixels. Must be in range [0.5, 500].
-    face_color : Color | None
+    face_color : UniformColor | VertexColors
         Color of the point symbol's interior. Default is white.
-    edge_color : Color | None
+    edge_color : UniformColor | VertexColors
         Color of the point symbol's border/outline. Default is black.
     edge_width : float | None
         Width of the point symbol's border in pixels. Default is 1.0.
@@ -104,12 +104,12 @@ class Points(Node):
     size: Annotated[float, Interval(ge=0.5, le=500)] = Field(
         default=10.0, description="Diameter of each point marker in pixels"
     )
-    face_color: ColorModel = Field(
-        default=ColorModel(type="uniform", color=Color("white")),
+    face_color: UniformColor | VertexColors = Field(
+        default_factory=lambda: UniformColor(color=Color("white")),
         description="Color of the point symbol's interior",
     )
-    edge_color: ColorModel = Field(
-        default=ColorModel(type="uniform", color=Color("black")),
+    edge_color: UniformColor | VertexColors = Field(
+        default_factory=lambda: UniformColor(color=Color("black")),
         description="Color of the point symbol's border",
     )
     edge_width: float = Field(
@@ -128,13 +128,6 @@ class Points(Node):
     antialias: float = Field(
         default=1, description="Anti-aliasing amount in pixels for smoother rendering"
     )
-
-    @field_validator("face_color", "edge_color", mode="after")
-    @classmethod
-    def validate_color(cls, color: ColorModel) -> ColorModel:
-        if color.type not in ("uniform", "vertex"):
-            raise ValueError("Points color type must be 'uniform' or 'vertex'")
-        return color
 
     @property  # TODO: Cache?
     def bounding_box(self) -> AABB:

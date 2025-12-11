@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 from cmap import Color
-from pydantic import Field, computed_field, field_validator
+from pydantic import Field, computed_field
 
-from scenex.model._color import ColorModel
+from scenex.model._color import UniformColor, VertexColors
 
 from .node import AABB, Node
 
@@ -31,7 +31,7 @@ class Line(Node):
     vertices : array-like
         Array of vertex positions defining the line path. Shape should be (N, 2) for
         2D lines or (N, 3) for 3D lines, where N is the number of vertices.
-    color : ColorModel
+    color : UniformColor | VertexColors
         Color specification for the line. Can be:
         - Uniform: Single color for the entire line
         - Vertex: One color per vertex, interpolated along segments
@@ -73,8 +73,8 @@ class Line(Node):
         description="Array of vertex positions with shape (N, 2) or (N, 3)",
     )
 
-    color: ColorModel = Field(
-        default=ColorModel(type="uniform", color=Color("white")),
+    color: UniformColor | VertexColors = Field(
+        default_factory=lambda: UniformColor(color=Color("white")),
         description="Color specification; uniform or per-vertex colors",
     )
     width: float = Field(default=1.0, ge=0.0, description="Width of the line in pixels")
@@ -96,13 +96,6 @@ class Line(Node):
             max_vals = (*max_vals, 0.0)
 
         return (min_vals, max_vals)  # type: ignore
-
-    @field_validator("color", mode="after")
-    @classmethod
-    def validate_color(cls, color: ColorModel) -> ColorModel:
-        if color.type not in ("uniform", "vertex"):
-            raise ValueError("Line color type must be 'uniform' or 'vertex'")
-        return color
 
     def passes_through(self, ray: Ray) -> float | None:
         """

@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 from cmap import Color
-from pydantic import Field, computed_field, field_validator
+from pydantic import Field, computed_field
 
-from scenex.model._color import ColorModel
+from scenex.model._color import FaceColors, UniformColor, VertexColors
 
 from .node import AABB, Node
 
@@ -34,8 +34,11 @@ class Mesh(Node):
         Array of face definitions. Shape should be (M, 3) where M is the number of
         triangular faces. Each row contains three indices into the vertices array,
         defining a triangle with counter-clockwise winding.
-    color : Color | None
-        Uniform color for the entire mesh. Default is white.
+    color : UniformColor | FaceColors | VertexColors
+        Color specification for the mesh. Can be:
+        - Uniform: Single color for the entire mesh
+        - Face: One color per face
+        - Vertex: One color per vertex, interpolated across faces
 
     Examples
     --------
@@ -86,17 +89,10 @@ class Mesh(Node):
         description="Array of face indices with shape (M, 3) defining triangles",
     )
 
-    color: ColorModel = Field(
-        default=ColorModel(type="uniform", color=Color("white")),
+    color: UniformColor | FaceColors | VertexColors = Field(
+        default_factory=lambda: UniformColor(color=Color("white")),
         description="Color specification; uniform, per-face, or per-vertex",
     )
-
-    @field_validator("color", mode="after")
-    @classmethod
-    def validate_color(cls, color: ColorModel) -> ColorModel:
-        if color.type not in ("uniform", "face", "vertex"):
-            raise ValueError("Mesh color type must be 'uniform', 'face', or 'vertex'")
-        return color
 
     @computed_field  # type: ignore[prop-decorator]
     @property  # TODO: Cache?

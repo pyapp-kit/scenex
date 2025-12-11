@@ -1,20 +1,18 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
-import cmap
 import numpy as np
 import pygfx
 
 from scenex.adaptors._base import LineAdaptor
+from scenex.model._color import ColorModel, UniformColor, VertexColors
 
 from ._node import Node
 
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
-    import scenex as snx
     from scenex import model
 
 
@@ -49,26 +47,19 @@ class Line(Node, LineAdaptor):
         else:
             self._pygfx_node.geometry = pygfx.Geometry(positions=arg)
 
-    def _snx_set_color(self, arg: snx.ColorModel) -> None:
-        # TODO: There's got to be a more efficient way to do this...
-        if arg.type == "uniform" and isinstance(arg.color, cmap.Color):
-            self._geometry = self._pygfx_node.geometry = pygfx.Geometry(
-                positions=self._geometry.positions.data,
+    def _snx_set_color(self, arg: ColorModel) -> None:
+        # Set the color first, and then the color mode
+        # This order is probably smart because otherwise we'd be vulnerable to an
+        # invalid intermediate state (e.g., setting color mode to 'vertex' when no
+        # vertex colors)
+        if isinstance(arg, UniformColor):
+            self._material.color = arg.color.rgba
+            self._material.color_mode = "uniform"
+        elif isinstance(arg, VertexColors):
+            self._geometry.colors = pygfx.resources.Buffer(
+                np.asarray([a.rgba for a in arg.color], dtype=np.float32)
             )
-            self._material = self._pygfx_node.material = pygfx.LineMaterial(
-                color_mode="uniform",
-                thickness=self._material.thickness,
-                color=arg.color.rgba,
-            )
-        elif arg.type == "vertex" and isinstance(arg.color, Sequence):
-            self._geometry = self._pygfx_node.geometry = pygfx.Geometry(
-                positions=self._geometry.positions.data,
-                colors=np.asarray([a.rgba for a in arg.color], dtype=np.float32),
-            )
-            self._material = self._pygfx_node.material = pygfx.LineMaterial(
-                color_mode="vertex",
-                thickness=self._material.thickness,
-            )
+            self._material.color_mode = "vertex"
 
     def _snx_set_width(self, arg: float) -> None:
         self._material.thickness = arg

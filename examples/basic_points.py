@@ -1,4 +1,19 @@
-"""Demonstrates rendering points with different sizing modes."""
+"""Interactive points example demonstrating ColorModel subclasses and scaling modes.
+
+This example shows:
+- Per-vertex coloring with VertexColors (each point gets a different color)
+- Uniform coloring with UniformColor (all points same color)
+- Fixed vs. scene-based point scaling modes
+- Interactive color swapping on mouse hover (face and edge colors swap)
+
+The points start with per-vertex face colors (red, green, blue, yellow) and a white
+uniform edge. When the mouse hovers over any point, the colors invert: faces become
+white (uniform) and edges become colored (per-vertex).
+
+Scaling modes:
+- "fixed": Point size in pixels, stays constant when zooming
+- "scene": Point size in world-space units, scales when zooming
+"""
 
 import cmap
 import numpy as np
@@ -31,8 +46,8 @@ points = snx.Points(
     size=20,  # Pixel diameter
     edge_width=10,
     scaling="fixed",
-    face_color=snx.ColorModel(type="vertex", color=colors),
-    edge_color=snx.ColorModel(type="uniform", color=cmap.Color("white")),
+    face_color=snx.VertexColors(color=colors),
+    edge_color=snx.UniformColor(color=cmap.Color("white")),
 )
 # "scene" scaling means the point size is defined in world space,
 # so it varies as you zoom in and out.
@@ -43,8 +58,8 @@ points = snx.Points(
 #     size=1,  # World-space diameter
 #     edge_width=0,
 #     scaling="scene",
-#     face_color=snx.ColorModel(type="vertex", color=colors),
-#     edge_color=snx.ColorModel(type="uniform", color=cmap.Color("white")),
+#     face_color=snx.VertexColors(color=colors),
+#     edge_color=snx.UniformColor(color=cmap.Color("white")),
 # )
 
 
@@ -58,16 +73,12 @@ def _on_view_event(event: Event) -> bool:
     if isinstance(event, MouseMoveEvent):
         intersections = event.world_ray.intersections(view.scene)
         if points in [n for n, _ in intersections]:
-            points.face_color = snx.ColorModel(
-                type="uniform", color=cmap.Color("white")
-            )
-            points.edge_color = snx.ColorModel(type="vertex", color=colors)
+            points.face_color = snx.UniformColor(color=cmap.Color("white"))
+            points.edge_color = snx.VertexColors(color=colors)
         else:
             # Restore vertex colors
-            points.face_color = snx.ColorModel(type="vertex", color=colors)
-            points.edge_color = snx.ColorModel(
-                type="uniform", color=cmap.Color("white")
-            )
+            points.face_color = snx.VertexColors(color=colors)
+            points.edge_color = snx.UniformColor(color=cmap.Color("white"))
     return False
 
 

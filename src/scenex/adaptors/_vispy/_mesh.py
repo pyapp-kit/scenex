@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
-import cmap
 import numpy as np
 import vispy.color
 import vispy.scene
 import vispy.visuals
 
 from scenex.adaptors._base import MeshAdaptor
+from scenex.model._color import ColorModel, FaceColors, UniformColor, VertexColors
 
 from ._node import Node
 
@@ -45,7 +44,7 @@ class Mesh(Node, MeshAdaptor):
     def _snx_set_faces(self, arg: ArrayLike) -> None:
         self._update_vispy_data()
 
-    def _snx_set_color(self, arg: model.ColorModel) -> None:
+    def _snx_set_color(self, arg: ColorModel) -> None:
         self._colors = Mesh._color_from(arg)
         self._update_vispy_data()
 
@@ -61,15 +60,15 @@ class Mesh(Node, MeshAdaptor):
 
     @staticmethod
     def _color_from(
-        arg: model.ColorModel,
+        arg: ColorModel,
     ) -> tuple[str, vispy.color.Color | np.ndarray]:
-        if arg.type == "uniform" and isinstance(arg.color, cmap.Color):
+        if isinstance(arg, UniformColor):
             return "color", vispy.color.Color(arg.color.hex)
-        elif arg.type == "vertex" and isinstance(arg.color, Sequence):
+        elif isinstance(arg, VertexColors):
             return "vertex_colors", np.asarray(
                 [c.rgba for c in arg.color], dtype=np.float32
             )
-        elif arg.type == "face" and isinstance(arg.color, Sequence):
+        elif isinstance(arg, FaceColors):
             # TODO: per-face colors are tricky under this paradigm.
             # vispy expects that if you provide N face colors, you have N triangles,
             # and vice-versa. This means that the intermediate state in between updating

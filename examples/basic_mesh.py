@@ -1,4 +1,15 @@
-"""Demonstrates rendering a mesh whose faces vanish on mouse hover. Click to reset."""
+"""Interactive mesh example demonstrating ColorModel subclasses.
+
+This example shows:
+- Per-vertex coloring with VertexColors (gradient based on position)
+- Uniform coloring with UniformColor (solid purple)
+- Interactive face removal on mouse hover
+- Cycling between color models with right-click
+- Mesh reset on left-click
+
+The mesh starts with per-vertex colors creating a colorful gradient. Right-clicking
+toggles between per-vertex and uniform coloring modes.
+"""
 
 import cmap
 import numpy as np
@@ -48,8 +59,7 @@ def create_grid_mesh(
 original_vertices, original_faces = create_grid_mesh(size=15, spacing=0.15)
 
 # Create per-vertex colors (gradient based on position)
-per_vertex_model = snx.ColorModel(
-    type="vertex",
+per_vertex_model = snx.VertexColors(
     color=[
         cmap.Color(f"hsl({int(v[0] * 50 + v[1] * 50) % 360}, 100%, 50%)")
         for v in original_vertices
@@ -57,7 +67,7 @@ per_vertex_model = snx.ColorModel(
 )
 
 # Create uniform colors
-uniform_model = snx.ColorModel(type="uniform", color=cmap.Color("purple"))
+uniform_model = snx.UniformColor(color=cmap.Color("purple"))
 
 mesh = snx.Mesh(
     vertices=original_vertices,
@@ -91,7 +101,7 @@ def event_filter(event: Event) -> bool:
             return True
         elif event.buttons & MouseButton.RIGHT:
             # Right click cycles the colormodel
-            if mesh.color.type == "uniform":
+            if mesh.color == uniform_model:
                 mesh.color = per_vertex_model
             else:
                 mesh.color = uniform_model

@@ -23,9 +23,8 @@ def _create_line_data(angle: float = 0) -> np.ndarray:
 original_vertices = _create_line_data()
 
 
-line_color_model = snx.ColorModel(type="uniform", color=cmap.Color("cyan"))
-pressed_color_model = snx.ColorModel(
-    type="vertex",
+line_color_model = snx.UniformColor(color=cmap.Color("cyan"))
+pressed_color_model = snx.VertexColors(
     color=[
         cmap.Color("blue") if i % 2 == 0 else cmap.Color("yellow")
         for i in range(len(original_vertices))

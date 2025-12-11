@@ -16,8 +16,8 @@ def points() -> snx.Points:
     return snx.Points(
         coords=coords,
         size=10,
-        face_color=snx.ColorModel(type="uniform", color=cmap.Color("red")),
-        edge_color=snx.ColorModel(type="uniform", color=cmap.Color("white")),
+        face_color=snx.UniformColor(color=cmap.Color("red")),
+        edge_color=snx.UniformColor(color=cmap.Color("white")),
         edge_width=1.0,
         symbol="disc",
         scaling=False,
@@ -112,23 +112,23 @@ def test_points_color(points: snx.Points, adaptor: adaptors.Points) -> None:
         np.testing.assert_allclose(face, points.edge_color.color)
 
     # Change face color to uniform Blue
-    points.face_color = snx.ColorModel(type="uniform", color=cmap.Color("blue"))
+    points.face_color = snx.UniformColor(color=cmap.Color("blue"))
     for face in node._data["a_bg_color"]:  # pyright: ignore
         np.testing.assert_allclose(face, points.face_color.color)
 
     # Change edge color to uniform Green
-    points.edge_color = snx.ColorModel(type="uniform", color=cmap.Color("green"))
+    points.edge_color = snx.UniformColor(color=cmap.Color("green"))
     for face in node._data["a_fg_color"]:  # pyright: ignore
         np.testing.assert_allclose(face, points.edge_color.color)
 
     # Change face color to Vertex
     colors = [cmap.Color("red"), cmap.Color("green"), cmap.Color("blue")]
-    points.face_color = snx.ColorModel(type="vertex", color=colors)
+    points.face_color = snx.VertexColors(color=colors)
     for actual, expected in zip(node._data["a_bg_color"], colors, strict=False):  # pyright: ignore
         np.testing.assert_allclose(actual, expected)
 
     # Change edge color to Vertex
     edge_colors = [cmap.Color("yellow"), cmap.Color("cyan"), cmap.Color("magenta")]
-    points.edge_color = snx.ColorModel(type="vertex", color=edge_colors)
+    points.edge_color = snx.VertexColors(color=edge_colors)
     for actual, expected in zip(node._data["a_fg_color"], edge_colors, strict=False):  # pyright: ignore
         np.testing.assert_allclose(actual, expected)

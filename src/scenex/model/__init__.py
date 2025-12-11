@@ -86,7 +86,12 @@ from cmap import Color, Colormap  # re-export
 
 from ._base import EventedBase, objects
 from ._canvas import Canvas
-from ._color import ColorModel
+from ._color import (
+    ColorModel,
+    FaceColors,
+    UniformColor,
+    VertexColors,
+)
 from ._grid import Grid
 from ._layout import Layout
 from ._nodes.camera import Camera, CameraType, InteractionStrategy, Orbit, PanZoom
@@ -111,6 +116,7 @@ __all__ = [
     "ColorModel",
     "Colormap",
     "EventedBase",
+    "FaceColors",
     "Grid",
     "Image",
     "InteractionStrategy",
@@ -130,6 +136,8 @@ __all__ = [
     "SymbolName",
     "Text",
     "Transform",
+    "UniformColor",
+    "VertexColors",
     "View",
     "Volume",
     "objects",

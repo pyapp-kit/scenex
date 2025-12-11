@@ -28,7 +28,7 @@ def mesh() -> snx.Mesh:
     return snx.Mesh(
         vertices=vertices,
         faces=faces,
-        color=snx.ColorModel(type="uniform", color=cmap.Color("red")),
+        color=snx.UniformColor(color=cmap.Color("red")),
     )
 
 
@@ -67,10 +67,10 @@ def test_data(mesh: snx.Mesh, adaptor: adaptors.Mesh) -> None:
 def test_color(mesh: snx.Mesh, adaptor: adaptors.Mesh) -> None:
     """Tests that changing the model color changes the view (the Vispy node)."""
     # Change color
-    assert mesh.color is not None
-    assert np.array_equal(mesh.color.color.rgba, adaptor._vispy_node.color.rgba)  # type: ignore
-    mesh.color = snx.ColorModel(type="uniform", color=cmap.Color("blue"))
-    assert np.array_equal(mesh.color.color.rgba, adaptor._vispy_node.color.rgba)  # type: ignore
+    assert isinstance(mesh.color, snx.UniformColor)
+    assert np.array_equal(mesh.color.color.rgba, adaptor._vispy_node.color.rgba)
+    mesh.color = snx.UniformColor(color=cmap.Color("blue"))
+    assert np.array_equal(mesh.color.color.rgba, adaptor._vispy_node.color.rgba)
 
     # Change to vertex colors
     mesh_data = adaptor._vispy_node.mesh_data
@@ -84,7 +84,7 @@ def test_color(mesh: snx.Mesh, adaptor: adaptors.Mesh) -> None:
         cmap.Color("blue"),
         cmap.Color("yellow"),
     ]
-    mesh.color = snx.ColorModel(type="vertex", color=colors)
+    mesh.color = snx.VertexColors(color=colors)
     # VisPy stores vertex colors in mesh_data
     # Note: VisPy might return RGBA or just RGB depending on input, but usually RGBA
     # We check if the stored colors match our input
