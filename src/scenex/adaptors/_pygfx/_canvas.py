@@ -96,13 +96,13 @@ class Canvas(CanvasAdaptor):
 
     def _snx_set_visible(self, arg: bool) -> None:
         app().show(self, arg)
-        self._wgpu_canvas.request_draw(self._draw)
+        self._wgpu_canvas.request_draw()
 
     def _draw(self) -> None:
         for view in self._views:
             cast("View", get_adaptor(view))._draw(self._renderer)
         self._renderer.flush()
-        self._renderer.request_draw(self._draw)
+        self._renderer.request_draw()
 
     def _snx_add_view(self, view: model.View) -> None:
         # This logic should go in the canvas node, I think
