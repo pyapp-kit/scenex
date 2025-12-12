@@ -56,8 +56,7 @@ wx= [
 pygfx = ["pygfx>=0.13.0"]
 vispy = ["vispy>=0.15.0", "pyopengl"]
 imgui = [
-    # 1.6.3 breaks type checking, 1.92 not working with pygfx
-    "imgui-bundle>=1.6,!=1.6.3,<1.92.0",
+    "imgui-bundle>=1.92.0",
 ]
 
 [dependency-groups]
