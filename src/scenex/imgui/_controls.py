@@ -50,18 +50,18 @@ def add_imgui_controls(view: View) -> None:
         raise NotImplementedError(
             "Imgui controls can currently only be added to a canvas backed by pygfx."
         )
-    if not snx_view_adaptor._renderer:
+    if not snx_canvas_adaptor._renderer:
         raise RuntimeError("The pygfx renderer has not been initialized yet.")
 
     imgui_renderer = ImguiRenderer(
-        device=snx_view_adaptor._renderer.device,
+        device=snx_canvas_adaptor._renderer.device,
         canvas=render_canv,  # pyright: ignore[reportArgumentType] (incorrect hint)
     )
 
     if implot.get_current_context() is None:
         implot.create_context()  # must run after ImGui context exists
 
-    @imgui_renderer.set_gui  # type: ignore [misc]
+    @imgui_renderer.set_gui  # type: ignore [untyped-decorator]
     def _update_gui() -> imgui.ImDrawData:
         imgui.new_frame()
         render_imgui_view_controls(view)

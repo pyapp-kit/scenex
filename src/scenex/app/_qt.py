@@ -246,7 +246,7 @@ class MainThreadInvoker(QObject):
         )
         return future
 
-    @slot()  # type: ignore[misc]
+    @slot()  # type: ignore[untyped-decorator]
     def _invoke_current(self) -> None:
         """Invokes the current callable."""
         if (cb := self._current_callable) is not None:
