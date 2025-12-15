@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeGuard, cast
 import numpy as np
 
 from scenex.adaptors._base import CanvasAdaptor
+from scenex.app import app
 
 from ._adaptor_registry import get_adaptor
 
@@ -33,20 +34,21 @@ class Canvas(CanvasAdaptor):
             title=canvas.title, size=(canvas.width, canvas.height)
         )
         # Qt RenderCanvas calls show() in its __init__ method, so we need to hide it
-        if supports_hide_show(self._canvas.native):
-            self._canvas.native.hide()
+        # if supports_hide_show(self._canvas.native):
+        #     self._canvas.native.hide()
         self._grid = cast("Grid", self._canvas.central_widget.add_grid())
         for view in canvas.views:
             self._snx_add_view(view)
         self._views = canvas.views
 
+        self._event_filter = app().install_event_filter(self._canvas.native, canvas)
+
     def _snx_get_native(self) -> Any:
         return self._canvas.native
 
     def _snx_set_visible(self, arg: bool) -> None:
-        # show the qt canvas we patched earlier in __init__
-        if supports_hide_show(self._canvas.native):
-            self._canvas.show()
+        app().show(self, arg)
+        self._canvas.update()
 
     def _draw(self) -> None:
         self._canvas.update()
@@ -55,10 +57,10 @@ class Canvas(CanvasAdaptor):
         self._grid.add_widget(get_adaptor(view)._snx_get_native())
 
     def _snx_set_width(self, arg: int) -> None:
-        self._canvas.size = (self._canvas.size[0], arg)
+        self._canvas.size = (arg, self._canvas.size[1])
 
     def _snx_set_height(self, arg: int) -> None:
-        self._canvas.size = (arg, self._canvas.size[1])
+        self._canvas.size = (self._canvas.size[0], arg)
 
     def _snx_set_background_color(self, arg: Color | None) -> None:
         if arg is None:
