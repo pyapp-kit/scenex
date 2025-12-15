@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from typing import Annotated, Any, Literal
 
+import numpy as np
 from annotated_types import Interval
 from cmap import Color
-from pydantic import Field
+from pydantic import Field, computed_field
 
-from .node import Node
+from .node import AABB, Node
 
 SymbolName = Literal[
     "disc",
@@ -54,3 +55,12 @@ class Points(Node):
     )
 
     antialias: float = Field(default=1, description="Anti-aliasing factor, in px.")
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property  # TODO: Cache?
+    def bounding_box(self) -> AABB:
+        arr = np.asarray(self.coords)
+        return (
+            tuple(float(d) for d in np.min(arr, axis=0)),
+            tuple(float(d) for d in np.max(arr, axis=0)),
+        )  # type: ignore
