@@ -80,7 +80,7 @@ def _rendercanvas_class() -> BaseRenderCanvas:
 
             ## -- END: Localizing https://github.com/pygfx/rendercanvas/pull/159 -- #
 
-            def Destroy(self) -> bool:
+            def Destroy(self) -> None:
                 # Overridden to avoid cleaning up the renderCanvas widget, IF it got
                 # reparented. This is likely wrong.
                 return super(wx.Frame, self).Destroy()  # type: ignore
