@@ -55,7 +55,6 @@ wx= [
 ]
 pygfx = [
     "pygfx>=0.13.0",
-    "rendercanvas<=2.4.2" # 2.5.0 seems to cause some hanging on CI tests.
 ]
 vispy = ["vispy>=0.15.0", "pyopengl"]
 imgui = [
