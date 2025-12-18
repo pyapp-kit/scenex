@@ -53,7 +53,6 @@ def _rendercanvas_class() -> BaseRenderCanvas:
     if frontend == GuiFrontend.WX:
         import rendercanvas.wx
         import wx
-        from rendercanvas.base import WrapperRenderCanvas
 
         # FIXME: Ideally, we would return a rendercanvas.wx.WxRenderWidget,
         # however doing so throws a bug in the creation of the WgpuRenderer.
@@ -61,26 +60,7 @@ def _rendercanvas_class() -> BaseRenderCanvas:
         # override its Destroy method to avoid it trying to clean up the widget
         # if the user reparents it.
         class _RenderCanvas(rendercanvas.wx.RenderCanvas):
-            # -- BEGIN: Localizing https://github.com/pygfx/rendercanvas/pull/159 -- #
-            # TODO: Remove these methods when we can depend upon that PR.
-
-            def set_logical_size(self, width: float, height: float) -> None:
-                # Overridden to avoid WrappedRenderCanvas delegating to the subwidget.
-                # In other words, we want to make use of the logic in
-                # BaseRenderCanvas.set_logical_size without calling the subwidget's
-                # method.
-                super(WrapperRenderCanvas, self).set_logical_size(width, height)
-
-            def _rc_set_logical_size(self, width: float, height: float) -> None:
-                # This method is intended to set the size of the renderable area.
-                # Wx.Window.SetSize() sets the size of the window including titlebar
-                # etc. on frames - we need to use SetClientSize() instead.
-                width, height = int(width), int(height)
-                self.SetClientSize(width, height)
-
-            ## -- END: Localizing https://github.com/pygfx/rendercanvas/pull/159 -- #
-
-            def Destroy(self) -> None:
+            def Destroy(self) -> bool:
                 # Overridden to avoid cleaning up the renderCanvas widget, IF it got
                 # reparented. This is likely wrong.
                 return super(wx.Frame, self).Destroy()  # type: ignore
