@@ -4,11 +4,6 @@ from scenex.adaptors._registry import AdaptorRegistry
 
 
 class PygfxAdaptorRegistry(AdaptorRegistry):
-    def start_event_loop(self) -> None:
-        from rendercanvas.auto import loop
-
-        loop.run()
-
     def get_adaptor_class(self, obj: Any) -> type:
         from scenex.adaptors import _pygfx
 
