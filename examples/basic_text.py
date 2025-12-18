@@ -13,6 +13,5 @@ view = snx.View(
 
 
 # Show and position camera
-snx.use("pygfx")
 snx.show(view)
 snx.run()
