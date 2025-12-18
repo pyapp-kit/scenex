@@ -110,4 +110,8 @@ ENV/
 .vscode/
 .idea/
 
+# LLM Configuration
+AGENTS.md
+.claude/
+
 uv.lock
