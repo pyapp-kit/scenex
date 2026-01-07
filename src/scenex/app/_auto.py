@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 import os
 import sys
+from collections import OrderedDict
 from concurrent.futures import Executor, Future, ThreadPoolExecutor
 from contextlib import contextmanager
 from enum import Enum, auto
@@ -47,13 +48,19 @@ class GuiFrontend(str, Enum):
     WX = "wx"
 
 
-GUI_PROVIDERS: dict[GuiFrontend, tuple[str, str]] = {
-    GuiFrontend.WX: ("scenex.app._wx", "WxAppWrap"),
-    GuiFrontend.QT: ("scenex.app._qt", "QtAppWrap"),
-    # Note that Jupyter should go last because it is a guess based on IPython
-    # which may be installed with the other frameworks as well.
-    GuiFrontend.JUPYTER: ("scenex.app._jupyter", "JupyterAppWrap"),
-}
+# This maps GuiFrontend enum values to the module and class name
+# Note that this dictionary is ordered by the precedence of the backends.
+# If multiple backends are available (but not already running), scenex will
+# choose the backend that is first in this dictionary.
+GUI_PROVIDERS: OrderedDict[GuiFrontend, tuple[str, str]] = OrderedDict()
+
+GUI_PROVIDERS[GuiFrontend.QT] = ("scenex.app._qt", "QtAppWrap")
+# Wx comes second because in general Qt "runs better"
+GUI_PROVIDERS[GuiFrontend.WX] = ("scenex.app._wx", "WxAppWrap")
+# Jupyter is "preferred least" because checking whether it is running is in practice
+# a check whether IPython is running. IPython could be installed along with the other
+# frameworks.
+GUI_PROVIDERS[GuiFrontend.JUPYTER] = ("scenex.app._jupyter", "JupyterAppWrap")
 
 
 class CursorType(Enum):
