@@ -159,7 +159,10 @@ class Node(EventedBase):
     order: int = Field(
         default=0,
         ge=0,
-        description="Drawing order within siblings; higher values drawn later (on top)",
+        description=(
+            "Drawing order within siblings; higher values drawn later (on top). "
+            "Equivalent drawing order for siblings is undefined."
+        ),
     )
     transform: Transform = Field(
         default_factory=Transform,

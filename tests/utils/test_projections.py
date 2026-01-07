@@ -122,6 +122,36 @@ def test_zoom_to_fit_orthographic() -> None:
     )
 
 
+def test_zoom_to_fit_orthographic_preserving_aspect_ratio() -> None:
+    view = snx.View(
+        scene=snx.Scene(
+            children=[snx.Points(coords=np.asarray([[0, 200, 1], [100, 0, 0]]))]
+        )
+    )
+    # By default, the view is not square
+    zoom_to_fit(view, type="orthographic")
+    # Assert the camera is moved to the center of the scene
+    assert view.camera.transform == snx.Transform().translated((50, 100, 0.5))
+    # Projection that maps world space to canvas coordinates
+    tform = view.camera.transform.inv() @ view.camera.projection
+    # Assert the camera projects [0, 0, 0] to NDC coordinates [-1, -1]
+    assert np.array_equal((-1, -1), tform.map((0, 0, 0))[:2])
+    # ...and [100, 200, 0] to NDC coordinates [1, 1]
+    assert np.array_equal((1, 1), tform.map((100, 200, 0))[:2])
+
+    # Now with aspect preservation the longer axis (y) should fit exactly, and the
+    # shorter axis (x) should have some padding to maintain aspect ratio
+    zoom_to_fit(view, type="orthographic", preserve_aspect_ratio=True)
+    # Assert the camera is moved to the center of the scene
+    assert view.camera.transform == snx.Transform().translated((50, 100, 0.5))
+    # Projection that maps world space to canvas coordinates
+    tform = view.camera.transform.inv() @ view.camera.projection
+    # Assert the camera projects [0, 0, 0] to NDC coordinates [-0.5, -1]
+    assert np.array_equal((-0.5, -1), tform.map((0, 0, 0))[:2])
+    # ...and [100, 200, 0] to NDC coordinates [0.5, 1]
+    assert np.array_equal((0.5, 1), tform.map((100, 200, 0))[:2])
+
+
 def test_zoom_to_fit_perspective() -> None:
     view = snx.View(
         scene=snx.Scene(
