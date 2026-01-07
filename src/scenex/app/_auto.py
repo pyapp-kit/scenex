@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     P = ParamSpec("P")
 
 
-GUI_ENV_VAR = "SCENEX_WIDGET_BACKEND"
+GUI_ENV_VAR = "SCENEX_APP_BACKEND"
 """Preferred GUI frontend. If not set, the first available GUI frontend is used."""
 _APP: App | None = None
 """Singleton instance of the current (GUI) application. Once set it shouldn't change."""
@@ -390,7 +390,7 @@ def determine_app() -> GuiFrontend:
     This function selects the appropriate GUI framework backend through a
     three-tier strategy:
 
-    1. **Explicit request**: If the SCENEX_WIDGET_BACKEND environment variable
+    1. **Explicit request**: If the SCENEX_APP_BACKEND environment variable
        is set, that backend is used (e.g., "qt", "wx", "jupyter").
     2. **Running application**: If a GUI application is already running in the
        process (detected via framework imports), that backend is used.
@@ -405,7 +405,7 @@ def determine_app() -> GuiFrontend:
     Raises
     ------
     ValueError
-        If the SCENEX_WIDGET_BACKEND environment variable is set to an invalid
+        If the SCENEX_APP_BACKEND environment variable is set to an invalid
         value.
     RuntimeError
         If no GUI backend can be found or loaded.
@@ -417,7 +417,7 @@ def determine_app() -> GuiFrontend:
 
     Force a specific backend via environment variable:
         >>> import os
-        >>> os.environ["SCENEX_WIDGET_BACKEND"] = "qt"
+        >>> os.environ["SCENEX_APP_BACKEND"] = "qt"
         >>> backend = determine_app()  # Will use Qt
 
     See Also

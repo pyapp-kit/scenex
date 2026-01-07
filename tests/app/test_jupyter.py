@@ -40,7 +40,7 @@ if determine_backend() == "vispy":
     os.environ["_VISPY_TESTING_APP"] = "jupyter_rfb"
     asyncio.set_event_loop(asyncio.new_event_loop())
 
-    os.environ["SCENEX_WIDGET_BACKEND"] = "jupyter"
+    os.environ["SCENEX_APP_BACKEND"] = "jupyter"
 
 
 @pytest.fixture
