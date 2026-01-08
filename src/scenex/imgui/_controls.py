@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 
 try:
@@ -119,8 +121,16 @@ def add_imgui_controls(view: View) -> None:
     - Mesh node (color, opacity, blending, etc.)
     """
     snx_canvas_model = view.canvas
-    snx_canvas_adaptor = snx_canvas_model._get_adaptors(backend="pygfx")[0]
-    snx_view_adaptor = view._get_adaptors(backend="pygfx")[0]
+    try:
+        snx_canvas_adaptor = snx_canvas_model._get_adaptors(backend="pygfx")[0]
+        snx_view_adaptor = view._get_adaptors(backend="pygfx")[0]
+    except (KeyError, IndexError):
+        warnings.warn(
+            "No pygfx adaptor found view/canvas; cannot add imgui controls.",
+            stacklevel=2,
+        )
+        return
+
     render_canv = cast("CanvasAdaptor", snx_canvas_adaptor)._snx_get_native()
 
     if not (
