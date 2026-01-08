@@ -22,8 +22,9 @@ jobs:
       - run: pipx run check-manifest
 
   lint:
-    # We lint on Windows so we can lint wx code.
-    runs-on: ubuntu-latest
+    # Lint on Windows to include wx type stubs. wxPython does not ship pre-built wheels for Linux,
+    # and building on CI from source fails due to missing GTK+ dev files.
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v7
