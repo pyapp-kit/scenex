@@ -27,7 +27,10 @@ class Mesh(Node, MeshAdaptor):
     def __init__(self, mesh: model.Mesh, **backend_kwargs: Any) -> None:
         self._model = mesh
 
-        self._material = pygfx.MeshBasicMaterial()
+        self._material = pygfx.MeshBasicMaterial(
+            # This value has model render order win for coplanar objects
+            depth_compare="<=",
+        )
 
         self._geometry = pygfx.Geometry(
             positions=pygfx.resources.Buffer(

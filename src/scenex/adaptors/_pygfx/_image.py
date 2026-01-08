@@ -28,7 +28,11 @@ class Image(Node, ImageAdaptor):
 
     def __init__(self, image: model.Image, **backend_kwargs: Any) -> None:
         self._model = image
-        self._material = pygfx.ImageBasicMaterial(clim=image.clims)
+        self._material = pygfx.ImageBasicMaterial(
+            clim=image.clims,
+            # This value has model render order win for coplanar objects
+            depth_compare="<=",
+        )
         self._snx_set_data(image.data)
         self._pygfx_node = pygfx.Image(self._geometry, self._material)
 

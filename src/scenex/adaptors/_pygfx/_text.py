@@ -24,7 +24,11 @@ class Text(Node, TextAdaptor):
 
     def __init__(self, text: TextModel, **backend_kwargs: Any) -> None:
         self._model = text
-        self._material = pygfx.TextMaterial(color=text.color.hex)
+        self._material = pygfx.TextMaterial(
+            color=text.color.hex,
+            # This value has model render order win for coplanar objects
+            depth_compare="<=",
+        )
         # create a pygfx Text visual
         self._pygfx_node = pygfx.Text(
             text=text.text,

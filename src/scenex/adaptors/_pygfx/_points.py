@@ -42,6 +42,8 @@ class Points(Node, PointsAdaptor):
             aa=points.antialias > 0,
             edge_width=points.edge_width,
             opacity=points.opacity,
+            # This value has model render order win for coplanar objects
+            depth_compare="<=",
         )
         if isinstance(points.face_color, UniformColor):
             self._material.color = points.face_color.color.rgba
