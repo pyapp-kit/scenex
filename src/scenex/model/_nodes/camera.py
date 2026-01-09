@@ -8,6 +8,13 @@ import numpy as np
 import pylinalg as la
 from pydantic import Field, PrivateAttr, computed_field
 
+from scenex.app.events import (
+    MouseButton,
+    MouseEvent,
+    MouseMoveEvent,
+    MousePressEvent,
+    WheelEvent,
+)
 from scenex.model._base import EventedBase
 from scenex.utils import projections
 
@@ -454,14 +461,6 @@ class Orbit(InteractionStrategy):
 
     def handle_event(self, event: Event, camera: Camera) -> bool:
         """Handle mouse and wheel events to orbit the camera."""
-        from scenex.app.events import (
-            MouseButton,
-            MouseEvent,
-            MouseMoveEvent,
-            MousePressEvent,
-            WheelEvent,
-        )
-
         if not camera.interactive:
             return False
 
