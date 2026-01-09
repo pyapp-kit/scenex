@@ -1,5 +1,17 @@
+from unittest.mock import patch
+
 import scenex as snx
 import scenex.adaptors._vispy as adaptors
+
+
+def test_close() -> None:
+    """Ensures that the SceneCanvas' close method is called when closing the model."""
+    canvas = snx.Canvas()
+    vis_canvas = adaptors.adaptors.get_adaptor(canvas, create=True)
+    assert isinstance(vis_canvas, adaptors.Canvas)
+    with patch.object(vis_canvas._canvas, "close") as mock_close:
+        canvas.close()
+    mock_close.assert_called_once()
 
 
 def test_grid() -> None:

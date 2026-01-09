@@ -1,8 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import cmap
 import numpy as np
 import pytest
 
 import scenex as snx
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 @pytest.fixture
@@ -67,3 +74,25 @@ def basic_scene(
 @pytest.fixture
 def basic_view(basic_scene: snx.Scene) -> snx.View:
     return snx.View(scene=basic_scene)
+
+
+@pytest.fixture(autouse=True)
+def _close_canvases() -> Iterator[None]:
+    """Close any open canvases after each test."""
+    from unittest.mock import patch
+
+    canvases: list[snx.Canvas] = []
+    original_show = snx.show
+
+    def mock_show(*args, **kwargs):  # type: ignore
+        """Show the canvas as normal, but hold onto it so we can close it later."""
+        canvas = original_show(*args, **kwargs)
+        canvases.append(canvas)
+        return canvas
+
+    with patch.object(snx, "show", side_effect=mock_show):
+        yield
+
+    # Close any created canvases
+    for canvas in canvases:
+        canvas.close()

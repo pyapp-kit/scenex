@@ -1,9 +1,19 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pygfx
 
 import scenex as snx
 import scenex.adaptors._pygfx as adaptors
+
+
+def test_close() -> None:
+    """Ensures that the RenderCanvas is closed (soon) after closing the model."""
+    canvas = snx.Canvas()
+    py_canvas = adaptors.adaptors.get_adaptor(canvas, create=True)
+    assert isinstance(py_canvas, adaptors.Canvas)
+    with patch.object(py_canvas._wgpu_canvas, "close") as mock_close:
+        canvas.close()
+    mock_close.assert_called_once()
 
 
 def test_grid() -> None:

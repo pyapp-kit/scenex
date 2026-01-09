@@ -130,6 +130,11 @@ class Canvas(EventedBase):
 
         self._compute_layout()
 
+    def close(self) -> None:
+        """Close the canvas and release resources."""
+        for adaptor in self._get_adaptors():
+            cast("CanvasAdaptor", adaptor)._snx_close()
+
     @computed_field  # type: ignore
     @property
     def views(self) -> Sequence[View]:
