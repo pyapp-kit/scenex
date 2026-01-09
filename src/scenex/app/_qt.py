@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 from concurrent.futures import Future
-from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from qtpy.QtCore import (
@@ -16,7 +15,6 @@ from qtpy.QtCore import (
 )
 from qtpy.QtGui import QEnterEvent, QMouseEvent, QResizeEvent, QWheelEvent
 from qtpy.QtWidgets import QApplication, QWidget
-from superqt.utils import signals_blocked
 
 from scenex.app._auto import App, CursorType
 from scenex.app.events import (
@@ -44,7 +42,7 @@ except ImportError:
 
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterator
+    from collections.abc import Callable
     from typing import Any
 
     from scenex import Canvas
@@ -61,8 +59,8 @@ class QtEventFilter(QObject, EventFilter):
         self._active_buttons: MouseButton = MouseButton.NONE
 
     def eventFilter(self, a0: QObject | None = None, a1: QEvent | None = None) -> bool:
-        if isinstance(a0, QWidget) and isinstance(a1, QEvent):
-            if evt := self._convert_event(a1):
+        if isinstance(a0, QWidget) and not a0.signalsBlocked():
+            if isinstance(a1, QEvent) and (evt := self._convert_event(a1)):
                 return self._model_canvas.handle(evt)
         return False
 
@@ -199,12 +197,6 @@ class QtAppWrap(App):
         self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
     ) -> Future[T]:
         return _call_in_main_thread(func, *args, **kwargs)
-
-    @contextmanager
-    def block_events(self, window: Any) -> Iterator[None]:
-        """Context manager to block events for a window."""
-        with signals_blocked(window):
-            yield
 
     def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
         adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])

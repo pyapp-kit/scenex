@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from concurrent.futures import Future
-from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, cast
 
 import wx
@@ -20,7 +19,7 @@ from scenex.app.events._events import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterator
+    from collections.abc import Callable
 
     from scenex import Canvas
     from scenex.adaptors._base import CanvasAdaptor
@@ -194,12 +193,6 @@ class WxAppWrap(App):
         self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
     ) -> Future[T]:
         return call_in_main_thread(func, *args, **kwargs)
-
-    @contextmanager
-    def block_events(self, window: Any) -> Iterator[None]:
-        """Context manager to block events for a window."""
-        with wx.EventBlocker(window):
-            yield
 
     def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
         adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])

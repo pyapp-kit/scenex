@@ -5,7 +5,6 @@ import os
 import sys
 from collections import OrderedDict
 from concurrent.futures import Executor, Future, ThreadPoolExecutor
-from contextlib import contextmanager
 from enum import Enum, auto
 from functools import cache, wraps
 from typing import TYPE_CHECKING, cast
@@ -280,31 +279,6 @@ class App:
         """
         return _thread_pool_executor()
 
-    @contextmanager
-    def block_events(self, window: Any) -> Iterator[None]:
-        """Context manager to temporarily block events for a window.
-
-        Parameters
-        ----------
-        window : Any
-            The backend-specific window object.
-
-        Yields
-        ------
-        None
-
-        Notes
-        -----
-        Must be implemented by subclasses.
-
-        Examples
-        --------
-        Block events during a long operation:
-            >>> with app().block_events(canvas_widget):
-            ...     perform_long_operation()
-        """
-        raise NotImplementedError("Must be implemented by subclasses.")
-
     # ------------------------------ cursor API -------------------------------
     def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
         """Set the cursor for the given canvas.
@@ -330,7 +304,6 @@ def _running_apps() -> Iterator[GuiFrontend]:
     """Return an iterator of running GUI applications."""
     for mod_name in ("PyQt5", "PySide2", "PySide6", "PyQt6"):
         if mod := sys.modules.get(f"{mod_name}.QtWidgets"):
-            print(f"Found {mod}")
             if (
                 qapp := getattr(mod, "QApplication", None)
             ) and qapp.instance() is not None:
