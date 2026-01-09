@@ -131,6 +131,8 @@ class Transform(RootModel):
         >>> transformed = transform.map(points)
 
     Combine two transforms:
+        >>> transform1 = Transform().translated((5, 0, 0))
+        >>> transform2 = Transform().scaled((2, 2, 2))
         >>> combined = transform1 @ transform2
 
     Invert a transform:

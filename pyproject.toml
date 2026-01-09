@@ -169,8 +169,13 @@ venv = ".venv"
 # https://docs.pytest.org/
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = ["--color=yes"]
-testpaths = ["tests"]
+addopts = [
+    "--color=yes",
+    "--doctest-modules",
+    "--doctest-continue-on-failure",
+]
+testpaths = ["tests", "src"]
+doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE"]
 filterwarnings = [
     "error",
     "ignore:'count' is passed as positional argument::vispy",

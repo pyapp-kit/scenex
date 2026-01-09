@@ -138,35 +138,44 @@ def show(
     Show a simple image:
         >>> import numpy as np
         >>> import scenex as snx
-        >>> data = np.random.rand(100, 100)
+        >>> data = np.random.rand(100, 100).astype(np.float32)
         >>> img = snx.Image(data=data)
         >>> snx.show(img)
+        Canvas(...)
         >>> snx.run()
 
     Show a scene with multiple objects:
+        >>> from cmap import Color
+        >>> points = np.random.rand(100, 3).astype(np.float32)
         >>> scene = snx.Scene(
         ...     children=[
-        ...         snx.Image(data=image_data),
-        ...         snx.Points(coords=points, face_color=Color("red")),
+        ...         snx.Image(data=data),
+        ...         snx.Points(
+        ...             coords=points,
+        ...             face_color=snx.UniformColor(color=Color("red")),
+        ...         ),
         ...     ]
         ... )
-        >>> canvas = snx.show(scene)
+        >>> snx.show(scene)
+        Canvas(...)
         >>> snx.run()
 
     Show a view with interactive camera:
         >>> view = snx.View(
-        ...     scene=my_scene,
+        ...     scene=scene,
         ...     camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
         ... )
         >>> snx.show(view)
+        Canvas(...)
         >>> snx.run()
 
     Show with specific backend:
-        >>> snx.show(my_scene, backend="pygfx")
+        >>> snx.show(scene, backend="pygfx")
+        Canvas(...)
         >>> snx.run()
 
     Access the returned canvas:
-        >>> canvas = snx.show(my_image)
+        >>> canvas = snx.show(scene)
         >>> canvas.background_color = Color("white")
         >>> canvas.width = 800
         >>> snx.run()

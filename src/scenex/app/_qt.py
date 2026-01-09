@@ -182,8 +182,9 @@ class QtAppWrap(App):
         cast("QWidget", canvas).installEventFilter(f)
         return f
 
-    def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
-        cast("QWidget", canvas._snx_get_native()).setVisible(visible)
+    def show(self, canvas: Canvas, visible: bool) -> None:
+        adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
+        cast("QWidget", adaptor._snx_get_native()).setVisible(visible)
 
     def process_events(self) -> None:
         """Process events for the application."""

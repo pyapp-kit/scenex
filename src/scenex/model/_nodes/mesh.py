@@ -43,6 +43,7 @@ class Mesh(Node):
     Examples
     --------
     Create a simple triangle mesh:
+        >>> import numpy as np
         >>> vertices = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]])
         >>> faces = np.array([[0, 1, 2]])
         >>> mesh = Mesh(

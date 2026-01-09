@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
     from typing_extensions import ParamSpec, TypeVar
 
-    from scenex.adaptors._base import CanvasAdaptor
     from scenex.app.events._events import EventFilter
     from scenex.model import Canvas
 
@@ -89,6 +88,8 @@ class CursorType(Enum):
     Examples
     --------
     Set a crosshair cursor during drawing mode:
+        >>> import scenex as snx
+        >>> canvas = snx.Canvas()
         >>> app().set_cursor(canvas, CursorType.CROSS)
 
     Restore default cursor after operation:
@@ -163,13 +164,13 @@ class App:
         """
         raise NotImplementedError("Must be implemented by subclasses.")
 
-    def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
+    def show(self, canvas: Canvas, visible: bool) -> None:
         """Show or hide a canvas window.
 
         Parameters
         ----------
-        canvas : CanvasAdaptor
-            The canvas adaptor wrapping the backend-specific canvas widget.
+        canvas : Canvas
+            The canvas to show or hide
         visible : bool
             True to show the canvas window, False to hide it.
 
@@ -348,7 +349,8 @@ def ensure_main_thread(func: Callable[P, T]) -> Callable[P, Future[T]]:
     Ensure a GUI operation runs on the main thread:
         >>> @ensure_main_thread
         ... def update_widget(value: int) -> None:
-        ...     widget.set_value(value)
+        ...     # Update some GUI widget with the given value
+        ...     pass
         >>> future = update_widget(42)  # Returns immediately with Future
         >>> result = future.result()  # Block until completion if needed
 
@@ -457,14 +459,6 @@ def app() -> App:
     --------
     Get the app and run the event loop:
         >>> app().run()
-
-    Show a canvas window:
-        >>> from scenex import Canvas
-        >>> canvas = Canvas()
-        >>> app().show(canvas._get_adaptors()[0], visible=True)
-
-    Process pending events without blocking:
-        >>> app().process_events()
 
     See Also
     --------

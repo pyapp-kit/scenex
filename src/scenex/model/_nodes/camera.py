@@ -75,9 +75,7 @@ class Camera(Node):
 
     Create a perspective camera:
         >>> from scenex.utils.projections import perspective
-        >>> camera = Camera(
-        ...     projection=perspective(fov=60, aspect=1.5, near=0.1, far=100)
-        ... )
+        >>> camera = Camera(projection=perspective(fov=70, near=0.1, far=100))
     """
 
     node_type: Literal["camera"] = "camera"
@@ -271,14 +269,17 @@ class PanZoom(InteractionStrategy):
         >>> camera = Camera(controller=PanZoom(lock_x=True), interactive=True)
 
     Create an image viewer with pan/zoom:
+        >>> import numpy as np
+        >>> from scenex.utils import projections
+        >>> my_data = np.random.rand(512, 512).astype(np.float32)
         >>> view = View(
         ...     scene=Scene(children=[Image(data=my_data)]),
         ...     camera=Camera(
         ...         controller=PanZoom(),
         ...         interactive=True,
-        ...         projection=orthographic(width, height, 1),
         ...     ),
         ... )
+        >>> projections.zoom_to_fit(view=view, type="orthographic")
 
     See Also
     --------
@@ -406,18 +407,35 @@ class Orbit(InteractionStrategy):
     Examples
     --------
     Orbit around the origin:
+        >>> from scenex.utils import projections
+        >>> # Create a perspective camera...
         >>> camera = Camera(
-        ...     controller=Orbit(center=(0, 0, 0)),
         ...     interactive=True,
-        ...     projection=perspective(fov=60, aspect=1.5, near=0.1, far=1000),
+        ...     projection=projections.perspective(fov=70, near=1, far=1000),
         ... )
+        >>> # ...positioned along the X axis...
+        >>> camera.transform = Transform().translated((100, 0, 0))
+        >>> # ...looking at the origin...
+        >>> camera.look_at((0, 0, 0), up=(0, 0, 1))
+        >>> # ...that orbits around the origin
+        >>> camera.controller = Orbit(center=(0, 0, 0))
 
     Orbit around a data volume's center:
+        >>> import numpy as np
+        >>> my_data = np.random.rand(100, 100, 100).astype(np.float32)
+        >>> volume = Volume(data=my_data)
         >>> center = np.mean(volume.bounding_box, axis=0)
-        >>> camera = Camera(controller=Orbit(center=tuple(center)), interactive=True)
-        >>> # Position camera along x-axis looking at center
+        >>> # Create a perspective camera...
+        >>> camera = Camera(
+        ...     interactive=True,
+        ...     projection=projections.perspective(fov=70, near=1, far=1000),
+        ... )
+        >>> # ...positioned along the X axis from the volume center...
         >>> camera.transform = Transform().translated(center).translated((100, 0, 0))
+        >>> # ...looking at the center...
         >>> camera.look_at(center, up=(0, 0, 1))
+        >>> # ...that orbits around the center
+        >>> camera.controller = Orbit(center=center)
 
     Custom polar axis for Y-up scenes:
         >>> camera = Camera(

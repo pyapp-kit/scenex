@@ -194,10 +194,11 @@ class JupyterAppWrap(App):
     def install_event_filter(self, canvas: Any, model_canvas: Canvas) -> EventFilter:
         return JupyterEventFilter(canvas, model_canvas)
 
-    def show(self, canvas: CanvasAdaptor, visible: bool) -> None:
-        native_canvas = cast("RemoteFrameBuffer", canvas._snx_get_native())
-        if canvas not in self._visible_canvases:
-            self._visible_canvases.add(canvas)
+    def show(self, canvas: Canvas, visible: bool) -> None:
+        adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
+        native_canvas = cast("RemoteFrameBuffer", adaptor)
+        if adaptor not in self._visible_canvases:
+            self._visible_canvases.add(adaptor)
             display.display(native_canvas)
         native_canvas.layout.display = "flex" if visible else "none"
 

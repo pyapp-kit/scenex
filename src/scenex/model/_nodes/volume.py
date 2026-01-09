@@ -36,12 +36,13 @@ class Volume(Image):
     Examples
     --------
     Create a volume with MIP rendering:
+        >>> import numpy as np
         >>> data = np.random.rand(50, 100, 100)  # ZYX dimensions
         >>> volume = Volume(data=data, render_mode="mip")
 
     Create a volume with custom colormap and intensity range:
         >>> volume = Volume(
-        ...     data=my_3d_array,
+        ...     data=data,
         ...     cmap=Colormap("viridis"),
         ...     clims=(0, 1),
         ...     render_mode="iso",

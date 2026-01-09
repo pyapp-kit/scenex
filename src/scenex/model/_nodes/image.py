@@ -48,21 +48,22 @@ class Image(Node):
     Examples
     --------
     Create a simple grayscale image:
+        >>> import numpy as np
         >>> data = np.random.rand(100, 100)
         >>> img = Image(data=data)
 
     Create an image with custom colormap and intensity range:
-        >>> img = Image(data=my_array, cmap=Colormap("viridis"), clims=(0, 255))
+        >>> img = Image(data=data, cmap=Colormap("viridis"), clims=(0, 255))
 
     Create a transformed and semi-transparent image:
         >>> img = Image(
-        ...     data=my_array,
+        ...     data=data,
         ...     transform=Transform().translated((10, 20)).scaled((2, 2)),
         ...     opacity=0.7,
         ... )
 
     Apply gamma correction to brighten dark images:
-        >>> img = Image(data=dark_image, gamma=0.5)
+        >>> img = Image(data=data, gamma=0.5)
     """
 
     node_type: Literal["image"] = Field(default="image", repr=False)
@@ -194,4 +195,4 @@ def _passes_through_parallelogram(
     is_inside = alpha >= 0 and alpha < 1 and beta >= 0 and beta < 1
 
     # If the ray passes through node, return the depth of the intersection.
-    return t if is_inside else None
+    return float(t) if is_inside else None
