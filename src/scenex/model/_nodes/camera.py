@@ -15,7 +15,6 @@ from .node import Node
 
 if TYPE_CHECKING:
     from scenex.app.events import Event
-    from scenex.app.events._events import Ray
     from scenex.model._transform import Transform
 
 CameraType = Literal["panzoom", "perspective"]
@@ -93,10 +92,6 @@ class Camera(Node):
     @property  # TODO: Cache?
     def bounding_box(self) -> None:
         # Prevent cameras from distorting scene bounding boxes
-        return None
-
-    def passes_through(self, ray: Ray) -> float | None:
-        # Cameras are not rendered objects
         return None
 
     @property

@@ -246,7 +246,8 @@ class Node(EventedBase):
             The depth t at which the ray intersects the node, or None if it never
             intersects.
         """
-        raise RuntimeError("Must be implemented in subclasses")
+        # Nodes that want to support ray intersection should override this method.
+        return None
 
     @model_validator(mode="wrap")
     @classmethod

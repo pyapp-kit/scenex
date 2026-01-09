@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING, Any, Literal
 
-from scenex.app.events._events import Ray
-
 from .node import Node
 
 if TYPE_CHECKING:
@@ -69,8 +67,3 @@ class Scene(Node):
             children: Iterable["Node | dict[str, Any]"] = (),
             **data: "Unpack[NodeKwargs]",
         ) -> None: ...
-
-    def passes_through(self, ray: Ray) -> float | None:
-        # The ray could pass through this scene's children,
-        # but it cannot pass through the scene itself...
-        return None
