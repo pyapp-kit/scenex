@@ -452,15 +452,6 @@ class Orbit(InteractionStrategy):
     _last_canvas_pos: tuple[float, float] | None = PrivateAttr(default=None)
     _pan_ray: Any = PrivateAttr(default=None)  # Ray type
 
-    def model_post_init(self, __context: Any) -> None:
-        """Ensure center and polar_axis are numpy arrays."""
-        super().model_post_init(__context)
-        # Convert to numpy arrays for efficient computation
-        object.__setattr__(self, "_center_array", np.array(self.center, dtype=float))
-        object.__setattr__(
-            self, "_polar_axis_array", np.array(self.polar_axis, dtype=float)
-        )
-
     def handle_event(self, event: Event, camera: Camera) -> bool:
         """Handle mouse and wheel events to orbit the camera."""
         from scenex.app.events import (
@@ -558,7 +549,6 @@ class Orbit(InteractionStrategy):
                 float(new_center_array[2]),
             )
             self.center = new_center_tuple
-            object.__setattr__(self, "_center_array", new_center_array)
             handled = True
 
         elif isinstance(event, WheelEvent):
