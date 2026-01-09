@@ -27,26 +27,26 @@ repos:
         language: system
         types_or: [python, pyi]
         require_serial: true
-        entry: uv run --active ruff format --force-exclude
+        entry: uv run ruff format --force-exclude
       - id: ruff-check
         name: ruff check
         language: system
         types_or: [python, pyi]
         require_serial: true
-        entry: uv run --active ruff check --force-exclude
+        entry: uv run ruff check --force-exclude
         args: [--output-format=full, --show-fixes, --exit-non-zero-on-fix]
       - id: mypy
         name: mypy
         language: system
         types_or: [python, pyi]
         require_serial: true
-        entry: uv run --active mypy
+        entry: uv run mypy
       - id: pyright
         name: pyright
         language: system
         types_or: [python, pyi]
         require_serial: true
-        entry: uv run --active pyright
+        entry: uv run pyright
 
   - repo: https://github.com/crate-ci/typos
     rev: v1.34.0
