@@ -39,7 +39,11 @@ class EventedBase(BaseModel):
 
     _model_id: uuid.UUID = PrivateAttr(default_factory=uuid.uuid4)
 
-    events: ClassVar[SignalGroupDescriptor] = SignalGroupDescriptor()
+    events: ClassVar[SignalGroupDescriptor] = SignalGroupDescriptor(
+        # NB: Need to avoid propagating events to parents who don't necessarily have the
+        # same fields.
+        connect_child_events=False
+    )
 
     # note, strangely, for mypy reasons,
     # this configDict should not include extra="forbid"
@@ -79,15 +83,7 @@ class EventedBase(BaseModel):
         self, backend: str | None = None, create: bool = False
     ) -> list["Adaptor"]:
         """Get all adaptors for this model."""
-        from scenex.adaptors import get_adaptor_registry, get_all_adaptors
+        from scenex.adaptors import get_adaptor_registry
 
-        if backend:
-            reg = get_adaptor_registry(backend=backend)
-            return [reg.get_adaptor(self, create=create)]
-        else:
-            return list(get_all_adaptors(self))
-
-    def _get_native(self, backend: str | None = None, create: bool = False) -> Any:
-        """Get the native object for this model."""
-        if adaptors := self._get_adaptors(backend=backend, create=create):
-            return adaptors[0]._snx_get_native()
+        reg = get_adaptor_registry(backend=backend)
+        return [reg.get_adaptor(self, create=create)]

@@ -1,8 +1,17 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
+from unittest.mock import Mock
+
 import cmap
 import numpy as np
 import pytest
 
 import scenex as snx
+from scenex.app import app
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 @pytest.fixture
@@ -10,7 +19,7 @@ def random_points_node() -> snx.Points:
     return snx.Points(
         coords=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
         size=5,
-        face_color=cmap.Color("coral"),
+        face_color=snx.UniformColor(color=cmap.Color("coral")),
         transform=snx.Transform().translated((0, -50)),
     )
 
@@ -67,3 +76,53 @@ def basic_scene(
 @pytest.fixture
 def basic_view(basic_scene: snx.Scene) -> snx.View:
     return snx.View(scene=basic_scene)
+
+
+@pytest.fixture(autouse=True)
+def _close_canvases() -> Iterator[None]:
+    """Close any open canvases after each test."""
+    from unittest.mock import patch
+
+    canvases: list[snx.Canvas] = []
+    original_show = snx.show
+
+    def mock_show(*args, **kwargs):  # type: ignore
+        """Show the canvas as normal, but hold onto it so we can close it later."""
+        canvas = original_show(*args, **kwargs)
+        canvases.append(canvas)
+        return canvas
+
+    with patch.object(snx, "show", side_effect=mock_show):
+        yield
+
+    # Close any created canvases
+    for canvas in canvases:
+        canvas.close()
+
+
+@pytest.fixture(autouse=True)
+def _doctest_setup(doctest_namespace: dict) -> Iterator[None]:
+    """Sets up the doctest namespace.
+
+    The main function currently is to allow examples to call blocking functions (for
+    streamlined copy-paste) without actually blocking.
+    """
+    # Mock snx.run
+    snx.run = Mock(return_value=None)
+
+    # Mock app().run
+    original_app = app()
+
+    # Create a wrapper that delegates everything to the real app except run()
+    class MockedApp:
+        def run(self) -> None:
+            """No-op run method for doctests."""
+            pass
+
+        def __getattr__(self, name: str) -> Any:
+            """Delegate all other attributes to the real app."""
+            return getattr(original_app, name)
+
+    doctest_namespace["app"] = MockedApp
+
+    yield
