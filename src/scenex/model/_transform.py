@@ -3,7 +3,7 @@ from __future__ import annotations
 import functools
 import math
 from functools import reduce
-from typing import TYPE_CHECKING, Any, ClassVar, cast
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, cast
 
 import numpy as np
 from pydantic import ConfigDict, Field, RootModel
@@ -89,8 +89,8 @@ class Matrix3D(np.ndarray):
 class Transform(RootModel):
     """A 4x4 transformation matrix placing a 3D object in 3D space."""
 
-    root: Matrix3D = Field(
-        default_factory=lambda: np.eye(4),  # type: ignore
+    root: Annotated[np.ndarray, Matrix3D] = Field(
+        default_factory=lambda: np.eye(4),
         description="4x4 Transformation matrix.",
     )
 
@@ -116,7 +116,7 @@ class Transform(RootModel):
         """Return the dot product of this transform with another."""
         if isinstance(other, Transform):
             other = other.root
-        return Transform(self.root @ other)  # type: ignore
+        return Transform(self.root @ other)
 
     def dot(self, other: Transform | ArrayLike) -> Transform:
         """Return the dot product of this transform with another."""
@@ -131,7 +131,7 @@ class Transform(RootModel):
 
     def inv(self) -> Transform:
         """Return the inverse of the transform."""
-        return Transform(np.linalg.inv(self.root))  # type: ignore
+        return Transform(np.linalg.inv(self.root))
 
     def translated(self, pos: ArrayLike) -> Transform:
         """Return new transform, translated by pos.
