@@ -103,12 +103,12 @@ def use(backend: KnownBackend | None = None) -> None:
     --------
     Use pygfx backend explicitly:
         >>> import scenex as snx
-        >>> snx.use("pygfx")
-        >>> snx.show(my_view)
+        >>> snx.use("pygfx")  # doctest: +SKIP
+        >>> canvas = snx.show(snx.View())
 
     Use vispy backend:
-        >>> snx.use("vispy")
-        >>> snx.show(my_scene)
+        >>> snx.use("vispy")  # doctest: +SKIP
+        >>> canvas = snx.show(snx.Scene())
 
     Reset to auto-detection:
         >>> snx.use(None)
@@ -141,15 +141,19 @@ def run() -> None:
     Examples
     --------
     Basic usage with a scene:
+        >>> import numpy as np
         >>> import scenex as snx
-        >>> scene = snx.Scene(children=[snx.Image(data=my_array)])
+        >>> scene = snx.Scene(
+        ...     children=[snx.Image(data=np.random.rand(100, 100).astype(np.float32))]
+        ... )
         >>> snx.show(scene)
+        Canvas(...)
         >>> snx.run()  # Blocks until window is closed
 
     Create multiple views and run:
         >>> canvas = snx.Canvas()
-        >>> canvas.grid.add(view1, row=0, col=0)
-        >>> canvas.grid.add(view2, row=0, col=1)
+        >>> canvas.grid.add(snx.View(), row=0, col=0)
+        >>> canvas.grid.add(snx.View(), row=0, col=1)
         >>> canvas.visible = True
         >>> snx.run()
 

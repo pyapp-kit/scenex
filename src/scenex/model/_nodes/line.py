@@ -44,6 +44,7 @@ class Line(Node):
     Examples
     --------
     Create a simple line connecting several points:
+        >>> import numpy as np
         >>> vertices = np.array([[0, 0], [10, 5], [20, 0]])
         >>> line = Line(
         ...     vertices=vertices,

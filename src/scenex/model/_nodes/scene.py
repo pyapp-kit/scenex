@@ -25,10 +25,16 @@ class Scene(Node):
     Examples
     --------
     Create a scene with visual elements:
+        >>> import numpy as np
+        >>> my_image = np.random.rand(100, 100).astype(np.float32)
+        >>> my_points = np.random.rand(100, 3).astype(np.float32)
         >>> scene = Scene(
         ...     children=[
         ...         Image(data=my_image),
-        ...         Points(coords=my_points, face_color=Color("red")),
+        ...         Points(
+        ...             coords=my_points,
+        ...             face_color=UniformColor(color=Color("red")),
+        ...         ),
         ...     ]
         ... )
 
@@ -39,10 +45,8 @@ class Scene(Node):
 
     Create a hierarchical scene with nested nodes:
         >>> grandchild = Image(data=my_image)
-        >>> parent_node = Node(
-        ...     transform=Transform().translated((10, 0, 0)), children=[grandchild]
-        ... )
-        >>> scene = Scene(children=[parent_node])
+        >>> parent = Points(coords=my_points)
+        >>> scene = Scene(children=[parent])
 
     Use a scene with a view:
         >>> view = View(scene=scene, camera=Camera())

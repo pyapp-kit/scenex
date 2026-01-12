@@ -26,16 +26,6 @@ class GridAssignment(Layout):
         The number of rows the view spans (default 1).
     colspan : int
         The number of columns the view spans (default 1).
-
-    Examples
-    --------
-    Create a grid assignment at row 0, column 1:
-        >>> assignment = GridAssignment(view=my_view, row=0, col=1)
-
-    Create a grid assignment spanning 2 rows and 3 columns:
-        >>> assignment = GridAssignment(
-        ...     view=my_view, row=0, col=0, rowspan=2, colspan=3
-        ... )
     """
 
     view: View
@@ -73,6 +63,8 @@ class Grid(Layout):
     --------
     Create a grid with two views side-by-side with equal widths:
         >>> grid = Grid()
+        >>> view1 = View()
+        >>> view2 = View()
         >>> grid.add(view1, row=0, col=0)
         >>> grid.add(view2, row=0, col=1)
 
@@ -82,6 +74,8 @@ class Grid(Layout):
         >>> grid.add(view2, row=0, col=1)
 
     Create a view spanning multiple cells:
+        >>> main_view = View()
+        >>> side_view = View()
         >>> grid = Grid()
         >>> grid.add(main_view, row=0, col=0, rowspan=2, colspan=2)
         >>> grid.add(side_view, row=0, col=2)

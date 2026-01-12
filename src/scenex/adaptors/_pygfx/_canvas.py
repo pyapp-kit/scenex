@@ -95,7 +95,7 @@ class Canvas(CanvasAdaptor):
         return self._wgpu_canvas
 
     def _snx_set_visible(self, arg: bool) -> None:
-        app().show(self, arg)
+        app().show(self._canvas, arg)
         self._wgpu_canvas.request_draw()
 
     def _draw(self) -> None:

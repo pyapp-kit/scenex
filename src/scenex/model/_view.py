@@ -53,12 +53,14 @@ class View(EventedBase):
     Examples
     --------
     Create a view with a scene containing an image:
+        >>> import numpy as np
+        >>> my_array = np.random.rand(100, 100).astype(np.float32)
         >>> scene = Scene(children=[Image(data=my_array)])
         >>> view = View(scene=scene, camera=Camera())
 
     Create a view with interactive camera and letterbox resizing:
         >>> view = View(
-        ...     scene=my_scene,
+        ...     scene=scene,
         ...     camera=Camera(controller=PanZoom(), interactive=True),
         ...     resize=Letterbox(),
         ... )

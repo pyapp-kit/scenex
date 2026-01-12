@@ -71,6 +71,8 @@ class Canvas(EventedBase):
 
     Create a canvas with multiple views arranged in a grid:
         >>> canvas = Canvas(width=800, height=400)
+        >>> view1 = View()
+        >>> view2 = View()
         >>> canvas.grid.add(view1, row=0, col=0)
         >>> canvas.grid.add(view2, row=0, col=1)
     """

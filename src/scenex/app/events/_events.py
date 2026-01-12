@@ -50,16 +50,24 @@ class MouseButton(IntFlag):
     Examples
     --------
     Check if left button is pressed:
+        >>> event = MousePressEvent(
+        ...     canvas_pos=(100, 150),
+        ...     world_ray=Ray(origin=(0, 0, 0), direction=(0, 0, -1), source=None),
+        ...     buttons=MouseButton.LEFT | MouseButton.RIGHT,
+        ... )
         >>> if event.buttons & MouseButton.LEFT:
         ...     print("Left button is down")
+        Left button is down
 
     Check for specific button combination:
         >>> if event.buttons == (MouseButton.LEFT | MouseButton.RIGHT):
         ...     print("Both left and right buttons pressed")
+        Both left and right buttons pressed
 
     Check if any button is pressed:
         >>> if event.buttons != MouseButton.NONE:
         ...     print("Some button is pressed")
+        Some button is pressed
     """
 
     NONE = 0
@@ -100,19 +108,23 @@ class Ray(NamedTuple):
     Examples
     --------
     Find all intersections with a scene:
-        >>> intersections = event.world_ray.intersections(view.scene)
-        >>> for node, distance in intersections:
-        ...     print(f"Hit {node.name} at distance {distance}")
-
-    Get the 3D world position at a specific distance:
-        >>> point = event.world_ray.point_at_distance(10.0)
-        >>> print(f"Point 10 units along ray: {point}")
-
-    Find nearest intersection:
-        >>> intersections = event.world_ray.intersections(view.scene)
-        >>> if intersections:
-        ...     nearest_node, nearest_dist = intersections[0]
-        ...     hit_point = event.world_ray.point_at_distance(nearest_dist)
+        >>> import numpy as np
+        >>> import scenex as snx
+        >>> view = snx.View(
+        ...     scene=snx.Scene(
+        ...         children=[
+        ...             snx.Image(data=np.random.rand(100, 100)),
+        ...             snx.Points(
+        ...                 coords=np.asarray([[0, 0, 0], [1, 1, 0]]),
+        ...                 size=5,
+        ...                 edge_width=0,
+        ...             ),
+        ...         ]
+        ...     )
+        ... )
+        >>> ray = Ray(origin=(1, 1, 10), direction=(0, 0, -1), source=view)
+        >>> ray.intersections(view.scene)
+        [(Points(...), 7.5), (Image(...), 10.0)]
 
     See Also
     --------
@@ -349,20 +361,6 @@ class EventFilter:
     EventFilter instances are returned when installing event filters on views or
     canvases. They provide a mechanism to uninstall the filter when it's no longer
     needed, ensuring proper cleanup and preventing memory leaks.
-
-    Examples
-    --------
-    Install and later remove an event filter:
-        >>> def my_filter(event):
-        ...     print(f"Event: {event}")
-        ...     return False
-        >>> filter_handle = view.install_event_filter(my_filter)
-        >>> # ... later ...
-        >>> filter_handle.uninstall()
-
-    See Also
-    --------
-    View.set_event_filter : Install an event filter on a view
     """
 
     def uninstall(self) -> None:

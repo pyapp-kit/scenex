@@ -75,6 +75,7 @@ class Points(Node):
     Examples
     --------
     Create simple point markers:
+        >>> import numpy as np
         >>> coords = np.random.rand(100, 2) * 100
         >>> points = Points(
         ...     coords=coords,
@@ -84,7 +85,7 @@ class Points(Node):
 
     Create points with custom symbols and styling:
         >>> points = Points(
-        ...     coords=my_coords,
+        ...     coords=coords,
         ...     symbol="star",
         ...     size=20,
         ...     face_color=UniformColor(color=Color("yellow")),
