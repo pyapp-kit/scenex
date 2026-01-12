@@ -1,7 +1,8 @@
 import logging
 from collections.abc import Iterable, Iterator
-from typing import TYPE_CHECKING, Annotated, Any, ClassVar, Union, cast
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, Union, cast
 
+import numpy as np
 from psygnal import Signal
 from pydantic import (
     ConfigDict,
@@ -46,6 +47,9 @@ logger = logging.getLogger(__name__)
 AnyNode = Annotated[
     Union["Image", "Points", "Camera", "Scene"], Field(discriminator="node_type")
 ]
+
+# Axis-Aligned Bounding Box
+AABB: TypeAlias = tuple[tuple[float, float, float], tuple[float, float, float]]
 
 
 class Node(EventedBase):
@@ -107,6 +111,20 @@ class Node(EventedBase):
     def children(self) -> tuple["Node", ...]:
         """Return a tuple of the children of this node."""
         return tuple(self._children)
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property  # TODO: Cache?
+    def bounding_box(self) -> AABB | None:
+        bounded_nodes = [c for c in self.children if c.bounding_box]
+        if not bounded_nodes:
+            # If there are no children declaring a bounding box, return None
+            return None
+        node_aabbs = [n.transform.map(n.bounding_box)[:, :3] for n in bounded_nodes]  # type:ignore
+        mi = np.vstack([t[0] for t in node_aabbs]).min(axis=0)
+        ma = np.vstack([t[1] for t in node_aabbs]).max(axis=0)
+        # Note the casting is important for pydantic
+        # FIXME: Should just validate in pydantic
+        return (tuple(float(m) for m in mi), tuple(float(m) for m in ma))  # type: ignore
 
     def add_child(self, child: "AnyNode") -> None:
         """Add a child node to this node."""
