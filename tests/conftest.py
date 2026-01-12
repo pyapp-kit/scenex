@@ -1,3 +1,6 @@
+from collections.abc import Iterator
+from unittest.mock import Mock
+
 import cmap
 import numpy as np
 import pytest
@@ -67,3 +70,32 @@ def basic_scene(
 @pytest.fixture
 def basic_view(basic_scene: snx.Scene) -> snx.View:
     return snx.View(scene=basic_scene)
+
+
+@pytest.fixture(autouse=True)
+def _doctest_setup(doctest_namespace: dict) -> Iterator[None]:
+    """Sets up the doctest namespace.
+
+    The main function currently is to allow examples to call blocking functions (for
+    streamlined copy-paste) without actually blocking.
+    """
+    # Mock snx.run
+    snx.run = Mock(return_value=None)
+
+    # TODO: Necessary for the work on https://github.com/pyapp-kit/scenex/pull/42
+    # # Mock app().run
+    # original_app = app()
+
+    # # Create a wrapper that delegates everything to the real app except run()
+    # class MockedApp:
+    #     def run(self) -> None:
+    #         """No-op run method for doctests."""
+    #         pass
+
+    #     def __getattr__(self, name: str) -> Any:
+    #         """Delegate all other attributes to the real app."""
+    #         return getattr(original_app, name)
+
+    # doctest_namespace["app"] = MockedApp
+
+    yield
