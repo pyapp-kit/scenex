@@ -82,5 +82,25 @@ def use(backend: KnownBackend | None = None) -> None:
 
 
 def run() -> None:
-    """Enter the native GUI event loop."""
+    """Start the GUI event loop to display interactive visualizations.
+
+    This function enters the native event loop of the graphics backend, allowing
+    interactive visualizations to respond to user input (mouse, keyboard) and remain
+    visible. The function blocks until the visualization window is closed.
+
+    Call this function after creating and showing your visualizations with `show()`.
+    It is only needed for desktop applications; in Jupyter notebooks, visualizations
+    are displayed automatically without calling `run()`.
+
+    Examples
+    --------
+    Basic usage with a scene:
+        >>> import numpy as np
+        >>> import scenex as snx
+        >>> scene = snx.Scene(
+        ...     children=[snx.Image(data=np.random.rand(100, 100).astype(np.float32))]
+        ... )
+        >>> canvas = snx.show(scene)
+        >>> snx.run()  # Blocks until window is closed
+    """
     get_adaptor_registry().start_event_loop()
