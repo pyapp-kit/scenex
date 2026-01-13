@@ -169,8 +169,19 @@ venv = ".venv"
 # https://docs.pytest.org/
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = ["--color=yes"]
-testpaths = ["tests"]
+addopts = [
+    "--color=yes",
+    # This tells pytest to run doctest within python modules
+    "--doctest-modules",
+    # This allows doctest to skip python modules that error on import
+    # in our case, this will avoid import errors from backend-specific modules.
+    "--doctest-ignore-import-errors",
+]
+testpaths = [
+    "tests",
+    "src",
+]
+doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE"]
 filterwarnings = [
     "error",
     "ignore:'count' is passed as positional argument::vispy",

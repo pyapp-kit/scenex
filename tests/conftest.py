@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import cmap
 import numpy as np
@@ -79,7 +81,6 @@ def basic_view(basic_scene: snx.Scene) -> snx.View:
 @pytest.fixture(autouse=True)
 def _close_canvases() -> Iterator[None]:
     """Close any open canvases after each test."""
-    from unittest.mock import patch
 
     canvases: list[snx.Canvas] = []
     original_show = snx.show

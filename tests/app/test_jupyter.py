@@ -66,6 +66,7 @@ RIGHT_MOUSE = 2
 
 
 def test_pointer_down(evented_canvas: snx.Canvas) -> None:
+    snx.show(evented_canvas)
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
