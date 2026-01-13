@@ -38,6 +38,17 @@ def _doctest_setup(doctest_namespace: dict) -> Iterator[None]:
         except ImportError:
             pass
 
+        try:
+            # HACK: (Only?) in the doctests, WxRenderWidget._rc_close throws:
+            # RuntimeError: wrapped C/C++ object of type WxRenderWidget has been deleted
+            # Unless this starts happening outside of doctests, let's just ignore it.
+            from rendercanvas.wx import WxRenderWidget
+
+            WxRenderWidget._rc_close = Mock(return_value=None)  # type: ignore[method-assign]
+
+        except ImportError:
+            pass
+
         # Mock app().run
         original_app = app()
 

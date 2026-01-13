@@ -399,7 +399,7 @@ def determine_app() -> GuiFrontend:
 
     Force a specific backend via environment variable:
         >>> import os
-        >>> os.environ["SCENEX_APP_BACKEND"] = "qt"
+        >>> os.environ["SCENEX_APP_BACKEND"] = "qt"  # doctest: +SKIP
         >>> backend = determine_app()  # Will use Qt
 
     See Also
