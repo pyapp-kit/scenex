@@ -54,12 +54,24 @@ wx= [
     "wxpython >=4.2.2",
 ]
 pygfx = [
+    # Needed for per-material blending modes
     "pygfx>=0.13.0",
-    # This version of rendercanvas correctly resizes wx widgets
+    # Needed to correctly resizes wx widgets
     "rendercanvas>=2.5.1"
 ]
 vispy = ["vispy>=0.15.0", "pyopengl"]
+# This extra is a mess!
+# Our source code for the pygfx adaptors relies on pygfx>=0.13.0 (see that extra for why).
+# However no versions of imgui-bundle that I'm aware of work for pygfx v0.13.0, because each version of pygfx
+# is tied to a range of versions of wgpu-py. The wgpu-py imgui renderer is broken until wgpu>=0.27.0, which
+# corresponds to pygfx>=0.15.2. So, if you don't care about imgui, you can run pygfx>=0.13.0, but if you want
+# it, you'll need pygfx>=0.15.2 so that you can get wgpu>=0.27.0.
+# Note that it's unclear to me why pygfx v0.15.0 does not work, because the fixes should be a part of that release.
+# See https://github.com/pygfx/wgpu-py/pull/725
 imgui = [
+    # Pulls in a wgpu>=0.27 which is needed to work with this version of imgui-bundle
+    "pygfx>=0.15.2",
+    # Earlier versions of imgui-bundle don't work with pygfx>=0.13.0
     "imgui-bundle>=1.92.0",
 ]
 
