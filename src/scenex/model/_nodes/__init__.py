@@ -70,9 +70,22 @@ from .node import Node  # noqa: I001  must be imported first to avoid circular i
 from .camera import Camera
 from .image import Image
 from .line import Line
+from .mesh import Mesh
 from .points import Points
 from .scene import Scene
+from .text import Text
+from .volume import Volume
 
 Node.model_rebuild()
 
-__all__ = ["Camera", "Image", "Line", "Node", "Points", "Scene"]
+__all__ = [
+    "Camera",
+    "Image",
+    "Line",
+    "Mesh",
+    "Node",
+    "Points",
+    "Scene",
+    "Text",
+    "Volume",
+]
