@@ -24,21 +24,26 @@ Supported Frontends
 
 Usage
 -----
-The app is typically created automatically by `scenex.show()` and `scenex.run()`::
+The app is typically created automatically by `scenex.show()` and/or `scenex.run()`::
 
-    import scenex as snx
+    >>> import scenex as snx
+    >>> import numpy as np
 
-    # App is created automatically
-    snx.show(my_scene)
-    snx.run()  # Starts the event loop
+    >>> # Create a scenex scene
+    >>> my_array = np.random.rand(100, 100).astype(np.float32)
+    >>> my_scene = snx.Scene(children=[snx.Image(data=my_array)])
 
-Access the app instance directly::
+    >>> # Showing the scene creates the app if needed
+    >>> snx.show(my_scene)
+    Canvas(...)
+    >>> snx.run()  # Starts the event loop
 
-    from scenex.app import app
+But it CAN be useful to access the app instance directly. For example, it can be useful
+to ask the app to process any pending events::
 
-    # Get the current app (creates if needed)
-    current_app = app()
-    current_app.run()
+    >>> from scenex.app import app
+
+    >>> app().process_events()
 
 Notes
 -----

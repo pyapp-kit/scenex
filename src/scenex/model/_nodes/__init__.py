@@ -38,24 +38,27 @@ Examples
 --------
 Create a simple image node::
 
-    import numpy as np
-    from scenex.model._nodes import Image
-
-    img = Image(data=np.random.rand(100, 100))
+    >>> import numpy as np
+    >>> from scenex.model._nodes import Image
+    >>> img = Image(data=np.random.rand(100, 100))
 
 Create a hierarchy with transforms::
 
-    from scenex.model._nodes import Scene, Points
-    from scenex.model import Transform
+    >>> from scenex.model._nodes import Scene, Points
+    >>> from scenex.model import Transform
 
-    # Parent node with transform
-    group = Node(transform=Transform().translated((10, 0, 0)))
-    group.add_child(Points(coords=points1))
-    group.add_child(Points(coords=points2))
+    >>> # Parent node with transform
+    >>> parent_points = Points(
+    ...     coords=np.random.rand(50, 3),
+    ...     transform=Transform().translated((10, 0, 0)),
+    ... )
+    >>> # Child node
+    >>> child_img = Image(data=np.random.rand(100, 100))
 
-    # Add to scene
-    scene = Scene()
-    scene.add_child(group)
+    >>> # Add to scene
+    >>> scene = Scene()
+    >>> parent_points.parent = scene
+    >>> child_img.parent = parent_points
 
 See Also
 --------

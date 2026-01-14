@@ -91,28 +91,17 @@ def add_imgui_controls(view: View) -> None:
     --------
     Basic usage with an image::
 
-        import scenex as snx
-        from scenex.imgui import add_imgui_controls
+        >>> import scenex as snx
+        >>> import numpy as np
+        >>> from scenex.imgui import add_imgui_controls
 
-        image = snx.Image(data=my_array)
-        view = snx.View(scene=snx.Scene(children=[image]))
-        add_imgui_controls(view)
-        snx.show(view)
-        snx.run()
-
-    With multiple nodes::
-
-        scene = snx.Scene(
-            children=[
-                snx.Image(data=data1),
-                snx.Points(coords=points),
-                snx.Mesh(vertices=verts, faces=faces),
-            ]
-        )
-        view = snx.View(scene=scene)
-        add_imgui_controls(view)
-        snx.show(view)
-        snx.run()
+        >>> my_array = np.random.rand(100, 100).astype(np.float32)
+        >>> image = snx.Image(data=my_array)
+        >>> view = snx.View(scene=snx.Scene(children=[image]))
+        >>> snx.show(view)
+        Canvas(...)
+        >>> add_imgui_controls(view)
+        >>> snx.run()
 
     The control panel will show sections for:
     - View properties (camera, layout, etc.)

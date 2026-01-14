@@ -54,21 +54,21 @@ Examples
 --------
 Build a simple scene::
 
-    from scenex.model import Scene, Image, Points
-    import numpy as np
+    >>> from scenex.model import Scene, Image, Points
+    >>> import numpy as np
 
-    scene = Scene(
-        children=[
-            Image(data=np.random.rand(100, 100)),
-            Points(coords=np.random.rand(50, 2) * 100),
-        ]
-    )
+    >>> scene = Scene(
+    ...     children=[
+    ...         Image(data=np.random.rand(100, 100)),
+    ...         Points(coords=np.random.rand(50, 2) * 100),
+    ...     ]
+    ... )
 
 Create a view with interactive camera::
 
-    from scenex.model import View, Camera, PanZoom
+    >>> from scenex.model import View, Camera, PanZoom
 
-    view = View(scene=scene, camera=Camera(controller=PanZoom(), interactive=True))
+    >>> view = View(scene=scene, camera=Camera(controller=PanZoom(), interactive=True))
 
 Notes
 -----

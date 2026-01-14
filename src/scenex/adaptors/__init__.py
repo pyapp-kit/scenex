@@ -37,22 +37,26 @@ Supported Backends
 
 Usage
 -----
-Adaptors are not intended for manual instantiation; they are instead created
+Adaptors are NOT intended for manual instantiation; they are instead created
 automatically by `scenex.show()`::
 
-    import scenex as snx
+    >>> import scenex as snx
+    >>> import numpy as np
 
-    # Create model
-    scene = snx.Scene(children=[snx.Image(data=my_array)])
+    >>> # Create model
+    >>> my_array = np.random.rand(100, 100).astype(np.float32)
+    >>> scene = snx.Scene(children=[snx.Image(data=my_array)])
 
-    # This creates adaptors automatically
-    snx.show(scene)  # Adaptors sync model to GPU
-    snx.run()
+    >>> # This creates adaptors automatically
+    >>> snx.show(scene)
+    Canvas(...)
+    >>> snx.run()
 
 To select a particular backend, use `scenex.use()`::
 
-    snx.use("pygfx")  # or "vispy"
-    snx.show(scene)
+    >>> snx.use("pygfx")  # doctest: +SKIP
+    >>> snx.show(scene)
+    Canvas(...)
 
 See Also
 --------
