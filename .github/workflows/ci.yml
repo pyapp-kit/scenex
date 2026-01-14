@@ -42,7 +42,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.10", "3.13"]
         gfx: [pygfx, vispy]
-        canvas: [pyqt, jupyter, wx]
+        canvas: [pyqt6, jupyter, wx]
         exclude:
           # glfw.GLFWError: (65545) b'NSGL: Failed to find a suitable pixel format'
           # (Under the hood GLFW gives vispy the OpenGL context.)
@@ -58,11 +58,11 @@ jobs:
         include:
           - python-version: "3.11"
             gfx: pygfx
-            canvas: pyqt
+            canvas: pyqt6
             os: ubuntu-latest
           - python-version: "3.12"
             gfx: pygfx
-            canvas: pyqt
+            canvas: pyqt6
             os: ubuntu-latest
 
     steps:
@@ -81,7 +81,7 @@ jobs:
           sudo apt install -y libegl1-mesa-dev libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers
 
       - name: Install dependencies
-        run: uv sync --no-dev --group test --extra ${{ matrix.gfx }} --extra ${{matrix.canvas}} ${{ matrix.python-version >= '3.12' && '--extra imgui' || '' }} ${{ matrix.canvas == 'pyqt' && '--group testqt' || '' }}
+        run: uv sync --no-dev --group test --extra ${{ matrix.gfx }} --extra ${{matrix.canvas}} ${{ matrix.python-version >= '3.12' && '--extra imgui' || '' }} ${{ matrix.canvas == 'pyqt6' && '--group testqt' || '' }}
 
       - name: Test
         shell: bash

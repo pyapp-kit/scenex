@@ -44,7 +44,7 @@ jupyter = [
     # Otherwise jupyter_rfb will use PNG, which is apparently slower
     "simplejpeg",
 ]
-pyqt = [
+pyqt6 = [
     "pyqt6 >=6.4,!=6.6",
     "pyqt6 >=6.5.3; python_version >= '3.12'",
     "qtpy >=2",
