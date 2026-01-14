@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import cmap
 import numpy as np
 import pytest
 
@@ -13,6 +14,7 @@ from scenex.model._transform import Transform
 def image() -> snx.Image:
     return snx.Image(
         data=np.random.randint(0, 255, (100, 100), dtype=np.uint8),
+        cmap=cmap.Colormap("viridis"),
     )
 
 
@@ -62,3 +64,33 @@ def test_transform(image: snx.Image, adaptor: adaptors.Image) -> None:
     bb = adaptor._pygfx_node.get_world_bounding_box()
     assert bb is not None
     assert np.array_equal(exp_bounds, bb)
+
+
+def test_rgb(image: snx.Image, adaptor: adaptors.Image) -> None:
+    """Tests RGB(A) images are correctly massaged to avoid shading errors."""
+    # Assert a colormap can be used with 2D data
+    image.data = np.random.randint(0, 255, (100, 100), dtype=np.uint8)
+    image.cmap = cmap.Colormap("red")
+    np.testing.assert_array_equal(image.data, adaptor._pygfx_node.geometry.grid.data)  # pyright: ignore
+    np.testing.assert_array_equal(
+        cmap.Colormap("red").to_pygfx().texture.data,
+        adaptor._pygfx_node.material.map.texture.data,  # pyright: ignore
+    )
+
+    # When the data changes to RGB, the adaptor's material map should be None
+    image.data = np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
+    np.testing.assert_array_equal(image.data, adaptor._pygfx_node.geometry.grid.data)  # pyright: ignore
+    assert adaptor._pygfx_node.material.map is None  # pyright: ignore
+
+    # Even if the cmap is set, it should be ignored
+    image.cmap = cmap.Colormap("blue")
+    np.testing.assert_array_equal(image.data, adaptor._pygfx_node.geometry.grid.data)  # pyright: ignore
+    assert adaptor._pygfx_node.material.map is None  # pyright: ignore
+
+    # But it should snap to place if we go back to 2D data
+    image.data = np.random.randint(0, 255, (100, 100), dtype=np.uint8)
+    np.testing.assert_array_equal(image.data, adaptor._pygfx_node.geometry.grid.data)  # pyright: ignore
+    np.testing.assert_array_equal(
+        cmap.Colormap("blue").to_pygfx().texture.data,
+        adaptor._pygfx_node.material.map.texture.data,  # type: ignore
+    )
