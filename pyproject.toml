@@ -48,7 +48,6 @@ pyqt = [
     "pyqt6 >=6.4,!=6.6",
     "pyqt6 >=6.5.3; python_version >= '3.12'",
     "qtpy >=2",
-    "superqt[iconify] >=0.7.2",
 ]
 wx= [
     "wxpython >=4.2.2",
