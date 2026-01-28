@@ -81,9 +81,8 @@ def test_orbitcontroller_orbit() -> None:
     controller = snx.Orbit(center=(0, 0, 0))
     cam = snx.Camera(interactive=True, controller=controller)
     # Add cam to the canvas
-    canvas = snx.Canvas()
     view = snx.View(camera=cam)
-    canvas.grid.add(view)
+    canvas = snx.Canvas(views=[view])
     # Position the camera along the x-axis, looking in the negative x direction at the
     # center
     cam.transform = Transform().translated((10, 0, 0))
@@ -166,9 +165,8 @@ def test_orbitcontroller_pan() -> None:
     controller = snx.Orbit(center=(0, 0, 0))
     cam = snx.Camera(interactive=True, controller=controller)
     # Add cam to the canvas
-    canvas = snx.Canvas()
     view = snx.View(camera=cam)
-    canvas.grid.add(view)
+    canvas = snx.Canvas(views=[view])
     # Position the camera along the x-axis, looking in the negative x direction at the
     # center
     cam.transform = Transform().rotated(90, (0, 1, 0)).translated((10, 0, 0))

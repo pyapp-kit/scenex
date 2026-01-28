@@ -31,8 +31,7 @@ def test_line_ray_intersection() -> None:
     line = snx.Line(vertices=vertices, width=2)
     # Since ray-line intersections are computed in canvas space, we need view+canvas
     view = snx.View(scene=snx.Scene(children=[line]))
-    canvas = snx.Canvas()
-    canvas.grid.add(view)
+    canvas = snx.Canvas(views=[view])
 
     # Just barely fit the line into view
     view.camera.transform = projections.orthographic(2, 2, 1e5).translated((1, 1, 1))
@@ -83,8 +82,7 @@ def test_line_ray_intersection_transformed() -> None:
             children=[line],
         )
     )
-    canvas = snx.Canvas()
-    canvas.grid.add(view)
+    canvas = snx.Canvas(views=[view])
 
     # Just barely fit the line into view
     view.camera.transform = projections.orthographic(2, 2, 1e5).translated((1, 1, 1))

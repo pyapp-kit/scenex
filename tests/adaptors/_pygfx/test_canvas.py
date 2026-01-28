@@ -16,13 +16,11 @@ def test_close() -> None:
     mock_close.assert_called_once()
 
 
-def test_grid() -> None:
+def test_multiple_views() -> None:
     # Create a canvas with two views
-    canvas = snx.Canvas()
     view1 = snx.View()
     view2 = snx.View()
-    canvas.grid.add(view1, row=0, col=0)
-    canvas.grid.add(view2, row=1, col=1)
+    canvas = snx.Canvas(views=[view1, view2], width=400, height=400)
     py_canvas = adaptors.adaptors.get_adaptor(canvas, create=True)
     assert isinstance(py_canvas, adaptors.Canvas)
     py_view1 = adaptors.adaptors.get_adaptor(view1, create=True)
@@ -40,17 +38,22 @@ def test_grid() -> None:
     py_view2._draw(renderer_mock)
     rect2 = renderer_mock.render.call_args_list[0][1]["rect"]
     renderer_mock.reset_mock()
-    assert rect1[2] == rect2[2]
-    assert rect1[3] == rect2[3]
+    # Check that the views are side-by-side and equally sized
+    assert rect1 == (0, 0, 200, 400)
+    assert rect2 == (200, 0, 200, 400)
 
-    # Now change the row size and assert a change in the view heights
-    canvas.grid.row_sizes = (0.7, 0.3)
-    canvas.grid.col_sizes = (0.7, 0.3)
+    # Now change the canvas size and ensure the views update accordingly
+    canvas.width = 800
+    canvas.height = 600
+    renderer_mock = MagicMock(spec=pygfx.renderers.WgpuRenderer)
+    renderer_mock.logical_size = (canvas.width, canvas.height)
+    renderer_mock.physical_size = (canvas.width, canvas.height)
     py_view1._draw(renderer_mock)
     rect1 = renderer_mock.render.call_args_list[0][1]["rect"]
     renderer_mock.reset_mock()
     py_view2._draw(renderer_mock)
     rect2 = renderer_mock.render.call_args_list[0][1]["rect"]
     renderer_mock.reset_mock()
-    assert rect1[2] == 7 * rect2[2] / 3
-    assert rect1[3] == 7 * rect2[3] / 3
+    # Check that the views are side-by-side and equally sized
+    assert rect1 == (0, 0, 400, 600)
+    assert rect2 == (400, 0, 400, 600)

@@ -67,7 +67,7 @@ class View(EventedBase):
 
     Add a view to a canvas:
         >>> canvas = Canvas()
-        >>> canvas.grid.add(view, row=0, col=0)
+        >>> canvas.views.append(view)
     """
 
     scene: Scene = Field(
@@ -123,7 +123,7 @@ class View(EventedBase):
         self._canvas = value
         # If this view is not already on the canvas, just add it to the end
         if self not in value.views:
-            value.grid.add(self)
+            value.views.append(self)
 
     def render(self) -> np.ndarray:
         """Render the view to an array."""

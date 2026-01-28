@@ -23,8 +23,9 @@ def test_events() -> None:
     view.camera.projection = projections.orthographic(1, 1, 1)
 
     # Put it on a canvas
-    canvas = snx.Canvas(width=int(view.layout.width), height=int(view.layout.height))
-    canvas.grid.add(view)
+    canvas = snx.Canvas(
+        width=int(view.layout.width), height=int(view.layout.height), views=[view]
+    )
 
     # Mouse over that image in the top right corner
     canvas_pos = (view.layout.width, 0)
@@ -55,8 +56,9 @@ def test_filter_returning_None() -> None:
     view.set_event_filter(faulty_filter)
 
     # ...put it on a canvas...
-    canvas = snx.Canvas(width=int(view.layout.width), height=int(view.layout.height))
-    canvas.grid.add(view)
+    canvas = snx.Canvas(
+        width=int(view.layout.width), height=int(view.layout.height), views=[view]
+    )
 
     # ...and create a mock event...
     canvas_pos = (0, 0)

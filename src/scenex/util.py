@@ -174,8 +174,8 @@ def show(
             # Respect the view size if provided
             width=int(view.layout.width),
             height=int(view.layout.height),
+            views=[view],
         )
-        canvas.grid.add(view, row=0, col=0)
 
     canvas.visible = True
     reg = get_adaptor_registry(backend=backend)

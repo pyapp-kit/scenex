@@ -50,8 +50,7 @@ class Scene(Node):
 
     Use a scene with a view:
         >>> view = View(scene=scene, camera=Camera())
-        >>> canvas = Canvas()
-        >>> canvas.grid.add(view)
+        >>> canvas = Canvas(views=[view])
 
     Notes
     -----

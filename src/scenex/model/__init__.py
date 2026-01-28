@@ -92,7 +92,6 @@ from ._color import (
     UniformColor,
     VertexColors,
 )
-from ._grid import Grid
 from ._layout import Layout
 from ._nodes.camera import Camera, CameraType, InteractionStrategy, Orbit, PanZoom
 from ._nodes.image import Image, InterpolationMode

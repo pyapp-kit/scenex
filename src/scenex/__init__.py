@@ -50,7 +50,6 @@ from .model._color import (
     UniformColor,
     VertexColors,
 )
-from .model._grid import Grid
 from .model._nodes.camera import Camera, InteractionStrategy, Orbit, PanZoom
 from .model._nodes.image import Image
 from .model._nodes.line import Line

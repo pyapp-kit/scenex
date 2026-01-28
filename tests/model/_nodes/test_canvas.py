@@ -14,8 +14,11 @@ def test_to_world() -> None:
         interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
-    canvas = snx.Canvas(width=int(view.layout.width), height=int(view.layout.height))
-    canvas.grid.add(view)
+    canvas = snx.Canvas(
+        width=int(view.layout.width),
+        height=int(view.layout.height),
+        views=[view],
+    )
 
     # Test center of canvas
     canvas_pos = (view.layout.width // 2, view.layout.height // 2)
@@ -42,8 +45,11 @@ def test_to_world_translated() -> None:
         interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
-    canvas = snx.Canvas(width=int(view.layout.width), height=int(view.layout.height))
-    canvas.grid.add(view)
+    canvas = snx.Canvas(
+        width=int(view.layout.width),
+        height=int(view.layout.height),
+        views=[view],
+    )
 
     ray = canvas.to_world((0, 0))
     assert ray == Ray(origin=(0, 2, 1), direction=(0, 0, -1), source=view)
@@ -69,37 +75,38 @@ def test_to_world_projection() -> None:
         interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
-    canvas = snx.Canvas(width=int(view.layout.width), height=int(view.layout.height))
-    canvas.grid.add(view)
+    canvas = snx.Canvas(
+        width=int(view.layout.width),
+        height=int(view.layout.height),
+        views=[view],
+    )
 
     ray = canvas.to_world((0, 0))
     assert ray == Ray(origin=(-0.5, 0.5, 0), direction=(0, 0, -1), source=view)
     camera.projection = snx.Transform()
 
 
-def test_grid() -> None:
+def test_multiple_views() -> None:
     # Create a canvas with two views
-    canvas = snx.Canvas()
     view1 = snx.View()
     view2 = snx.View()
-    canvas.grid.add(view1, row=0, col=0)
-    canvas.grid.add(view2, row=1, col=1)
-    # Assert that by default the row/columns are equally sized
-    assert len(canvas.grid.row_sizes) == 2
-    assert canvas.grid.row_sizes[0] == canvas.grid.row_sizes[1]
-    assert len(canvas.grid.col_sizes) == 2
-    assert canvas.grid.col_sizes[0] == canvas.grid.col_sizes[1]
+    canvas = snx.Canvas(
+        width=800,
+        height=600,
+        views=[view1, view2],
+    )
 
-    # Which means that the views have the same size
+    # Assert the by default the views are equally sized
     assert view1.layout.width == view2.layout.width
     assert view1.layout.height == view2.layout.height
+    # And side-by-side (we'll add other behaviors later)
+    assert view1.layout.x + view1.layout.width == view2.layout.x
+    assert view1.layout.y == view2.layout.y
 
-    # Now change the row size and assert a change in the view heights
-    canvas.grid.row_sizes = (0.7, 0.3)
-    assert view1.layout.height == 7 / 3 * view2.layout.height
-
-    # Now change the column size and assert a change in the view widths
-    # (and assert that the row size change is still in effect)
-    canvas.grid.col_sizes = (0.7, 0.3)
-    assert view1.layout.height == 7 / 3 * view2.layout.height
-    assert view1.layout.width == 7 / 3 * view2.layout.width
+    # Assert changing the width and height of the canvas updates the views
+    canvas.width = 400
+    canvas.height = 400
+    assert view1.layout.width == view2.layout.width
+    assert view1.layout.height == view2.layout.height
+    assert view1.layout.x + view1.layout.width == view2.layout.x
+    assert view1.layout.y == view2.layout.y

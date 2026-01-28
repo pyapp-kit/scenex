@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 import pylinalg as la
 from cmap import Color
-from pydantic import ConfigDict, Field, PrivateAttr, computed_field
+from pydantic import ConfigDict, Field, PrivateAttr
 from typing_extensions import Unpack
 
 from scenex.app.events import (
@@ -17,12 +16,14 @@ from scenex.app.events import (
     Ray,
     ResizeEvent,
 )
-from scenex.model._grid import Grid, GridAssignment
+from scenex.model._evented_list import EventedList
 
 from ._base import EventedBase
 from ._view import View  # noqa: TC001
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from typing_extensions import TypedDict
 
     from scenex.adaptors._base import CanvasAdaptor
@@ -42,8 +43,8 @@ class Canvas(EventedBase):
 
     The Canvas represents the top-level rendering context where views are displayed.
     In desktop applications, a canvas corresponds to a window. In web applications,
-    it corresponds to a DOM element. Multiple views can be arranged on a single canvas
-    using a grid layout system.
+    it corresponds to a DOM element. Multiple views can be laid out horizontally on a
+    single canvas; more complex layouts are planned in the near future.
 
     Attributes
     ----------
@@ -57,9 +58,6 @@ class Canvas(EventedBase):
         Whether the canvas is visible. Set to True to show the canvas window.
     title : str
         The window title (desktop) or label for the canvas.
-    grid : Grid
-        The grid layout system managing view arrangement on the canvas.
-        Views are added to the grid which automatically handles their positioning.
 
     Examples
     --------
@@ -69,12 +67,8 @@ class Canvas(EventedBase):
     Create a canvas with custom size and title:
         >>> canvas = Canvas(width=800, height=600, title="My Visualization")
 
-    Create a canvas with multiple views arranged in a grid:
-        >>> canvas = Canvas(width=800, height=400)
-        >>> view1 = View()
-        >>> view2 = View()
-        >>> canvas.grid.add(view1, row=0, col=0)
-        >>> canvas.grid.add(view2, row=0, col=1)
+    Create a canvas with multiple views side-by-side:
+        >>> canvas = Canvas(width=800, height=400, views=[View(), View()])
     """
 
     width: int = Field(default=500, description="The width of the canvas in pixels")
@@ -89,11 +83,7 @@ class Canvas(EventedBase):
         default="",
         description="The title displayed on the canvas window",
     )
-    grid: Grid = Field(
-        default_factory=Grid,
-        frozen=True,
-        description="The grid layout system for arranging views on the canvas",
-    )
+    views: EventedList[View] = Field(default_factory=EventedList, frozen=True)
 
     # Private state for tracking mouse view transitions
     _last_mouse_view: View | None = PrivateAttr(default=None)
@@ -119,17 +109,6 @@ class Canvas(EventedBase):
         self.events.width.connect(self._compute_layout)
         self.events.height.connect(self._compute_layout)
 
-        self.grid.grid.item_changed.connect(self._compute_layout)
-        self.grid.grid.item_inserted.connect(self._compute_layout)
-        self.grid.grid.item_removed.connect(self._compute_layout)
-
-        self.grid.events.row_sizes.connect(self._compute_layout)
-        self.grid.events.col_sizes.connect(self._compute_layout)
-
-        self.grid.grid.item_changed.connect(self._on_view_changed)
-        self.grid.grid.item_inserted.connect(self._on_view_inserted)
-        self.grid.grid.item_removed.connect(self._on_view_removed)
-
         self._compute_layout()
 
     def close(self) -> None:
@@ -137,60 +116,14 @@ class Canvas(EventedBase):
         for adaptor in self._get_adaptors():
             cast("CanvasAdaptor", adaptor)._snx_close()
 
-    @computed_field  # type: ignore
-    @property
-    def views(self) -> Sequence[View]:
-        return [assignment.view for assignment in self.grid.grid]
-
     def _compute_layout(self) -> None:
-        if not self.views:
-            return
-        grid = self.grid
-        max_r = max(assignment.row + assignment.rowspan for assignment in grid.grid)
-        max_c = max(assignment.col + assignment.colspan for assignment in grid.grid)
-        # FIXME: Vulnerable to rounding errors?
-        row_sizes = grid.row_sizes or [1] * max_r
-        col_sizes = grid.col_sizes or [1] * max_c
-
-        total_row_size = sum(row_sizes, 0)
-        total_col_size = sum(col_sizes, 0)
-        for assignment in grid.grid:
-            x = sum(col_sizes[: assignment.col], 0)
-            y = sum(row_sizes[: assignment.row], 0)
-            assignment.view.layout.x = x / total_col_size * self.width
-            assignment.view.layout.y = y / total_row_size * self.height
-            assignment.view.layout.width = (
-                sum(col_sizes[assignment.col : assignment.col + assignment.colspan], 0)
-                / total_col_size
-                * self.width
-            )
-            assignment.view.layout.height = (
-                sum(row_sizes[assignment.row : assignment.row + assignment.rowspan], 0)
-                / total_row_size
-                * self.height
-            )
-
-    def _on_view_inserted(self, idx: int, assignment: GridAssignment) -> None:
-        assignment.view._canvas = self
-
-    def _on_view_removed(self, idx: int, assignment: GridAssignment) -> None:
-        assignment.view._canvas = None
-
-    def _on_view_changed(
-        self,
-        idx: int | slice,
-        old_assignment: GridAssignment | Sequence[GridAssignment],
-        new_assignment: GridAssignment | Sequence[GridAssignment],
-    ) -> None:
-        if not isinstance(old_assignment, Sequence):
-            old_assignment = [old_assignment]
-        for assignment in old_assignment:
-            assignment.view._canvas = None
-
-        if not isinstance(new_assignment, Sequence):
-            new_assignment = [new_assignment]
-        for assignment in new_assignment:
-            assignment.view._canvas = self
+        total = len(self.views)
+        # TODO: Support more complex layouts
+        for i, view in enumerate(self.views):
+            view.layout.x = (i / total) * self.width
+            view.layout.y = 0
+            view.layout.width = self.width / total
+            view.layout.height = self.height
 
     @property
     def size(self) -> tuple[int, int]:

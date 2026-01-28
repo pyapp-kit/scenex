@@ -151,9 +151,7 @@ def run() -> None:
         >>> snx.run()  # Blocks until window is closed
 
     Create multiple views and run:
-        >>> canvas = snx.Canvas()
-        >>> canvas.grid.add(snx.View(), row=0, col=0)
-        >>> canvas.grid.add(snx.View(), row=0, col=1)
+        >>> canvas = snx.Canvas(views=[snx.View(), snx.View()])
         >>> canvas.visible = True
         >>> snx.run()
 

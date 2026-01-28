@@ -38,8 +38,7 @@ def test_points_ray_intersection_screen_space() -> None:
 
     # Since ray-point intersections are computed in canvas space, we need view+canvas
     view = snx.View(scene=snx.Scene(children=[points]))
-    canvas = snx.Canvas()
-    canvas.grid.add(view)
+    canvas = snx.Canvas(views=[view])
 
     # Set up camera to look at the points
     view.camera.projection = projections.orthographic(2, 2, 1e5)
@@ -81,8 +80,7 @@ def test_points_ray_intersection_world_space() -> None:
     )
 
     view = snx.View(scene=snx.Scene(children=[points]))
-    canvas = snx.Canvas()
-    canvas.grid.add(view)
+    canvas = snx.Canvas(views=[view])
 
     # Set up camera
     view.camera.projection = projections.orthographic(2, 2, 1e5)
@@ -129,8 +127,7 @@ def test_points_ray_intersection_transformed() -> None:
     )
 
     view = snx.View(scene=snx.Scene(children=[points]))
-    canvas = snx.Canvas()
-    canvas.grid.add(view)
+    canvas = snx.Canvas(views=[view])
 
     # Set up camera to look at the transformed point
     view.camera.projection = projections.orthographic(2, 2, 1e5)
@@ -157,8 +154,7 @@ def test_points_ray_intersection_edge_cases() -> None:
     # Empty points
     empty_points = snx.Points(coords=np.array([]).reshape(0, 3), size=4, scaling=False)
     view = snx.View(scene=snx.Scene(children=[empty_points]))
-    canvas = snx.Canvas()
-    canvas.grid.add(view)
+    canvas = snx.Canvas(views=[view])
 
     ray = canvas.to_world((canvas.width // 2, canvas.height // 2))
     assert ray is not None
@@ -175,8 +171,7 @@ def test_points_ray_intersection_edge_cases() -> None:
     )
     # Create a new view with the edge points
     view = snx.View(scene=snx.Scene(children=[points_with_edge]))
-    canvas = snx.Canvas()
-    canvas.grid.add(view)
+    canvas = snx.Canvas(views=[view])
 
     view.camera.projection = projections.orthographic(2, 2, 1e5)
     view.camera.transform = snx.Transform().translated((1, 1, 2))

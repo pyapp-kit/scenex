@@ -44,8 +44,7 @@ def evented_canvas(qtbot: QtBot) -> snx.Canvas:
     camera = snx.Camera(transform=Transform(), interactive=True)
     scene = snx.Scene(children=[])
     view = snx.View(scene=scene, camera=camera)
-    canvas = snx.Canvas()
-    canvas.grid.add(view)
+    canvas = snx.Canvas(views=[view])
     native = cast(
         "CanvasAdaptor", canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
