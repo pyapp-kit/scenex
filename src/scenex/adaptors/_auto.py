@@ -6,6 +6,8 @@ import sys
 from contextlib import suppress
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, TypeGuard, cast, get_args
 
+from scenex.app import app
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
@@ -41,7 +43,7 @@ def get_adaptor_registry(backend: KnownBackend | str | None = None) -> AdaptorRe
 
 
 def get_all_adaptors(obj: Any) -> Iterator[Adaptor]:
-    """Get all adaptors for the given object."""
+    """Get all loaded adaptors for the given object."""
     for mod_name in ["scenex.adaptors._vispy", "scenex.adaptors._pygfx"]:
         if mod := sys.modules.get(mod_name):
             reg = cast("AdaptorRegistry", mod.adaptors)
@@ -75,7 +77,51 @@ def determine_backend(request: KnownBackend | str | None = None) -> KnownBackend
 
 
 def use(backend: KnownBackend | None = None) -> None:
-    """Set the graphics backend, or `None` to auto-determine."""
+    """Set the graphics backend for rendering scenex visualizations.
+
+    This function allows you to explicitly select which graphics library (backend)
+    scenex should use for rendering. It is the goal of scenex to support the full range
+    of model API for each backend.
+
+    If not called, scenex will automatically select an arbitrary available backend. You
+    can also set the backend via the SCENEX_CANVAS_BACKEND environment variable.
+
+    Parameters
+    ----------
+    backend : Literal["pygfx", "vispy"] | None
+        The graphics backend to use:
+        - "pygfx": Modern WebGPU-based renderer with advanced features
+        - "vispy": OpenGL-based renderer with broad compatibility
+        - None: Reset to auto-detection
+
+    Raises
+    ------
+    ValueError
+        If the specified backend is not one of the known backends.
+
+    Examples
+    --------
+    Use pygfx backend explicitly:
+        >>> import scenex as snx
+        >>> snx.use("pygfx")  # doctest: +SKIP
+        >>> canvas = snx.show(snx.View())
+
+    Use vispy backend:
+        >>> snx.use("vispy")  # doctest: +SKIP
+        >>> canvas = snx.show(snx.Scene())
+
+    Reset to auto-detection:
+        >>> snx.use(None)
+
+    Notes
+    -----
+    The backend selection follows this priority order:
+    1. Backend specified by this function
+    2. SCENEX_CANVAS_BACKEND environment variable
+    3. Auto-detection (pygfx preferred, then vispy)
+
+    This function should be called before creating any visualizations.
+    """
     global _USE
     if backend is None or _ensure_valid_backend(backend):
         _USE = backend
@@ -100,7 +146,20 @@ def run() -> None:
         >>> scene = snx.Scene(
         ...     children=[snx.Image(data=np.random.rand(100, 100).astype(np.float32))]
         ... )
-        >>> canvas = snx.show(scene)
+        >>> snx.show(scene)
+        Canvas(...)
         >>> snx.run()  # Blocks until window is closed
+
+    Create multiple views and run:
+        >>> canvas = snx.Canvas(views=[snx.View(), snx.View()])
+        >>> canvas.visible = True
+        >>> snx.run()
+
+    Notes
+    -----
+    - This function blocks execution until all visualization windows are closed
+    - Not needed in Jupyter notebooks or other interactive environments
+    - Must be called after `show()` has been used to create visualizations
+    - The event loop handles user interactions like pan, zoom, and picking
     """
-    get_adaptor_registry().start_event_loop()
+    app().run()

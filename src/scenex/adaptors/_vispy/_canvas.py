@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeGuard, cast
 import numpy as np
 
 from scenex.adaptors._base import CanvasAdaptor
+from scenex.app import app
 
 from ._adaptor_registry import get_adaptor
 
@@ -13,6 +14,8 @@ if TYPE_CHECKING:
     from rendercanvas.base import BaseRenderCanvas
 
     from scenex import model
+
+    from ._view import View
 
     class SupportsHideShow(BaseRenderCanvas):
         def show(self) -> None: ...
@@ -27,7 +30,7 @@ class Canvas(CanvasAdaptor):
     """Canvas interface for vispy Backend."""
 
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
-        from vispy.scene import Grid, SceneCanvas
+        from vispy.scene import SceneCanvas, VisualNode
 
         self._canvas = SceneCanvas(
             title=canvas.title, size=(canvas.width, canvas.height)
@@ -35,30 +38,43 @@ class Canvas(CanvasAdaptor):
         # Qt RenderCanvas calls show() in its __init__ method, so we need to hide it
         if supports_hide_show(self._canvas.native):
             self._canvas.native.hide()
-        self._grid = cast("Grid", self._canvas.central_widget.add_grid())
+        self._views: list[model.View] = []
         for view in canvas.views:
             self._snx_add_view(view)
-        self._views = canvas.views
+        self._filter = app().install_event_filter(self._canvas.native, canvas)
+
+        self._visual_to_node: dict[VisualNode, model.Node | None] = {}
+        self._last_canvas_pos: tuple[float, float] | None = None
+        self._model = canvas
 
     def _snx_get_native(self) -> Any:
         return self._canvas.native
 
     def _snx_set_visible(self, arg: bool) -> None:
         # show the qt canvas we patched earlier in __init__
-        if supports_hide_show(self._canvas.native):
-            self._canvas.show()
+        app().show(self._model, arg)
 
     def _draw(self) -> None:
         self._canvas.update()
 
     def _snx_add_view(self, view: model.View) -> None:
-        self._grid.add_widget(get_adaptor(view)._snx_get_native())
+        if view in self._views:
+            return
+
+        vis_view = cast("View", get_adaptor(view))
+        # NOTE: canvas.central_widget.add_widget exists but
+        # messes with the layout constantly. The docs specify that setting the parent
+        # directly also works.
+        vis_view._vispy_viewbox.parent = self._canvas.central_widget
+
+        get_adaptor(view.camera)._set_view(view.layout.width, view.layout.height)  # type:ignore
+        self._views.append(view)
 
     def _snx_set_width(self, arg: int) -> None:
-        self._canvas.size = (self._canvas.size[0], arg)
+        self._canvas.size = self._model.size
 
     def _snx_set_height(self, arg: int) -> None:
-        self._canvas.size = (arg, self._canvas.size[1])
+        self._canvas.size = self._model.size
 
     def _snx_set_background_color(self, arg: Color | None) -> None:
         if arg is None:

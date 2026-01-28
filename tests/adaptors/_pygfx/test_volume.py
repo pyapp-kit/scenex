@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import numpy as np
+import pygfx
 import pytest
 
 import scenex as snx
 import scenex.adaptors._pygfx as adaptors
 from scenex.adaptors._auto import get_adaptor_registry
-from scenex.model._transform import Transform
+from scenex.model import BlendMode, Transform
 
 
 @pytest.fixture
@@ -58,3 +59,17 @@ def test_transform(volume: snx.Volume, adaptor: adaptors.Volume) -> None:
     bb = adaptor._pygfx_node.get_world_bounding_box()
     assert bb is not None
     assert np.array_equal(exp_bounds, bb)
+
+
+@pytest.mark.skipif(
+    pygfx.version_info < (0, 13, 0), reason="Requires pygfx 0.13.0 or higher"
+)
+def test_blending(volume: snx.Volume, adaptor: adaptors.Volume) -> None:
+    volume.blending = BlendMode.ADDITIVE
+    assert adaptor._material.alpha_mode == "add"
+
+    volume.blending = BlendMode.ALPHA
+    assert adaptor._material.alpha_mode == "auto"
+
+    volume.blending = BlendMode.OPAQUE
+    assert adaptor._material.alpha_mode == "solid"
