@@ -93,7 +93,14 @@ from ._color import (
     VertexColors,
 )
 from ._layout import Layout
-from ._nodes.camera import Camera, CameraType, InteractionStrategy, Orbit, PanZoom
+from ._nodes.camera import (
+    AnyInteractionStrategy,
+    Camera,
+    CameraType,
+    InteractionStrategy,
+    Orbit,
+    PanZoom,
+)
 from ._nodes.image import Image, InterpolationMode
 from ._nodes.line import Line
 from ._nodes.mesh import Mesh
@@ -103,10 +110,12 @@ from ._nodes.scene import Scene
 from ._nodes.text import Text
 from ._nodes.volume import RenderMode, Volume
 from ._transform import Transform
-from ._view import Letterbox, ResizeStrategy, View
+from ._view import AnyResizeStrategy, Letterbox, ResizeStrategy, View
 
 __all__ = [
+    "AnyInteractionStrategy",
     "AnyNode",
+    "AnyResizeStrategy",
     "BlendMode",
     "Camera",
     "CameraType",
@@ -116,7 +125,6 @@ __all__ = [
     "Colormap",
     "EventedBase",
     "FaceColors",
-    "Grid",
     "Image",
     "InteractionStrategy",
     "InterpolationMode",
@@ -137,6 +145,7 @@ __all__ = [
     "Transform",
     "UniformColor",
     "VertexColors",
+    "View",
     "View",
     "Volume",
     "objects",

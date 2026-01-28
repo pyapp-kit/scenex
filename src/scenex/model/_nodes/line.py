@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 from cmap import Color
-from pydantic import Field, computed_field
+from pydantic import Field
 
 from scenex.model._color import UniformColor, VertexColors
 
@@ -84,7 +84,6 @@ class Line(Node):
         default=1.0, description="Anti-aliasing amount in pixels for smoother rendering"
     )
 
-    @computed_field  # type: ignore[prop-decorator]
     @property  # TODO: Cache?
     def bounding_box(self) -> AABB:
         arr = np.asarray(self.vertices)

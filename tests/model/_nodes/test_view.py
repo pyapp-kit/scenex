@@ -72,3 +72,14 @@ def test_filter_returning_None() -> None:
     handled = view.filter_event(event)
     assert isinstance(handled, bool)
     assert handled is False
+
+
+def test_view_serialization() -> None:
+    view = snx.View(resize=snx.Letterbox())
+    json = view.model_dump_json()
+    view2 = snx.View.model_validate_json(json)
+    # FIXME: there are tons of different errors in round trip serialization
+    # let's just make sure that Letterbox() can be round-trip serialized
+    # and leave the rest for later
+    assert view2.resize and view.resize
+    assert view2.resize.type == view.resize.type

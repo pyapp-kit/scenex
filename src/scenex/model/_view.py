@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Annotated, Any, Literal, Union, cast
 
 from pydantic import Field, PrivateAttr
 
@@ -25,6 +25,8 @@ if TYPE_CHECKING:
     from ._canvas import Canvas
 
 logger = logging.getLogger(__name__)
+
+AnyResizeStrategy = Annotated[Union["Letterbox", "None"], Field(discriminator="type")]
 
 
 class View(EventedBase):
@@ -78,7 +80,7 @@ class View(EventedBase):
         default_factory=Camera,
         description="The camera defining the viewing perspective and projection",
     )
-    resize: ResizeStrategy | None = Field(
+    resize: AnyResizeStrategy = Field(
         default=None,
         description="Strategy for adjusting camera projection when the view is resized",
     )
@@ -297,6 +299,8 @@ class Letterbox(ResizeStrategy):
     _reference: Transform | None = PrivateAttr(default=None)
     # ...and this is the transform we applied in response to the last resize event.
     _last_adjustment: Transform | None = PrivateAttr(default=None)
+
+    type: Literal["letterbox"] = Field(default="letterbox", repr=False)
 
     def handle_resize(self, view: View) -> None:
         """Handle view resize by adjusting projection to maintain aspect ratio."""

@@ -55,3 +55,14 @@ def test_camera_look_at() -> None:
     np.testing.assert_allclose(cam.forward, (1, 0, 0), atol=1e-6)
     # Up should be (0, 0, 1) - (0, 0, 0) = (0, 0, 1)
     np.testing.assert_allclose(cam.up, (0, 0, 1), atol=1e-6)
+
+
+def test_camera_serialization() -> None:
+    cam = snx.Camera(
+        controller=snx.Orbit(center=(5, 5, 10)),
+        interactive=True,
+        transform=snx.Transform().translated((10, 20, 30)).scaled((2, 2, 2)),
+    )
+    json = cam.model_dump_json()
+    cam2 = snx.Camera.model_validate_json(json)
+    assert cam2.model_dump_json() == json

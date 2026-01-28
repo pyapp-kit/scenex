@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 
 from cmap import Color
-from pydantic import ConfigDict, Field, computed_field
+from pydantic import ConfigDict, Field
 
 from ._base import EventedBase
 
@@ -106,19 +106,16 @@ class Layout(EventedBase):
 
     model_config = ConfigDict(extra="forbid")
 
-    @computed_field  # type: ignore [prop-decorator]
     @property
     def position(self) -> tuple[float, float]:
         """Return the x, y position of the layout as a tuple."""
         return self.x, self.y
 
-    @computed_field  # type: ignore [prop-decorator]
     @property
     def size(self) -> tuple[float, float]:
         """Return the width, height of the layout as a tuple."""
         return self.width, self.height
 
-    @computed_field  # type: ignore [prop-decorator]
     @property
     def content_rect(self) -> tuple[float, float, float, float]:
         """Return the (x, y, width, height) of the content area."""

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 from cmap import Color
-from pydantic import Field, computed_field
+from pydantic import Field
 
 from scenex.model._color import FaceColors, UniformColor, VertexColors
 
@@ -99,7 +99,6 @@ class Mesh(Node):
         description="Color specification; uniform, per-face, or per-vertex",
     )
 
-    @computed_field  # type: ignore[prop-decorator]
     @property  # TODO: Cache?
     def bounding_box(self) -> AABB:
         arr = np.asarray(self.vertices)

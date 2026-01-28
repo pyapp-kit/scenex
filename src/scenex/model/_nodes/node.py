@@ -13,6 +13,7 @@ from pydantic import (
     ModelWrapValidatorHandler,
     PrivateAttr,
     SerializerFunctionWrapHandler,
+    TypeAdapter,
     ValidationInfo,
     computed_field,
     model_serializer,
@@ -33,8 +34,11 @@ if TYPE_CHECKING:
     from .camera import Camera
     from .image import Image
     from .line import Line
+    from .mesh import Mesh
     from .points import Points
     from .scene import Scene
+    from .text import Text
+    from .volume import Volume
 
     class NodeKwargs(TypedDict, total=False):
         """TypedDict for Node kwargs."""
@@ -53,7 +57,7 @@ logger = logging.getLogger(__name__)
 
 # improve me... Read up on: https://docs.pydantic.dev/latest/concepts/unions/
 AnyNode = Annotated[
-    Union["Image", "Points", "Line", "Camera", "Scene"],
+    Union["Image", "Mesh", "Points", "Line", "Camera", "Scene", "Text", "Volume"],
     Field(discriminator="node_type"),
 ]
 
@@ -193,8 +197,22 @@ class Node(EventedBase):
 
         for ch in children:
             if not isinstance(ch, Node):
-                ch = Node.model_validate(ch)
+                ch = self._validate_json(ch)
             self.add_child(ch)  # type: ignore [arg-type]
+
+    def _validate_json(self, json: Any) -> Node:
+        # All nodes in AnyNode must be imported here to fully define the AnyNode type.
+        # They can't be top-level imports because of circular import issues.
+        from .camera import Camera  # noqa: F401
+        from .image import Image  # noqa: F401
+        from .line import Line  # noqa: F401
+        from .mesh import Mesh  # noqa: F401
+        from .points import Points  # noqa: F401
+        from .scene import Scene  # noqa: F401
+        from .text import Text  # noqa: F401
+        from .volume import Volume  # noqa: F401
+
+        return TypeAdapter(AnyNode).validate_python(json)
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -202,7 +220,6 @@ class Node(EventedBase):
         """Return a tuple of the children of this node."""
         return tuple(self._children)
 
-    @computed_field  # type: ignore[prop-decorator]
     @property  # TODO: Cache?
     def bounding_box(self) -> AABB | None:
         bounded_nodes = [c for c in self.children if c.bounding_box]

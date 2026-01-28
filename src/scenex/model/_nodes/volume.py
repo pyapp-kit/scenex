@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-from pydantic import Field, computed_field
+from pydantic import Field
 
 from .image import Image, _passes_through_parallelogram
 from .node import AABB  # noqa: TC001
@@ -55,11 +55,14 @@ class Volume(Image):
     following ZYX convention.
     """
 
+    # Note that since we inherit from Image, which has node_type defined,
+    # we need to ignore the type check for assignment here.
+    node_type: Literal["volume"] = Field(default="volume", repr=False)  # type: ignore[assignment]
+
     render_mode: RenderMode = Field(
         default="mip", description="Volume rendering method"
     )
 
-    @computed_field  # type: ignore[prop-decorator]
     @property  # TODO: Cache?
     def bounding_box(self) -> AABB:
         bb = super().bounding_box

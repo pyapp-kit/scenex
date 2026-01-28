@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Literal
 
 from cmap import Color
-from pydantic import Field, computed_field
+from pydantic import Field
 
 from .node import AABB, Node
 
@@ -41,7 +41,6 @@ class Text(Node):
     color: Color = Field(default=Color("white"), description="Color of the text")
     size: int = Field(default=12, ge=0, description="Font size in pixels")
 
-    @computed_field  # type: ignore[prop-decorator]
     @property
     def bounding_box(self) -> AABB:
         # TODO: Bounding boxes for text are hard.

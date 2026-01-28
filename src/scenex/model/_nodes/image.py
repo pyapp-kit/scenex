@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Annotated, Any, Literal
 import numpy as np
 from annotated_types import Interval
 from cmap import Colormap
-from pydantic import Field, computed_field
+from pydantic import Field
 
 from .node import AABB, Node
 
@@ -93,7 +93,6 @@ class Image(Node):
         description="Interpolation method: 'nearest', 'linear', or 'bicubic'",
     )
 
-    @computed_field  # type: ignore[prop-decorator]
     @property  # TODO: Cache?
     def bounding_box(self) -> AABB:
         if not hasattr(self.data, "shape"):

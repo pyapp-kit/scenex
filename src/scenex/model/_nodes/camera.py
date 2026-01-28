@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import math
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal, Union
 
 import numpy as np
 import pylinalg as la
-from pydantic import Field, PrivateAttr, computed_field
+from pydantic import Field, PrivateAttr
 
 from scenex.app.events import (
     MouseButton,
@@ -29,6 +29,10 @@ Position2D = tuple[float, float]
 Position3D = tuple[float, float, float]
 Vector3D = tuple[float, float, float]
 Position = Position2D | Position3D
+
+AnyInteractionStrategy = Annotated[
+    Union["PanZoom", "Orbit", "None"], Field(discriminator="type")
+]
 
 
 class Camera(Node):
@@ -80,7 +84,7 @@ class Camera(Node):
 
     node_type: Literal["camera"] = "camera"
 
-    controller: InteractionStrategy | None = Field(
+    controller: AnyInteractionStrategy = Field(
         default=None,
         description="Strategy for handling user interactions with the camera",
     )
@@ -93,7 +97,6 @@ class Camera(Node):
         description="Projection transformation mapping NDC to 3D rays in local space",
     )
 
-    @computed_field  # type: ignore[prop-decorator]
     @property  # TODO: Cache?
     def bounding_box(self) -> None:
         # Prevent cameras from distorting scene bounding boxes
@@ -296,6 +299,7 @@ class PanZoom(InteractionStrategy):
         default=False,
         description="If True, prevent vertical panning and zooming.",
     )
+    type: Literal["pan_zoom"] = Field(default="pan_zoom", repr=False)
 
     # Private state for tracking interactions
     _drag_pos: tuple[float, float] | None = PrivateAttr(default=None)
@@ -472,6 +476,7 @@ class Orbit(InteractionStrategy):
         default=(0.0, 0.0, 1.0),
         description='The axis defining the "up" direction for orbit calculations.',
     )
+    type: Literal["orbit"] = Field(default="orbit", repr=False)
 
     # Private state for tracking interactions
     _last_canvas_pos: tuple[float, float] | None = PrivateAttr(default=None)
