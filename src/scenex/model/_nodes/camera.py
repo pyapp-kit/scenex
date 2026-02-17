@@ -24,13 +24,12 @@ if TYPE_CHECKING:
     from scenex.app.events import Event
     from scenex.model._transform import Transform
 
-CameraType = Literal["panzoom", "perspective"]
 Position2D = tuple[float, float]
 Position3D = tuple[float, float, float]
 Vector3D = tuple[float, float, float]
 Position = Position2D | Position3D
 
-AnyInteractionStrategy = Annotated[
+AnyController = Annotated[
     Union["PanZoom", "Orbit", "None"], Field(discriminator="type")
 ]
 
@@ -55,9 +54,9 @@ class Camera(Node):
 
     Attributes
     ----------
-    controller : InteractionStrategy | None
-        Strategy for handling user interactions (e.g., PanZoom, Orbit). If None, no
-        interaction strategy is used.
+    controller : CameraController | None
+        Describes response to user interactions (e.g., PanZoom, Orbit). If None, user
+        interactions are ignored.
     interactive : bool
         Whether the camera responds to user input events (mouse, keyboard).
     projection : Transform
@@ -66,10 +65,10 @@ class Camera(Node):
 
     Examples
     --------
-    Create a camera with pan-zoom interaction:
+    Create a camera with pan-zoom controller:
         >>> camera = Camera(controller=PanZoom(), interactive=True)
 
-    Create a camera with orbit interaction:
+    Create a camera with orbit controller:
         >>> camera = Camera(controller=Orbit(center=(0, 0, 0)), interactive=True)
 
     Position a camera and point it at a target:
@@ -84,9 +83,9 @@ class Camera(Node):
 
     node_type: Literal["camera"] = "camera"
 
-    controller: AnyInteractionStrategy = Field(
+    controller: AnyController = Field(
         default=None,
-        description="Strategy for handling user interactions with the camera",
+        description="Describes how user interaction affects the camera",
     )
     interactive: bool = Field(
         default=True,
@@ -183,16 +182,16 @@ class Camera(Node):
 
 
 # ====================================================================================
-# Interaction Strategies
+# Camera Controllers
 # ====================================================================================
 
 
-class InteractionStrategy(EventedBase):
+class CameraController(EventedBase):
     """Base class defining how a camera responds to user interaction events.
 
-    An InteractionStrategy handles user input (mouse, keyboard, wheel) to manipulate
+    A CameraController handles user input (mouse, keyboard, wheel) to manipulate
     camera transforms and projections, enabling interactive behaviors like panning,
-    zooming, orbiting, or custom camera controls. Strategies are attached to Camera
+    zooming, orbiting, or custom camera controls. Controllers are attached to Camera
     instances via the `controller` field and automatically receive events when the
     camera is marked as `interactive=True`.
 
@@ -201,17 +200,17 @@ class InteractionStrategy(EventedBase):
 
     Examples
     --------
-    Create a camera with pan/zoom interaction:
+    Create a camera with pan/zoom controller:
         >>> camera = Camera(controller=PanZoom(), interactive=True)
 
-    Create a camera with orbit interaction:
+    Create a camera with orbit controller:
         >>> camera = Camera(controller=Orbit(center=(0, 0, 0)), interactive=True)
 
     See Also
     --------
-    PanZoom : 2D pan and zoom interaction strategy
-    Orbit : 3D orbit interaction strategy
-    Camera : Camera class that uses interaction strategies
+    PanZoom : 2D pan and zoom controller
+    Orbit : 3D orbit controller
+    Camera : Camera class that uses controllers
     """
 
     @abstractmethod
@@ -239,8 +238,8 @@ class InteractionStrategy(EventedBase):
         raise NotImplementedError
 
 
-class PanZoom(InteractionStrategy):
-    """2D pan and zoom interaction strategy for orthographic views.
+class PanZoom(CameraController):
+    """2D pan and zoom controller for orthographic views.
 
     PanZoom provides intuitive mouse-based navigation for 2D scenes and orthographic
     projections.
@@ -286,8 +285,8 @@ class PanZoom(InteractionStrategy):
 
     See Also
     --------
-    Orbit : 3D orbit interaction strategy for perspective views
-    InteractionStrategy : Base class for interaction strategies
+    Orbit : 3D orbit controller for perspective views
+    CameraController : Base class for camera controllers
     Camera : Camera class with controller field
     """
 
@@ -379,8 +378,8 @@ class PanZoom(InteractionStrategy):
         return 2 ** (delta * 0.001)
 
 
-class Orbit(InteractionStrategy):
-    """3D orbit interaction strategy for rotating around a focal point.
+class Orbit(CameraController):
+    """3D orbit controller for rotating around a focal point.
 
     Orbit provides intuitive 3D navigation for perspective views by allowing the camera
     to rotate around a fixed center point while maintaining its distance.
@@ -462,8 +461,8 @@ class Orbit(InteractionStrategy):
 
     See Also
     --------
-    PanZoom : 2D pan and zoom strategy for orthographic views
-    InteractionStrategy : Base class for interaction strategies
+    PanZoom : 2D pan and zoom controller for orthographic views
+    CameraController : Base class for camera controllers
     Camera : Camera class with controller field
     Camera.look_at : Method to orient camera toward a point
     """
@@ -519,8 +518,6 @@ class Orbit(InteractionStrategy):
             # Step 0: Gather transform components, relative to camera center
             orbit_mat = camera.transform.translated(-center_array)
             position, _rotation, _scale = la.mat_decompose(orbit_mat.T)
-            # TODO: Make this a controller parameter
-            camera_polar = (0, 0, 1)
             camera_right = np.cross(camera.forward, camera.up)
 
             # Step 1
@@ -538,7 +535,7 @@ class Orbit(InteractionStrategy):
             camera.transform = (
                 camera.transform.translated(-center_array)  # 3a
                 .rotated(d_elevation, camera_right)  # 3b
-                .rotated(d_azimuth, camera_polar)  # 3c
+                .rotated(d_azimuth, self.polar_axis)  # 3c
                 .translated(center_array)  # 3d
             )
 

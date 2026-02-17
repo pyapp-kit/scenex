@@ -53,9 +53,6 @@ class Camera(Node, CameraAdaptor):
 
         self._update_vispy_node_tform()
 
-    def _snx_set_type(self, arg: model.CameraType) -> None:
-        raise NotImplementedError()
-
     def _snx_set_transform(self, arg: Transform) -> None:
         # Note that the scenex transform is inverted here.
         # Scenex transforms map local coordinates into parent coordinates,
@@ -75,7 +72,7 @@ class Camera(Node, CameraAdaptor):
         # Transforms
         self._update_vispy_node_tform()
 
-    def _snx_set_controller(self, arg: model.InteractionStrategy | None) -> None:
+    def _snx_set_controller(self, arg: model.CameraController | None) -> None:
         pass
 
     def _update_vispy_node_tform(self) -> None:

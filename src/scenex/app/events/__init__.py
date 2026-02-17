@@ -2,8 +2,8 @@
 
 This module provides a unified event abstraction for user interactions across different
 GUI frameworks and rendering backends. Events represent user actions (e.g. mouse clicks,
-movement, scrolling) and system events (e.g. window resize), allowing nodes and
-controllers to respond to input in a framework-agnostic way.
+movement, scrolling) and system events (e.g. window resize), allowing event filters,
+camera controllers, etc. to respond to input in a framework-agnostic way.
 
 Event Types
 -----------
@@ -60,7 +60,7 @@ Set a custom event filter on a view::
 
 See Also
 --------
-scenex.model.Camera : Camera with interactive controllers
+scenex.model.Camera : Camera with interactive interaction strategies
 scenex.model.View : View with event filter support
 """
 

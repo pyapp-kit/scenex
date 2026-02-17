@@ -76,9 +76,10 @@ def add_imgui_controls(view: View) -> None:
     - The control panel is rendered as an overlay on the canvas. It is not (currently)
       restricted to a specific area of the canvas
     - Current architecture necessitates this function be called AFTER setting up camera
-      controllers and/or view event filters. All view events are intercepted and may not
-      propagate to the user's view filter or camera filter, but a best attempt is made
-      to propagate events that do not interact with the ImGui control panel.
+      interaction strategies and/or view event filters. All view events are intercepted
+      and may not propagate to the user's view filter or camera filter, but a best
+      attempt is made to propagate events that do not interact with the ImGui control
+      panel.
     - Widgets are automatically generated from Pydantic field metadata:
         * Literal types → dropdown menus
         * bool → checkbox

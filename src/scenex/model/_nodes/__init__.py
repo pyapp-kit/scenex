@@ -67,7 +67,7 @@ scenex.model.Transform : Transformation matrices
 """
 
 from .node import Node  # noqa: I001  must be imported first to avoid circular imports
-from .camera import Camera
+from .camera import Camera, CameraController, Orbit, PanZoom
 from .image import Image
 from .line import Line
 from .mesh import Mesh
@@ -80,10 +80,13 @@ Node.model_rebuild()
 
 __all__ = [
     "Camera",
+    "CameraController",
     "Image",
     "Line",
     "Mesh",
     "Node",
+    "Orbit",
+    "PanZoom",
     "Points",
     "Scene",
     "Text",

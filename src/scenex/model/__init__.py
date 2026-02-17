@@ -46,8 +46,8 @@ Main Model Categories
     - ColorModel: Color specification (uniform, per-face, per-vertex)
 
 **Interaction Models**
-    - PanZoom: Pan and zoom camera controller
-    - Orbit: Orbit camera controller
+    - PanZoom: Pan and zoom camera interaction
+    - Orbit: Orbit camera interaction
     - Letterbox: Maintain aspect ratio on resize
 
 Examples
@@ -94,10 +94,9 @@ from ._color import (
 )
 from ._layout import Layout
 from ._nodes.camera import (
-    AnyInteractionStrategy,
+    AnyController,
     Camera,
-    CameraType,
-    InteractionStrategy,
+    CameraController,
     Orbit,
     PanZoom,
 )
@@ -113,12 +112,12 @@ from ._transform import Transform
 from ._view import AnyResizeStrategy, Letterbox, ResizeStrategy, View
 
 __all__ = [
-    "AnyInteractionStrategy",
+    "AnyController",
     "AnyNode",
     "AnyResizeStrategy",
     "BlendMode",
     "Camera",
-    "CameraType",
+    "CameraController",
     "Canvas",
     "Color",
     "ColorModel",
@@ -126,7 +125,6 @@ __all__ = [
     "EventedBase",
     "FaceColors",
     "Image",
-    "InteractionStrategy",
     "InterpolationMode",
     "Layout",
     "Letterbox",
