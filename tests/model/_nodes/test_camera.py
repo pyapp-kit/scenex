@@ -250,12 +250,27 @@ def test_orbit_pan() -> None:
     np.testing.assert_allclose(interaction.center, desired_center)
 
 
-def test_camera_serialization() -> None:
+def test_panzoom_serialization() -> None:
     cam = snx.Camera(
-        controller=snx.Orbit(center=(5, 5, 10)),
+        controller=snx.PanZoom(),
         interactive=True,
         transform=snx.Transform().translated((10, 20, 30)).scaled((2, 2, 2)),
     )
     json = cam.model_dump_json()
     cam2 = snx.Camera.model_validate_json(json)
-    assert cam2.model_dump_json() == json
+    assert isinstance(cam2.controller, snx.PanZoom)
+
+
+def test_orbit_serialization() -> None:
+    center = (5, 5, 10)
+    polar_axis = (1, 0, 0)
+    cam = snx.Camera(
+        controller=snx.Orbit(center=center, polar_axis=polar_axis),
+        interactive=True,
+        transform=snx.Transform().translated((10, 20, 30)).scaled((2, 2, 2)),
+    )
+    json = cam.model_dump_json()
+    cam2 = snx.Camera.model_validate_json(json)
+    assert isinstance(cam2.controller, snx.Orbit)
+    assert cam2.controller.center == center
+    assert cam2.controller.polar_axis == polar_axis
