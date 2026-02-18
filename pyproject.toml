@@ -50,7 +50,7 @@ pyqt6 = [
     "qtpy >=2",
 ]
 wx= [
-    "wxpython >=4.2.2",
+    "wxpython >=4.2.2,<4.2.5",
 ]
 pygfx = [
     # Needed for per-material blending modes
