@@ -48,7 +48,7 @@ Main Model Categories
 **Interaction Models**
     - PanZoom: Pan and zoom camera interaction
     - Orbit: Orbit camera interaction
-    - Letterbox: Maintain aspect ratio on resize
+    - Letterbox: Maintain aspect ratio on view resize
 
 Examples
 --------
@@ -109,12 +109,12 @@ from ._nodes.scene import Scene
 from ._nodes.text import Text
 from ._nodes.volume import RenderMode, Volume
 from ._transform import Transform
-from ._view import AnyResizeStrategy, Letterbox, ResizeStrategy, View
+from ._view import AnyResizePolicy, Letterbox, ResizePolicy, View
 
 __all__ = [
     "AnyController",
     "AnyNode",
-    "AnyResizeStrategy",
+    "AnyResizePolicy",
     "BlendMode",
     "Camera",
     "CameraController",
@@ -135,7 +135,7 @@ __all__ = [
     "PanZoom",
     "Points",
     "RenderMode",
-    "ResizeStrategy",
+    "ResizePolicy",
     "ScalingMode",
     "Scene",
     "SymbolName",

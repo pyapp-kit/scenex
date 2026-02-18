@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-AnyResizeStrategy = Annotated[Union["Letterbox", "None"], Field(discriminator="type")]
+AnyResizePolicy = Annotated[Union["Letterbox", "None"], Field(discriminator="type")]
 
 
 class View(EventedBase):
@@ -44,7 +44,7 @@ class View(EventedBase):
         The scene graph containing all visual elements to be rendered in this view.
     camera : Camera
         The camera defining the viewing perspective and projection for this view.
-    resize : ResizeStrategy | None
+    on_resize : ResizePolicy | None
         Strategy for adjusting the camera projection when the view is resized. If None,
         the camera projection remains unchanged on view resize.
     layout : Layout
@@ -64,7 +64,7 @@ class View(EventedBase):
         >>> view = View(
         ...     scene=scene,
         ...     camera=Camera(controller=PanZoom(), interactive=True),
-        ...     resize=Letterbox(),
+        ...     on_resize=Letterbox(),
         ... )
 
     Add a view to a canvas:
@@ -80,9 +80,9 @@ class View(EventedBase):
         default_factory=Camera,
         description="The camera defining the viewing perspective and projection",
     )
-    resize: AnyResizeStrategy = Field(
+    on_resize: AnyResizePolicy = Field(
         default=None,
-        description="Strategy for adjusting camera projection when the view is resized",
+        description="Policy for adjusting camera projection when the view is resized",
     )
     layout: Layout = Field(
         default_factory=Layout,
@@ -105,8 +105,8 @@ class View(EventedBase):
         self.layout.events.height.connect(self._on_layout_change)
 
     def _on_layout_change(self, *args: Any) -> None:
-        if resize := self.resize:
-            resize.handle_resize(self)
+        if on_resize := self.on_resize:
+            on_resize.handle_resize(self)
 
     @property
     def canvas(self) -> Canvas:
@@ -205,10 +205,10 @@ class View(EventedBase):
 # ====================================================================================
 
 
-class ResizeStrategy(EventedBase):
+class ResizePolicy(EventedBase):
     """Base class defining how a view adapts to changes in its layout dimensions.
 
-    A ResizeStrategy is invoked automatically when a view's layout dimensions change,
+    A ResizePolicy is invoked automatically when a view's layout dimensions change,
     providing a hook to adjust any aspect of the view in response. While the most
     common use case is adjusting the camera's projection matrix to maintain aspect
     ratio or fit content, strategies have full access to the view and can modify the
@@ -221,9 +221,9 @@ class ResizeStrategy(EventedBase):
     Examples
     --------
     Maintain aspect ratio when view resizes:
-        >>> view = View(camera=Camera(), resize=Letterbox())
+        >>> view = View(camera=Camera(), on_resize=Letterbox())
 
-    No resize behavior (omit the resize parameter):
+    No resize behavior (omit the on_resize parameter):
         >>> view = View(camera=Camera())
 
     See Also
@@ -250,7 +250,7 @@ class ResizeStrategy(EventedBase):
         raise NotImplementedError
 
 
-class Letterbox(ResizeStrategy):
+class Letterbox(ResizePolicy):
     """Maintain content aspect ratio on resize via letterboxing/pillarboxing.
 
     The Letterbox strategy preserves the original aspect ratio of the camera's
@@ -273,7 +273,7 @@ class Letterbox(ResizeStrategy):
         >>> from scenex.utils.projections import orthographic
         >>> view = View(
         ...     camera=Camera(projection=orthographic(100, 100, 100)),
-        ...     resize=Letterbox(),
+        ...     on_resize=Letterbox(),
         ... )
 
     When view is resized to 200x100 pixels, the projection expands horizontally
@@ -288,7 +288,7 @@ class Letterbox(ResizeStrategy):
 
     See Also
     --------
-    ResizeStrategy : Base class for resize strategies
+    ResizePolicy : Base class for resize policies
     View : View class that uses resize strategies
     Camera : Camera class with projection property
     """

@@ -60,7 +60,7 @@ from .model._nodes.scene import Scene
 from .model._nodes.text import Text
 from .model._nodes.volume import Volume
 from .model._transform import Transform
-from .model._view import Letterbox, ResizeStrategy, View
+from .model._view import Letterbox, ResizePolicy, View
 from .util import show
 
 __all__ = [
@@ -77,7 +77,7 @@ __all__ = [
     "Orbit",
     "PanZoom",
     "Points",
-    "ResizeStrategy",
+    "ResizePolicy",
     "Scene",
     "Text",
     "Transform",

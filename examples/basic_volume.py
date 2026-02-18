@@ -24,7 +24,7 @@ view = snx.View(
         ]
     ),
     camera=snx.Camera(interactive=True),
-    resize=snx.Letterbox(),
+    on_resize=snx.Letterbox(),
 )
 
 snx.show(view)
