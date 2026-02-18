@@ -56,7 +56,7 @@ pygfx = [
     # Needed for per-material blending modes
     "pygfx>=0.13.0",
     # Needed to correctly resizes wx widgets
-    "rendercanvas>=2.5.1,<2.6.0"
+    "rendercanvas>=2.5.1,<2.6.1"
 ]
 vispy = ["vispy>=0.15.0", "pyopengl"]
 # This extra is a mess!
