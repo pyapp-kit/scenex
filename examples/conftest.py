@@ -12,9 +12,6 @@ def pytest_collection_modifyitems(
     session: "pytest.Session", config: "pytest.Config", items: "list[pytest.Item]"
 ) -> None:
     """Add sanitizers to Notebook tests."""
-    if IPyNbCell is None:
-        return  # nbval not installed, nothing to sanitize
-
     for item in items:
         # For each notebook cell being tested...
         if not isinstance(item, IPyNbCell):

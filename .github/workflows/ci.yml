@@ -87,6 +87,11 @@ jobs:
         shell: bash
         run: uv run --no-sync coverage run -p -m pytest -v
 
+      - name: Test notebooks
+        if: matrix.canvas == 'jupyter'
+        shell: bash
+        run: uv run --no-sync coverage run -p -m pytest -v --nbval examples
+
       - name: Upload coverage
         uses: actions/upload-artifact@v6
         with:
