@@ -50,7 +50,7 @@ pyqt6 = [
     "qtpy >=2",
 ]
 wx= [
-    "wxpython >=4.2.2,<4.2.5",
+    "wxpython >=4.2.2",
 ]
 pygfx = [
     # Needed for per-material blending modes
@@ -75,7 +75,7 @@ imgui = [
 ]
 
 [dependency-groups]
-test = ["pytest>=8", "pytest-cov>=6"]
+test = ["pytest>=8", "pytest-cov>=6", "pytest-timeout"]
 testqt = [{ include-group = "test" }, "pytest-qt >=4.4"]
 docs = [
     "mike>=2.1.3",
@@ -187,6 +187,7 @@ addopts = [
     # This allows doctest to skip python modules that error on import
     # in our case, this will avoid import errors from backend-specific modules.
     "--doctest-ignore-import-errors",
+    "--timeout=30",
 ]
 testpaths = [
     "tests",
