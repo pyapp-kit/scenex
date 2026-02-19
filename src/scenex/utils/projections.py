@@ -7,10 +7,6 @@ from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 
-# FIXME the top import (commented out) does not work due to a circular import
-# Because the Camera model uses orthographic for its default transform.
-# Might want to think about a better organization.
-# from scenex.model import Transform
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
