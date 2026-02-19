@@ -12,9 +12,9 @@ from scenex.adaptors._auto import get_adaptor_registry
 
 @pytest.fixture
 def points() -> snx.Points:
-    coords = np.array([[0, 0, 0], [1, 1, 0], [2, 2, 0]])
+    vertices = np.array([[0, 0, 0], [1, 1, 0], [2, 2, 0]])
     return snx.Points(
-        coords=coords,
+        vertices=vertices,
         size=10,
         face_color=snx.UniformColor(color=cmap.Color("red")),
         edge_color=snx.UniformColor(color=cmap.Color("white")),
@@ -37,11 +37,11 @@ def test_points_data(points: snx.Points, adaptor: adaptors.Points) -> None:
     node = adaptor._vispy_node
     assert isinstance(node, vispy.scene.Markers)
     # Initial state
-    assert np.array_equal(node._data["a_position"], points.coords)  # pyright: ignore
-    # Change coords
-    new_coords = np.array([[10, 10, 0], [20, 20, 0]])
-    points.coords = new_coords
-    assert np.array_equal(node._data["a_position"], new_coords)  # pyright: ignore
+    assert np.array_equal(node._data["a_position"], points.vertices)  # pyright: ignore
+    # Change vertices
+    new_vertices = np.array([[10, 10, 0], [20, 20, 0]])
+    points.vertices = new_vertices
+    assert np.array_equal(node._data["a_position"], new_vertices)  # pyright: ignore
 
 
 def test_points_size(points: snx.Points, adaptor: adaptors.Points) -> None:
@@ -51,11 +51,11 @@ def test_points_size(points: snx.Points, adaptor: adaptors.Points) -> None:
     # Initial state
     assert np.array_equal(
         node._data["a_size"],  # pyright: ignore
-        points.size * np.ones(len(points.coords)),  # pyright: ignore
+        points.size * np.ones(len(points.vertices)),  # pyright: ignore
     )
     # Change size
     points.size = 5
-    assert np.array_equal(node._data["a_size"], 5 * np.ones(len(points.coords)))  # pyright: ignore
+    assert np.array_equal(node._data["a_size"], 5 * np.ones(len(points.vertices)))  # pyright: ignore
 
 
 def test_points_opacity(points: snx.Points, adaptor: adaptors.Points) -> None:

@@ -45,7 +45,7 @@ class Points(Node):
 
     Attributes
     ----------
-    coords : array-like
+    vertices : array-like
         Array of point coordinates. Shape should be (N, 2) for 2D points or (N, 3) for
         3D points, where N is the number of points.
     size : float
@@ -76,16 +76,16 @@ class Points(Node):
     --------
     Create simple point markers:
         >>> import numpy as np
-        >>> coords = np.random.rand(100, 2) * 100
+        >>> vertices = np.random.rand(100, 2) * 100
         >>> points = Points(
-        ...     coords=coords,
+        ...     vertices=vertices,
         ...     size=5,
         ...     face_color=UniformColor(color=Color("red")),
         ... )
 
     Create points with custom symbols and styling:
         >>> points = Points(
-        ...     coords=coords,
+        ...     vertices=vertices,
         ...     symbol="star",
         ...     size=20,
         ...     face_color=UniformColor(color=Color("yellow")),
@@ -95,21 +95,21 @@ class Points(Node):
 
     Create fixed-size points that don't scale with zoom:
         >>> points = Points(
-        ...     coords=coords,
+        ...     vertices=vertices,
         ...     size=10,
         ...     scaling=False,
         ...     face_color=UniformColor(color=Color("blue")),
         ... )
 
     Create 3D points:
-        >>> coords_3d = np.random.rand(50, 3) * 100
-        >>> points = Points(coords=coords_3d, symbol="diamond", size=15)
+        >>> vertices_3d = np.random.rand(50, 3) * 100
+        >>> points = Points(vertices=vertices_3d, symbol="diamond", size=15)
     """
 
     node_type: Literal["points"] = "points"
 
     # numpy array of 2D/3D point centers, shape (N, 2) or (N, 3)
-    coords: Any = Field(
+    vertices: Any = Field(
         default=None,
         repr=False,
         exclude=True,
@@ -145,7 +145,7 @@ class Points(Node):
 
     @property  # TODO: Cache?
     def bounding_box(self) -> AABB:
-        arr = np.asarray(self.coords)
+        arr = np.asarray(self.vertices)
         return (
             tuple(float(d) for d in np.min(arr, axis=0)),
             tuple(float(d) for d in np.max(arr, axis=0)),
@@ -169,7 +169,7 @@ class Points(Node):
 
     def _passes_through_screen(self, ray: Ray) -> float | None:
         """Test ray intersection in screen/canvas space for fixed-size points."""
-        if self.coords is None or len(self.coords) == 0:
+        if self.vertices is None or len(self.vertices) == 0:
             return None
 
         # Convert points to canvas space
@@ -194,20 +194,20 @@ class Points(Node):
             return None
 
         # For intersecting points, calculate the world-space distance along the ray
-        coords = np.asarray(self.coords)
-        if coords.ndim < len(ray.origin):
-            coords = np.pad(
-                coords,
-                ((0, 0), (0, len(ray.origin) - coords.shape[1])),
+        vertices = np.asarray(self.vertices)
+        if vertices.ndim < len(ray.origin):
+            vertices = np.pad(
+                vertices,
+                ((0, 0), (0, len(ray.origin) - vertices.shape[1])),
                 mode="constant",
                 constant_values=0,
             )
 
         # Transform intersecting points to world space
-        world_coords = self.transform.map(coords[intersecting_indices])[:, :3]
+        world_vertices = self.transform.map(vertices[intersecting_indices])[:, :3]
 
         # Calculate distances along the ray to intersecting points
-        ray_to_points = world_coords - ray.origin
+        ray_to_points = world_vertices - ray.origin
         ray_dir_squared = np.dot(ray.direction, ray.direction)
 
         if ray_dir_squared == 0:
@@ -237,7 +237,7 @@ class Points(Node):
         layout = view.layout
         tform_to_root_scene = self.transform_to_node(view.scene)
         ndc_points = cam.projection.map(
-            cam.transform.imap(tform_to_root_scene.map(self.coords))
+            cam.transform.imap(tform_to_root_scene.map(self.vertices))
         )[:, :2]
         return np.asarray((ndc_points + 1) / 2 * (layout.width, layout.height))
 
@@ -247,14 +247,14 @@ class Points(Node):
 
         # Step 1 - Determine whether the ray passes through any points
 
-        # Convert coords to a 3-dimensional numpy array
-        coords = np.asarray(self.coords)
-        if coords.ndim < len(ray.origin):
-            coords = np.pad(
-                self.coords, ((0, 0), (0, 1)), mode="constant", constant_values=0
+        # Convert vertices to a 3-dimensional numpy array
+        vertices = np.asarray(self.vertices)
+        if vertices.ndim < len(ray.origin):
+            vertices = np.pad(
+                self.vertices, ((0, 0), (0, 1)), mode="constant", constant_values=0
             )
         # And then transform the points to world space
-        coords = self.transform.map(coords)[:, :3]
+        vertices = self.transform.map(vertices)[:, :3]
 
         # For each point, determine whether the ray passes through its sphere.
         #
@@ -266,7 +266,7 @@ class Points(Node):
         # as (ray.origin + ray.direction * t). Substituting this definition into the
         # sphere equation, yields a quadratic equation at^2 + bt + c = 0, where a, b,
         # and c have the following definitions:
-        ray_diff = coords - ray.origin
+        ray_diff = vertices - ray.origin
         a = np.dot(ray.direction, ray.direction)
         b = -2 * np.dot(ray_diff, ray.direction)
         c = np.sum(ray_diff * ray_diff, axis=1) - r**2

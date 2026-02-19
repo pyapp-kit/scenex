@@ -11,7 +11,7 @@ def test_bounding_box() -> None:
 
     # With children, the bounding box should be defined by the scene
     points_scene = snx.Scene(
-        children=[snx.Points(coords=np.asarray([[0, 100, 0], [100, 0, 1]]))]
+        children=[snx.Points(vertices=np.asarray([[0, 100, 0], [100, 0, 1]]))]
     )
     exp_bounding_box = np.asarray(((0, 0, 0), (100, 100, 1)))
     act_bouning_box = points_scene.bounding_box
@@ -22,7 +22,7 @@ def test_bounding_box() -> None:
     points_scene = snx.Scene(
         children=[
             snx.Points(
-                coords=np.asarray([[0, 100, 0], [100, 0, 1]]),
+                vertices=np.asarray([[0, 100, 0], [100, 0, 1]]),
                 transform=Transform().translated((1, 1, 1)),
             )
         ]
@@ -36,14 +36,14 @@ def test_bounding_box() -> None:
     points_scene = snx.Scene(
         children=[
             snx.Points(
-                coords=np.asarray(
+                vertices=np.asarray(
                     [
                         [0, 100, 0],
                     ]
                 ),
             ),
             snx.Points(
-                coords=np.asarray(
+                vertices=np.asarray(
                     [
                         [100, 0, 1],
                     ]

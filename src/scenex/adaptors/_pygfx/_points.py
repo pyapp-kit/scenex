@@ -50,28 +50,28 @@ class Points(Node, PointsAdaptor):
         if isinstance(points.edge_color, UniformColor):
             self._material.edge_color = points.edge_color.color.rgba
 
-        # Fill this in empty for now; will be populated in _snx_set_coords
+        # Fill this in empty for now; will be populated in _snx_set_vertices
         self._geometry = pygfx.Geometry(positions=np.zeros((1, 3), dtype=np.float32))
-        self._snx_set_coords(points.coords)
+        self._snx_set_vertices(points.vertices)
 
         self._pygfx_node = pygfx.Points(self._geometry, self._material)
 
-    def _snx_set_coords(self, coords: npt.NDArray | None) -> None:
+    def _snx_set_vertices(self, vertices: npt.NDArray | None) -> None:
         # ensure (N, 3)
-        if coords is None or coords.size == 0:
-            coords = np.zeros((0, 3), dtype=np.float32)
-        elif coords.shape[1] == 2:
-            coords = np.column_stack((coords, np.zeros(coords.shape[0])))
+        if vertices is None or vertices.size == 0:
+            vertices = np.zeros((0, 3), dtype=np.float32)
+        elif vertices.shape[1] == 2:
+            vertices = np.column_stack((vertices, np.zeros(vertices.shape[0])))
         # Coerce dtypes to float32 - suprisingly pygfx is sensitive to this
-        coords = coords.astype(np.float32)
+        vertices = vertices.astype(np.float32)
         # Update existing buffer if possible for performance
         positions = self._geometry.positions
-        if (data := positions.data) is not None and (coords.shape == data.shape):
-            data[:, :] = coords
+        if (data := positions.data) is not None and (vertices.shape == data.shape):
+            data[:, :] = vertices
             positions.update_range()
         # Otherwise create a new buffer
         else:
-            self._geometry.positions = pygfx.resources.Buffer(coords)
+            self._geometry.positions = pygfx.resources.Buffer(vertices)
 
     def _snx_set_size(self, size: float) -> None:
         self._material.size = size  # pyright: ignore

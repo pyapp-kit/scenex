@@ -38,7 +38,7 @@ class Points(Node, PointsAdaptor):
         self._vispy_node = vispy.scene.Markers()
         self._update_vispy_data()
 
-    def _snx_set_coords(self, coords: npt.NDArray) -> None:
+    def _snx_set_vertices(self, vertices: npt.NDArray) -> None:
         self._update_vispy_data()
 
     def _snx_set_size(self, size: float) -> None:
@@ -93,7 +93,7 @@ class Points(Node, PointsAdaptor):
             raise NotImplementedError("Unsupported face color model")
 
         self._vispy_node.set_data(
-            pos=np.asarray(self._model.coords),
+            pos=np.asarray(self._model.vertices),
             size=self._model.size,
             symbol=self._model.symbol,
             face_color=face_color,  # pyright: ignore

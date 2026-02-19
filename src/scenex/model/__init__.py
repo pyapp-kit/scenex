@@ -60,7 +60,7 @@ Build a simple scene::
     >>> scene = Scene(
     ...     children=[
     ...         Image(data=np.random.rand(100, 100)),
-    ...         Points(coords=np.random.rand(50, 2) * 100),
+    ...         Points(vertices=np.random.rand(50, 2) * 100),
     ...     ]
     ... )
 

@@ -92,7 +92,7 @@ def test_perspective() -> None:
 def test_zoom_to_fit_orthographic() -> None:
     view = snx.View(
         scene=snx.Scene(
-            children=[snx.Points(coords=np.asarray([[0, 100, 0], [100, 0, 1]]))]
+            children=[snx.Points(vertices=np.asarray([[0, 100, 0], [100, 0, 1]]))]
         )
     )
 
@@ -125,7 +125,7 @@ def test_zoom_to_fit_orthographic() -> None:
 def test_zoom_to_fit_orthographic_preserving_aspect_ratio() -> None:
     view = snx.View(
         scene=snx.Scene(
-            children=[snx.Points(coords=np.asarray([[0, 200, 1], [100, 0, 0]]))]
+            children=[snx.Points(vertices=np.asarray([[0, 200, 1], [100, 0, 0]]))]
         )
     )
     # By default, the view is not square
@@ -155,7 +155,7 @@ def test_zoom_to_fit_orthographic_preserving_aspect_ratio() -> None:
 def test_zoom_to_fit_perspective() -> None:
     view = snx.View(
         scene=snx.Scene(
-            children=[snx.Points(coords=np.asarray([[0, 100, 1], [100, 0, 0]]))]
+            children=[snx.Points(vertices=np.asarray([[0, 100, 1], [100, 0, 0]]))]
         )
     )
     zoom_to_fit(view, type="perspective")

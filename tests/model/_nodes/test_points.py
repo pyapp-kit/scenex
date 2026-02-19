@@ -8,7 +8,7 @@ from scenex.utils import projections
 @pytest.fixture
 def points() -> snx.Points:
     return snx.Points(
-        coords=np.random.randint(0, 255, (100, 3), dtype=np.uint8),
+        vertices=np.random.randint(0, 255, (100, 3), dtype=np.uint8),
     )
 
 
@@ -16,7 +16,7 @@ def test_bounding_box(points: snx.Points) -> None:
     # This test is a bit tautological, but it does prevent anything crazy from happening
     # :)
     exp_bounding_box = np.asarray(
-        (np.min(points.coords, axis=0), np.max(points.coords, axis=0))
+        (np.min(points.vertices, axis=0), np.max(points.vertices, axis=0))
     )
     assert np.array_equal(exp_bounding_box, points.bounding_box)
 
@@ -28,9 +28,9 @@ def test_points_ray_intersection_screen_space() -> None:
     This test is thus more complicated than some other nodes' intersection tests.
     """
     # Create one point with fixed scaling
-    coords = np.array([[1, 1, 0]])
+    vertices = np.array([[1, 1, 0]])
     points = snx.Points(
-        coords=coords,
+        vertices=vertices,
         size=4,  # Pixel diameter
         edge_width=0,
         scaling="fixed",
@@ -71,9 +71,9 @@ def test_points_ray_intersection_screen_space() -> None:
 def test_points_ray_intersection_world_space() -> None:
     """Test ray-point intersection in world space (scene scaling)."""
     # Create one point with scene scaling
-    coords = np.array([[1, 1, 0]])
+    vertices = np.array([[1, 1, 0]])
     points = snx.Points(
-        coords=coords,
+        vertices=vertices,
         size=1,  # World-space diameter
         edge_width=0,
         scaling="scene",
@@ -117,10 +117,10 @@ def test_points_ray_intersection_world_space() -> None:
 def test_points_ray_intersection_transformed() -> None:
     """Test ray-point intersection with transforms applied."""
     # Simple point at origin
-    coords = np.array([[0, 0, 0]])
+    vertices = np.array([[0, 0, 0]])
     # Transform the point to (1, 1, 0) at the node level
     points = snx.Points(
-        coords=coords,
+        vertices=vertices,
         size=4,
         scaling=False,
         transform=snx.Transform().translated((1, 1, 0)),
@@ -152,7 +152,9 @@ def test_points_ray_intersection_transformed() -> None:
 def test_points_ray_intersection_edge_cases() -> None:
     """Test edge cases for ray-point intersection."""
     # Empty points
-    empty_points = snx.Points(coords=np.array([]).reshape(0, 3), size=4, scaling=False)
+    empty_points = snx.Points(
+        vertices=np.array([]).reshape(0, 3), size=4, scaling=False
+    )
     view = snx.View(scene=snx.Scene(children=[empty_points]))
     canvas = snx.Canvas(views=[view])
 
@@ -162,9 +164,9 @@ def test_points_ray_intersection_edge_cases() -> None:
     assert distance is None
 
     # Points with edge width
-    coords = np.array([[1, 1, 0]])
+    vertices = np.array([[1, 1, 0]])
     points_with_edge = snx.Points(
-        coords=coords,
+        vertices=vertices,
         size=2,
         edge_width=2,  # Increases effective radius
         scaling=False,

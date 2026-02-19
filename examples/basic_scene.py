@@ -23,7 +23,7 @@ view = snx.View(
                 order=0,
             ),
             snx.Points(
-                coords=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
+                vertices=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
                 size=5,
                 face_color=snx.UniformColor(color=cmap.Color("coral")),
                 edge_color=snx.UniformColor(color=cmap.Color("purple")),

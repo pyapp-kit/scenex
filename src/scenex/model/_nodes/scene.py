@@ -32,7 +32,7 @@ class Scene(Node):
         ...     children=[
         ...         Image(data=my_image),
         ...         Points(
-        ...             coords=my_points,
+        ...             vertices=my_points,
         ...             face_color=UniformColor(color=Color("red")),
         ...         ),
         ...     ]
@@ -41,11 +41,11 @@ class Scene(Node):
     Create an empty scene and later add children:
         >>> scene = Scene()
         >>> scene.add_child(Image(data=my_image))
-        >>> scene.add_child(Points(coords=my_points))
+        >>> scene.add_child(Points(vertices=my_points))
 
     Create a hierarchical scene with nested nodes:
         >>> grandchild = Image(data=my_image)
-        >>> parent = Points(coords=my_points)
+        >>> parent = Points(vertices=my_points)
         >>> scene = Scene(children=[parent])
 
     Use a scene with a view:

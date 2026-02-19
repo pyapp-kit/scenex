@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 @pytest.fixture
 def random_points_node() -> snx.Points:
     return snx.Points(
-        coords=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
+        vertices=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
         size=5,
         face_color=snx.UniformColor(color=cmap.Color("coral")),
         transform=snx.Transform().translated((0, -50)),

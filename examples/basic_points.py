@@ -23,7 +23,7 @@ from scenex.app.events import Event, MouseMoveEvent
 from scenex.utils import projections
 
 # Here is our points data
-coords = np.array(
+vertices = np.array(
     [
         [0, 0, 0],
         [0, 1, 0],
@@ -42,7 +42,7 @@ colors = [
 # so it remains constant (fixed) as you zoom in and out.
 points = snx.Points(
     name="point",
-    coords=coords,
+    vertices=vertices,
     size=20,  # Pixel diameter
     edge_width=10,
     scaling="fixed",
@@ -54,7 +54,7 @@ points = snx.Points(
 # You can uncomment the following lines to try it out.
 # points = snx.Points(
 #     name="point",
-#     coords=coords,
+#     vertices=vertices,
 #     size=1,  # World-space diameter
 #     edge_width=0,
 #     scaling="scene",

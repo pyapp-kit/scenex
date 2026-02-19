@@ -115,7 +115,7 @@ class Ray(NamedTuple):
         ...         children=[
         ...             snx.Image(data=np.random.rand(100, 100)),
         ...             snx.Points(
-        ...                 coords=np.asarray([[0, 0, 0], [1, 1, 0]]),
+        ...                 vertices=np.asarray([[0, 0, 0], [1, 1, 0]]),
         ...                 size=5,
         ...                 edge_width=0,
         ...             ),

@@ -12,9 +12,9 @@ from scenex.adaptors._auto import get_adaptor_registry
 
 @pytest.fixture
 def points() -> snx.Points:
-    coords = np.array([[0, 0, 0], [1, 1, 0], [2, 2, 0]])
+    vertices = np.array([[0, 0, 0], [1, 1, 0], [2, 2, 0]])
     return snx.Points(
-        coords=coords,
+        vertices=vertices,
         size=10,
         face_color=snx.UniformColor(color=cmap.Color("red")),
         edge_color=snx.UniformColor(color=cmap.Color("white")),
@@ -40,12 +40,12 @@ def test_points_data(points: snx.Points, adaptor: adaptors.Points) -> None:
     assert isinstance(geom, pygfx.Geometry)
 
     # initial data
-    assert np.array_equal(geom.positions.data, points.coords)
+    assert np.array_equal(geom.positions.data, points.vertices)
 
-    # update coords
-    new_coords = np.array([[5, 5, 0], [6, 6, 0]])
-    points.coords = new_coords
-    assert np.array_equal(geom.positions.data, new_coords)
+    # update vertices
+    new_vertices = np.array([[5, 5, 0], [6, 6, 0]])
+    points.vertices = new_vertices
+    assert np.array_equal(geom.positions.data, new_vertices)
 
 
 def test_points_size(points: snx.Points, adaptor: adaptors.Points) -> None:

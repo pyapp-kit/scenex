@@ -49,7 +49,7 @@ Create a hierarchy with transforms::
 
     >>> # Parent node with transform
     >>> parent_points = Points(
-    ...     coords=np.random.rand(50, 3),
+    ...     vertices=np.random.rand(50, 3),
     ...     transform=Transform().translated((10, 0, 0)),
     ... )
     >>> # Child node

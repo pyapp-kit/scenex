@@ -7,7 +7,7 @@ from scenex.app import CursorType, app
 from scenex.app.events import Event, MouseMoveEvent
 
 # Points data
-coords = np.array(
+vertices = np.array(
     [
         [0, 0, 0],
         [0, 1, 0],
@@ -18,7 +18,7 @@ coords = np.array(
 
 points = snx.Points(
     name="points",
-    coords=coords,
+    vertices=vertices,
     size=18,
     edge_width=0,
     scaling="fixed",
