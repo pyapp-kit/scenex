@@ -172,8 +172,11 @@ class Node(EventedBase):
         default_factory=Transform,
         description="Transformation from local coordinates to parent coordinates",
     )
+    # Generally users want to see opaque objects behind transparent ones (so not OPAQUE)
+    # ADDITIVE is only really useful for volume vis
+    # TODO: This belongs in design decision docs somewhere
     blending: BlendMode = Field(
-        default=BlendMode.OPAQUE,
+        default=BlendMode.ALPHA,
         description="How this node's colors blend with nodes behind it",
     )
 
