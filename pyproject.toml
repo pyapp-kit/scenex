@@ -60,7 +60,7 @@ pygfx = [
     "pygfx>=0.13.0",
     # Needed to correctly resizes wx widgets
     # "rendercanvas>=2.5.1"
-    "rendercanvas @ git+https://github.com/pygfx/rendercanvas.git@2fe764e03204e6b8d43bc4952ac8df13bc4fad57"
+    "rendercanvas @ git+https://github.com/pygfx/rendercanvas.git@96f5d9c99c698e18b298d4a91e1f40a15bcd248d"
 ]
 vispy = ["vispy>=0.15.0", "pyopengl"]
 # This extra is a mess!
