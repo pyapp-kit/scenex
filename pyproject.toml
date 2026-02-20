@@ -32,18 +32,51 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Typing :: Typed",
 ]
-dependencies = ["cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10"]
+dependencies = ["cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10", "pylinalg"]
 
 [project.optional-dependencies]
-pygfx = ["pygfx>=0.9.0"]
+jupyter = [
+    "ipywidgets >=8.0.5",
+    "jupyter >=1.1",
+    "jupyter_rfb >=0.3.3",
+    # Note that this dep is only needed for Vispy, something like simplejpeg would work fine if just pygfx.
+    "glfw",
+    # Otherwise jupyter_rfb will use PNG, which is apparently slower
+    "simplejpeg",
+]
+pyqt6 = [
+    "pyqt6 >=6.4,!=6.6",
+    "pyqt6 >=6.5.3; python_version >= '3.12'",
+    "qtpy >=2",
+]
+wx= [
+    "wxpython >=4.2.2",
+]
+pygfx = [
+    # Needed for per-material blending modes
+    "pygfx>=0.13.0",
+    # Needed to correctly resizes wx widgets
+    "rendercanvas>=2.5.1"
+]
 vispy = ["vispy>=0.15.0", "pyopengl"]
+# This extra is a mess!
+# Our source code for the pygfx adaptors relies on pygfx>=0.13.0 (see that extra for why).
+# However no versions of imgui-bundle that I'm aware of work for pygfx v0.13.0, because each version of pygfx
+# is tied to a range of versions of wgpu-py. The wgpu-py imgui renderer is broken until wgpu>=0.27.0, which
+# corresponds to pygfx>=0.15.2. So, if you don't care about imgui, you can run pygfx>=0.13.0, but if you want
+# it, you'll need pygfx>=0.15.2 so that you can get wgpu>=0.27.0.
+# Note that it's unclear to me why pygfx v0.15.0 does not work, because the fixes should be a part of that release.
+# See https://github.com/pygfx/wgpu-py/pull/725
 imgui = [
-    # 1.6.3 breaks type checking, 1.92 not working with pygfx
-    "imgui-bundle>=1.6,!=1.6.3,<1.92.0",
+    # Pulls in a wgpu>=0.27 which is needed to work with this version of imgui-bundle
+    "pygfx>=0.15.2",
+    # Earlier versions of imgui-bundle don't work with pygfx>=0.13.0
+    "imgui-bundle>=1.92.0",
 ]
 
 [dependency-groups]
-test = ["pytest>=8", "pytest-cov>=6", "PyQt6"]
+test = ["pytest>=8", "pytest-cov>=6"]
+testqt = [{ include-group = "test" }, "pytest-qt >=4.4"]
 docs = [
     "mike>=2.1.3",
     "mkdocs>=1.6.1",
@@ -56,7 +89,7 @@ docs = [
 dev = [
     { include-group = "test" },
     { include-group = "docs" },
-    "scenex[pygfx,vispy,imgui]",
+    "scenex[pygfx,vispy,imgui,jupyter,pyqt, wx]",
     "imageio[tifffile] >=2.20",
     "ipython",
     "mypy",
@@ -122,14 +155,14 @@ disallow_subclassing_any = false
 show_error_codes = true
 pretty = true
 plugins = ["pydantic.mypy"]
-untyped_calls_exclude = ["rendercanvas"]
+untyped_calls_exclude = ["rendercanvas", "IPython", "pytestqt"]
 
 [[tool.mypy.overrides]]
 module = ["rendercanvas.*"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
-module = ["pygfx.*", "vispy.*", "wgpu.*"]
+module = ["pygfx.*", "vispy.*", "wgpu.*", "glfw.*", "pylinalg.*", "qtpy.*", "ipywidgets.*", "IPython.*", "jupyter", "jupyter_rfb.*", "wx.*", "pytestqt.*"]
 ignore_missing_imports = true
 
 [tool.pydantic-mypy]

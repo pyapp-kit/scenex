@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+import warnings
+from typing import TYPE_CHECKING, Generic, TypeVar, cast
 
+from scenex import model
 from scenex.adaptors._base import NodeAdaptor, TNode
 
 from ._adaptor_registry import get_adaptor
@@ -10,13 +12,18 @@ from ._adaptor_registry import get_adaptor
 if TYPE_CHECKING:
     import pygfx
 
-    from scenex import model
     from scenex.model import Transform
 
 logger = logging.getLogger("scenex.adaptors.pygfx")
 TObj = TypeVar("TObj", bound="pygfx.WorldObject")
 TMat = TypeVar("TMat", bound="pygfx.Material")
 TGeo = TypeVar("TGeo", bound="pygfx.Geometry")
+
+BLEND_MODES = {
+    model.BlendMode.OPAQUE: "solid",
+    model.BlendMode.ALPHA: "auto",
+    model.BlendMode.ADDITIVE: "add",
+}
 
 
 class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj, TMat, TGeo]):
@@ -26,9 +33,6 @@ class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj, TMat, TGeo]):
     _material: TMat
     _geometry: TGeo
     _name: str
-
-    def _snx_get_native(self) -> Any:
-        return self._pygfx_node
 
     def _snx_set_name(self, arg: str) -> None:
         # not sure pygfx has a name attribute...
@@ -63,10 +67,25 @@ class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj, TMat, TGeo]):
         # pygfx uses a transposed matrix relative to the model
         self._pygfx_node.local.matrix = arg.root.T
 
+    def _snx_set_blending(self, arg: model.BlendMode) -> None:
+        material = self._pygfx_node.material
+        if material is None:
+            # FIXME this node is a scene
+            return
+        # pygfx only supports node blend modes for versions >=0.13
+        if hasattr(material, "alpha_mode"):
+            material.alpha_mode = BLEND_MODES[arg]  # pyright: ignore
+        else:
+            warnings.warn(
+                "Node blending not supported by this version of pygfx - ignoring",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+
     def _snx_add_node(self, node: model.Node) -> None:
         # create if it doesn't exist
         adaptor = cast("Node", get_adaptor(node))
-        self._pygfx_node.add(adaptor._snx_get_native())
+        self._pygfx_node.add(adaptor._pygfx_node)
 
     def _snx_force_update(self) -> None:
         pass

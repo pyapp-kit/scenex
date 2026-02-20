@@ -22,7 +22,9 @@ jobs:
       - run: pipx run check-manifest
 
   lint:
-    runs-on: ubuntu-latest
+    # Lint on Windows to include wx type stubs. wxPython does not ship pre-built wheels for Linux,
+    # and building on CI from source fails due to missing GTK+ dev files.
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v7
@@ -32,16 +34,36 @@ jobs:
       - uses: j178/prek-action@v1
 
   test:
-    name: test ${{ matrix.os }} py${{ matrix.python-version }} ${{ matrix.gfx }}
+    name: test ${{ matrix.os }} py${{ matrix.python-version }} ${{ matrix.gfx }} ${{ matrix.canvas }}
     runs-on: ${{ matrix.os }}
-    env:
-      UV_FROZEN: 1
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.13"]
         gfx: [pygfx, vispy]
+        canvas: [pyqt6, jupyter, wx]
+        exclude:
+          # glfw.GLFWError: (65545) b'NSGL: Failed to find a suitable pixel format'
+          # (Under the hood GLFW gives vispy the OpenGL context.)
+          - os: macos-latest
+            canvas: jupyter
+            gfx: vispy
+          # wxpython does not build wheels for ubuntu or macos-latest py3.10
+          - os: ubuntu-latest
+            canvas: wx
+          - os: macos-latest
+            canvas: wx
+            python-version: "3.10"
+        include:
+          - python-version: "3.11"
+            gfx: pygfx
+            canvas: pyqt6
+            os: ubuntu-latest
+          - python-version: "3.12"
+            gfx: pygfx
+            canvas: pyqt6
+            os: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v6
@@ -59,7 +81,7 @@ jobs:
           sudo apt install -y libegl1-mesa-dev libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers
 
       - name: Install dependencies
-        run: uv sync --no-dev --group test --extra ${{ matrix.gfx }} ${{ matrix.python-version != '3.10' && '--extra imgui' || '' }}
+        run: uv sync --no-dev --group test --extra ${{ matrix.gfx }} --extra ${{matrix.canvas}} ${{ matrix.python-version >= '3.12' && matrix.gfx == 'pygfx' && '--extra imgui' || '' }} ${{ matrix.canvas == 'pyqt6' && '--group testqt' || '' }}
 
       - name: Test
         shell: bash
@@ -68,7 +90,7 @@ jobs:
       - name: Upload coverage
         uses: actions/upload-artifact@v6
         with:
-          name: covreport-${{ matrix.os }}-py${{ matrix.python-version }}-${{ matrix.gfx }}
+          name: covreport-${{ matrix.os }}-py${{ matrix.python-version }}-${{ matrix.gfx }}-${{ matrix.canvas }}
           path: ./.coverage*
           include-hidden-files: true
 

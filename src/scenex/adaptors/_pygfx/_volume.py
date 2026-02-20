@@ -56,6 +56,8 @@ class Volume(Node, VolumeAdaptor):
     def _snx_set_data(self, data: ArrayLike) -> None:
         self._texture = self._create_texture(np.asanyarray(data))
         self._geometry = pygfx.Geometry(grid=self._texture)
+        if hasattr(self, "_pygfx_node"):
+            self._pygfx_node.geometry = self._geometry
 
     def _snx_set_render_mode(
         self,
@@ -67,6 +69,13 @@ class Volume(Node, VolumeAdaptor):
             kwargs["interpolation"] = interpolation
         elif self._material is not None:
             kwargs["interpolation"] = self._material.interpolation
+            kwargs["clim"] = self._material.clim
+            kwargs["map"] = self._material.map
+            kwargs["gamma"] = self._material.gamma
+            kwargs["opacity"] = self._material.opacity
+            # alpha_mode parameter introduced in pygfx 0.13.0
+            if hasattr(self._material, "alpha_mode"):
+                kwargs["alpha_mode"] = self._material.alpha_mode
 
         if data == "mip":
             self._material = pygfx.VolumeMipMaterial(**kwargs)

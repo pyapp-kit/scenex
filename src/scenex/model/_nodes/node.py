@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import logging
 from collections.abc import Iterable, Iterator
-from typing import TYPE_CHECKING, Annotated, Any, ClassVar, Union, cast
+from enum import Enum
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, Union, cast
 
+import numpy as np
 from psygnal import Signal
 from pydantic import (
     ConfigDict,
@@ -9,6 +13,7 @@ from pydantic import (
     ModelWrapValidatorHandler,
     PrivateAttr,
     SerializerFunctionWrapHandler,
+    TypeAdapter,
     ValidationInfo,
     computed_field,
     model_serializer,
@@ -19,18 +24,26 @@ from scenex.model._base import EventedBase
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
+
     import numpy.typing as npt
     from typing_extensions import Self, TypedDict, Unpack
 
+    from scenex.app.events import Ray
+
     from .camera import Camera
     from .image import Image
+    from .line import Line
+    from .mesh import Mesh
     from .points import Points
     from .scene import Scene
+    from .text import Text
+    from .volume import Volume
 
     class NodeKwargs(TypedDict, total=False):
         """TypedDict for Node kwargs."""
 
-        parent: "Node | None"
+        parent: Node | None
         name: str | None
         visible: bool
         interactive: bool
@@ -44,39 +57,107 @@ logger = logging.getLogger(__name__)
 
 # improve me... Read up on: https://docs.pydantic.dev/latest/concepts/unions/
 AnyNode = Annotated[
-    Union["Image", "Points", "Camera", "Scene"], Field(discriminator="node_type")
+    Union["Image", "Mesh", "Points", "Line", "Camera", "Scene", "Text", "Volume"],
+    Field(discriminator="node_type"),
 ]
+
+# Axis-Aligned Bounding Box
+AABB: TypeAlias = tuple[tuple[float, float, float], tuple[float, float, float]]
+
+
+class BlendMode(Enum):
+    """
+    A set of available blending modes.
+
+    Blending modes determine how the colors of rendered objects are combined with the
+    colors already present in the framebuffer. More practically, if two objects overlap
+    from the camera's perspective in the scene, the blending mode of the new object
+    determines how its colors are combined with those of the object previously rendered.
+
+    Note that the draw order plays a crucial role in blending.
+    """
+
+    OPAQUE = "opaque"
+    """The object's color value, multiplied by its alpha value, overwrites the
+    background color.
+    """
+    ALPHA = "alpha"
+    """
+    The object's color is blended with the background using standard alpha compositing.
+    The resulting color is a weighted combination of the foreground and background,
+    where weights are determined by alpha values.
+    """
+    ADDITIVE = "additive"
+    """The object's color value, multiplied by its alpha value, is added to the
+    background color.
+    """
 
 
 class Node(EventedBase):
-    """Base class for all nodes.  Also a [`Container[Node]`][collections.abc.Container].
+    """Base class for all nodes in the scene graph.
 
-    Do not instantiate this class directly. Use a subclass.  GenericNode may
-    be used in place of Node.
+    Node is the fundamental building block of scenex's scene graph architecture. Nodes
+    form a hierarchical tree structure where each node can have a parent and children,
+    creating a parent-child relationship that propagates transformations, visibility,
+    and other properties through the graph.
+
+    Nodes are abstract and should not be instantiated directly. Use concrete subclasses
+    like Image, Points, Line, Mesh, Scene, or Camera instead.
+
+    The scene graph hierarchy allows:
+    - Hierarchical transformations: A node's transform is relative to its parent
+    - Property inheritance: Visibility and opacity affect all descendants
+    - Spatial relationships: Nodes can find paths to other nodes in the graph
+    - Event handling: Interactive nodes can respond to user input
+
+    Notes
+    -----
+    Do not instantiate Node directly. Use concrete subclasses instead.
     """
 
-    parent: "Node | None" = Field(default=None, repr=False, exclude=True)
+    parent: Node | None = Field(
+        default=None,
+        repr=False,
+        exclude=True,
+        description="The parent of this node in the scene graph hierarchy",
+    )
     # see computed field below
-    _children: list["AnyNode"] = PrivateAttr(default_factory=list)
+    _children: list[AnyNode] = PrivateAttr(default_factory=list)
 
-    name: str | None = Field(default=None, description="Name of the node.")
-    visible: bool = Field(default=True, description="Whether this node is visible.")
+    name: str | None = Field(default=None, description="Name identifying the node")
+    visible: bool = Field(
+        default=True,
+        description="Whether this node and its children should be rendered",
+    )
     interactive: bool = Field(
         default=False,
-        description="Whether this node accepts mouse and touch events",
+        description="Whether this node should respond to mouse and touch events",
         repr=False,
     )
-    opacity: float = Field(default=1.0, ge=0, le=1, description="Opacity of this node.")
+    opacity: float = Field(
+        default=1.0,
+        ge=0,
+        le=1,
+        description="Opacity from 0.0 (transparent) to 1.0 (opaque)",
+    )
     order: int = Field(
         default=0,
         ge=0,
-        description="A value used to determine the order in which nodes are drawn. "
-        "Greater values are drawn later. Children are always drawn after their parent",
+        description=(
+            "Drawing order within siblings; higher values drawn later (on top). "
+            "Equivalent drawing order for siblings is undefined."
+        ),
     )
     transform: Transform = Field(
         default_factory=Transform,
-        description="Transform that maps the local coordinate frame to the coordinate "
-        "frame of the parent.",
+        description="Transformation from local coordinates to parent coordinates",
+    )
+    # Generally users want to see opaque objects behind transparent ones (so not OPAQUE)
+    # ADDITIVE is only really useful for volume vis
+    # TODO: This belongs in design decision docs somewhere
+    blending: BlendMode = Field(
+        default=BlendMode.ALPHA,
+        description="How this node's colors blend with nodes behind it",
     )
 
     model_config = ConfigDict(extra="forbid")
@@ -87,8 +168,8 @@ class Node(EventedBase):
     def __init__(
         self,
         *,
-        children: Iterable["Node | dict[str, Any]"] = (),
-        **data: "Unpack[NodeKwargs]",
+        children: Iterable[Node | dict[str, Any]] = (),
+        **data: Unpack[NodeKwargs],
     ) -> None:
         # prevent direct instantiation.
         # makes it easier to use NodeUnion without having to deal with self-reference.
@@ -99,36 +180,83 @@ class Node(EventedBase):
 
         for ch in children:
             if not isinstance(ch, Node):
-                ch = Node.model_validate(ch)
+                ch = self._validate_json(ch)
             self.add_child(ch)  # type: ignore [arg-type]
+
+    def _validate_json(self, json: Any) -> Node:
+        # All nodes in AnyNode must be imported here to fully define the AnyNode type.
+        # They can't be top-level imports because of circular import issues.
+        from .camera import Camera  # noqa: F401
+        from .image import Image  # noqa: F401
+        from .line import Line  # noqa: F401
+        from .mesh import Mesh  # noqa: F401
+        from .points import Points  # noqa: F401
+        from .scene import Scene  # noqa: F401
+        from .text import Text  # noqa: F401
+        from .volume import Volume  # noqa: F401
+
+        return TypeAdapter(AnyNode).validate_python(json)
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def children(self) -> tuple["Node", ...]:
+    def children(self) -> tuple[Node, ...]:
         """Return a tuple of the children of this node."""
         return tuple(self._children)
 
-    def add_child(self, child: "AnyNode") -> None:
+    @property  # TODO: Cache?
+    def bounding_box(self) -> AABB | None:
+        bounded_nodes = [c for c in self.children if c.bounding_box]
+        if not bounded_nodes:
+            # If there are no children declaring a bounding box, return None
+            return None
+        node_aabbs = [n.transform.map(n.bounding_box)[:, :3] for n in bounded_nodes]  # type:ignore
+        mi = np.vstack([t[0] for t in node_aabbs]).min(axis=0)
+        ma = np.vstack([t[1] for t in node_aabbs]).max(axis=0)
+        # Note the casting is important for pydantic
+        # FIXME: Should just validate in pydantic
+        return (tuple(float(m) for m in mi), tuple(float(m) for m in ma))  # type: ignore
+
+    def add_child(self, child: AnyNode) -> None:
         """Add a child node to this node."""
         self._children.append(child)
         child.parent = cast("AnyNode", self)
         self.child_added.emit(child)
 
-    def remove_child(self, child: "AnyNode") -> None:
+    def remove_child(self, child: AnyNode) -> None:
         """Remove a child node from this node. Does not raise if child is missing."""
         if child in self._children:
             self._children.remove(child)
             child.parent = None
             self.child_removed.emit(child)
 
+    def passes_through(self, ray: Ray) -> float | None:
+        """Returns the depth t at which the provided ray intersects this node.
+
+        The ray, in this case, is defined by R(t) = ray_origin + ray_direction * t,
+        where t>=0
+
+        Parameters
+        ----------
+        ray : Ray
+            The ray passing through the scene
+
+        Returns
+        -------
+        t: float | None
+            The depth t at which the ray intersects the node, or None if it never
+            intersects.
+        """
+        # Nodes that want to support ray intersection should override this method.
+        return None
+
     @model_validator(mode="wrap")
     @classmethod
     def _validate_model(
         cls,
         value: Any,
-        handler: ModelWrapValidatorHandler["Self"],
+        handler: ModelWrapValidatorHandler[Self],
         info: ValidationInfo,
-    ) -> "Self":
+    ) -> Self:
         # Ensures that changing the parent of a node
         # also updates the children of the new/old parent.
         if isinstance(value, dict):
@@ -140,7 +268,7 @@ class Node(EventedBase):
         return result
 
     @staticmethod
-    def _update_parent_children(node: "Node", old_parent: "Node | None" = None) -> None:
+    def _update_parent_children(node: Node, old_parent: Node | None = None) -> None:
         """Remove the node from its old_parent and add it to its new parent."""
         if (new_parent := node.parent) != old_parent:
             if new_parent is not None and node not in new_parent._children:
@@ -165,7 +293,7 @@ class Node(EventedBase):
 
     # below borrowed from vispy.scene.Node
 
-    def transform_to_node(self, other: "Node") -> Transform:
+    def transform_to_node(self, other: Node) -> Transform:
         """Return Transform that maps from coordinate frame of `self` to `other`.
 
         Note that there must be a _single_ path in the scenegraph that connects
@@ -185,7 +313,7 @@ class Node(EventedBase):
         tforms = [n.transform for n in a[:-1]] + [n.transform.inv() for n in b]
         return Transform.chain(*tforms[::-1])
 
-    def path_to_node(self, other: "Node") -> tuple[list["Node"], list["Node"]]:
+    def path_to_node(self, other: Node) -> tuple[list[Node], list[Node]]:
         """Return two lists describing the path from this node to another.
 
         Parameters
@@ -229,7 +357,7 @@ class Node(EventedBase):
         down = their_parents[: their_parents.index(common_parent)][::-1]
         return (up, down)
 
-    def iter_parents(self) -> Iterator["Node"]:
+    def iter_parents(self) -> Iterator[Node]:
         """Return list of parents starting from this node.
 
         The chain ends at the first node with no parents.

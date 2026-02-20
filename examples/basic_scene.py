@@ -1,3 +1,5 @@
+"""Demonstrates a basic scene with multiple visual elements and imgui controls."""
+
 import cmap
 import numpy as np
 
@@ -18,22 +20,26 @@ view = snx.View(
                 transform=snx.Transform().scaled((1.3, 0.5)).translated((-40, 20)),
                 clims=(0, 255),
                 opacity=0.7,
+                order=0,
             ),
             snx.Points(
-                coords=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
+                vertices=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
                 size=5,
-                face_color=cmap.Color("coral"),
-                edge_color=cmap.Color("purple"),
+                face_color=snx.UniformColor(color=cmap.Color("coral")),
+                edge_color=snx.UniformColor(color=cmap.Color("purple")),
                 transform=snx.Transform().translated((0, -50)),
+                order=1,
             ),
         ]
     ),
+    camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
+    on_resize=snx.Letterbox(),
 )
 
 # example of adding an object to a scene
 X, Y = np.meshgrid(np.linspace(-10, 10, 100), np.linspace(-10, 10, 100))
 sine_img = (np.sin(X) * np.cos(Y)).astype(np.float32)
-image = snx.Image(name="sine image", data=sine_img, clims=(-1, 1))
+image = snx.Image(name="sine image", data=sine_img, clims=(-1, 1), order=2)
 view.scene.add_child(image)
 
 # both are optional, just for example
@@ -41,6 +47,7 @@ view.scene.add_child(image)
 # snx.use("vispy")
 
 snx.show(view)
+
 if add_imgui_controls is not None:
     add_imgui_controls(view)
 snx.run()

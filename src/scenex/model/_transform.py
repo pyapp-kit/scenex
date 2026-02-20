@@ -3,7 +3,7 @@ from __future__ import annotations
 import functools
 import math
 from functools import reduce
-from typing import TYPE_CHECKING, Any, ClassVar, cast
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, cast
 
 import numpy as np
 from pydantic import ConfigDict, Field, RootModel
@@ -87,11 +87,63 @@ class Matrix3D(np.ndarray):
 
 
 class Transform(RootModel):
-    """A 4x4 transformation matrix placing a 3D object in 3D space."""
+    """A 4x4 homogeneous transformation matrix for 3D affine transformations.
 
-    root: Matrix3D = Field(
-        default_factory=lambda: np.eye(4),  # type: ignore
-        description="4x4 Transformation matrix.",
+    Transformations use homogeneous coordinates, where 3D points (x, y, z) are
+    represented as 4-vectors (x, y, z, 1). This enables affine transformations
+    (translation, rotation, scaling) to be represented as matrix multiplication.
+
+    The Transform class is immutable (frozen). Operations like translated(), rotated(),
+    and scaled() return new Transform instances rather than modifying the original.
+
+    Examples
+    --------
+    Create an identity transform:
+        >>> transform = Transform()
+
+    Translate an object:
+        >>> transform = Transform().translated((10, 20, 30))
+
+    Rotate 45 degrees around the z-axis:
+        >>> transform = Transform().rotated(45, axis=(0, 0, 1))
+
+    Scale uniformly by 2x:
+        >>> transform = Transform().scaled((2, 2, 2))
+
+    Chain multiple transformations:
+        >>> transform = (
+        ...     Transform()
+        ...     .translated((10, 0, 0))
+        ...     .rotated(45, (0, 0, 1))
+        ...     .scaled((2, 2, 2))
+        ... )
+
+    Rotate around a specific point:
+        >>> transform = Transform().rotated(90, axis=(0, 0, 1), about=(10, 10, 0))
+
+    Transform coordinates:
+        >>> points = np.array([[0, 0, 0], [1, 1, 1]])
+        >>> transformed = transform.map(points)
+
+    Combine two transforms:
+        >>> transform1 = Transform().translated((5, 0, 0))
+        >>> transform2 = Transform().scaled((2, 2, 2))
+        >>> combined = transform1 @ transform2
+
+    Invert a transform:
+        >>> inverse = transform.inv()
+
+    Notes
+    -----
+    - Transformations are applied in the order they are chained
+    - The transform is immutable; all operations return new instances
+    - Uses right-multiplication convention: point @ matrix
+    - Default rotation axis is (0, 0, 1) - the z-axis
+    """
+
+    root: Annotated[np.ndarray, Matrix3D] = Field(
+        default_factory=lambda: np.eye(4),
+        description="4x4 transformation matrix in homogeneous coordinates",
     )
 
     model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, validate_default=True)
@@ -116,7 +168,7 @@ class Transform(RootModel):
         """Return the dot product of this transform with another."""
         if isinstance(other, Transform):
             other = other.root
-        return Transform(self.root @ other)  # type: ignore
+        return Transform(self.root @ other)
 
     def dot(self, other: Transform | ArrayLike) -> Transform:
         """Return the dot product of this transform with another."""
@@ -131,7 +183,7 @@ class Transform(RootModel):
 
     def inv(self) -> Transform:
         """Return the inverse of the transform."""
-        return Transform(np.linalg.inv(self.root))  # type: ignore
+        return Transform(np.linalg.inv(self.root))
 
     def translated(self, pos: ArrayLike) -> Transform:
         """Return new transform, translated by pos.

@@ -22,6 +22,9 @@ TCamera = TypeVar("TCamera", bound="model.Camera", covariant=True)
 TImage = TypeVar("TImage", bound="model.Image", covariant=True)
 TVolume = TypeVar("TVolume", bound="model.Volume", covariant=True)
 TPoints = TypeVar("TPoints", bound="model.Points", covariant=True)
+TMesh = TypeVar("TMesh", bound="model.Mesh", covariant=True)
+TLine = TypeVar("TLine", bound="model.Line", covariant=True)
+TText = TypeVar("TText", bound="model.Text", covariant=True)
 TCanvas = TypeVar("TCanvas", bound="model.Canvas", covariant=True)
 TView = TypeVar("TView", bound="model.View", covariant=True)
 TLayout = TypeVar("TLayout", bound="model.Layout", covariant=True)
@@ -40,10 +43,6 @@ class Adaptor(ABC, Generic[TModel, TNative]):
     @abstractmethod
     def __init__(self, obj: TModel) -> None:
         """All backend adaptor objects receive the object they are adapting."""
-
-    @abstractmethod
-    def _snx_get_native(self) -> TNative:
-        """Return the native object for the ."""
 
     def handle_event(self, info: EmissionInfo) -> None:
         """Receive info from psygnal callback and convert to adaptor call."""
@@ -99,6 +98,8 @@ class NodeAdaptor(SupportsVisibility[TNode, TNative]):
     @abstractmethod
     def _snx_set_transform(self, arg: model.Transform, /) -> None: ...
     @abstractmethod
+    def _snx_set_blending(self, arg: model.BlendMode, /) -> None: ...
+    @abstractmethod
     def _snx_add_node(self, node: model.Node) -> None: ...
 
     @abstractmethod
@@ -118,13 +119,9 @@ class CameraAdaptor(NodeAdaptor[TCamera, TNative]):
     """Protocol for a backend camera adaptor object."""
 
     @abstractmethod
-    def _snx_set_type(self, arg: model.CameraType, /) -> None: ...
+    def _snx_set_projection(self, arg: model.Transform, /) -> None: ...
     @abstractmethod
-    def _snx_set_zoom(self, arg: float, /) -> None: ...
-    @abstractmethod
-    def _snx_set_center(self, arg: tuple[float, ...], /) -> None: ...
-    @abstractmethod
-    def _snx_zoom_to_fit(self, arg: float, /) -> None: ...
+    def _snx_set_controller(self, arg: model.CameraController | None, /) -> None: ...
 
 
 class ImageAdaptor(NodeAdaptor[TImage, TNative]):
@@ -151,13 +148,13 @@ class PointsAdaptor(NodeAdaptor[TPoints, TNative]):
     """Protocol for a backend Image adaptor object."""
 
     @abstractmethod
-    def _snx_set_coords(self, coords: NDArray) -> None: ...
+    def _snx_set_vertices(self, vertices: NDArray) -> None: ...
     @abstractmethod
     def _snx_set_size(self, arg: float, /) -> None: ...
     @abstractmethod
-    def _snx_set_face_color(self, arg: model.Color, /) -> None: ...
+    def _snx_set_face_color(self, arg: model.ColorModel, /) -> None: ...
     @abstractmethod
-    def _snx_set_edge_color(self, arg: model.Color, /) -> None: ...
+    def _snx_set_edge_color(self, arg: model.ColorModel, /) -> None: ...
     @abstractmethod
     def _snx_set_edge_width(self, arg: float, /) -> None: ...
     @abstractmethod
@@ -166,6 +163,39 @@ class PointsAdaptor(NodeAdaptor[TPoints, TNative]):
     def _snx_set_scaling(self, arg: model.ScalingMode, /) -> None: ...
     @abstractmethod
     def _snx_set_antialias(self, arg: float, /) -> None: ...
+
+
+class MeshAdaptor(NodeAdaptor[TMesh, TNative]):
+    """Protocol for a backend Mesh adaptor object."""
+
+    @abstractmethod
+    def _snx_set_vertices(self, arg: NDArray) -> None: ...
+    @abstractmethod
+    def _snx_set_faces(self, arg: NDArray, /) -> None: ...
+    @abstractmethod
+    def _snx_set_color(self, arg: model.ColorModel, /) -> None: ...
+
+
+class LineAdaptor(NodeAdaptor[TLine, TNative]):
+    """Protocol for a backend Line adaptor object."""
+
+    @abstractmethod
+    def _snx_set_vertices(self, arg: NDArray) -> None: ...
+    @abstractmethod
+    def _snx_set_color(self, arg: model.ColorModel, /) -> None: ...
+    @abstractmethod
+    def _snx_set_width(self, arg: float, /) -> None: ...
+
+
+class TextAdaptor(NodeAdaptor[TText, TNative]):
+    """Protocol for a backend Text adaptor object."""
+
+    @abstractmethod
+    def _snx_set_text(self, arg: str, /) -> None: ...
+    @abstractmethod
+    def _snx_set_color(self, arg: model.Color, /) -> None: ...
+    @abstractmethod
+    def _snx_set_size(self, arg: int, /) -> None: ...
 
 
 class CanvasAdaptor(SupportsVisibility[TCanvas, TNative]):
@@ -177,6 +207,10 @@ class CanvasAdaptor(SupportsVisibility[TCanvas, TNative]):
     def _snx_set_height(self, arg: int, /) -> None: ...
     @abstractmethod
     def _snx_set_background_color(self, arg: model.Color | None, /) -> None: ...
+    @abstractmethod
+    def _snx_get_native(self) -> Any:
+        """Returns an object understood by the backend widget toolkit."""
+
     @abstractmethod
     def _snx_set_title(self, arg: str, /) -> None: ...
     @abstractmethod

@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from collections.abc import Iterator
-from unittest.mock import Mock
+from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import cmap
 import numpy as np
@@ -7,13 +10,16 @@ import pytest
 
 import scenex as snx
 
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
 
 @pytest.fixture
 def random_points_node() -> snx.Points:
     return snx.Points(
-        coords=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
+        vertices=np.random.randint(0, 200, (100, 2)).astype(np.uint8),
         size=5,
-        face_color=cmap.Color("coral"),
+        face_color=snx.UniformColor(color=cmap.Color("coral")),
         transform=snx.Transform().translated((0, -50)),
     )
 
@@ -73,29 +79,21 @@ def basic_view(basic_scene: snx.Scene) -> snx.View:
 
 
 @pytest.fixture(autouse=True)
-def _doctest_setup(doctest_namespace: dict) -> Iterator[None]:
-    """Sets up the doctest namespace.
+def _close_canvases() -> Iterator[None]:
+    """Close any open canvases after each test."""
 
-    The main function currently is to allow examples to call blocking functions (for
-    streamlined copy-paste) without actually blocking.
-    """
-    # Mock snx.run
-    snx.run = Mock(return_value=None)
+    canvases: list[snx.Canvas] = []
+    original_show = snx.show
 
-    # TODO: Necessary for the work on https://github.com/pyapp-kit/scenex/pull/42
-    # # Mock app().run
-    # original_app = app()
+    def mock_show(*args, **kwargs):  # type: ignore
+        """Show the canvas as normal, but hold onto it so we can close it later."""
+        canvas = original_show(*args, **kwargs)
+        canvases.append(canvas)
+        return canvas
 
-    # # Create a wrapper that delegates everything to the real app except run()
-    # class MockedApp:
-    #     def run(self) -> None:
-    #         """No-op run method for doctests."""
-    #         pass
+    with patch.object(snx, "show", side_effect=mock_show):
+        yield
 
-    #     def __getattr__(self, name: str) -> Any:
-    #         """Delegate all other attributes to the real app."""
-    #         return getattr(original_app, name)
-
-    # doctest_namespace["app"] = MockedApp
-
-    yield
+    # Close any created canvases
+    for canvas in canvases:
+        canvas.close()

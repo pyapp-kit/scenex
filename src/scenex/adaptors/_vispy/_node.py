@@ -5,25 +5,28 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 import numpy as np
 import vispy.scene
 
+from scenex import model
 from scenex.adaptors._base import NodeAdaptor, TNode
 
 from ._adaptor_registry import get_adaptor
 
 if TYPE_CHECKING:
-    from scenex import model
     from scenex.model import Transform
 
 
 TObj = TypeVar("TObj", bound="vispy.scene.Node")
+
+BLEND_MODES = {
+    model.BlendMode.OPAQUE: "opaque",
+    model.BlendMode.ALPHA: "translucent",
+    model.BlendMode.ADDITIVE: "additive",
+}
 
 
 class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj]):
     """Node adaptor for pygfx Backend."""
 
     _vispy_node: TObj
-
-    def _snx_get_native(self) -> Any:
-        return self._vispy_node
 
     def _snx_set_name(self, arg: str) -> None:
         self._vispy_node.name = arg
@@ -59,10 +62,18 @@ class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj]):
             np.asarray(arg)
         )
 
+    def _snx_set_blending(self, arg: model.BlendMode) -> None:
+        if hasattr(self._vispy_node, "set_gl_state"):
+            if arg == model.BlendMode.OPAQUE:
+                # for opaque, we need to disable blending
+                self._vispy_node.set_gl_state(None, blend=False)  # pyright: ignore
+            else:
+                self._vispy_node.set_gl_state(BLEND_MODES[arg])  # pyright: ignore
+
     def _snx_add_node(self, node: model.Node) -> None:
         # create if it doesn't exist
         adaptor = cast("Node", get_adaptor(node))
-        adaptor._snx_get_native().parent = self._vispy_node
+        adaptor._vispy_node.parent = self._vispy_node
 
     def _snx_force_update(self) -> None:
         pass

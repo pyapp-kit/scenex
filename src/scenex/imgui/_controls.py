@@ -12,9 +12,10 @@ except ImportError as e:
         "imgui_bundle and pygfx are required for imgui controls. "
         "Please install scenex with 'pip install scenex[imgui]'."
     ) from e
+
 import logging
 import types
-from typing import TYPE_CHECKING, Any, Literal, get_args, get_origin
+from typing import TYPE_CHECKING, Any, Literal, cast, get_args, get_origin
 
 import annotated_types
 import cmap
@@ -24,11 +25,22 @@ from rendercanvas import BaseRenderCanvas
 
 from scenex.adaptors._pygfx._canvas import Canvas as PygfxCanvasAdaptor
 from scenex.adaptors._pygfx._view import View as PygfxViewAdaptor
+from scenex.app.events import (
+    Event,
+    MouseButton,
+    MouseMoveEvent,
+    MousePressEvent,
+    MouseReleaseEvent,
+    WheelEvent,
+)
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from pydantic.fields import FieldInfo
 
     import scenex as snx
+    from scenex.adaptors._base import CanvasAdaptor
     from scenex.model._view import View
 
 logger = logging.getLogger("scenex.imgui")
@@ -37,7 +49,67 @@ _REGISTERED_COLORMAPS: set[str] = set()
 
 
 def add_imgui_controls(view: View) -> None:
-    """Add imgui controls to the given canvas."""
+    """Add an interactive ImGui control panel to a view.
+
+    Creates an overlay control panel that allows real-time manipulation of view
+    properties and scene node attributes through automatically generated widgets.
+    The panel displays collapsible sections for the view and each child node in
+    the scene, with widgets dynamically created based on Pydantic field types.
+
+    Parameters
+    ----------
+    view : View
+        The view to control.
+
+    Raises
+    ------
+    NotImplementedError
+        If the view is not using the pygfx backend.
+    RuntimeError
+        If the pygfx renderer has not been initialized yet.
+    ImportError
+        If required dependencies (imgui_bundle, pygfx) are not installed.
+
+    Notes
+    -----
+    - Only works with the pygfx backend
+    - The control panel is rendered as an overlay on the canvas. It is not (currently)
+      restricted to a specific area of the canvas
+    - Current architecture necessitates this function be called AFTER setting up camera
+      interaction strategies and/or view event filters. All view events are intercepted
+      and may not propagate to the user's view filter or camera filter, but a best
+      attempt is made to propagate events that do not interact with the ImGui control
+      panel.
+    - Widgets are automatically generated from Pydantic field metadata:
+        * Literal types → dropdown menus
+        * bool → checkbox
+        * int/float with bounds → slider
+        * int/float without bounds → input field
+        * Color → color picker
+        * Colormap → colormap preview button
+
+    Examples
+    --------
+    Basic usage with an image::
+
+        >>> import scenex as snx
+        >>> import numpy as np
+        >>> from scenex.imgui import add_imgui_controls
+
+        >>> my_array = np.random.rand(100, 100).astype(np.float32)
+        >>> image = snx.Image(data=my_array)
+        >>> view = snx.View(scene=snx.Scene(children=[image]))
+        >>> snx.show(view)
+        Canvas(...)
+        >>> add_imgui_controls(view)
+        >>> snx.run()
+
+    The control panel will show sections for:
+    - View properties (camera, layout, etc.)
+    - Image node (colormap, clims, opacity, etc.)
+    - Points node (size, color, symbol, etc.)
+    - Mesh node (color, opacity, blending, etc.)
+    """
     snx_canvas_model = view.canvas
     try:
         snx_canvas_adaptor = snx_canvas_model._get_adaptors(backend="pygfx")[0]
@@ -49,7 +121,7 @@ def add_imgui_controls(view: View) -> None:
         )
         return
 
-    render_canv = snx_canvas_model._get_native()
+    render_canv = cast("CanvasAdaptor", snx_canvas_adaptor)._snx_get_native()
 
     if not (
         isinstance(snx_canvas_adaptor, PygfxCanvasAdaptor)
@@ -59,27 +131,72 @@ def add_imgui_controls(view: View) -> None:
         raise NotImplementedError(
             "Imgui controls can currently only be added to a canvas backed by pygfx."
         )
+    if not snx_canvas_adaptor._renderer:
+        raise RuntimeError("The pygfx renderer has not been initialized yet.")
 
     imgui_renderer = ImguiRenderer(
-        device=snx_view_adaptor._renderer.device,
+        device=snx_canvas_adaptor._renderer.device,
         canvas=render_canv,  # pyright: ignore[reportArgumentType] (incorrect hint)
     )
 
     if implot.get_current_context() is None:
         implot.create_context()  # must run after ImGui context exists
 
-    @imgui_renderer.set_gui  # type: ignore [misc]
-    def _update_gui() -> imgui.ImDrawData:
-        imgui.new_frame()
+    @imgui_renderer.set_gui  # type: ignore [untyped-decorator]
+    def _update_gui() -> None:
         render_imgui_view_controls(view)
-        imgui.end_frame()
-        imgui.render()
-        return imgui.get_draw_data()
 
     @render_canv.request_draw
     def _update() -> None:
         snx_canvas_adaptor._draw()
         imgui_renderer.render()
+
+    class ImguiEventFilter:
+        internal_filter: Callable[[Event], bool] | None = None
+
+        def __call__(self, event: Event) -> bool:
+            # NOTE: As the scenex event system matures
+            # It may capture more events (notably, keypresses).
+            # We will have to intercept scenex events here if that occurs
+            if isinstance(event, MouseMoveEvent):
+                move_dict = {"x": event.canvas_pos[0], "y": event.canvas_pos[1]}
+                imgui_renderer._on_mouse_move(move_dict)
+                if move_dict.get("stop_propagation", False):
+                    return True
+            if isinstance(event, MousePressEvent):
+                btn = imgui_filter.convert_btn(event.buttons)
+                press_dict = {"button": btn, "event_type": "pointer_down"}
+                imgui_renderer._on_mouse(press_dict)
+                if press_dict.get("stop_propagation", False):
+                    return True
+            if isinstance(event, MouseReleaseEvent):
+                btn = imgui_filter.convert_btn(event.buttons)
+                release_dict = {"button": btn, "event_type": "pointer_up"}
+                imgui_renderer._on_mouse(release_dict)
+                if release_dict.get("stop_propagation", False):
+                    return True
+            if isinstance(event, WheelEvent):
+                # FIXME: Validate correct delta sign
+                wheel_dict = {"dx": event.angle_delta[0], "dy": event.angle_delta[1]}
+                imgui_renderer._on_wheel(wheel_dict)
+                if wheel_dict.get("stop_propagation", False):
+                    return True
+
+            if self.internal_filter is None:
+                return False
+            return self.internal_filter(event)
+
+        def convert_btn(self, btn: MouseButton) -> int:
+            if btn & MouseButton.LEFT:
+                return 1
+            if btn & MouseButton.RIGHT:
+                return 2
+            if btn & MouseButton.MIDDLE:
+                return 3
+            return 0
+
+    imgui_filter = ImguiEventFilter()
+    imgui_filter.internal_filter = view.set_event_filter(imgui_filter)
 
 
 def _min_max(meta: list[Any], eps: float = 0) -> tuple[float | None, float | None]:
@@ -177,9 +294,9 @@ def render_imgui_model_controls(model: BaseModel) -> None:
 
 def render_imgui_view_controls(view: snx.View) -> None:
     """Update the GUI with the current state."""
-    imgui.set_next_window_pos((0, 0), imgui.Cond_.appearing)  # type: ignore[arg-type]
-    imgui.push_style_var(imgui.StyleVar_.window_border_size, 0.0)  # type: ignore
-    imgui.begin("Controls", None, imgui.WindowFlags_.always_auto_resize)  # type: ignore
+    imgui.set_next_window_pos((0, 0), imgui.Cond_.appearing)
+    imgui.push_style_var(imgui.StyleVar_.window_border_size, 0.0)
+    imgui.begin("Controls", None, imgui.WindowFlags_.always_auto_resize)
     if imgui.collapsing_header("View"):
         render_imgui_model_controls(view)
     for i, child in enumerate(view.scene.children):
