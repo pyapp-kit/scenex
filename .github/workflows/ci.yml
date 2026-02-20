@@ -92,23 +92,6 @@ jobs:
         shell: bash
         run: uv run --no-sync coverage run -p -m pytest -v --nbval examples/*.ipynb
 
-      - name: Debug notebook stderr
-        if: matrix.canvas == 'jupyter' && failure()
-        shell: bash
-        run: |
-          uv run --no-sync jupyter nbconvert --to notebook --execute \
-            --ExecutePreprocessor.timeout=60 \
-            examples/notebook.ipynb --output /tmp/executed.ipynb 2>&1 || true
-          uv run --no-sync python -c "
-          import json, sys
-          nb = json.load(open('/tmp/executed.ipynb'))
-          for i, cell in enumerate(nb['cells']):
-              for out in cell.get('outputs', []):
-                  if out.get('name') == 'stderr':
-                      print(f'--- Cell {i} stderr ---')
-                      print(''.join(out['text']))
-          "
-
       - name: Upload coverage
         uses: actions/upload-artifact@v6
         with:
