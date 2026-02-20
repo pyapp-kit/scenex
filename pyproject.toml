@@ -90,7 +90,7 @@ docs = [
 dev = [
     { include-group = "test" },
     { include-group = "docs" },
-    "scenex[pygfx,vispy,imgui,jupyter,pyqt, wx]",
+    "scenex[pygfx,vispy,imgui,jupyter,pyqt6, wx]",
     "imageio[tifffile] >=2.20",
     "ipython",
     "mypy",
