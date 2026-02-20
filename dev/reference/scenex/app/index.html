@@ -1,0 +1,649 @@
+<!doctype html><html lang=en class=no-js> <head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Declarative scene graph model and backend abstraction."><link href=https://pyapp-kit.github.io/scenex/dev/reference/scenex/app/ rel=canonical><link href=../adaptors/ rel=prev><link href=events/ rel=next><link rel=icon href=../../../assets/images/favicon.png><meta name=generator content="mkdocs-1.6.1, mkdocs-material-9.7.2"><title>app - scenex</title><link rel=stylesheet href=../../../assets/stylesheets/main.484c7ddc.min.css><link rel=stylesheet href=../../../assets/stylesheets/palette.ab4e12ef.min.css><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback"><style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style><link rel=stylesheet href=../../../assets/_mkdocstrings.css><link rel=stylesheet href=../../../css/extra.css><script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script></head> <body dir=ltr data-md-color-scheme=default data-md-color-primary=indigo data-md-color-accent=indigo> <input class=md-toggle data-md-toggle=drawer type=checkbox id=__drawer autocomplete=off> <input class=md-toggle data-md-toggle=search type=checkbox id=__search autocomplete=off> <label class=md-overlay for=__drawer></label> <div data-md-component=skip> <a href=#scenex.app class=md-skip> Skip to content </a> </div> <div data-md-component=announce> <aside class=md-banner> <div class="md-banner__inner md-grid md-typeset"> <!-- See the dashes here --> <!-- Need to reapply margin from base CSS, which is overridden in extra CSS (to fix empty banner) --> <div style="margin: 0.6rem auto"> You are currently viewing documentation for a <strong>dev</strong> build. This may reference unreleased features. For latest release, see <strong><a href=../../../..>stable release docs</a></strong>. </div> </div> </aside> </div> <div data-md-color-scheme=default data-md-component=outdated hidden> </div> <header class="md-header md-header--shadow" data-md-component=header> <nav class="md-header__inner md-grid" aria-label=Header> <a href=../../.. title=scenex class="md-header__button md-logo" aria-label=scenex data-md-component=logo> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M19.5 17c-.13 0-.26 0-.39.04l-1.61-3.25a2.5 2.5 0 0 0-1.75-4.29c-.13 0-.25 0-.39.04l-1.63-3.25c.48-.45.77-1.08.77-1.79a2.5 2.5 0 0 0-5 0c0 .71.29 1.34.76 1.79L8.64 9.54c-.14-.04-.26-.04-.39-.04a2.5 2.5 0 0 0-1.75 4.29l-1.61 3.25C4.76 17 4.63 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.79c.46-.45.75-1.08.75-1.79s-.29-1.34-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21c-.45.45-.75 1.09-.75 1.79a2.5 2.5 0 0 0 2.5 2.5c.13 0 .25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5"/></svg> </a> <label class="md-header__button md-icon" for=__drawer> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg> </label> <div class=md-header__title data-md-component=header-title> <div class=md-header__ellipsis> <div class=md-header__topic> <span class=md-ellipsis> scenex </span> </div> <div class=md-header__topic data-md-component=header-topic> <span class=md-ellipsis> app </span> </div> </div> </div> <form class=md-header__option data-md-component=palette> <input class=md-option data-md-color-media=(prefers-color-scheme) data-md-color-scheme=default data-md-color-primary=indigo data-md-color-accent=indigo aria-label="Switch to light mode" type=radio name=__palette id=__palette_0> <label class="md-header__button md-icon" title="Switch to light mode" for=__palette_1 hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg> </label> <input class=md-option data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme=default data-md-color-primary=black data-md-color-accent=indigo aria-label="Switch to dark mode" type=radio name=__palette id=__palette_1> <label class="md-header__button md-icon" title="Switch to dark mode" for=__palette_2 hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg> </label> <input class=md-option data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme=slate data-md-color-primary=black data-md-color-accent=indigo aria-label="Switch to system preference" type=radio name=__palette id=__palette_2> <label class="md-header__button md-icon" title="Switch to system preference" for=__palette_0 hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg> </label> </form> <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script> <label class="md-header__button md-icon" for=__search> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg> </label> <div class=md-search data-md-component=search role=dialog> <label class=md-search__overlay for=__search></label> <div class=md-search__inner role=search> <form class=md-search__form name=search> <input type=text class=md-search__input name=query aria-label=Search placeholder=Search autocapitalize=off autocorrect=off autocomplete=off spellcheck=false data-md-component=search-query required> <label class="md-search__icon md-icon" for=__search> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg> </label> <nav class=md-search__options aria-label=Search> <button type=reset class="md-search__icon md-icon" title=Clear aria-label=Clear tabindex=-1> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg> </button> </nav> <div class=md-search__suggest data-md-component=search-suggest></div> </form> <div class=md-search__output> <div class=md-search__scrollwrap tabindex=0 data-md-scrollfix> <div class=md-search-result data-md-component=search-result> <div class=md-search-result__meta> Initializing search </div> <ol class=md-search-result__list role=presentation></ol> </div> </div> </div> </div> </div> <div class=md-header__source> <a href=https://github.com/pyapp-kit/scenex title="Go to repository" class=md-source data-md-component=source> <div class="md-source__icon md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 512 512"><!-- Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg> </div> <div class=md-source__repository> pyapp-kit/scenex </div> </a> </div> </nav> </header> <div class=md-container data-md-component=container> <main class=md-main data-md-component=main> <div class="md-main__inner md-grid"> <div class="md-sidebar md-sidebar--primary" data-md-component=sidebar data-md-type=navigation> <div class=md-sidebar__scrollwrap> <div class=md-sidebar__inner> <nav class="md-nav md-nav--primary" aria-label=Navigation data-md-level=0> <label class=md-nav__title for=__drawer> <a href=../../.. title=scenex class="md-nav__button md-logo" aria-label=scenex data-md-component=logo> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M19.5 17c-.13 0-.26 0-.39.04l-1.61-3.25a2.5 2.5 0 0 0-1.75-4.29c-.13 0-.25 0-.39.04l-1.63-3.25c.48-.45.77-1.08.77-1.79a2.5 2.5 0 0 0-5 0c0 .71.29 1.34.76 1.79L8.64 9.54c-.14-.04-.26-.04-.39-.04a2.5 2.5 0 0 0-1.75 4.29l-1.61 3.25C4.76 17 4.63 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.79c.46-.45.75-1.08.75-1.79s-.29-1.34-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21c-.45.45-.75 1.09-.75 1.79a2.5 2.5 0 0 0 2.5 2.5c.13 0 .25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5"/></svg> </a> scenex </label> <div class=md-nav__source> <a href=https://github.com/pyapp-kit/scenex title="Go to repository" class=md-source data-md-component=source> <div class="md-source__icon md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 512 512"><!-- Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg> </div> <div class=md-source__repository> pyapp-kit/scenex </div> </a> </div> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../.. class=md-nav__link> <span class=md-ellipsis> Home </span> </a> </li> <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_2 checked> <label class=md-nav__link for=__nav_2 id=__nav_2_label tabindex> <span class=md-ellipsis> API Reference </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_2_label aria-expanded=true> <label class=md-nav__title for=__nav_2> <span class="md-nav__icon md-icon"></span> API Reference </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--active md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_2_1 checked> <div class="md-nav__link md-nav__container"> <a href=../ class="md-nav__link "> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>scenex </span> </a> <label class="md-nav__link " for=__nav_2_1 id=__nav_2_1_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_2_1_label aria-expanded=true> <label class=md-nav__title for=__nav_2_1> <span class="md-nav__icon md-icon"></span> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>scenex </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../adaptors/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>adaptors </span> </a> </li> <li class="md-nav__item md-nav__item--active md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_2_1_3 checked> <div class="md-nav__link md-nav__container"> <a href=./ class="md-nav__link md-nav__link--active"> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>app </span> </a> <label class="md-nav__link md-nav__link--active" for=__nav_2_1_3 id=__nav_2_1_3_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=3 aria-labelledby=__nav_2_1_3_label aria-expanded=true> <label class=md-nav__title for=__nav_2_1_3> <span class="md-nav__icon md-icon"></span> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>app </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=events/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>events </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=../conftest/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>conftest </span> </a> </li> <li class=md-nav__item> <a href=../imgui/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>imgui </span> </a> </li> <li class=md-nav__item> <a href=../model/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>model </span> </a> </li> <li class=md-nav__item> <a href=../util/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>util </span> </a> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_2_1_8> <div class="md-nav__link md-nav__container"> <a href=../utils/ class="md-nav__link "> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>utils </span> </a> <label class="md-nav__link " for=__nav_2_1_8 id=__nav_2_1_8_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=3 aria-labelledby=__nav_2_1_8_label aria-expanded=false> <label class=md-nav__title for=__nav_2_1_8> <span class="md-nav__icon md-icon"></span> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>utils </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../utils/projections/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>projections </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> </ul> </nav> </li> </ul> </nav> </div> </div> </div> <div class="md-sidebar md-sidebar--secondary" data-md-component=sidebar data-md-type=toc> <div class=md-sidebar__scrollwrap> <div class=md-sidebar__inner> <nav class="md-nav md-nav--secondary" aria-label="Table of contents"> <label class=md-nav__title for=__toc> <span class="md-nav__icon md-icon"></span> Table of contents </label> <ul class=md-nav__list data-md-component=toc data-md-scrollfix> <li class=md-nav__item> <a href=#scenex.app.App class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;App </span> </a> <nav class=md-nav aria-label= App> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.App.call_in_main_thread class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;call_in_main_thread </span> </a> <nav class=md-nav aria-label= call_in_main_thread> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.App.call_in_main_thread(func) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;func </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.App.call_in_main_thread(*args) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;*args </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.App.call_in_main_thread(**kwargs) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;**kwargs </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#scenex.app.App.call_later class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;call_later </span> </a> <nav class=md-nav aria-label= call_later> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.App.call_later(msec) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;msec </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.App.call_later(func) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;func </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#scenex.app.App.create_app class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;create_app </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.App.get_executor class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;get_executor </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.App.install_event_filter class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;install_event_filter </span> </a> <nav class=md-nav aria-label= install_event_filter> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.App.install_event_filter(canvas) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;canvas </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.App.install_event_filter(model_canvas) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;model_canvas </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#scenex.app.App.process_events class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;process_events </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.App.run class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;run </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.App.set_cursor class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;set_cursor </span> </a> <nav class=md-nav aria-label= set_cursor> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.App.set_cursor(canvas) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;canvas </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.App.set_cursor(cursor) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;cursor </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#scenex.app.App.show class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;show </span> </a> <nav class=md-nav aria-label= show> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.App.show(canvas) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;canvas </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.App.show(visible) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;visible </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#scenex.app.CursorType class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;CursorType </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.GuiFrontend class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;GuiFrontend </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.app class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;app </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.determine_app class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;determine_app </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.ensure_main_thread class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;ensure_main_thread </span> </a> <nav class=md-nav aria-label= ensure_main_thread> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.ensure_main_thread(func) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;func </span> </a> </li> </ul> </nav> </li> </ul> </nav> </div> </div> </div> <div class=md-content data-md-component=content> <article class="md-content__inner md-typeset"> <div class="doc doc-object doc-module"> <h1 id=scenex.app class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-module"></code> <span class="doc doc-object-name doc-module-name">scenex.app</span> <a href=#scenex.app class=headerlink title="Permanent link">#</a></h1> <div class="doc doc-contents first"> <p>Application and GUI framework abstraction layer.</p> <p>This module provides a unified interface for managing GUI applications across different frameworks (Qt, WxPython, Jupyter) and rendering backends. It handles the event loop, window creation, and platform-specific details, allowing scenex to work seamlessly across desktop and web environments.</p> <p>The app abstraction decouples scenex from specific GUI frameworks, making it possible to switch between Qt widgets, WxPython windows, or Jupyter notebook outputs without changing your visualization code.</p> <details class=main-components open> <summary>Main Components</summary> <ul> <li>App: Abstract base class for GUI applications</li> <li>GuiFrontend: Enumeration of supported GUI frameworks (Qt, WxPython, Jupyter)</li> <li>app(): Factory function that returns the active application instance</li> <li>determine_app(): Auto-detect which GUI framework to use</li> </ul> </details> <details class=supported-frontends open> <summary>Supported Frontends</summary> <p><strong>Qt</strong> (PyQt6, PySide6) <strong>WxPython</strong> <strong>Jupyter</strong></p> </details> <details class=usage open> <summary>Usage</summary> <p>The app is typically created automatically by <code>scenex.show()</code> and/or <code>scenex.run()</code>::</p> <div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; import scenex as snx
+&gt;&gt;&gt; import numpy as np
+
+&gt;&gt;&gt; # Create a scenex scene
+&gt;&gt;&gt; my_array = np.random.rand(100, 100).astype(np.float32)
+&gt;&gt;&gt; my_scene = snx.Scene(children=[snx.Image(data=my_array)])
+
+&gt;&gt;&gt; # Showing the scene creates the app if needed
+&gt;&gt;&gt; snx.show(my_scene)
+Canvas(...)
+&gt;&gt;&gt; snx.run()  # Starts the event loop
+</code></pre></div> <p>But it CAN be useful to access the app instance directly. For example, it can be useful to ask the app to process any pending events::</p> <div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; from scenex.app import app
+
+&gt;&gt;&gt; app().process_events()
+</code></pre></div> </details> <details class=note open> <summary>Notes</summary> <p>This module is designed to be cleanly extractable to a separate library if needed. It fully encapsulates GUI framework logic and event loop management.</p> </details> <details class=see-also open> <summary>See Also</summary> <p>scenex.run : Convenience function to start the event loop scenex.show : Creates and displays visualizations</p> </details> <p><span class=doc-section-title>Modules:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            scenex.app.events" href=events/#scenex.app.events>events</a></code></b> – <div class=doc-md-description> <p>Event system for handling user input and interaction.</p> </div> </li> </ul> <p><span class=doc-section-title>Classes:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            App (scenex.app.App)" href=#scenex.app.App>App</a></code></b> – <div class=doc-md-description> <p>Base class for GUI application wrappers.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            CursorType (scenex.app.CursorType)" href=#scenex.app.CursorType>CursorType</a></code></b> – <div class=doc-md-description> <p>Enumeration of standard cursor types for canvas interaction.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            GuiFrontend (scenex.app.GuiFrontend)" href=#scenex.app.GuiFrontend>GuiFrontend</a></code></b> – <div class=doc-md-description> <p>Enum of available GUI frontends.</p> </div> </li> </ul> <p><span class=doc-section-title>Functions:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            app (scenex.app.app)" href=#scenex.app.app>app</a></code></b> – <div class=doc-md-description> <p>Get the active GUI application instance.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            determine_app (scenex.app.determine_app)" href=#scenex.app.determine_app>determine_app</a></code></b> – <div class=doc-md-description> <p>Determine which GUI backend to use for the application.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            ensure_main_thread (scenex.app.ensure_main_thread)" href=#scenex.app.ensure_main_thread>ensure_main_thread</a></code></b> – <div class=doc-md-description> <p>Decorator that ensures a function is called in the main GUI thread.</p> </div> </li> </ul> <div class="doc doc-children"> <div class="doc doc-object doc-class"> <h2 id=scenex.app.App class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">App</span> <a href=#scenex.app.App class=headerlink title="Permanent link">#</a></h2> <div class="doc doc-contents "> <p>Base class for GUI application wrappers.</p> <p>App provides an abstract interface for integrating scenex with different GUI frameworks (Qt, WxPython, Jupyter). Each GUI backend implements this interface to provide framework-specific application lifecycle management, event handling, and threading operations.</p> <p>The App class is typically accessed via the <code>app()</code> function, which automatically determines and initializes the appropriate backend based on the environment and available GUI frameworks.</p> <details class=note open> <summary>Notes</summary> <p>This is an abstract base class. Concrete implementations are provided by backend-specific subclasses (QtAppWrap, WxAppWrap, JupyterAppWrap).</p> </details> <details class=see-also open> <summary>See Also</summary> <p>app : Function to get the active application instance GuiFrontend : Enumeration of available GUI backends determine_app : Function to determine which GUI backend to use</p> </details> <p><span class=doc-section-title>Methods:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            call_in_main_thread (scenex.app.App.call_in_main_thread)" href=#scenex.app.App.call_in_main_thread>call_in_main_thread</a></code></b> – <div class=doc-md-description> <p>Schedule a function to be called in the main GUI thread.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            call_later (scenex.app.App.call_later)" href=#scenex.app.App.call_later>call_later</a></code></b> – <div class=doc-md-description> <p>Schedule a function to be called after a delay.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            create_app (scenex.app.App.create_app)" href=#scenex.app.App.create_app>create_app</a></code></b> – <div class=doc-md-description> <p>Create the application instance, if not already created.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            get_executor (scenex.app.App.get_executor)" href=#scenex.app.App.get_executor>get_executor</a></code></b> – <div class=doc-md-description> <p>Return an executor for running tasks in background threads.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            install_event_filter (scenex.app.App.install_event_filter)" href=#scenex.app.App.install_event_filter>install_event_filter</a></code></b> – <div class=doc-md-description> <p>Install an event filter on a canvas to forward events to the model.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            process_events (scenex.app.App.process_events)" href=#scenex.app.App.process_events>process_events</a></code></b> – <div class=doc-md-description> <p>Yields the current thread to process all pending GUI events.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            run (scenex.app.App.run)" href=#scenex.app.App.run>run</a></code></b> – <div class=doc-md-description> <p>Start the application event loop.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            set_cursor (scenex.app.App.set_cursor)" href=#scenex.app.App.set_cursor>set_cursor</a></code></b> – <div class=doc-md-description> <p>Set the cursor for the given canvas.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            show (scenex.app.App.show)" href=#scenex.app.App.show>show</a></code></b> – <div class=doc-md-description> <p>Show or hide a canvas window.</p> </div> </li> </ul> <div class="doc doc-children"> <div class="doc doc-object doc-function"> <h3 id=scenex.app.App.call_in_main_thread class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">call_in_main_thread</span> <a href=#scenex.app.App.call_in_main_thread class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>call_in_main_thread</span><span class=p>(</span>
+</span><span id=__span-0-2>    <span class=n><a class="autorefs autorefs-internal" title="func (scenex.app.App.call_in_main_thread(func))" href=#scenex.app.App.call_in_main_thread(func)>func</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" title=collections.abc.Callable href=https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable>Callable</a></span><span class=p>[</span><span class=n><span title=scenex.app._auto.P>P</span></span><span class=p>,</span> <span class=n><span title=scenex.app._auto.T>T</span></span><span class=p>],</span> <span class=o>*</span><span class=n><a class="autorefs autorefs-internal" title="*args (scenex.app.App.call_in_main_thread(*args))" href=#scenex.app.App.call_in_main_thread(*args)>args</a></span><span class=p>:</span> <span class=n><span title=scenex.app._auto.P.args>args</span></span><span class=p>,</span> <span class=o>**</span><span class=n><a class="autorefs autorefs-internal" title="**kwargs (scenex.app.App.call_in_main_thread(**kwargs))" href=#scenex.app.App.call_in_main_thread(**kwargs)>kwargs</a></span><span class=p>:</span> <span class=n><span title=scenex.app._auto.P.kwargs>kwargs</span></span>
+</span><span id=__span-0-3><span class=p>)</span> <span class=o>-&gt;</span> <span class=n><a class="autorefs autorefs-external" title=concurrent.futures.Future href=https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future>Future</a></span><span class=p>[</span><span class=n><span title=scenex.app._auto.T>T</span></span><span class=p>]</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Schedule a function to be called in the main GUI thread.</p> <p>Many GUI frameworks require that widget operations occur on the main thread. This method safely schedules a function call on the main thread and returns a Future that will contain the result.</p> <p><span class=doc-section-title>Parameters:</span></p> <ul> <li class="doc-section-item field-body"> <h4 id=scenex.app.App.call_in_main_thread(func) class="doc doc-heading doc-heading-parameter"> <b><code>func</code></b> <a href=#scenex.app.App.call_in_main_thread(func) class=headerlink title="Permanent link">#</a></h4> (<code><a class="autorefs autorefs-external" title=collections.abc.Callable href=https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable>Callable</a>[<span title=scenex.app._auto.P>P</span>, <span title=scenex.app._auto.T>T</span>]</code>) – <div class=doc-md-description> <p>The function to call.</p> </div> </li> <li class="doc-section-item field-body"> <h4 id=scenex.app.App.call_in_main_thread(*args) class="doc doc-heading doc-heading-parameter"> <b><code>*args</code></b> <a href=#scenex.app.App.call_in_main_thread(*args) class=headerlink title="Permanent link">#</a></h4> (<code><span title=scenex.app._auto.P.args>args</span></code>, default: <code>()</code> ) – <div class=doc-md-description> <p>Positional arguments to pass to func.</p> </div> </li> <li class="doc-section-item field-body"> <h4 id=scenex.app.App.call_in_main_thread(**kwargs) class="doc doc-heading doc-heading-parameter"> <b><code>**kwargs</code></b> <a href=#scenex.app.App.call_in_main_thread(**kwargs) class=headerlink title="Permanent link">#</a></h4> (<code><span title=scenex.app._auto.P.kwargs>kwargs</span></code>, default: <code>{}</code> ) – <div class=doc-md-description> <p>Keyword arguments to pass to func.</p> </div> </li> </ul> <p><span class=doc-section-title>Returns:</span></p> <ul> <li class="doc-section-item field-body"> <code><a class="autorefs autorefs-external" title=concurrent.futures.Future href=https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future>Future</a>[<span title=scenex.app._auto.T>T</span>]</code> – <div class=doc-md-description> <p>A Future object that will contain the function's return value once the call completes.</p> </div> </li> </ul> <details class=note open> <summary>Notes</summary> <p>The base implementation executes the function immediately and returns a completed Future. Subclasses should override this to provide thread-safe execution.</p> </details> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/_auto.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>216</span>
+<span class=normal>217</span>
+<span class=normal>218</span>
+<span class=normal>219</span>
+<span class=normal>220</span>
+<span class=normal>221</span>
+<span class=normal>222</span>
+<span class=normal>223</span>
+<span class=normal>224</span>
+<span class=normal>225</span>
+<span class=normal>226</span>
+<span class=normal>227</span>
+<span class=normal>228</span>
+<span class=normal>229</span>
+<span class=normal>230</span>
+<span class=normal>231</span>
+<span class=normal>232</span>
+<span class=normal>233</span>
+<span class=normal>234</span>
+<span class=normal>235</span>
+<span class=normal>236</span>
+<span class=normal>237</span>
+<span class=normal>238</span>
+<span class=normal>239</span>
+<span class=normal>240</span>
+<span class=normal>241</span>
+<span class=normal>242</span>
+<span class=normal>243</span>
+<span class=normal>244</span>
+<span class=normal>245</span>
+<span class=normal>246</span>
+<span class=normal>247</span>
+<span class=normal>248</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-216><span class=k>def</span><span class=w> </span><span class=nf>call_in_main_thread</span><span class=p>(</span>
+</span><span id=__span-0-217>    <span class=bp>self</span><span class=p>,</span> <span class=n>func</span><span class=p>:</span> <span class=n>Callable</span><span class=p>[</span><span class=n>P</span><span class=p>,</span> <span class=n>T</span><span class=p>],</span> <span class=o>*</span><span class=n>args</span><span class=p>:</span> <span class=n>P</span><span class=o>.</span><span class=n>args</span><span class=p>,</span> <span class=o>**</span><span class=n>kwargs</span><span class=p>:</span> <span class=n>P</span><span class=o>.</span><span class=n>kwargs</span>
+</span><span id=__span-0-218><span class=p>)</span> <span class=o>-&gt;</span> <span class=n>Future</span><span class=p>[</span><span class=n>T</span><span class=p>]:</span>
+</span><span id=__span-0-219><span class=w>    </span><span class=sd>&quot;&quot;&quot;Schedule a function to be called in the main GUI thread.</span>
+</span><span id=__span-0-220>
+</span><span id=__span-0-221><span class=sd>    Many GUI frameworks require that widget operations occur on the main</span>
+</span><span id=__span-0-222><span class=sd>    thread. This method safely schedules a function call on the main thread</span>
+</span><span id=__span-0-223><span class=sd>    and returns a Future that will contain the result.</span>
+</span><span id=__span-0-224>
+</span><span id=__span-0-225><span class=sd>    Parameters</span>
+</span><span id=__span-0-226><span class=sd>    ----------</span>
+</span><span id=__span-0-227><span class=sd>    func : Callable[P, T]</span>
+</span><span id=__span-0-228><span class=sd>        The function to call.</span>
+</span><span id=__span-0-229><span class=sd>    *args : P.args</span>
+</span><span id=__span-0-230><span class=sd>        Positional arguments to pass to func.</span>
+</span><span id=__span-0-231><span class=sd>    **kwargs : P.kwargs</span>
+</span><span id=__span-0-232><span class=sd>        Keyword arguments to pass to func.</span>
+</span><span id=__span-0-233>
+</span><span id=__span-0-234><span class=sd>    Returns</span>
+</span><span id=__span-0-235><span class=sd>    -------</span>
+</span><span id=__span-0-236><span class=sd>    Future[T]</span>
+</span><span id=__span-0-237><span class=sd>        A Future object that will contain the function&#39;s return value once</span>
+</span><span id=__span-0-238><span class=sd>        the call completes.</span>
+</span><span id=__span-0-239>
+</span><span id=__span-0-240><span class=sd>    Notes</span>
+</span><span id=__span-0-241><span class=sd>    -----</span>
+</span><span id=__span-0-242><span class=sd>    The base implementation executes the function immediately and returns</span>
+</span><span id=__span-0-243><span class=sd>    a completed Future. Subclasses should override this to provide</span>
+</span><span id=__span-0-244><span class=sd>    thread-safe execution.</span>
+</span><span id=__span-0-245><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-246>    <span class=n>future</span><span class=p>:</span> <span class=n>Future</span><span class=p>[</span><span class=n>T</span><span class=p>]</span> <span class=o>=</span> <span class=n>Future</span><span class=p>()</span>
+</span><span id=__span-0-247>    <span class=n>future</span><span class=o>.</span><span class=n>set_result</span><span class=p>(</span><span class=n>func</span><span class=p>(</span><span class=o>*</span><span class=n>args</span><span class=p>,</span> <span class=o>**</span><span class=n>kwargs</span><span class=p>))</span>
+</span><span id=__span-0-248>    <span class=k>return</span> <span class=n>future</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.app.App.call_later class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">call_later</span> <a href=#scenex.app.App.call_later class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>call_later</span><span class=p>(</span><span class=n><a class="autorefs autorefs-internal" title="msec (scenex.app.App.call_later(msec))" href=#scenex.app.App.call_later(msec)>msec</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-internal" title="func (scenex.app.App.call_later(func))" href=#scenex.app.App.call_later(func)>func</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" title=collections.abc.Callable href=https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable>Callable</a></span><span class=p>[[],</span> <span class=kc>None</span><span class=p>])</span> <span class=o>-&gt;</span> <span class=kc>None</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Schedule a function to be called after a delay.</p> <p><span class=doc-section-title>Parameters:</span></p> <ul> <li class="doc-section-item field-body"> <h4 id=scenex.app.App.call_later(msec) class="doc doc-heading doc-heading-parameter"> <b><code>msec</code></b> <a href=#scenex.app.App.call_later(msec) class=headerlink title="Permanent link">#</a></h4> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></code>) – <div class=doc-md-description> <p>Delay in milliseconds before calling the function.</p> </div> </li> <li class="doc-section-item field-body"> <h4 id=scenex.app.App.call_later(func) class="doc doc-heading doc-heading-parameter"> <b><code>func</code></b> <a href=#scenex.app.App.call_later(func) class=headerlink title="Permanent link">#</a></h4> (<code><a class="autorefs autorefs-external" title=collections.abc.Callable href=https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable>Callable</a>[[], None]</code>) – <div class=doc-md-description> <p>The function to call. Must take no arguments.</p> </div> </li> </ul> <details class=note open> <summary>Notes</summary> <p>Must be implemented by subclasses.</p> </details> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/_auto.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>250</span>
+<span class=normal>251</span>
+<span class=normal>252</span>
+<span class=normal>253</span>
+<span class=normal>254</span>
+<span class=normal>255</span>
+<span class=normal>256</span>
+<span class=normal>257</span>
+<span class=normal>258</span>
+<span class=normal>259</span>
+<span class=normal>260</span>
+<span class=normal>261</span>
+<span class=normal>262</span>
+<span class=normal>263</span>
+<span class=normal>264</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-250><span class=k>def</span><span class=w> </span><span class=nf>call_later</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>msec</span><span class=p>:</span> <span class=nb>int</span><span class=p>,</span> <span class=n>func</span><span class=p>:</span> <span class=n>Callable</span><span class=p>[[],</span> <span class=kc>None</span><span class=p>])</span> <span class=o>-&gt;</span> <span class=kc>None</span><span class=p>:</span>
+</span><span id=__span-0-251><span class=w>    </span><span class=sd>&quot;&quot;&quot;Schedule a function to be called after a delay.</span>
+</span><span id=__span-0-252>
+</span><span id=__span-0-253><span class=sd>    Parameters</span>
+</span><span id=__span-0-254><span class=sd>    ----------</span>
+</span><span id=__span-0-255><span class=sd>    msec : int</span>
+</span><span id=__span-0-256><span class=sd>        Delay in milliseconds before calling the function.</span>
+</span><span id=__span-0-257><span class=sd>    func : Callable[[], None]</span>
+</span><span id=__span-0-258><span class=sd>        The function to call. Must take no arguments.</span>
+</span><span id=__span-0-259>
+</span><span id=__span-0-260><span class=sd>    Notes</span>
+</span><span id=__span-0-261><span class=sd>    -----</span>
+</span><span id=__span-0-262><span class=sd>    Must be implemented by subclasses.</span>
+</span><span id=__span-0-263><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-264>    <span class=k>raise</span> <span class=ne>NotImplementedError</span><span class=p>(</span><span class=s2>&quot;Must be implemented by subclasses.&quot;</span><span class=p>)</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.app.App.create_app class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">create_app</span> <a href=#scenex.app.App.create_app class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>create_app</span><span class=p>()</span> <span class=o>-&gt;</span> <span class=n><a class="autorefs autorefs-external" title=typing.Any href=https://docs.python.org/3/library/typing.html#typing.Any>Any</a></span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Create the application instance, if not already created.</p> <p>This method initializes the underlying GUI framework's application object (e.g., QApplication for Qt). If an application instance already exists, this method should return the existing instance.</p> <p><span class=doc-section-title>Returns:</span></p> <ul> <li class="doc-section-item field-body"> <code><a class="autorefs autorefs-external" title=typing.Any href=https://docs.python.org/3/library/typing.html#typing.Any>Any</a></code> – <div class=doc-md-description> <p>The backend-specific application object.</p> </div> </li> </ul> <details class=note open> <summary>Notes</summary> <p>Must be implemented by subclasses.</p> </details> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/_auto.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>136</span>
+<span class=normal>137</span>
+<span class=normal>138</span>
+<span class=normal>139</span>
+<span class=normal>140</span>
+<span class=normal>141</span>
+<span class=normal>142</span>
+<span class=normal>143</span>
+<span class=normal>144</span>
+<span class=normal>145</span>
+<span class=normal>146</span>
+<span class=normal>147</span>
+<span class=normal>148</span>
+<span class=normal>149</span>
+<span class=normal>150</span>
+<span class=normal>151</span>
+<span class=normal>152</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-136><span class=k>def</span><span class=w> </span><span class=nf>create_app</span><span class=p>(</span><span class=bp>self</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=n>Any</span><span class=p>:</span>
+</span><span id=__span-0-137><span class=w>    </span><span class=sd>&quot;&quot;&quot;Create the application instance, if not already created.</span>
+</span><span id=__span-0-138>
+</span><span id=__span-0-139><span class=sd>    This method initializes the underlying GUI framework&#39;s application object</span>
+</span><span id=__span-0-140><span class=sd>    (e.g., QApplication for Qt). If an application instance already exists,</span>
+</span><span id=__span-0-141><span class=sd>    this method should return the existing instance.</span>
+</span><span id=__span-0-142>
+</span><span id=__span-0-143><span class=sd>    Returns</span>
+</span><span id=__span-0-144><span class=sd>    -------</span>
+</span><span id=__span-0-145><span class=sd>    Any</span>
+</span><span id=__span-0-146><span class=sd>        The backend-specific application object.</span>
+</span><span id=__span-0-147>
+</span><span id=__span-0-148><span class=sd>    Notes</span>
+</span><span id=__span-0-149><span class=sd>    -----</span>
+</span><span id=__span-0-150><span class=sd>    Must be implemented by subclasses.</span>
+</span><span id=__span-0-151><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-152>    <span class=k>raise</span> <span class=ne>NotImplementedError</span><span class=p>(</span><span class=s2>&quot;Must be implemented by subclasses.&quot;</span><span class=p>)</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.app.App.get_executor class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">get_executor</span> <a href=#scenex.app.App.get_executor class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>get_executor</span><span class=p>()</span> <span class=o>-&gt;</span> <span class=n><a class="autorefs autorefs-external" title=concurrent.futures.Executor href=https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor>Executor</a></span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Return an executor for running tasks in background threads.</p> <p><span class=doc-section-title>Returns:</span></p> <ul> <li class="doc-section-item field-body"> <code><a class="autorefs autorefs-external" title=concurrent.futures.Executor href=https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor>Executor</a></code> – <div class=doc-md-description> <p>A concurrent.futures.Executor instance (typically a ThreadPoolExecutor) for running background tasks.</p> </div> </li> </ul> <details class=note open> <summary>Notes</summary> <p>The default implementation returns a shared ThreadPoolExecutor with 2 workers. Subclasses can override this to provide framework-specific executors.</p> </details> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/_auto.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>266</span>
+<span class=normal>267</span>
+<span class=normal>268</span>
+<span class=normal>269</span>
+<span class=normal>270</span>
+<span class=normal>271</span>
+<span class=normal>272</span>
+<span class=normal>273</span>
+<span class=normal>274</span>
+<span class=normal>275</span>
+<span class=normal>276</span>
+<span class=normal>277</span>
+<span class=normal>278</span>
+<span class=normal>279</span>
+<span class=normal>280</span>
+<span class=normal>281</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-266><span class=k>def</span><span class=w> </span><span class=nf>get_executor</span><span class=p>(</span><span class=bp>self</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=n>Executor</span><span class=p>:</span>
+</span><span id=__span-0-267><span class=w>    </span><span class=sd>&quot;&quot;&quot;Return an executor for running tasks in background threads.</span>
+</span><span id=__span-0-268>
+</span><span id=__span-0-269><span class=sd>    Returns</span>
+</span><span id=__span-0-270><span class=sd>    -------</span>
+</span><span id=__span-0-271><span class=sd>    Executor</span>
+</span><span id=__span-0-272><span class=sd>        A concurrent.futures.Executor instance (typically a ThreadPoolExecutor)</span>
+</span><span id=__span-0-273><span class=sd>        for running background tasks.</span>
+</span><span id=__span-0-274>
+</span><span id=__span-0-275><span class=sd>    Notes</span>
+</span><span id=__span-0-276><span class=sd>    -----</span>
+</span><span id=__span-0-277><span class=sd>    The default implementation returns a shared ThreadPoolExecutor with 2</span>
+</span><span id=__span-0-278><span class=sd>    workers. Subclasses can override this to provide framework-specific</span>
+</span><span id=__span-0-279><span class=sd>    executors.</span>
+</span><span id=__span-0-280><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-281>    <span class=k>return</span> <span class=n>_thread_pool_executor</span><span class=p>()</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.app.App.install_event_filter class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">install_event_filter</span> <a href=#scenex.app.App.install_event_filter class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>install_event_filter</span><span class=p>(</span>
+</span><span id=__span-0-2>    <span class=n><a class="autorefs autorefs-internal" title="canvas (scenex.app.App.install_event_filter(canvas))" href=#scenex.app.App.install_event_filter(canvas)>canvas</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" title=typing.Any href=https://docs.python.org/3/library/typing.html#typing.Any>Any</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-internal" title="model_canvas (scenex.app.App.install_event_filter(model_canvas))" href=#scenex.app.App.install_event_filter(model_canvas)>model_canvas</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            Canvas (scenex.model.Canvas)" href=../model/#scenex.model.Canvas>Canvas</a></span>
+</span><span id=__span-0-3><span class=p>)</span> <span class=o>-&gt;</span> <span class=n><a class="autorefs autorefs-internal" title="            EventFilter (scenex.app.events._events.EventFilter)" href=events/#scenex.app.events.EventFilter>EventFilter</a></span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Install an event filter on a canvas to forward events to the model.</p> <p>Implementations of this method will capture all events given to the native widget, translated them into scenex events, and route them to <code>model_canvas</code>.</p> <p><span class=doc-section-title>Parameters:</span></p> <ul> <li class="doc-section-item field-body"> <h4 id=scenex.app.App.install_event_filter(canvas) class="doc doc-heading doc-heading-parameter"> <b><code>canvas</code></b> <a href=#scenex.app.App.install_event_filter(canvas) class=headerlink title="Permanent link">#</a></h4> (<code><a class="autorefs autorefs-external" title=typing.Any href=https://docs.python.org/3/library/typing.html#typing.Any>Any</a></code>) – <div class=doc-md-description> <p>The backend-specific native canvas widget.</p> </div> </li> <li class="doc-section-item field-body"> <h4 id=scenex.app.App.install_event_filter(model_canvas) class="doc doc-heading doc-heading-parameter"> <b><code>model_canvas</code></b> <a href=#scenex.app.App.install_event_filter(model_canvas) class=headerlink title="Permanent link">#</a></h4> (<code><a class="autorefs autorefs-internal" title="            Canvas (scenex.model.Canvas)" href=../model/#scenex.model.Canvas>Canvas</a></code>) – <div class=doc-md-description> <p>The scenex Canvas model that should receive events.</p> </div> </li> </ul> <p><span class=doc-section-title>Returns:</span></p> <ul> <li class="doc-section-item field-body"> <code><a class="autorefs autorefs-internal" title="            EventFilter (scenex.app.events._events.EventFilter)" href=events/#scenex.app.events.EventFilter>EventFilter</a></code> – <div class=doc-md-description> <p>A handle that can be used to uninstall the event filter.</p> </div> </li> </ul> <details class=note open> <summary>Notes</summary> <p>Must be implemented by subclasses.</p> </details> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/_auto.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>183</span>
+<span class=normal>184</span>
+<span class=normal>185</span>
+<span class=normal>186</span>
+<span class=normal>187</span>
+<span class=normal>188</span>
+<span class=normal>189</span>
+<span class=normal>190</span>
+<span class=normal>191</span>
+<span class=normal>192</span>
+<span class=normal>193</span>
+<span class=normal>194</span>
+<span class=normal>195</span>
+<span class=normal>196</span>
+<span class=normal>197</span>
+<span class=normal>198</span>
+<span class=normal>199</span>
+<span class=normal>200</span>
+<span class=normal>201</span>
+<span class=normal>202</span>
+<span class=normal>203</span>
+<span class=normal>204</span>
+<span class=normal>205</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-183><span class=k>def</span><span class=w> </span><span class=nf>install_event_filter</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>canvas</span><span class=p>:</span> <span class=n>Any</span><span class=p>,</span> <span class=n>model_canvas</span><span class=p>:</span> <span class=n>Canvas</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=n>EventFilter</span><span class=p>:</span>
+</span><span id=__span-0-184><span class=w>    </span><span class=sd>&quot;&quot;&quot;Install an event filter on a canvas to forward events to the model.</span>
+</span><span id=__span-0-185>
+</span><span id=__span-0-186><span class=sd>    Implementations of this method will capture all events given to the native</span>
+</span><span id=__span-0-187><span class=sd>    widget, translated them into scenex events, and route them to `model_canvas`.</span>
+</span><span id=__span-0-188>
+</span><span id=__span-0-189><span class=sd>    Parameters</span>
+</span><span id=__span-0-190><span class=sd>    ----------</span>
+</span><span id=__span-0-191><span class=sd>    canvas : Any</span>
+</span><span id=__span-0-192><span class=sd>        The backend-specific native canvas widget.</span>
+</span><span id=__span-0-193><span class=sd>    model_canvas : Canvas</span>
+</span><span id=__span-0-194><span class=sd>        The scenex Canvas model that should receive events.</span>
+</span><span id=__span-0-195>
+</span><span id=__span-0-196><span class=sd>    Returns</span>
+</span><span id=__span-0-197><span class=sd>    -------</span>
+</span><span id=__span-0-198><span class=sd>    EventFilter</span>
+</span><span id=__span-0-199><span class=sd>        A handle that can be used to uninstall the event filter.</span>
+</span><span id=__span-0-200>
+</span><span id=__span-0-201><span class=sd>    Notes</span>
+</span><span id=__span-0-202><span class=sd>    -----</span>
+</span><span id=__span-0-203><span class=sd>    Must be implemented by subclasses.</span>
+</span><span id=__span-0-204><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-205>    <span class=k>raise</span> <span class=ne>NotImplementedError</span><span class=p>(</span><span class=s2>&quot;Must be implemented by subclasses.&quot;</span><span class=p>)</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.app.App.process_events class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">process_events</span> <a href=#scenex.app.App.process_events class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>process_events</span><span class=p>()</span> <span class=o>-&gt;</span> <span class=kc>None</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Yields the current thread to process all pending GUI events.</p> <details class=note open> <summary>Notes</summary> <p>Must be implemented by subclasses.</p> </details> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/_auto.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>207</span>
+<span class=normal>208</span>
+<span class=normal>209</span>
+<span class=normal>210</span>
+<span class=normal>211</span>
+<span class=normal>212</span>
+<span class=normal>213</span>
+<span class=normal>214</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-207><span class=k>def</span><span class=w> </span><span class=nf>process_events</span><span class=p>(</span><span class=bp>self</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=kc>None</span><span class=p>:</span>
+</span><span id=__span-0-208><span class=w>    </span><span class=sd>&quot;&quot;&quot;Yields the current thread to process all pending GUI events.</span>
+</span><span id=__span-0-209>
+</span><span id=__span-0-210><span class=sd>    Notes</span>
+</span><span id=__span-0-211><span class=sd>    -----</span>
+</span><span id=__span-0-212><span class=sd>    Must be implemented by subclasses.</span>
+</span><span id=__span-0-213><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-214>    <span class=k>raise</span> <span class=ne>NotImplementedError</span><span class=p>(</span><span class=s2>&quot;Must be implemented by subclasses.&quot;</span><span class=p>)</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.app.App.run class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">run</span> <a href=#scenex.app.App.run class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>run</span><span class=p>()</span> <span class=o>-&gt;</span> <span class=kc>None</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Start the application event loop.</p> <p>This method enters the GUI framework's main event loop, which processes user input, window events, and other GUI operations. The method blocks until the application is closed.</p> <details class=note open> <summary>Notes</summary> <p>Must be implemented by subclasses.</p> </details> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/_auto.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>154</span>
+<span class=normal>155</span>
+<span class=normal>156</span>
+<span class=normal>157</span>
+<span class=normal>158</span>
+<span class=normal>159</span>
+<span class=normal>160</span>
+<span class=normal>161</span>
+<span class=normal>162</span>
+<span class=normal>163</span>
+<span class=normal>164</span>
+<span class=normal>165</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-154><span class=k>def</span><span class=w> </span><span class=nf>run</span><span class=p>(</span><span class=bp>self</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=kc>None</span><span class=p>:</span>
+</span><span id=__span-0-155><span class=w>    </span><span class=sd>&quot;&quot;&quot;Start the application event loop.</span>
+</span><span id=__span-0-156>
+</span><span id=__span-0-157><span class=sd>    This method enters the GUI framework&#39;s main event loop, which processes</span>
+</span><span id=__span-0-158><span class=sd>    user input, window events, and other GUI operations. The method blocks</span>
+</span><span id=__span-0-159><span class=sd>    until the application is closed.</span>
+</span><span id=__span-0-160>
+</span><span id=__span-0-161><span class=sd>    Notes</span>
+</span><span id=__span-0-162><span class=sd>    -----</span>
+</span><span id=__span-0-163><span class=sd>    Must be implemented by subclasses.</span>
+</span><span id=__span-0-164><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-165>    <span class=k>raise</span> <span class=ne>NotImplementedError</span><span class=p>(</span><span class=s2>&quot;Must be implemented by subclasses.&quot;</span><span class=p>)</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.app.App.set_cursor class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">set_cursor</span> <a href=#scenex.app.App.set_cursor class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>set_cursor</span><span class=p>(</span><span class=n><a class="autorefs autorefs-internal" title="canvas (scenex.app.App.set_cursor(canvas))" href=#scenex.app.App.set_cursor(canvas)>canvas</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            Canvas (scenex.model.Canvas)" href=../model/#scenex.model.Canvas>Canvas</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-internal" title="cursor (scenex.app.App.set_cursor(cursor))" href=#scenex.app.App.set_cursor(cursor)>cursor</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            CursorType (scenex.app._auto.CursorType)" href=#scenex.app.CursorType>CursorType</a></span><span class=p>)</span> <span class=o>-&gt;</span> <span class=kc>None</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Set the cursor for the given canvas.</p> <p>Backends override this to translate the abstract cursor into native form.</p> <p><span class=doc-section-title>Parameters:</span></p> <ul> <li class="doc-section-item field-body"> <h4 id=scenex.app.App.set_cursor(canvas) class="doc doc-heading doc-heading-parameter"> <b><code>canvas</code></b> <a href=#scenex.app.App.set_cursor(canvas) class=headerlink title="Permanent link">#</a></h4> (<code><a class="autorefs autorefs-internal" title="            Canvas (scenex.model.Canvas)" href=../model/#scenex.model.Canvas>Canvas</a></code>) – <div class=doc-md-description> <p>The canvas on which to set the cursor.</p> </div> </li> <li class="doc-section-item field-body"> <h4 id=scenex.app.App.set_cursor(cursor) class="doc doc-heading doc-heading-parameter"> <b><code>cursor</code></b> <a href=#scenex.app.App.set_cursor(cursor) class=headerlink title="Permanent link">#</a></h4> (<code><a class="autorefs autorefs-internal" title="            CursorType (scenex.app._auto.CursorType)" href=#scenex.app.CursorType>CursorType</a></code>) – <div class=doc-md-description> <p>The type of cursor to set.</p> </div> </li> </ul> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/_auto.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>284</span>
+<span class=normal>285</span>
+<span class=normal>286</span>
+<span class=normal>287</span>
+<span class=normal>288</span>
+<span class=normal>289</span>
+<span class=normal>290</span>
+<span class=normal>291</span>
+<span class=normal>292</span>
+<span class=normal>293</span>
+<span class=normal>294</span>
+<span class=normal>295</span>
+<span class=normal>296</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-284><span class=k>def</span><span class=w> </span><span class=nf>set_cursor</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>canvas</span><span class=p>:</span> <span class=n>Canvas</span><span class=p>,</span> <span class=n>cursor</span><span class=p>:</span> <span class=n>CursorType</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=kc>None</span><span class=p>:</span>
+</span><span id=__span-0-285><span class=w>    </span><span class=sd>&quot;&quot;&quot;Set the cursor for the given canvas.</span>
+</span><span id=__span-0-286>
+</span><span id=__span-0-287><span class=sd>    Backends override this to translate the abstract cursor into native form.</span>
+</span><span id=__span-0-288>
+</span><span id=__span-0-289><span class=sd>    Parameters</span>
+</span><span id=__span-0-290><span class=sd>    ----------</span>
+</span><span id=__span-0-291><span class=sd>    canvas : Canvas</span>
+</span><span id=__span-0-292><span class=sd>        The canvas on which to set the cursor.</span>
+</span><span id=__span-0-293><span class=sd>    cursor : CursorType</span>
+</span><span id=__span-0-294><span class=sd>        The type of cursor to set.</span>
+</span><span id=__span-0-295><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-296>    <span class=k>raise</span> <span class=ne>NotImplementedError</span><span class=p>(</span><span class=s2>&quot;Must be implemented by subclasses.&quot;</span><span class=p>)</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.app.App.show class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">show</span> <a href=#scenex.app.App.show class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>show</span><span class=p>(</span><span class=n><a class="autorefs autorefs-internal" title="canvas (scenex.app.App.show(canvas))" href=#scenex.app.App.show(canvas)>canvas</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            Canvas (scenex.model.Canvas)" href=../model/#scenex.model.Canvas>Canvas</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-internal" title="visible (scenex.app.App.show(visible))" href=#scenex.app.App.show(visible)>visible</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#bool>bool</a></span><span class=p>)</span> <span class=o>-&gt;</span> <span class=kc>None</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Show or hide a canvas window.</p> <p><span class=doc-section-title>Parameters:</span></p> <ul> <li class="doc-section-item field-body"> <h4 id=scenex.app.App.show(canvas) class="doc doc-heading doc-heading-parameter"> <b><code>canvas</code></b> <a href=#scenex.app.App.show(canvas) class=headerlink title="Permanent link">#</a></h4> (<code><a class="autorefs autorefs-internal" title="            Canvas (scenex.model.Canvas)" href=../model/#scenex.model.Canvas>Canvas</a></code>) – <div class=doc-md-description> <p>The canvas to show or hide</p> </div> </li> <li class="doc-section-item field-body"> <h4 id=scenex.app.App.show(visible) class="doc doc-heading doc-heading-parameter"> <b><code>visible</code></b> <a href=#scenex.app.App.show(visible) class=headerlink title="Permanent link">#</a></h4> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#bool>bool</a></code>) – <div class=doc-md-description> <p>True to show the canvas window, False to hide it.</p> </div> </li> </ul> <details class=note open> <summary>Notes</summary> <p>Must be implemented by subclasses.</p> </details> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/_auto.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>167</span>
+<span class=normal>168</span>
+<span class=normal>169</span>
+<span class=normal>170</span>
+<span class=normal>171</span>
+<span class=normal>172</span>
+<span class=normal>173</span>
+<span class=normal>174</span>
+<span class=normal>175</span>
+<span class=normal>176</span>
+<span class=normal>177</span>
+<span class=normal>178</span>
+<span class=normal>179</span>
+<span class=normal>180</span>
+<span class=normal>181</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-167><span class=k>def</span><span class=w> </span><span class=nf>show</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>canvas</span><span class=p>:</span> <span class=n>Canvas</span><span class=p>,</span> <span class=n>visible</span><span class=p>:</span> <span class=nb>bool</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=kc>None</span><span class=p>:</span>
+</span><span id=__span-0-168><span class=w>    </span><span class=sd>&quot;&quot;&quot;Show or hide a canvas window.</span>
+</span><span id=__span-0-169>
+</span><span id=__span-0-170><span class=sd>    Parameters</span>
+</span><span id=__span-0-171><span class=sd>    ----------</span>
+</span><span id=__span-0-172><span class=sd>    canvas : Canvas</span>
+</span><span id=__span-0-173><span class=sd>        The canvas to show or hide</span>
+</span><span id=__span-0-174><span class=sd>    visible : bool</span>
+</span><span id=__span-0-175><span class=sd>        True to show the canvas window, False to hide it.</span>
+</span><span id=__span-0-176>
+</span><span id=__span-0-177><span class=sd>    Notes</span>
+</span><span id=__span-0-178><span class=sd>    -----</span>
+</span><span id=__span-0-179><span class=sd>    Must be implemented by subclasses.</span>
+</span><span id=__span-0-180><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-181>    <span class=k>raise</span> <span class=ne>NotImplementedError</span><span class=p>(</span><span class=s2>&quot;Must be implemented by subclasses.&quot;</span><span class=p>)</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.CursorType class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">CursorType</span> <a href=#scenex.app.CursorType class=headerlink title="Permanent link">#</a></h2> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-external" title=enum.Enum href=https://docs.python.org/3/library/enum.html#enum.Enum>Enum</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            CursorType (scenex.app.CursorType)" href=#scenex.app.CursorType id=mermaid-link-scenex.app.CursorType></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.CursorType>
+              flowchart TD
+              scenex.app.CursorType[CursorType]
+
+              
+
+              click scenex.app.CursorType href "" "scenex.app.CursorType"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.CursorType');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>Enumeration of standard cursor types for canvas interaction.</p> <p>CursorType provides platform-independent cursor shapes that can be set on canvases to indicate different interaction modes or states. Each cursor type is mapped to the appropriate platform-specific cursor by the GUI backend.</p> <p><span class=doc-section-title>Attributes:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.CursorType.DEFAULT>DEFAULT</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></code>) – <div class=doc-md-description> <p>The standard arrow cursor, typically used for normal selection and interaction.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.CursorType.CROSS>CROSS</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></code>) – <div class=doc-md-description> <p>A crosshair cursor, useful for precise positioning or drawing operations.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.CursorType.V_ARROW>V_ARROW</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></code>) – <div class=doc-md-description> <p>A vertical resize arrow cursor, indicating vertical resizing capability.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.CursorType.H_ARROW>H_ARROW</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></code>) – <div class=doc-md-description> <p>A horizontal resize arrow cursor, indicating horizontal resizing capability.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.CursorType.ALL_ARROW>ALL_ARROW</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></code>) – <div class=doc-md-description> <p>A multi-directional arrow cursor, indicating omnidirectional movement.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.CursorType.BDIAG_ARROW>BDIAG_ARROW</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></code>) – <div class=doc-md-description> <p>A diagonal resize arrow cursor (backward diagonal), for diagonal resizing.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.CursorType.FDIAG_ARROW>FDIAG_ARROW</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></code>) – <div class=doc-md-description> <p>A diagonal resize arrow cursor (forward diagonal), for diagonal resizing.</p> </div> </li> </ul> <p><span class=doc-section-title>Examples:</span></p> <p>Set a crosshair cursor during drawing mode: &gt;&gt;&gt; import scenex as snx &gt;&gt;&gt; canvas = snx.Canvas() &gt;&gt;&gt; app().set_cursor(canvas, CursorType.CROSS)</p> <p>Restore default cursor after operation: &gt;&gt;&gt; app().set_cursor(canvas, CursorType.DEFAULT)</p> <details class=see-also open> <summary>See Also</summary> <p>App.set_cursor : Method to set cursor on a canvas</p> </details> <div class="doc doc-children"> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.GuiFrontend class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">GuiFrontend</span> <a href=#scenex.app.GuiFrontend class=headerlink title="Permanent link">#</a></h2> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#str>str</a></code>, <code><a class="autorefs autorefs-external" title=enum.Enum href=https://docs.python.org/3/library/enum.html#enum.Enum>Enum</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            GuiFrontend (scenex.app.GuiFrontend)" href=#scenex.app.GuiFrontend id=mermaid-link-scenex.app.GuiFrontend></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.GuiFrontend>
+              flowchart TD
+              scenex.app.GuiFrontend[GuiFrontend]
+
+              
+
+              click scenex.app.GuiFrontend href "" "scenex.app.GuiFrontend"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.GuiFrontend');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>Enum of available GUI frontends.</p> <p><span class=doc-section-title>Attributes:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.GuiFrontend.JUPYTER>JUPYTER</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#str>str</a></code>) – <div class=doc-md-description> <p><a href=https://jupyter.org/ >JUPYTER</a></p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.GuiFrontend.QT>QT</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#str>str</a></code>) – <div class=doc-md-description> <p><a href=https://doc.qt.io>PyQt5/PySide2/PyQt6/PySide6</a></p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.GuiFrontend.WX>WX</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#str>str</a></code>) – <div class=doc-md-description> <p><a href=https://wxpython.org/ >WX</a></p> </div> </li> </ul> <div class="doc doc-children"> </div> </div> </div> <div class="doc doc-object doc-function"> <h2 id=scenex.app.app class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code> <span class="doc doc-object-name doc-function-name">app</span> <a href=#scenex.app.app class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>app</span><span class=p>()</span> <span class=o>-&gt;</span> <span class=n><a class="autorefs autorefs-internal" title="            App (scenex.app._auto.App)" href=#scenex.app.App>App</a></span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Get the active GUI application instance.</p> <p>Returns the singleton App instance for the current process, creating and initializing it if necessary. The GUI backend is determined automatically using <code>determine_app()</code>.</p> <p>This function should be used whenever you need to interact with the GUI application, such as running the event loop, showing windows, or scheduling thread-safe operations.</p> <p><span class=doc-section-title>Returns:</span></p> <ul> <li class="doc-section-item field-body"> <code><a class="autorefs autorefs-internal" title="            App (scenex.app._auto.App)" href=#scenex.app.App>App</a></code> – <div class=doc-md-description> <p>The active App instance wrapping the GUI backend.</p> </div> </li> </ul> <p><span class=doc-section-title>Examples:</span></p> <p>Get the app and run the event loop: &gt;&gt;&gt; app().run()</p> <details class=see-also open> <summary>See Also</summary> <p>determine_app : Function that selects which GUI backend to use GuiFrontend : Enumeration of available backends App : Base class defining the application interface</p> </details> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/_auto.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>442</span>
+<span class=normal>443</span>
+<span class=normal>444</span>
+<span class=normal>445</span>
+<span class=normal>446</span>
+<span class=normal>447</span>
+<span class=normal>448</span>
+<span class=normal>449</span>
+<span class=normal>450</span>
+<span class=normal>451</span>
+<span class=normal>452</span>
+<span class=normal>453</span>
+<span class=normal>454</span>
+<span class=normal>455</span>
+<span class=normal>456</span>
+<span class=normal>457</span>
+<span class=normal>458</span>
+<span class=normal>459</span>
+<span class=normal>460</span>
+<span class=normal>461</span>
+<span class=normal>462</span>
+<span class=normal>463</span>
+<span class=normal>464</span>
+<span class=normal>465</span>
+<span class=normal>466</span>
+<span class=normal>467</span>
+<span class=normal>468</span>
+<span class=normal>469</span>
+<span class=normal>470</span>
+<span class=normal>471</span>
+<span class=normal>472</span>
+<span class=normal>473</span>
+<span class=normal>474</span>
+<span class=normal>475</span>
+<span class=normal>476</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-442><span class=k>def</span><span class=w> </span><span class=nf>app</span><span class=p>()</span> <span class=o>-&gt;</span> <span class=n>App</span><span class=p>:</span>
+</span><span id=__span-0-443><span class=w>    </span><span class=sd>&quot;&quot;&quot;Get the active GUI application instance.</span>
+</span><span id=__span-0-444>
+</span><span id=__span-0-445><span class=sd>    Returns the singleton App instance for the current process, creating and</span>
+</span><span id=__span-0-446><span class=sd>    initializing it if necessary. The GUI backend is determined automatically</span>
+</span><span id=__span-0-447><span class=sd>    using `determine_app()`.</span>
+</span><span id=__span-0-448>
+</span><span id=__span-0-449><span class=sd>    This function should be used whenever you need to interact with the GUI</span>
+</span><span id=__span-0-450><span class=sd>    application, such as running the event loop, showing windows, or scheduling</span>
+</span><span id=__span-0-451><span class=sd>    thread-safe operations.</span>
+</span><span id=__span-0-452>
+</span><span id=__span-0-453><span class=sd>    Returns</span>
+</span><span id=__span-0-454><span class=sd>    -------</span>
+</span><span id=__span-0-455><span class=sd>    App</span>
+</span><span id=__span-0-456><span class=sd>        The active App instance wrapping the GUI backend.</span>
+</span><span id=__span-0-457>
+</span><span id=__span-0-458><span class=sd>    Examples</span>
+</span><span id=__span-0-459><span class=sd>    --------</span>
+</span><span id=__span-0-460><span class=sd>    Get the app and run the event loop:</span>
+</span><span id=__span-0-461><span class=sd>        &gt;&gt;&gt; app().run()</span>
+</span><span id=__span-0-462>
+</span><span id=__span-0-463><span class=sd>    See Also</span>
+</span><span id=__span-0-464><span class=sd>    --------</span>
+</span><span id=__span-0-465><span class=sd>    determine_app : Function that selects which GUI backend to use</span>
+</span><span id=__span-0-466><span class=sd>    GuiFrontend : Enumeration of available backends</span>
+</span><span id=__span-0-467><span class=sd>    App : Base class defining the application interface</span>
+</span><span id=__span-0-468><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-469>    <span class=k>global</span> <span class=n>_APP</span>
+</span><span id=__span-0-470>    <span class=k>if</span> <span class=n>_APP</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+</span><span id=__span-0-471>        <span class=k>return</span> <span class=n>_APP</span>
+</span><span id=__span-0-472>
+</span><span id=__span-0-473>    <span class=c1># ensure the app is created for explicitly requested frontends</span>
+</span><span id=__span-0-474>    <span class=n>_APP</span> <span class=o>=</span> <span class=n>_load_app</span><span class=p>(</span><span class=o>*</span><span class=n>GUI_PROVIDERS</span><span class=p>[</span><span class=n>determine_app</span><span class=p>()])</span>
+</span><span id=__span-0-475>    <span class=n>_APP</span><span class=o>.</span><span class=n>create_app</span><span class=p>()</span>
+</span><span id=__span-0-476>    <span class=k>return</span> <span class=n>_APP</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h2 id=scenex.app.determine_app class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code> <span class="doc doc-object-name doc-function-name">determine_app</span> <a href=#scenex.app.determine_app class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>determine_app</span><span class=p>()</span> <span class=o>-&gt;</span> <span class=n><a class="autorefs autorefs-internal" title="            GuiFrontend (scenex.app._auto.GuiFrontend)" href=#scenex.app.GuiFrontend>GuiFrontend</a></span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Determine which GUI backend to use for the application.</p> <p>This function selects the appropriate GUI framework backend through a three-tier strategy:</p> <ol> <li><strong>Explicit request</strong>: If the SCENEX_APP_BACKEND environment variable is set, that backend is used (e.g., "qt", "wx", "jupyter").</li> <li><strong>Running application</strong>: If a GUI application is already running in the process (detected via framework imports), that backend is used.</li> <li><strong>Available backend</strong>: Try importing each backend in a predefined order until one succeeds.</li> </ol> <p><span class=doc-section-title>Returns:</span></p> <ul> <li class="doc-section-item field-body"> <code><a class="autorefs autorefs-internal" title="            GuiFrontend (scenex.app._auto.GuiFrontend)" href=#scenex.app.GuiFrontend>GuiFrontend</a></code> – <div class=doc-md-description> <p>The determined GUI backend to use.</p> </div> </li> </ul> <p><span class=doc-section-title>Raises:</span></p> <ul> <li class="doc-section-item field-body"> <code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/exceptions.html#ValueError>ValueError</a></code> – <div class=doc-md-description> <p>If the SCENEX_APP_BACKEND environment variable is set to an invalid value.</p> </div> </li> <li class="doc-section-item field-body"> <code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/exceptions.html#RuntimeError>RuntimeError</a></code> – <div class=doc-md-description> <p>If no GUI backend can be found or loaded.</p> </div> </li> </ul> <p><span class=doc-section-title>Examples:</span></p> <p>Let the function auto-detect the backend: &gt;&gt;&gt; backend = determine_app()</p> <p>Force a specific backend via environment variable: &gt;&gt;&gt; import os &gt;&gt;&gt; os.environ["SCENEX_APP_BACKEND"] = "qt" # doctest: +SKIP &gt;&gt;&gt; backend = determine_app() # Will use Qt</p> <details class=see-also open> <summary>See Also</summary> <p>app : Get the active App instance using the determined backend GuiFrontend : Enumeration of available backends</p> </details> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/_auto.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>369</span>
+<span class=normal>370</span>
+<span class=normal>371</span>
+<span class=normal>372</span>
+<span class=normal>373</span>
+<span class=normal>374</span>
+<span class=normal>375</span>
+<span class=normal>376</span>
+<span class=normal>377</span>
+<span class=normal>378</span>
+<span class=normal>379</span>
+<span class=normal>380</span>
+<span class=normal>381</span>
+<span class=normal>382</span>
+<span class=normal>383</span>
+<span class=normal>384</span>
+<span class=normal>385</span>
+<span class=normal>386</span>
+<span class=normal>387</span>
+<span class=normal>388</span>
+<span class=normal>389</span>
+<span class=normal>390</span>
+<span class=normal>391</span>
+<span class=normal>392</span>
+<span class=normal>393</span>
+<span class=normal>394</span>
+<span class=normal>395</span>
+<span class=normal>396</span>
+<span class=normal>397</span>
+<span class=normal>398</span>
+<span class=normal>399</span>
+<span class=normal>400</span>
+<span class=normal>401</span>
+<span class=normal>402</span>
+<span class=normal>403</span>
+<span class=normal>404</span>
+<span class=normal>405</span>
+<span class=normal>406</span>
+<span class=normal>407</span>
+<span class=normal>408</span>
+<span class=normal>409</span>
+<span class=normal>410</span>
+<span class=normal>411</span>
+<span class=normal>412</span>
+<span class=normal>413</span>
+<span class=normal>414</span>
+<span class=normal>415</span>
+<span class=normal>416</span>
+<span class=normal>417</span>
+<span class=normal>418</span>
+<span class=normal>419</span>
+<span class=normal>420</span>
+<span class=normal>421</span>
+<span class=normal>422</span>
+<span class=normal>423</span>
+<span class=normal>424</span>
+<span class=normal>425</span>
+<span class=normal>426</span>
+<span class=normal>427</span>
+<span class=normal>428</span>
+<span class=normal>429</span>
+<span class=normal>430</span>
+<span class=normal>431</span>
+<span class=normal>432</span>
+<span class=normal>433</span>
+<span class=normal>434</span>
+<span class=normal>435</span>
+<span class=normal>436</span>
+<span class=normal>437</span>
+<span class=normal>438</span>
+<span class=normal>439</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-369><span class=k>def</span><span class=w> </span><span class=nf>determine_app</span><span class=p>()</span> <span class=o>-&gt;</span> <span class=n>GuiFrontend</span><span class=p>:</span>
+</span><span id=__span-0-370><span class=w>    </span><span class=sd>&quot;&quot;&quot;Determine which GUI backend to use for the application.</span>
+</span><span id=__span-0-371>
+</span><span id=__span-0-372><span class=sd>    This function selects the appropriate GUI framework backend through a</span>
+</span><span id=__span-0-373><span class=sd>    three-tier strategy:</span>
+</span><span id=__span-0-374>
+</span><span id=__span-0-375><span class=sd>    1. **Explicit request**: If the SCENEX_APP_BACKEND environment variable</span>
+</span><span id=__span-0-376><span class=sd>       is set, that backend is used (e.g., &quot;qt&quot;, &quot;wx&quot;, &quot;jupyter&quot;).</span>
+</span><span id=__span-0-377><span class=sd>    2. **Running application**: If a GUI application is already running in the</span>
+</span><span id=__span-0-378><span class=sd>       process (detected via framework imports), that backend is used.</span>
+</span><span id=__span-0-379><span class=sd>    3. **Available backend**: Try importing each backend in a predefined order until one</span>
+</span><span id=__span-0-380><span class=sd>       succeeds.</span>
+</span><span id=__span-0-381>
+</span><span id=__span-0-382><span class=sd>    Returns</span>
+</span><span id=__span-0-383><span class=sd>    -------</span>
+</span><span id=__span-0-384><span class=sd>    GuiFrontend</span>
+</span><span id=__span-0-385><span class=sd>        The determined GUI backend to use.</span>
+</span><span id=__span-0-386>
+</span><span id=__span-0-387><span class=sd>    Raises</span>
+</span><span id=__span-0-388><span class=sd>    ------</span>
+</span><span id=__span-0-389><span class=sd>    ValueError</span>
+</span><span id=__span-0-390><span class=sd>        If the SCENEX_APP_BACKEND environment variable is set to an invalid</span>
+</span><span id=__span-0-391><span class=sd>        value.</span>
+</span><span id=__span-0-392><span class=sd>    RuntimeError</span>
+</span><span id=__span-0-393><span class=sd>        If no GUI backend can be found or loaded.</span>
+</span><span id=__span-0-394>
+</span><span id=__span-0-395><span class=sd>    Examples</span>
+</span><span id=__span-0-396><span class=sd>    --------</span>
+</span><span id=__span-0-397><span class=sd>    Let the function auto-detect the backend:</span>
+</span><span id=__span-0-398><span class=sd>        &gt;&gt;&gt; backend = determine_app()</span>
+</span><span id=__span-0-399>
+</span><span id=__span-0-400><span class=sd>    Force a specific backend via environment variable:</span>
+</span><span id=__span-0-401><span class=sd>        &gt;&gt;&gt; import os</span>
+</span><span id=__span-0-402><span class=sd>        &gt;&gt;&gt; os.environ[&quot;SCENEX_APP_BACKEND&quot;] = &quot;qt&quot;  # doctest: +SKIP</span>
+</span><span id=__span-0-403><span class=sd>        &gt;&gt;&gt; backend = determine_app()  # Will use Qt</span>
+</span><span id=__span-0-404>
+</span><span id=__span-0-405><span class=sd>    See Also</span>
+</span><span id=__span-0-406><span class=sd>    --------</span>
+</span><span id=__span-0-407><span class=sd>    app : Get the active App instance using the determined backend</span>
+</span><span id=__span-0-408><span class=sd>    GuiFrontend : Enumeration of available backends</span>
+</span><span id=__span-0-409><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-410>    <span class=n>running</span> <span class=o>=</span> <span class=nb>list</span><span class=p>(</span><span class=n>_running_apps</span><span class=p>())</span>
+</span><span id=__span-0-411>
+</span><span id=__span-0-412>    <span class=c1># Try 1: Load a frontend explicitly requested by the user</span>
+</span><span id=__span-0-413>    <span class=n>requested</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>getenv</span><span class=p>(</span><span class=n>GUI_ENV_VAR</span><span class=p>,</span> <span class=s2>&quot;&quot;</span><span class=p>)</span><span class=o>.</span><span class=n>lower</span><span class=p>()</span>
+</span><span id=__span-0-414>    <span class=n>valid</span> <span class=o>=</span> <span class=p>{</span><span class=n>x</span><span class=o>.</span><span class=n>value</span> <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=n>GuiFrontend</span><span class=p>}</span>
+</span><span id=__span-0-415>    <span class=k>if</span> <span class=n>requested</span><span class=p>:</span>
+</span><span id=__span-0-416>        <span class=k>if</span> <span class=n>requested</span> <span class=ow>not</span> <span class=ow>in</span> <span class=n>valid</span><span class=p>:</span>
+</span><span id=__span-0-417>            <span class=k>raise</span> <span class=ne>ValueError</span><span class=p>(</span>
+</span><span id=__span-0-418>                <span class=sa>f</span><span class=s2>&quot;Invalid GUI frontend: </span><span class=si>{</span><span class=n>requested</span><span class=si>!r}</span><span class=s2>. Valid options: </span><span class=si>{</span><span class=n>valid</span><span class=si>}</span><span class=s2>&quot;</span>
+</span><span id=__span-0-419>            <span class=p>)</span>
+</span><span id=__span-0-420>        <span class=k>return</span> <span class=n>GuiFrontend</span><span class=p>(</span><span class=n>requested</span><span class=p>)</span>
+</span><span id=__span-0-421>
+</span><span id=__span-0-422>    <span class=c1># Try 2: Utilize an existing, running app</span>
+</span><span id=__span-0-423>    <span class=k>for</span> <span class=n>key</span> <span class=ow>in</span> <span class=n>GUI_PROVIDERS</span><span class=o>.</span><span class=n>keys</span><span class=p>():</span>
+</span><span id=__span-0-424>        <span class=k>if</span> <span class=n>key</span> <span class=ow>in</span> <span class=n>running</span><span class=p>:</span>
+</span><span id=__span-0-425>            <span class=k>return</span> <span class=n>key</span>
+</span><span id=__span-0-426>
+</span><span id=__span-0-427>    <span class=c1># Try 3: Load an existing app</span>
+</span><span id=__span-0-428>    <span class=n>errors</span><span class=p>:</span> <span class=nb>list</span><span class=p>[</span><span class=nb>tuple</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=ne>BaseException</span><span class=p>]]</span> <span class=o>=</span> <span class=p>[]</span>
+</span><span id=__span-0-429>    <span class=k>for</span> <span class=n>key</span><span class=p>,</span> <span class=n>provider</span> <span class=ow>in</span> <span class=n>GUI_PROVIDERS</span><span class=o>.</span><span class=n>items</span><span class=p>():</span>
+</span><span id=__span-0-430>        <span class=k>try</span><span class=p>:</span>
+</span><span id=__span-0-431>            <span class=n>_load_app</span><span class=p>(</span><span class=o>*</span><span class=n>provider</span><span class=p>)</span>
+</span><span id=__span-0-432>            <span class=k>return</span> <span class=n>key</span>
+</span><span id=__span-0-433>        <span class=k>except</span> <span class=ne>Exception</span> <span class=k>as</span> <span class=n>e</span><span class=p>:</span>
+</span><span id=__span-0-434>            <span class=n>errors</span><span class=o>.</span><span class=n>append</span><span class=p>((</span><span class=n>key</span><span class=p>,</span> <span class=n>e</span><span class=p>))</span>
+</span><span id=__span-0-435>
+</span><span id=__span-0-436>    <span class=k>raise</span> <span class=ne>RuntimeError</span><span class=p>(</span>  <span class=c1># pragma: no cover</span>
+</span><span id=__span-0-437>        <span class=sa>f</span><span class=s2>&quot;Could not find an appropriate GUI frontend: </span><span class=si>{</span><span class=n>valid</span><span class=si>!r}</span><span class=s2>. Tried:</span><span class=se>\n\n</span><span class=s2>&quot;</span>
+</span><span id=__span-0-438>        <span class=o>+</span> <span class=s2>&quot;</span><span class=se>\n</span><span class=s2>&quot;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=sa>f</span><span class=s2>&quot;- </span><span class=si>{</span><span class=n>key</span><span class=si>}</span><span class=s2>: </span><span class=si>{</span><span class=n>err</span><span class=si>}</span><span class=s2>&quot;</span> <span class=k>for</span> <span class=n>key</span><span class=p>,</span> <span class=n>err</span> <span class=ow>in</span> <span class=n>errors</span><span class=p>)</span>
+</span><span id=__span-0-439>    <span class=p>)</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h2 id=scenex.app.ensure_main_thread class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code> <span class="doc doc-object-name doc-function-name">ensure_main_thread</span> <a href=#scenex.app.ensure_main_thread class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>ensure_main_thread</span><span class=p>(</span>
+</span><span id=__span-0-2>    <span class=n><a class="autorefs autorefs-internal" title="func (scenex.app.ensure_main_thread(func))" href=#scenex.app.ensure_main_thread(func)>func</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" title=collections.abc.Callable href=https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable>Callable</a></span><span class=p>[</span><span class=n><span title=scenex.app._auto.P>P</span></span><span class=p>,</span> <span class=n><span title=scenex.app._auto.T>T</span></span><span class=p>],</span>
+</span><span id=__span-0-3><span class=p>)</span> <span class=o>-&gt;</span> <span class=n><a class="autorefs autorefs-external" title=collections.abc.Callable href=https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable>Callable</a></span><span class=p>[</span><span class=n><span title=scenex.app._auto.P>P</span></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-external" title=concurrent.futures.Future href=https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future>Future</a></span><span class=p>[</span><span class=n><span title=scenex.app._auto.T>T</span></span><span class=p>]]</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Decorator that ensures a function is called in the main GUI thread.</p> <p>This decorator wraps a function so that when called, it is automatically scheduled to run on the main GUI thread rather than the caller's thread. This is essential for GUI operations that must occur on the main thread.</p> <p><span class=doc-section-title>Parameters:</span></p> <ul> <li class="doc-section-item field-body"> <h3 id=scenex.app.ensure_main_thread(func) class="doc doc-heading doc-heading-parameter"> <b><code>func</code></b> <a href=#scenex.app.ensure_main_thread(func) class=headerlink title="Permanent link">#</a></h3> (<code><a class="autorefs autorefs-external" title=collections.abc.Callable href=https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable>Callable</a>[<span title=scenex.app._auto.P>P</span>, <span title=scenex.app._auto.T>T</span>]</code>) – <div class=doc-md-description> <p>The function to wrap. Can have any signature.</p> </div> </li> </ul> <p><span class=doc-section-title>Returns:</span></p> <ul> <li class="doc-section-item field-body"> <code><a class="autorefs autorefs-external" title=collections.abc.Callable href=https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable>Callable</a>[<span title=scenex.app._auto.P>P</span>, <a class="autorefs autorefs-external" title=concurrent.futures.Future href=https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future>Future</a>[<span title=scenex.app._auto.T>T</span>]]</code> – <div class=doc-md-description> <p>A wrapped version of func that returns a Future instead of the direct result. The Future will contain the function's return value once the call completes on the main thread.</p> </div> </li> </ul> <p><span class=doc-section-title>Examples:</span></p> <p>Ensure a GUI operation runs on the main thread: &gt;&gt;&gt; @ensure_main_thread ... def update_widget(value: int) -&gt; None: ... # Update some GUI widget with the given value ... pass &gt;&gt;&gt; future = update_widget(42) # Returns immediately with Future &gt;&gt;&gt; result = future.result() # Block until completion if needed</p> <details class=see-also open> <summary>See Also</summary> <p>App.call_in_main_thread : Underlying method for thread-safe calls</p> </details> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/_auto.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>328</span>
+<span class=normal>329</span>
+<span class=normal>330</span>
+<span class=normal>331</span>
+<span class=normal>332</span>
+<span class=normal>333</span>
+<span class=normal>334</span>
+<span class=normal>335</span>
+<span class=normal>336</span>
+<span class=normal>337</span>
+<span class=normal>338</span>
+<span class=normal>339</span>
+<span class=normal>340</span>
+<span class=normal>341</span>
+<span class=normal>342</span>
+<span class=normal>343</span>
+<span class=normal>344</span>
+<span class=normal>345</span>
+<span class=normal>346</span>
+<span class=normal>347</span>
+<span class=normal>348</span>
+<span class=normal>349</span>
+<span class=normal>350</span>
+<span class=normal>351</span>
+<span class=normal>352</span>
+<span class=normal>353</span>
+<span class=normal>354</span>
+<span class=normal>355</span>
+<span class=normal>356</span>
+<span class=normal>357</span>
+<span class=normal>358</span>
+<span class=normal>359</span>
+<span class=normal>360</span>
+<span class=normal>361</span>
+<span class=normal>362</span>
+<span class=normal>363</span>
+<span class=normal>364</span>
+<span class=normal>365</span>
+<span class=normal>366</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-328><span class=k>def</span><span class=w> </span><span class=nf>ensure_main_thread</span><span class=p>(</span><span class=n>func</span><span class=p>:</span> <span class=n>Callable</span><span class=p>[</span><span class=n>P</span><span class=p>,</span> <span class=n>T</span><span class=p>])</span> <span class=o>-&gt;</span> <span class=n>Callable</span><span class=p>[</span><span class=n>P</span><span class=p>,</span> <span class=n>Future</span><span class=p>[</span><span class=n>T</span><span class=p>]]:</span>
+</span><span id=__span-0-329><span class=w>    </span><span class=sd>&quot;&quot;&quot;Decorator that ensures a function is called in the main GUI thread.</span>
+</span><span id=__span-0-330>
+</span><span id=__span-0-331><span class=sd>    This decorator wraps a function so that when called, it is automatically</span>
+</span><span id=__span-0-332><span class=sd>    scheduled to run on the main GUI thread rather than the caller&#39;s thread.</span>
+</span><span id=__span-0-333><span class=sd>    This is essential for GUI operations that must occur on the main thread.</span>
+</span><span id=__span-0-334>
+</span><span id=__span-0-335><span class=sd>    Parameters</span>
+</span><span id=__span-0-336><span class=sd>    ----------</span>
+</span><span id=__span-0-337><span class=sd>    func : Callable[P, T]</span>
+</span><span id=__span-0-338><span class=sd>        The function to wrap. Can have any signature.</span>
+</span><span id=__span-0-339>
+</span><span id=__span-0-340><span class=sd>    Returns</span>
+</span><span id=__span-0-341><span class=sd>    -------</span>
+</span><span id=__span-0-342><span class=sd>    Callable[P, Future[T]]</span>
+</span><span id=__span-0-343><span class=sd>        A wrapped version of func that returns a Future instead of the direct</span>
+</span><span id=__span-0-344><span class=sd>        result. The Future will contain the function&#39;s return value once the</span>
+</span><span id=__span-0-345><span class=sd>        call completes on the main thread.</span>
+</span><span id=__span-0-346>
+</span><span id=__span-0-347><span class=sd>    Examples</span>
+</span><span id=__span-0-348><span class=sd>    --------</span>
+</span><span id=__span-0-349><span class=sd>    Ensure a GUI operation runs on the main thread:</span>
+</span><span id=__span-0-350><span class=sd>        &gt;&gt;&gt; @ensure_main_thread</span>
+</span><span id=__span-0-351><span class=sd>        ... def update_widget(value: int) -&gt; None:</span>
+</span><span id=__span-0-352><span class=sd>        ...     # Update some GUI widget with the given value</span>
+</span><span id=__span-0-353><span class=sd>        ...     pass</span>
+</span><span id=__span-0-354><span class=sd>        &gt;&gt;&gt; future = update_widget(42)  # Returns immediately with Future</span>
+</span><span id=__span-0-355><span class=sd>        &gt;&gt;&gt; result = future.result()  # Block until completion if needed</span>
+</span><span id=__span-0-356>
+</span><span id=__span-0-357><span class=sd>    See Also</span>
+</span><span id=__span-0-358><span class=sd>    --------</span>
+</span><span id=__span-0-359><span class=sd>    App.call_in_main_thread : Underlying method for thread-safe calls</span>
+</span><span id=__span-0-360><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-361>
+</span><span id=__span-0-362>    <span class=nd>@wraps</span><span class=p>(</span><span class=n>func</span><span class=p>)</span>
+</span><span id=__span-0-363>    <span class=k>def</span><span class=w> </span><span class=nf>_wrapper</span><span class=p>(</span><span class=o>*</span><span class=n>args</span><span class=p>:</span> <span class=n>P</span><span class=o>.</span><span class=n>args</span><span class=p>,</span> <span class=o>**</span><span class=n>kwargs</span><span class=p>:</span> <span class=n>P</span><span class=o>.</span><span class=n>kwargs</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=n>Future</span><span class=p>[</span><span class=n>T</span><span class=p>]:</span>
+</span><span id=__span-0-364>        <span class=k>return</span> <span class=n>app</span><span class=p>()</span><span class=o>.</span><span class=n>call_in_main_thread</span><span class=p>(</span><span class=n>func</span><span class=p>,</span> <span class=o>*</span><span class=n>args</span><span class=p>,</span> <span class=o>**</span><span class=n>kwargs</span><span class=p>)</span>
+</span><span id=__span-0-365>
+</span><span id=__span-0-366>    <span class=k>return</span> <span class=n>_wrapper</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> </div> </div> </div> </article> </div> <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script> </div> </main> <footer class=md-footer> <nav class="md-footer__inner md-grid" aria-label=Footer> <a href=../adaptors/ class="md-footer__link md-footer__link--prev" aria-label='Previous: <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>adaptors'> <div class="md-footer__button md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg> </div> <div class=md-footer__title> <span class=md-footer__direction> Previous </span> <div class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>adaptors </div> </div> </a> <a href=events/ class="md-footer__link md-footer__link--next" aria-label='Next: <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>events'> <div class=md-footer__title> <span class=md-footer__direction> Next </span> <div class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>events </div> </div> <div class="md-footer__button md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg> </div> </a> </nav> <div class="md-footer-meta md-typeset"> <div class="md-footer-meta__inner md-grid"> <div class=md-copyright> Made with <a href=https://squidfunk.github.io/mkdocs-material/ target=_blank rel=noopener> Material for MkDocs </a> </div> <div class=md-social> <a href=https://github.com/pyapp-kit/ target=_blank rel=noopener title=github.com class=md-social__link> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 512 512"><!-- Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg> </a> <a href=https://pypi.org/project/scenex/ target=_blank rel=noopener title=pypi.org class=md-social__link> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 448 512"><!-- Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg> </a> </div> </div> </div> </footer> </div> <div class=md-dialog data-md-component=dialog> <div class="md-dialog__inner md-typeset"></div> </div> <script id=__config type=application/json>{"annotate": null, "base": "../../..", "features": ["search.highlight", "search.suggest", "content.code.copy", "content.code.annotate", "navigation.indexes", "navigation.footer", "navigation.sections", "toc.follow"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script> <script src=../../../assets/javascripts/bundle.79ae519e.min.js></script> </body> </html>

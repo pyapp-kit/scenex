@@ -1,0 +1,632 @@
+<!doctype html><html lang=en class=no-js> <head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Declarative scene graph model and backend abstraction."><link href=https://pyapp-kit.github.io/scenex/dev/reference/scenex/app/events/ rel=canonical><link href=../ rel=prev><link href=../../conftest/ rel=next><link rel=icon href=../../../../assets/images/favicon.png><meta name=generator content="mkdocs-1.6.1, mkdocs-material-9.7.2"><title>events - scenex</title><link rel=stylesheet href=../../../../assets/stylesheets/main.484c7ddc.min.css><link rel=stylesheet href=../../../../assets/stylesheets/palette.ab4e12ef.min.css><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback"><style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style><link rel=stylesheet href=../../../../assets/_mkdocstrings.css><link rel=stylesheet href=../../../../css/extra.css><script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script></head> <body dir=ltr data-md-color-scheme=default data-md-color-primary=indigo data-md-color-accent=indigo> <input class=md-toggle data-md-toggle=drawer type=checkbox id=__drawer autocomplete=off> <input class=md-toggle data-md-toggle=search type=checkbox id=__search autocomplete=off> <label class=md-overlay for=__drawer></label> <div data-md-component=skip> <a href=#scenex.app.events class=md-skip> Skip to content </a> </div> <div data-md-component=announce> <aside class=md-banner> <div class="md-banner__inner md-grid md-typeset"> <!-- See the dashes here --> <!-- Need to reapply margin from base CSS, which is overridden in extra CSS (to fix empty banner) --> <div style="margin: 0.6rem auto"> You are currently viewing documentation for a <strong>dev</strong> build. This may reference unreleased features. For latest release, see <strong><a href=../../../../..>stable release docs</a></strong>. </div> </div> </aside> </div> <div data-md-color-scheme=default data-md-component=outdated hidden> </div> <header class="md-header md-header--shadow" data-md-component=header> <nav class="md-header__inner md-grid" aria-label=Header> <a href=../../../.. title=scenex class="md-header__button md-logo" aria-label=scenex data-md-component=logo> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M19.5 17c-.13 0-.26 0-.39.04l-1.61-3.25a2.5 2.5 0 0 0-1.75-4.29c-.13 0-.25 0-.39.04l-1.63-3.25c.48-.45.77-1.08.77-1.79a2.5 2.5 0 0 0-5 0c0 .71.29 1.34.76 1.79L8.64 9.54c-.14-.04-.26-.04-.39-.04a2.5 2.5 0 0 0-1.75 4.29l-1.61 3.25C4.76 17 4.63 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.79c.46-.45.75-1.08.75-1.79s-.29-1.34-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21c-.45.45-.75 1.09-.75 1.79a2.5 2.5 0 0 0 2.5 2.5c.13 0 .25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5"/></svg> </a> <label class="md-header__button md-icon" for=__drawer> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg> </label> <div class=md-header__title data-md-component=header-title> <div class=md-header__ellipsis> <div class=md-header__topic> <span class=md-ellipsis> scenex </span> </div> <div class=md-header__topic data-md-component=header-topic> <span class=md-ellipsis> events </span> </div> </div> </div> <form class=md-header__option data-md-component=palette> <input class=md-option data-md-color-media=(prefers-color-scheme) data-md-color-scheme=default data-md-color-primary=indigo data-md-color-accent=indigo aria-label="Switch to light mode" type=radio name=__palette id=__palette_0> <label class="md-header__button md-icon" title="Switch to light mode" for=__palette_1 hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg> </label> <input class=md-option data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme=default data-md-color-primary=black data-md-color-accent=indigo aria-label="Switch to dark mode" type=radio name=__palette id=__palette_1> <label class="md-header__button md-icon" title="Switch to dark mode" for=__palette_2 hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg> </label> <input class=md-option data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme=slate data-md-color-primary=black data-md-color-accent=indigo aria-label="Switch to system preference" type=radio name=__palette id=__palette_2> <label class="md-header__button md-icon" title="Switch to system preference" for=__palette_0 hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg> </label> </form> <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script> <label class="md-header__button md-icon" for=__search> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg> </label> <div class=md-search data-md-component=search role=dialog> <label class=md-search__overlay for=__search></label> <div class=md-search__inner role=search> <form class=md-search__form name=search> <input type=text class=md-search__input name=query aria-label=Search placeholder=Search autocapitalize=off autocorrect=off autocomplete=off spellcheck=false data-md-component=search-query required> <label class="md-search__icon md-icon" for=__search> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg> </label> <nav class=md-search__options aria-label=Search> <button type=reset class="md-search__icon md-icon" title=Clear aria-label=Clear tabindex=-1> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg> </button> </nav> <div class=md-search__suggest data-md-component=search-suggest></div> </form> <div class=md-search__output> <div class=md-search__scrollwrap tabindex=0 data-md-scrollfix> <div class=md-search-result data-md-component=search-result> <div class=md-search-result__meta> Initializing search </div> <ol class=md-search-result__list role=presentation></ol> </div> </div> </div> </div> </div> <div class=md-header__source> <a href=https://github.com/pyapp-kit/scenex title="Go to repository" class=md-source data-md-component=source> <div class="md-source__icon md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 512 512"><!-- Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg> </div> <div class=md-source__repository> pyapp-kit/scenex </div> </a> </div> </nav> </header> <div class=md-container data-md-component=container> <main class=md-main data-md-component=main> <div class="md-main__inner md-grid"> <div class="md-sidebar md-sidebar--primary" data-md-component=sidebar data-md-type=navigation> <div class=md-sidebar__scrollwrap> <div class=md-sidebar__inner> <nav class="md-nav md-nav--primary" aria-label=Navigation data-md-level=0> <label class=md-nav__title for=__drawer> <a href=../../../.. title=scenex class="md-nav__button md-logo" aria-label=scenex data-md-component=logo> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M19.5 17c-.13 0-.26 0-.39.04l-1.61-3.25a2.5 2.5 0 0 0-1.75-4.29c-.13 0-.25 0-.39.04l-1.63-3.25c.48-.45.77-1.08.77-1.79a2.5 2.5 0 0 0-5 0c0 .71.29 1.34.76 1.79L8.64 9.54c-.14-.04-.26-.04-.39-.04a2.5 2.5 0 0 0-1.75 4.29l-1.61 3.25C4.76 17 4.63 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.79c.46-.45.75-1.08.75-1.79s-.29-1.34-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21c-.45.45-.75 1.09-.75 1.79a2.5 2.5 0 0 0 2.5 2.5c.13 0 .25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5"/></svg> </a> scenex </label> <div class=md-nav__source> <a href=https://github.com/pyapp-kit/scenex title="Go to repository" class=md-source data-md-component=source> <div class="md-source__icon md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 512 512"><!-- Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg> </div> <div class=md-source__repository> pyapp-kit/scenex </div> </a> </div> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../../.. class=md-nav__link> <span class=md-ellipsis> Home </span> </a> </li> <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_2 checked> <label class=md-nav__link for=__nav_2 id=__nav_2_label tabindex> <span class=md-ellipsis> API Reference </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_2_label aria-expanded=true> <label class=md-nav__title for=__nav_2> <span class="md-nav__icon md-icon"></span> API Reference </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--active md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_2_1 checked> <div class="md-nav__link md-nav__container"> <a href=../../ class="md-nav__link "> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>scenex </span> </a> <label class="md-nav__link " for=__nav_2_1 id=__nav_2_1_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_2_1_label aria-expanded=true> <label class=md-nav__title for=__nav_2_1> <span class="md-nav__icon md-icon"></span> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>scenex </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../adaptors/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>adaptors </span> </a> </li> <li class="md-nav__item md-nav__item--active md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_2_1_3 checked> <div class="md-nav__link md-nav__container"> <a href=../ class="md-nav__link "> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>app </span> </a> <label class="md-nav__link " for=__nav_2_1_3 id=__nav_2_1_3_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=3 aria-labelledby=__nav_2_1_3_label aria-expanded=true> <label class=md-nav__title for=__nav_2_1_3> <span class="md-nav__icon md-icon"></span> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>app </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--active"> <input class="md-nav__toggle md-toggle" type=checkbox id=__toc> <label class="md-nav__link md-nav__link--active" for=__toc> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>events </span> <span class="md-nav__icon md-icon"></span> </label> <a href=./ class="md-nav__link md-nav__link--active"> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>events </span> </a> <nav class="md-nav md-nav--secondary" aria-label="Table of contents"> <label class=md-nav__title for=__toc> <span class="md-nav__icon md-icon"></span> Table of contents </label> <ul class=md-nav__list data-md-component=toc data-md-scrollfix> <li class=md-nav__item> <a href=#scenex.app.events.Event class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;Event </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.EventFilter class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;EventFilter </span> </a> <nav class=md-nav aria-label= EventFilter> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.events.EventFilter.uninstall class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;uninstall </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseButton class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseButton </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseDoublePressEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseDoublePressEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseEnterEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseEnterEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseLeaveEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseLeaveEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseMoveEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseMoveEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MousePressEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MousePressEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseReleaseEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseReleaseEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.Ray class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;Ray </span> </a> <nav class=md-nav aria-label= Ray> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.events.Ray.intersections class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;intersections </span> </a> <nav class=md-nav aria-label= intersections> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.events.Ray.intersections(graph) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;graph </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#scenex.app.events.Ray.point_at_distance class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;point_at_distance </span> </a> <nav class=md-nav aria-label= point_at_distance> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.events.Ray.point_at_distance(distance) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;distance </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#scenex.app.events.ResizeEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ResizeEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.WheelEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;WheelEvent </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=../../conftest/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>conftest </span> </a> </li> <li class=md-nav__item> <a href=../../imgui/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>imgui </span> </a> </li> <li class=md-nav__item> <a href=../../model/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>model </span> </a> </li> <li class=md-nav__item> <a href=../../util/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>util </span> </a> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_2_1_8> <div class="md-nav__link md-nav__container"> <a href=../../utils/ class="md-nav__link "> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>utils </span> </a> <label class="md-nav__link " for=__nav_2_1_8 id=__nav_2_1_8_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=3 aria-labelledby=__nav_2_1_8_label aria-expanded=false> <label class=md-nav__title for=__nav_2_1_8> <span class="md-nav__icon md-icon"></span> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>utils </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../utils/projections/ class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>projections </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> </ul> </nav> </li> </ul> </nav> </div> </div> </div> <div class="md-sidebar md-sidebar--secondary" data-md-component=sidebar data-md-type=toc> <div class=md-sidebar__scrollwrap> <div class=md-sidebar__inner> <nav class="md-nav md-nav--secondary" aria-label="Table of contents"> <label class=md-nav__title for=__toc> <span class="md-nav__icon md-icon"></span> Table of contents </label> <ul class=md-nav__list data-md-component=toc data-md-scrollfix> <li class=md-nav__item> <a href=#scenex.app.events.Event class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;Event </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.EventFilter class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;EventFilter </span> </a> <nav class=md-nav aria-label= EventFilter> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.events.EventFilter.uninstall class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;uninstall </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseButton class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseButton </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseDoublePressEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseDoublePressEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseEnterEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseEnterEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseLeaveEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseLeaveEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseMoveEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseMoveEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MousePressEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MousePressEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.MouseReleaseEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MouseReleaseEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.Ray class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;Ray </span> </a> <nav class=md-nav aria-label= Ray> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.events.Ray.intersections class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;intersections </span> </a> <nav class=md-nav aria-label= intersections> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.events.Ray.intersections(graph) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;graph </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#scenex.app.events.Ray.point_at_distance class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;point_at_distance </span> </a> <nav class=md-nav aria-label= point_at_distance> <ul class=md-nav__list> <li class=md-nav__item> <a href=#scenex.app.events.Ray.point_at_distance(distance) class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;distance </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#scenex.app.events.ResizeEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ResizeEvent </span> </a> </li> <li class=md-nav__item> <a href=#scenex.app.events.WheelEvent class=md-nav__link> <span class=md-ellipsis> <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;WheelEvent </span> </a> </li> </ul> </nav> </div> </div> </div> <div class=md-content data-md-component=content> <article class="md-content__inner md-typeset"> <div class="doc doc-object doc-module"> <h1 id=scenex.app.events class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-module"></code> <span class="doc doc-object-name doc-module-name">scenex.app.events</span> <a href=#scenex.app.events class=headerlink title="Permanent link">#</a></h1> <div class="doc doc-contents first"> <p>Event system for handling user input and interaction.</p> <p>This module provides a unified event abstraction for user interactions across different GUI frameworks and rendering backends. Events represent user actions (e.g. mouse clicks, movement, scrolling) and system events (e.g. window resize), allowing event filters, camera controllers, etc. to respond to input in a framework-agnostic way.</p> <details class=event-types open> <summary>Event Types</summary> <p><strong>Mouse Events</strong>: - MousePressEvent: Mouse button pressed - MouseReleaseEvent: Mouse button released - MouseMoveEvent: Mouse cursor moved - MouseDoublePressEvent: Mouse button double-pressed - MouseEnterEvent: Mouse entered a view - MouseLeaveEvent: Mouse left a view - WheelEvent: Mouse wheel scrolled</p> <p><strong>System Events</strong>: - ResizeEvent: Canvas window resized</p> </details> <details class=event-flow open> <summary>Event Flow</summary> <p>Events are dispatched by the canvas to views and their camera controllers::</p> <div class="language-text highlight"><pre><span></span><code>Canvas → View (filter_event) → Camera Controller (handle_event)
+</code></pre></div> <p>The flow works as follows: 1. Canvas determines which view contains the cursor position 2. Canvas calls the view's filter_event() method with the event 3. If the view's camera is interactive, the camera controller's handle_event() is called 4. Handlers return True to stop propagation or False to continue</p> </details> <details class=key-concepts open> <summary>Key Concepts</summary> <p><strong>Ray</strong>: 3D ray in world space representing the mouse position - Used for 3D picking and intersection tests - Computed from 2D canvas position via camera unprojection</p> <p><strong>MouseButton</strong>: Enumeration of mouse buttons (LEFT, RIGHT, MIDDLE, etc.)</p> </details> <p><span class=doc-section-title>Examples:</span></p> <p>Set a custom event filter on a view::</p> <div class="language-text highlight"><pre><span></span><code>from scenex.model import View
+from scenex.app.events import MousePressEvent
+
+
+def on_click(event):
+    if isinstance(event, MousePressEvent):
+        print(f&quot;Clicked at {event.canvas_pos}&quot;)
+        return True  # Event handled
+    return False
+
+
+view = View(scene=my_scene, camera=my_camera)
+view.set_event_filter(on_click)
+</code></pre></div> <details class=see-also open> <summary>See Also</summary> <p>scenex.model.Camera : Camera with interactive interaction strategies scenex.model.View : View with event filter support</p> </details> <p><span class=doc-section-title>Classes:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events.Event)" href=#scenex.app.events.Event>Event</a></code></b> – <div class=doc-md-description> <p>Base class for all user interaction and system events.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            EventFilter (scenex.app.events.EventFilter)" href=#scenex.app.events.EventFilter>EventFilter</a></code></b> – <div class=doc-md-description> <p>Base class for event filter handles.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events.MouseButton)" href=#scenex.app.events.MouseButton>MouseButton</a></code></b> – <div class=doc-md-description> <p>Enumeration of mouse button states as bit flags.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            MouseDoublePressEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MouseDoublePressEvent)" href=#scenex.app.events.MouseDoublePressEvent>MouseDoublePressEvent</a></code></b> – <div class=doc-md-description> <p>Mouse button double-click.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            MouseEnterEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MouseEnterEvent)" href=#scenex.app.events.MouseEnterEvent>MouseEnterEvent</a></code></b> – <div class=doc-md-description> <p>Mouse cursor entering the view area.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MouseEvent)" href=#scenex.app.events.MouseEvent>MouseEvent</a></code></b> – <div class=doc-md-description> <p>Base class for all mouse-related interaction events.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            MouseLeaveEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MouseLeaveEvent)" href=#scenex.app.events.MouseLeaveEvent>MouseLeaveEvent</a></code></b> – <div class=doc-md-description> <p>Mouse cursor leaving the view area.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            MouseMoveEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MouseMoveEvent)" href=#scenex.app.events.MouseMoveEvent>MouseMoveEvent</a></code></b> – <div class=doc-md-description> <p>Mouse cursor movement within the view.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            MousePressEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MousePressEvent)" href=#scenex.app.events.MousePressEvent>MousePressEvent</a></code></b> – <div class=doc-md-description> <p>Mouse button press.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            MouseReleaseEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MouseReleaseEvent)" href=#scenex.app.events.MouseReleaseEvent>MouseReleaseEvent</a></code></b> – <div class=doc-md-description> <p>Mouse button release.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            Ray (scenex.app.events.Ray)" href=#scenex.app.events.Ray>Ray</a></code></b> – <div class=doc-md-description> <p>A 3D ray in world space representing a mouse position.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            ResizeEvent
+
+
+  
+      dataclass
+   (scenex.app.events.ResizeEvent)" href=#scenex.app.events.ResizeEvent>ResizeEvent</a></code></b> – <div class=doc-md-description> <p>Canvas window resize event.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            WheelEvent
+
+
+  
+      dataclass
+   (scenex.app.events.WheelEvent)" href=#scenex.app.events.WheelEvent>WheelEvent</a></code></b> – <div class=doc-md-description> <p>Mouse wheel scroll event.</p> </div> </li> </ul> <div class="doc doc-children"> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.Event class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">Event</span> <span class="doc doc-labels"> <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small> </span> <a href=#scenex.app.events.Event class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>Event</span><span class=p>()</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Base class for all user interaction and system events.</p> <p>Event is the root of the event hierarchy in scenex. All specific event types (mouse, keyboard, resize) inherit from this base class, enabling polymorphic event handling and extensibility for custom event types.</p> <p>The inheritance-based design allows: - Type checking with isinstance() to discriminate event types - Extensibility for adding new event types downstream - Structured event filtering based on event class hierarchy</p> <details class=see-also open> <summary>See Also</summary> <p>MouseEvent : Base class for mouse-related events ResizeEvent : Window resize event</p> </details> <div class="doc doc-children"> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.EventFilter class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">EventFilter</span> <a href=#scenex.app.events.EventFilter class=headerlink title="Permanent link">#</a></h2> <div class="doc doc-contents "> <p>Base class for event filter handles.</p> <p>EventFilter instances are returned when installing event filters on views or canvases. They provide a mechanism to uninstall the filter when it's no longer needed, ensuring proper cleanup and preventing memory leaks.</p> <p><span class=doc-section-title>Methods:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            uninstall (scenex.app.events.EventFilter.uninstall)" href=#scenex.app.events.EventFilter.uninstall>uninstall</a></code></b> – <div class=doc-md-description> <p>Remove this event filter.</p> </div> </li> </ul> <div class="doc doc-children"> <div class="doc doc-object doc-function"> <h3 id=scenex.app.events.EventFilter.uninstall class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">uninstall</span> <a href=#scenex.app.events.EventFilter.uninstall class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>uninstall</span><span class=p>()</span> <span class=o>-&gt;</span> <span class=kc>None</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Remove this event filter.</p> <p>Uninstalls the event filter, ensuring that the filter function will no longer be called for future events. After calling uninstall(), this EventFilter instance should not be used further.</p> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/events/_events.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>355</span>
+<span class=normal>356</span>
+<span class=normal>357</span>
+<span class=normal>358</span>
+<span class=normal>359</span>
+<span class=normal>360</span>
+<span class=normal>361</span>
+<span class=normal>362</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-355><span class=k>def</span><span class=w> </span><span class=nf>uninstall</span><span class=p>(</span><span class=bp>self</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=kc>None</span><span class=p>:</span>
+</span><span id=__span-0-356><span class=w>    </span><span class=sd>&quot;&quot;&quot;Remove this event filter.</span>
+</span><span id=__span-0-357>
+</span><span id=__span-0-358><span class=sd>    Uninstalls the event filter, ensuring that the filter function will no</span>
+</span><span id=__span-0-359><span class=sd>    longer be called for future events. After calling uninstall(), this</span>
+</span><span id=__span-0-360><span class=sd>    EventFilter instance should not be used further.</span>
+</span><span id=__span-0-361><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-362>    <span class=k>raise</span> <span class=ne>NotImplementedError</span><span class=p>(</span><span class=s2>&quot;This method should be implemented by subclasses.&quot;</span><span class=p>)</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.MouseButton class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">MouseButton</span> <a href=#scenex.app.events.MouseButton class=headerlink title="Permanent link">#</a></h2> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-external" title=enum.IntFlag href=https://docs.python.org/3/library/enum.html#enum.IntFlag>IntFlag</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events.MouseButton)" href=#scenex.app.events.MouseButton id=mermaid-link-scenex.app.events.MouseButton></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.events.MouseButton>
+              flowchart TD
+              scenex.app.events.MouseButton[MouseButton]
+
+              
+
+              click scenex.app.events.MouseButton href "" "scenex.app.events.MouseButton"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.events.MouseButton');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>Enumeration of mouse button states as bit flags.</p> <p>MouseButton uses IntFlag to allow bitwise operations, enabling representation of multiple simultaneous button presses.</p> <p><span class=doc-section-title>Examples:</span></p> <p>Check if left button is pressed: &gt;&gt;&gt; event = MousePressEvent( ... canvas_pos=(100, 150), ... world_ray=Ray(origin=(0, 0, 0), direction=(0, 0, -1), source=None), ... buttons=MouseButton.LEFT | MouseButton.RIGHT, ... ) &gt;&gt;&gt; if event.buttons &amp; MouseButton.LEFT: ... print("Left button is down") Left button is down</p> <p>Check for specific button combination: &gt;&gt;&gt; if event.buttons == (MouseButton.LEFT | MouseButton.RIGHT): ... print("Both left and right buttons pressed") Both left and right buttons pressed</p> <p>Check if any button is pressed: &gt;&gt;&gt; if event.buttons != MouseButton.NONE: ... print("Some button is pressed") Some button is pressed</p> <div class="doc doc-children"> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.MouseDoublePressEvent class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">MouseDoublePressEvent</span> <span class="doc doc-labels"> <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small> </span> <a href=#scenex.app.events.MouseDoublePressEvent class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>MouseDoublePressEvent</span><span class=p>(</span>
+</span><span id=__span-0-2>    <span class=n><span title=scenex.app.events.MouseDoublePressEvent(canvas_pos)>canvas_pos</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a></span><span class=p>[</span><span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>],</span>
+</span><span id=__span-0-3>    <span class=n><span title=scenex.app.events.MouseDoublePressEvent(world_ray)>world_ray</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            Ray (scenex.app.events._events.Ray)" href=#scenex.app.events.Ray>Ray</a></span><span class=p>,</span>
+</span><span id=__span-0-4>    <span class=n><span title=scenex.app.events.MouseDoublePressEvent(buttons)>buttons</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href=#scenex.app.events.MouseButton>MouseButton</a></span><span class=p>,</span>
+</span><span id=__span-0-5><span class=p>)</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href=#scenex.app.events.MouseEvent>MouseEvent</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            MouseDoublePressEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MouseDoublePressEvent)" href=#scenex.app.events.MouseDoublePressEvent id=mermaid-link-scenex.app.events.MouseDoublePressEvent></a> <a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href=#scenex.app.events.MouseEvent id=mermaid-link-scenex.app.events._events.MouseEvent></a> <a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events._events.Event)" href=#scenex.app.events.Event id=mermaid-link-scenex.app.events._events.Event></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.events.MouseDoublePressEvent>
+              flowchart TD
+              scenex.app.events.MouseDoublePressEvent[MouseDoublePressEvent]
+              scenex.app.events._events.MouseEvent[MouseEvent]
+              scenex.app.events._events.Event[Event]
+
+                              scenex.app.events._events.MouseEvent --> scenex.app.events.MouseDoublePressEvent
+                                scenex.app.events._events.Event --> scenex.app.events._events.MouseEvent
+                
+
+
+
+              click scenex.app.events.MouseDoublePressEvent href "" "scenex.app.events.MouseDoublePressEvent"
+              click scenex.app.events._events.MouseEvent href "" "scenex.app.events._events.MouseEvent"
+              click scenex.app.events._events.Event href "" "scenex.app.events._events.Event"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.events.MouseDoublePressEvent');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>Mouse button double-click.</p> <p>Fired when a mouse button is double-clicked (pressed twice in rapid succession). The timing threshold for double-click detection is system-dependent.</p> <details class=see-also open> <summary>See Also</summary> <p>MousePressEvent : Single mouse button press</p> </details> <div class="doc doc-children"> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.MouseEnterEvent class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">MouseEnterEvent</span> <span class="doc doc-labels"> <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small> </span> <a href=#scenex.app.events.MouseEnterEvent class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>MouseEnterEvent</span><span class=p>(</span>
+</span><span id=__span-0-2>    <span class=n><span title=scenex.app.events.MouseEnterEvent(canvas_pos)>canvas_pos</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a></span><span class=p>[</span><span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>],</span>
+</span><span id=__span-0-3>    <span class=n><span title=scenex.app.events.MouseEnterEvent(world_ray)>world_ray</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            Ray (scenex.app.events._events.Ray)" href=#scenex.app.events.Ray>Ray</a></span><span class=p>,</span>
+</span><span id=__span-0-4>    <span class=n><span title=scenex.app.events.MouseEnterEvent(buttons)>buttons</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href=#scenex.app.events.MouseButton>MouseButton</a></span><span class=p>,</span>
+</span><span id=__span-0-5><span class=p>)</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href=#scenex.app.events.MouseEvent>MouseEvent</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            MouseEnterEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MouseEnterEvent)" href=#scenex.app.events.MouseEnterEvent id=mermaid-link-scenex.app.events.MouseEnterEvent></a> <a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href=#scenex.app.events.MouseEvent id=mermaid-link-scenex.app.events._events.MouseEvent></a> <a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events._events.Event)" href=#scenex.app.events.Event id=mermaid-link-scenex.app.events._events.Event></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.events.MouseEnterEvent>
+              flowchart TD
+              scenex.app.events.MouseEnterEvent[MouseEnterEvent]
+              scenex.app.events._events.MouseEvent[MouseEvent]
+              scenex.app.events._events.Event[Event]
+
+                              scenex.app.events._events.MouseEvent --> scenex.app.events.MouseEnterEvent
+                                scenex.app.events._events.Event --> scenex.app.events._events.MouseEvent
+                
+
+
+
+              click scenex.app.events.MouseEnterEvent href "" "scenex.app.events.MouseEnterEvent"
+              click scenex.app.events._events.MouseEvent href "" "scenex.app.events._events.MouseEvent"
+              click scenex.app.events._events.Event href "" "scenex.app.events._events.Event"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.events.MouseEnterEvent');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>Mouse cursor entering the view area.</p> <p>Fired when the mouse cursor enters the bounds of a view from outside. Includes the entry position and button states.</p> <details class=see-also open> <summary>See Also</summary> <p>MouseLeaveEvent : Mouse cursor leaving the view</p> </details> <div class="doc doc-children"> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.MouseEvent class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">MouseEvent</span> <span class="doc doc-labels"> <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small> </span> <a href=#scenex.app.events.MouseEvent class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>MouseEvent</span><span class=p>(</span>
+</span><span id=__span-0-2>    <span class=n><span title=scenex.app.events.MouseEvent(canvas_pos)>canvas_pos</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a></span><span class=p>[</span><span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>],</span>
+</span><span id=__span-0-3>    <span class=n><span title=scenex.app.events.MouseEvent(world_ray)>world_ray</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            Ray (scenex.app.events._events.Ray)" href=#scenex.app.events.Ray>Ray</a></span><span class=p>,</span>
+</span><span id=__span-0-4>    <span class=n><span title=scenex.app.events.MouseEvent(buttons)>buttons</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href=#scenex.app.events.MouseButton>MouseButton</a></span><span class=p>,</span>
+</span><span id=__span-0-5><span class=p>)</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events._events.Event)" href=#scenex.app.events.Event>Event</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MouseEvent)" href=#scenex.app.events.MouseEvent id=mermaid-link-scenex.app.events.MouseEvent></a> <a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events._events.Event)" href=#scenex.app.events.Event id=mermaid-link-scenex.app.events._events.Event></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.events.MouseEvent>
+              flowchart TD
+              scenex.app.events.MouseEvent[MouseEvent]
+              scenex.app.events._events.Event[Event]
+
+                              scenex.app.events._events.Event --> scenex.app.events.MouseEvent
+                
+
+
+              click scenex.app.events.MouseEvent href "" "scenex.app.events.MouseEvent"
+              click scenex.app.events._events.Event href "" "scenex.app.events._events.Event"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.events.MouseEvent');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>Base class for all mouse-related interaction events.</p> <p>MouseEvent provides common fields for all mouse interactions, including the 2D canvas position, the 3D world ray for picking, and the state of mouse buttons. Specific mouse event types (move, press, release, etc.) inherit from this base.</p> <p><span class=doc-section-title>Attributes:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.events.MouseEvent.canvas_pos>canvas_pos</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a>[<a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>, <a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>]</code>) – <div class=doc-md-description> <p>The (x, y) position of the mouse cursor in canvas pixel coordinates, with origin at the top-left corner.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.events.MouseEvent.world_ray>world_ray</span></code></b> (<code><a class="autorefs autorefs-internal" title="            Ray (scenex.app.events._events.Ray)" href=#scenex.app.events.Ray>Ray</a></code>) – <div class=doc-md-description> <p>The 3D ray in world space corresponding to this mouse position, used for 3D picking and intersection testing. The ray passes from the camera through the cursor position.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.events.MouseEvent.buttons>buttons</span></code></b> (<code><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href=#scenex.app.events.MouseButton>MouseButton</a></code>) – <div class=doc-md-description> <p>Bit flags indicating which mouse buttons are currently pressed. Use bitwise operations to test button states (e.g., buttons &amp; MouseButton.LEFT).</p> </div> </li> </ul> <details class=see-also open> <summary>See Also</summary> <p>MouseMoveEvent : Mouse cursor movement MousePressEvent : Mouse button press MouseReleaseEvent : Mouse button release WheelEvent : Mouse wheel scroll Ray : 3D ray for picking</p> </details> <div class="doc doc-children"> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.MouseLeaveEvent class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">MouseLeaveEvent</span> <span class="doc doc-labels"> <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small> </span> <a href=#scenex.app.events.MouseLeaveEvent class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>MouseLeaveEvent</span><span class=p>()</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events._events.Event)" href=#scenex.app.events.Event>Event</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            MouseLeaveEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MouseLeaveEvent)" href=#scenex.app.events.MouseLeaveEvent id=mermaid-link-scenex.app.events.MouseLeaveEvent></a> <a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events._events.Event)" href=#scenex.app.events.Event id=mermaid-link-scenex.app.events._events.Event></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.events.MouseLeaveEvent>
+              flowchart TD
+              scenex.app.events.MouseLeaveEvent[MouseLeaveEvent]
+              scenex.app.events._events.Event[Event]
+
+                              scenex.app.events._events.Event --> scenex.app.events.MouseLeaveEvent
+                
+
+
+              click scenex.app.events.MouseLeaveEvent href "" "scenex.app.events.MouseLeaveEvent"
+              click scenex.app.events._events.Event href "" "scenex.app.events._events.Event"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.events.MouseLeaveEvent');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>Mouse cursor leaving the view area.</p> <p>Fired when the mouse cursor exits the bounds of a view. This is distinct from other mouse events in that it does not include position or button information, as the cursor is no longer over the view.</p> <p>Note that this does not inherit from MouseEvent, as no position or buttons are available when the cursor has left the view.</p> <details class=see-also open> <summary>See Also</summary> <p>MouseEnterEvent : Mouse cursor entering the view</p> </details> <div class="doc doc-children"> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.MouseMoveEvent class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">MouseMoveEvent</span> <span class="doc doc-labels"> <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small> </span> <a href=#scenex.app.events.MouseMoveEvent class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>MouseMoveEvent</span><span class=p>(</span>
+</span><span id=__span-0-2>    <span class=n><span title=scenex.app.events.MouseMoveEvent(canvas_pos)>canvas_pos</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a></span><span class=p>[</span><span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>],</span>
+</span><span id=__span-0-3>    <span class=n><span title=scenex.app.events.MouseMoveEvent(world_ray)>world_ray</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            Ray (scenex.app.events._events.Ray)" href=#scenex.app.events.Ray>Ray</a></span><span class=p>,</span>
+</span><span id=__span-0-4>    <span class=n><span title=scenex.app.events.MouseMoveEvent(buttons)>buttons</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href=#scenex.app.events.MouseButton>MouseButton</a></span><span class=p>,</span>
+</span><span id=__span-0-5><span class=p>)</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href=#scenex.app.events.MouseEvent>MouseEvent</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            MouseMoveEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MouseMoveEvent)" href=#scenex.app.events.MouseMoveEvent id=mermaid-link-scenex.app.events.MouseMoveEvent></a> <a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href=#scenex.app.events.MouseEvent id=mermaid-link-scenex.app.events._events.MouseEvent></a> <a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events._events.Event)" href=#scenex.app.events.Event id=mermaid-link-scenex.app.events._events.Event></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.events.MouseMoveEvent>
+              flowchart TD
+              scenex.app.events.MouseMoveEvent[MouseMoveEvent]
+              scenex.app.events._events.MouseEvent[MouseEvent]
+              scenex.app.events._events.Event[Event]
+
+                              scenex.app.events._events.MouseEvent --> scenex.app.events.MouseMoveEvent
+                                scenex.app.events._events.Event --> scenex.app.events._events.MouseEvent
+                
+
+
+
+              click scenex.app.events.MouseMoveEvent href "" "scenex.app.events.MouseMoveEvent"
+              click scenex.app.events._events.MouseEvent href "" "scenex.app.events._events.MouseEvent"
+              click scenex.app.events._events.Event href "" "scenex.app.events._events.Event"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.events.MouseMoveEvent');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>Mouse cursor movement within the view.</p> <p>Fired when the mouse cursor moves within the view bounds. Includes the current position, world ray, and button states. This event fires continuously during cursor movement.</p> <div class="doc doc-children"> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.MousePressEvent class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">MousePressEvent</span> <span class="doc doc-labels"> <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small> </span> <a href=#scenex.app.events.MousePressEvent class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>MousePressEvent</span><span class=p>(</span>
+</span><span id=__span-0-2>    <span class=n><span title=scenex.app.events.MousePressEvent(canvas_pos)>canvas_pos</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a></span><span class=p>[</span><span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>],</span>
+</span><span id=__span-0-3>    <span class=n><span title=scenex.app.events.MousePressEvent(world_ray)>world_ray</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            Ray (scenex.app.events._events.Ray)" href=#scenex.app.events.Ray>Ray</a></span><span class=p>,</span>
+</span><span id=__span-0-4>    <span class=n><span title=scenex.app.events.MousePressEvent(buttons)>buttons</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href=#scenex.app.events.MouseButton>MouseButton</a></span><span class=p>,</span>
+</span><span id=__span-0-5><span class=p>)</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href=#scenex.app.events.MouseEvent>MouseEvent</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            MousePressEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MousePressEvent)" href=#scenex.app.events.MousePressEvent id=mermaid-link-scenex.app.events.MousePressEvent></a> <a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href=#scenex.app.events.MouseEvent id=mermaid-link-scenex.app.events._events.MouseEvent></a> <a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events._events.Event)" href=#scenex.app.events.Event id=mermaid-link-scenex.app.events._events.Event></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.events.MousePressEvent>
+              flowchart TD
+              scenex.app.events.MousePressEvent[MousePressEvent]
+              scenex.app.events._events.MouseEvent[MouseEvent]
+              scenex.app.events._events.Event[Event]
+
+                              scenex.app.events._events.MouseEvent --> scenex.app.events.MousePressEvent
+                                scenex.app.events._events.Event --> scenex.app.events._events.MouseEvent
+                
+
+
+
+              click scenex.app.events.MousePressEvent href "" "scenex.app.events.MousePressEvent"
+              click scenex.app.events._events.MouseEvent href "" "scenex.app.events._events.MouseEvent"
+              click scenex.app.events._events.Event href "" "scenex.app.events._events.Event"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.events.MousePressEvent');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>Mouse button press.</p> <p>Fired when a mouse button is pressed down. The buttons field indicates which button(s) are now pressed. For detecting which button was newly pressed, compare with previous button states.</p> <details class=see-also open> <summary>See Also</summary> <p>MouseReleaseEvent : Mouse button release MouseDoublePressEvent : Double-click detection</p> </details> <div class="doc doc-children"> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.MouseReleaseEvent class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">MouseReleaseEvent</span> <span class="doc doc-labels"> <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small> </span> <a href=#scenex.app.events.MouseReleaseEvent class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>MouseReleaseEvent</span><span class=p>(</span>
+</span><span id=__span-0-2>    <span class=n><span title=scenex.app.events.MouseReleaseEvent(canvas_pos)>canvas_pos</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a></span><span class=p>[</span><span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>],</span>
+</span><span id=__span-0-3>    <span class=n><span title=scenex.app.events.MouseReleaseEvent(world_ray)>world_ray</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            Ray (scenex.app.events._events.Ray)" href=#scenex.app.events.Ray>Ray</a></span><span class=p>,</span>
+</span><span id=__span-0-4>    <span class=n><span title=scenex.app.events.MouseReleaseEvent(buttons)>buttons</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href=#scenex.app.events.MouseButton>MouseButton</a></span><span class=p>,</span>
+</span><span id=__span-0-5><span class=p>)</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href=#scenex.app.events.MouseEvent>MouseEvent</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            MouseReleaseEvent
+
+
+  
+      dataclass
+   (scenex.app.events.MouseReleaseEvent)" href=#scenex.app.events.MouseReleaseEvent id=mermaid-link-scenex.app.events.MouseReleaseEvent></a> <a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href=#scenex.app.events.MouseEvent id=mermaid-link-scenex.app.events._events.MouseEvent></a> <a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events._events.Event)" href=#scenex.app.events.Event id=mermaid-link-scenex.app.events._events.Event></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.events.MouseReleaseEvent>
+              flowchart TD
+              scenex.app.events.MouseReleaseEvent[MouseReleaseEvent]
+              scenex.app.events._events.MouseEvent[MouseEvent]
+              scenex.app.events._events.Event[Event]
+
+                              scenex.app.events._events.MouseEvent --> scenex.app.events.MouseReleaseEvent
+                                scenex.app.events._events.Event --> scenex.app.events._events.MouseEvent
+                
+
+
+
+              click scenex.app.events.MouseReleaseEvent href "" "scenex.app.events.MouseReleaseEvent"
+              click scenex.app.events._events.MouseEvent href "" "scenex.app.events._events.MouseEvent"
+              click scenex.app.events._events.Event href "" "scenex.app.events._events.Event"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.events.MouseReleaseEvent');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>Mouse button release.</p> <p>Fired when a mouse button is released. The buttons field reflects the state after the release (i.e., the released button is no longer set in the flags).</p> <details class=see-also open> <summary>See Also</summary> <p>MousePressEvent : Mouse button press</p> </details> <div class="doc doc-children"> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.Ray class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">Ray</span> <a href=#scenex.app.events.Ray class=headerlink title="Permanent link">#</a></h2> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-external" title=typing.NamedTuple href=https://docs.python.org/3/library/typing.html#typing.NamedTuple>NamedTuple</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            Ray (scenex.app.events.Ray)" href=#scenex.app.events.Ray id=mermaid-link-scenex.app.events.Ray></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.events.Ray>
+              flowchart TD
+              scenex.app.events.Ray[Ray]
+
+              
+
+              click scenex.app.events.Ray href "" "scenex.app.events.Ray"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.events.Ray');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>A 3D ray in world space representing a mouse position.</p> <p>A Ray represents the path of the mouse cursor projected into 3D world space, starting from the camera and passing through the cursor position on the view. Rays are the fundamental mechanism for 3D picking and intersection testing, allowing determination of which scene objects are under the mouse cursor.</p> <p>The ray is defined by an origin point (typically the camera position) and a normalized direction vector. All MouseEvent instances include a world_ray that can be used to test intersections with scene geometry.</p> <p><span class=doc-section-title>Attributes:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.events.Ray.origin>origin</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a>[<a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>, <a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>, <a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>]</code>) – <div class=doc-md-description> <p>The starting point of the ray in world coordinates, typically the camera position for perspective projections or a point on the view plane for orthographic projections.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.events.Ray.direction>direction</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a>[<a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>, <a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>, <a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>]</code>) – <div class=doc-md-description> <p>The normalized direction vector of the ray in world coordinates. For perspective views, this points from the camera through the cursor. For orthographic views, this is parallel to the camera's view direction.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.events.Ray.source>source</span></code></b> (<code><a class="autorefs autorefs-internal" title="            View (scenex.View)" href=../../#scenex.View>View</a></code>) – <div class=doc-md-description> <p>The view that generated this ray, providing context for which camera and scene the ray originated from.</p> </div> </li> </ul> <p><span class=doc-section-title>Examples:</span></p> <p>Find all intersections with a scene: &gt;&gt;&gt; import numpy as np &gt;&gt;&gt; import scenex as snx &gt;&gt;&gt; view = snx.View( ... scene=snx.Scene( ... children=[ ... snx.Image(data=np.random.rand(100, 100)), ... snx.Points( ... vertices=np.asarray([[0, 0, 0], [1, 1, 0]]), ... size=5, ... edge_width=0, ... ), ... ] ... ) ... ) &gt;&gt;&gt; ray = Ray(origin=(1, 1, 10), direction=(0, 0, -1), source=view) &gt;&gt;&gt; ray.intersections(view.scene) [(Points(...), 7.5), (Image(...), 10.0)]</p> <details class=see-also open> <summary>See Also</summary> <p>MouseEvent : Events that include world_ray Node.passes_through : Node method for computing ray intersections</p> </details> <p><span class=doc-section-title>Methods:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            intersections (scenex.app.events.Ray.intersections)" href=#scenex.app.events.Ray.intersections>intersections</a></code></b> – <div class=doc-md-description> <p>Find all nodes intersected by this ray in the scene graph.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            point_at_distance (scenex.app.events.Ray.point_at_distance)" href=#scenex.app.events.Ray.point_at_distance>point_at_distance</a></code></b> – <div class=doc-md-description> <p>Compute the 3D point at a given distance along the ray.</p> </div> </li> </ul> <div class="doc doc-children"> <div class="doc doc-object doc-function"> <h3 id=scenex.app.events.Ray.intersections class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">intersections</span> <a href=#scenex.app.events.Ray.intersections class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>intersections</span><span class=p>(</span><span class=n><a class="autorefs autorefs-internal" title="graph (scenex.app.events.Ray.intersections(graph))" href=#scenex.app.events.Ray.intersections(graph)>graph</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            Node (scenex.Node)" href=../../#scenex.Node>Node</a></span><span class=p>)</span> <span class=o>-&gt;</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#list>list</a></span><span class=p>[</span><span class=n><span title=scenex.app.events._events.Intersection>Intersection</span></span><span class=p>]</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Find all nodes intersected by this ray in the scene graph.</p> <p>Recursively tests the ray against the given node and all its descendants, returning all intersections sorted by distance from the ray origin. Only visible nodes are tested.</p> <p><span class=doc-section-title>Parameters:</span></p> <ul> <li class="doc-section-item field-body"> <h4 id=scenex.app.events.Ray.intersections(graph) class="doc doc-heading doc-heading-parameter"> <b><code>graph</code></b> <a href=#scenex.app.events.Ray.intersections(graph) class=headerlink title="Permanent link">#</a></h4> (<code><a class="autorefs autorefs-internal" title="            Node (scenex.Node)" href=../../#scenex.Node>Node</a></code>) – <div class=doc-md-description> <p>The root node to test. Typically a Scene, but can be any node with children.</p> </div> </li> </ul> <p><span class=doc-section-title>Returns:</span></p> <ul> <li class="doc-section-item field-body"> <code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#list>list</a>[<span title=scenex.app.events._events.Intersection>Intersection</span>]</code> – <div class=doc-md-description> <p>List of (node, distance) tuples for all intersections, sorted by increasing distance from the ray origin. The distance is the parameter t where intersection occurs at origin + t * direction.</p> </div> </li> </ul> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/events/_events.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>149</span>
+<span class=normal>150</span>
+<span class=normal>151</span>
+<span class=normal>152</span>
+<span class=normal>153</span>
+<span class=normal>154</span>
+<span class=normal>155</span>
+<span class=normal>156</span>
+<span class=normal>157</span>
+<span class=normal>158</span>
+<span class=normal>159</span>
+<span class=normal>160</span>
+<span class=normal>161</span>
+<span class=normal>162</span>
+<span class=normal>163</span>
+<span class=normal>164</span>
+<span class=normal>165</span>
+<span class=normal>166</span>
+<span class=normal>167</span>
+<span class=normal>168</span>
+<span class=normal>169</span>
+<span class=normal>170</span>
+<span class=normal>171</span>
+<span class=normal>172</span>
+<span class=normal>173</span>
+<span class=normal>174</span>
+<span class=normal>175</span>
+<span class=normal>176</span>
+<span class=normal>177</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-149><span class=k>def</span><span class=w> </span><span class=nf>intersections</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>graph</span><span class=p>:</span> <span class=n>Node</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>list</span><span class=p>[</span><span class=n>Intersection</span><span class=p>]:</span>
+</span><span id=__span-0-150><span class=w>    </span><span class=sd>&quot;&quot;&quot;Find all nodes intersected by this ray in the scene graph.</span>
+</span><span id=__span-0-151>
+</span><span id=__span-0-152><span class=sd>    Recursively tests the ray against the given node and all its descendants,</span>
+</span><span id=__span-0-153><span class=sd>    returning all intersections sorted by distance from the ray origin. Only</span>
+</span><span id=__span-0-154><span class=sd>    visible nodes are tested.</span>
+</span><span id=__span-0-155>
+</span><span id=__span-0-156><span class=sd>    Parameters</span>
+</span><span id=__span-0-157><span class=sd>    ----------</span>
+</span><span id=__span-0-158><span class=sd>    graph : Node</span>
+</span><span id=__span-0-159><span class=sd>        The root node to test. Typically a Scene, but can be any node with</span>
+</span><span id=__span-0-160><span class=sd>        children.</span>
+</span><span id=__span-0-161>
+</span><span id=__span-0-162><span class=sd>    Returns</span>
+</span><span id=__span-0-163><span class=sd>    -------</span>
+</span><span id=__span-0-164><span class=sd>    list[Intersection]</span>
+</span><span id=__span-0-165><span class=sd>        List of (node, distance) tuples for all intersections, sorted by</span>
+</span><span id=__span-0-166><span class=sd>        increasing distance from the ray origin. The distance is the parameter</span>
+</span><span id=__span-0-167><span class=sd>        t where intersection occurs at origin + t * direction.</span>
+</span><span id=__span-0-168><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-169>    <span class=n>through</span><span class=p>:</span> <span class=nb>list</span><span class=p>[</span><span class=n>Intersection</span><span class=p>]</span> <span class=o>=</span> <span class=p>[]</span>
+</span><span id=__span-0-170>    <span class=k>if</span> <span class=n>graph</span><span class=o>.</span><span class=n>visible</span><span class=p>:</span>
+</span><span id=__span-0-171>        <span class=c1># ...check the node itself...</span>
+</span><span id=__span-0-172>        <span class=k>if</span> <span class=p>(</span><span class=n>d</span> <span class=o>:=</span> <span class=n>graph</span><span class=o>.</span><span class=n>passes_through</span><span class=p>(</span><span class=bp>self</span><span class=p>))</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+</span><span id=__span-0-173>            <span class=n>through</span><span class=o>.</span><span class=n>append</span><span class=p>((</span><span class=n>graph</span><span class=p>,</span> <span class=n>d</span><span class=p>))</span>
+</span><span id=__span-0-174>        <span class=c1># ...then check its children...</span>
+</span><span id=__span-0-175>        <span class=k>for</span> <span class=n>child</span> <span class=ow>in</span> <span class=n>graph</span><span class=o>.</span><span class=n>children</span><span class=p>:</span>
+</span><span id=__span-0-176>            <span class=n>through</span><span class=o>.</span><span class=n>extend</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>intersections</span><span class=p>(</span><span class=n>child</span><span class=p>))</span>
+</span><span id=__span-0-177>    <span class=k>return</span> <span class=nb>sorted</span><span class=p>(</span><span class=n>through</span><span class=p>,</span> <span class=n>key</span><span class=o>=</span><span class=k>lambda</span> <span class=n>inter</span><span class=p>:</span> <span class=n>inter</span><span class=p>[</span><span class=mi>1</span><span class=p>])</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.app.events.Ray.point_at_distance class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">point_at_distance</span> <a href=#scenex.app.events.Ray.point_at_distance class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>point_at_distance</span><span class=p>(</span>
+</span><span id=__span-0-2>    <span class=n><a class="autorefs autorefs-internal" title="distance (scenex.app.events.Ray.point_at_distance(distance))" href=#scenex.app.events.Ray.point_at_distance(distance)>distance</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>,</span>
+</span><span id=__span-0-3><span class=p>)</span> <span class=o>-&gt;</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a></span><span class=p>[</span><span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>]</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Compute the 3D point at a given distance along the ray.</p> <p><span class=doc-section-title>Parameters:</span></p> <ul> <li class="doc-section-item field-body"> <h4 id=scenex.app.events.Ray.point_at_distance(distance) class="doc doc-heading doc-heading-parameter"> <b><code>distance</code></b> <a href=#scenex.app.events.Ray.point_at_distance(distance) class=headerlink title="Permanent link">#</a></h4> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></code>) – <div class=doc-md-description> <p>The distance along the ray from the origin. Positive values extend in the direction of the ray, negative values extend backward from the origin.</p> </div> </li> </ul> <p><span class=doc-section-title>Returns:</span></p> <ul> <li class="doc-section-item field-body"> <code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a>[<a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>, <a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>, <a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>]</code> – <div class=doc-md-description> <p>The (x, y, z) coordinates of the point at the specified distance along the ray.</p> </div> </li> </ul> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/app/events/_events.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>128</span>
+<span class=normal>129</span>
+<span class=normal>130</span>
+<span class=normal>131</span>
+<span class=normal>132</span>
+<span class=normal>133</span>
+<span class=normal>134</span>
+<span class=normal>135</span>
+<span class=normal>136</span>
+<span class=normal>137</span>
+<span class=normal>138</span>
+<span class=normal>139</span>
+<span class=normal>140</span>
+<span class=normal>141</span>
+<span class=normal>142</span>
+<span class=normal>143</span>
+<span class=normal>144</span>
+<span class=normal>145</span>
+<span class=normal>146</span>
+<span class=normal>147</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-128><span class=k>def</span><span class=w> </span><span class=nf>point_at_distance</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>distance</span><span class=p>:</span> <span class=nb>float</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>tuple</span><span class=p>[</span><span class=nb>float</span><span class=p>,</span> <span class=nb>float</span><span class=p>,</span> <span class=nb>float</span><span class=p>]:</span>
+</span><span id=__span-0-129><span class=w>    </span><span class=sd>&quot;&quot;&quot;Compute the 3D point at a given distance along the ray.</span>
+</span><span id=__span-0-130>
+</span><span id=__span-0-131><span class=sd>    Parameters</span>
+</span><span id=__span-0-132><span class=sd>    ----------</span>
+</span><span id=__span-0-133><span class=sd>    distance : float</span>
+</span><span id=__span-0-134><span class=sd>        The distance along the ray from the origin. Positive values extend</span>
+</span><span id=__span-0-135><span class=sd>        in the direction of the ray, negative values extend backward from</span>
+</span><span id=__span-0-136><span class=sd>        the origin.</span>
+</span><span id=__span-0-137>
+</span><span id=__span-0-138><span class=sd>    Returns</span>
+</span><span id=__span-0-139><span class=sd>    -------</span>
+</span><span id=__span-0-140><span class=sd>    tuple[float, float, float]</span>
+</span><span id=__span-0-141><span class=sd>        The (x, y, z) coordinates of the point at the specified distance</span>
+</span><span id=__span-0-142><span class=sd>        along the ray.</span>
+</span><span id=__span-0-143><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-144>    <span class=n>x</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>origin</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>+</span> <span class=bp>self</span><span class=o>.</span><span class=n>direction</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>*</span> <span class=n>distance</span>
+</span><span id=__span-0-145>    <span class=n>y</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>origin</span><span class=p>[</span><span class=mi>1</span><span class=p>]</span> <span class=o>+</span> <span class=bp>self</span><span class=o>.</span><span class=n>direction</span><span class=p>[</span><span class=mi>1</span><span class=p>]</span> <span class=o>*</span> <span class=n>distance</span>
+</span><span id=__span-0-146>    <span class=n>z</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>origin</span><span class=p>[</span><span class=mi>2</span><span class=p>]</span> <span class=o>+</span> <span class=bp>self</span><span class=o>.</span><span class=n>direction</span><span class=p>[</span><span class=mi>2</span><span class=p>]</span> <span class=o>*</span> <span class=n>distance</span>
+</span><span id=__span-0-147>    <span class=k>return</span> <span class=p>(</span><span class=n>x</span><span class=p>,</span> <span class=n>y</span><span class=p>,</span> <span class=n>z</span><span class=p>)</span>
+</span></code></pre></div></td></tr></table></div> </details> </div> </div> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.ResizeEvent class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">ResizeEvent</span> <span class="doc doc-labels"> <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small> </span> <a href=#scenex.app.events.ResizeEvent class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>ResizeEvent</span><span class=p>(</span><span class=n><span title=scenex.app.events.ResizeEvent(width)>width</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></span><span class=p>,</span> <span class=n><span title=scenex.app.events.ResizeEvent(height)>height</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></span><span class=p>)</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events._events.Event)" href=#scenex.app.events.Event>Event</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            ResizeEvent
+
+
+  
+      dataclass
+   (scenex.app.events.ResizeEvent)" href=#scenex.app.events.ResizeEvent id=mermaid-link-scenex.app.events.ResizeEvent></a> <a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events._events.Event)" href=#scenex.app.events.Event id=mermaid-link-scenex.app.events._events.Event></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.events.ResizeEvent>
+              flowchart TD
+              scenex.app.events.ResizeEvent[ResizeEvent]
+              scenex.app.events._events.Event[Event]
+
+                              scenex.app.events._events.Event --> scenex.app.events.ResizeEvent
+                
+
+
+              click scenex.app.events.ResizeEvent href "" "scenex.app.events.ResizeEvent"
+              click scenex.app.events._events.Event href "" "scenex.app.events._events.Event"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.events.ResizeEvent');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>Canvas window resize event.</p> <p>Fired when the canvas window changes dimensions, whether from user interaction (dragging window edges), programmatic resizing, or window manager actions. This event allows views and other components to adapt to new canvas dimensions.</p> <p><span class=doc-section-title>Attributes:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.events.ResizeEvent.width>width</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></code>) – <div class=doc-md-description> <p>The new width of the canvas in pixels.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.events.ResizeEvent.height>height</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#int>int</a></code>) – <div class=doc-md-description> <p>The new height of the canvas in pixels.</p> </div> </li> </ul> <div class="doc doc-children"> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.app.events.WheelEvent class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">WheelEvent</span> <span class="doc doc-labels"> <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small> </span> <a href=#scenex.app.events.WheelEvent class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>WheelEvent</span><span class=p>(</span>
+</span><span id=__span-0-2>    <span class=n><span title=scenex.app.events.WheelEvent(canvas_pos)>canvas_pos</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a></span><span class=p>[</span><span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>],</span>
+</span><span id=__span-0-3>    <span class=n><span title=scenex.app.events.WheelEvent(world_ray)>world_ray</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            Ray (scenex.app.events._events.Ray)" href=#scenex.app.events.Ray>Ray</a></span><span class=p>,</span>
+</span><span id=__span-0-4>    <span class=n><span title=scenex.app.events.WheelEvent(buttons)>buttons</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href=#scenex.app.events.MouseButton>MouseButton</a></span><span class=p>,</span>
+</span><span id=__span-0-5>    <span class=n><span title=scenex.app.events.WheelEvent(angle_delta)>angle_delta</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a></span><span class=p>[</span><span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>,</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a></span><span class=p>],</span>
+</span><span id=__span-0-6><span class=p>)</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href=#scenex.app.events.MouseEvent>MouseEvent</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            WheelEvent
+
+
+  
+      dataclass
+   (scenex.app.events.WheelEvent)" href=#scenex.app.events.WheelEvent id=mermaid-link-scenex.app.events.WheelEvent></a> <a class="autorefs autorefs-internal" title="            MouseEvent
+
+
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href=#scenex.app.events.MouseEvent id=mermaid-link-scenex.app.events._events.MouseEvent></a> <a class="autorefs autorefs-internal" title="            Event
+
+
+  
+      dataclass
+   (scenex.app.events._events.Event)" href=#scenex.app.events.Event id=mermaid-link-scenex.app.events._events.Event></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.app.events.WheelEvent>
+              flowchart TD
+              scenex.app.events.WheelEvent[WheelEvent]
+              scenex.app.events._events.MouseEvent[MouseEvent]
+              scenex.app.events._events.Event[Event]
+
+                              scenex.app.events._events.MouseEvent --> scenex.app.events.WheelEvent
+                                scenex.app.events._events.Event --> scenex.app.events._events.MouseEvent
+                
+
+
+
+              click scenex.app.events.WheelEvent href "" "scenex.app.events.WheelEvent"
+              click scenex.app.events._events.MouseEvent href "" "scenex.app.events._events.MouseEvent"
+              click scenex.app.events._events.Event href "" "scenex.app.events._events.Event"
+            </code></pre> <script>
+              var diagram = document.getElementById('mermaid-diagram-scenex.app.events.WheelEvent');
+              diagram.innerHTML = diagram.innerHTML.replace(/click ([\w.]+) href "" "\1"/g, function(match, nodeID, offset) {
+                try {
+                  const link = document.getElementById("mermaid-link-" + nodeID).href;
+                  return `click ${nodeID} href "${link}" "${nodeID}"`
+                } catch (e) {
+                  return '';
+                }
+              });
+            </script> <p>Mouse wheel scroll event.</p> <p>Fired when the mouse wheel (or trackpad scroll) is used. Includes the scroll delta in both horizontal and vertical directions. The magnitude and units of angle_delta are platform-dependent but typically represent degrees or steps.</p> <p><span class=doc-section-title>Attributes:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><span title=scenex.app.events.WheelEvent.angle_delta>angle_delta</span></code></b> (<code><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/stdtypes.html#tuple>tuple</a>[<a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>, <a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#float>float</a>]</code>) – <div class=doc-md-description> <p>The (horizontal, vertical) scroll delta. Positive vertical values typically represent scrolling up/away from the user, negative values down/toward the user. Horizontal scrolling (if supported) uses the first component.</p> </div> </li> </ul> <div class="doc doc-children"> </div> </div> </div> </div> </div> </div> </article> </div> <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script> </div> </main> <footer class=md-footer> <nav class="md-footer__inner md-grid" aria-label=Footer> <a href=../ class="md-footer__link md-footer__link--prev" aria-label="Previous: app"> <div class="md-footer__button md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg> </div> <div class=md-footer__title> <span class=md-footer__direction> Previous </span> <div class=md-ellipsis> app </div> </div> </a> <a href=../../conftest/ class="md-footer__link md-footer__link--next" aria-label='Next: <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>conftest'> <div class=md-footer__title> <span class=md-footer__direction> Next </span> <div class=md-ellipsis> <code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>conftest </div> </div> <div class="md-footer__button md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg> </div> </a> </nav> <div class="md-footer-meta md-typeset"> <div class="md-footer-meta__inner md-grid"> <div class=md-copyright> Made with <a href=https://squidfunk.github.io/mkdocs-material/ target=_blank rel=noopener> Material for MkDocs </a> </div> <div class=md-social> <a href=https://github.com/pyapp-kit/ target=_blank rel=noopener title=github.com class=md-social__link> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 512 512"><!-- Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg> </a> <a href=https://pypi.org/project/scenex/ target=_blank rel=noopener title=pypi.org class=md-social__link> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 448 512"><!-- Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg> </a> </div> </div> </div> </footer> </div> <div class=md-dialog data-md-component=dialog> <div class="md-dialog__inner md-typeset"></div> </div> <script id=__config type=application/json>{"annotate": null, "base": "../../../..", "features": ["search.highlight", "search.suggest", "content.code.copy", "content.code.annotate", "navigation.indexes", "navigation.footer", "navigation.sections", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script> <script src=../../../../assets/javascripts/bundle.79ae519e.min.js></script> </body> </html>
