@@ -20,7 +20,7 @@ def points() -> snx.Points:
         edge_color=snx.UniformColor(color=cmap.Color("white")),
         edge_width=1.0,
         symbol="disc",
-        scaling=False,
+        scaling="fixed",
         antialias=0,
     )
 
@@ -83,12 +83,6 @@ def test_points_scaling(points: snx.Points, adaptor: adaptors.Points) -> None:
     mat = node.material
     assert isinstance(mat, pygfx.PointsMaterial)
 
-    # False -> screen
-    assert points.scaling is False
-    assert mat.size_space == "screen"
-    # True -> world
-    points.scaling = True
-    assert mat.size_space == "world"
     # "visual" -> model,
     points.scaling = "visual"
     assert mat.size_space == "model"

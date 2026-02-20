@@ -18,8 +18,6 @@ if TYPE_CHECKING:
     from scenex import model
 
 SPACE_MAP: Mapping[model.ScalingMode, Literal["model", "screen", "world"]] = {
-    True: "world",
-    False: "screen",
     "fixed": "screen",
     "scene": "world",
     "visual": "model",

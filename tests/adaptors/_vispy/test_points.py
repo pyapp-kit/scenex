@@ -20,7 +20,7 @@ def points() -> snx.Points:
         edge_color=snx.UniformColor(color=cmap.Color("white")),
         edge_width=1.0,
         symbol="disc",
-        scaling=False,
+        scaling="fixed",
         antialias=0,
     )
 
@@ -86,17 +86,12 @@ def test_points_scaling(points: snx.Points, adaptor: adaptors.Points) -> None:
     node = adaptor._vispy_node
     assert isinstance(node, vispy.scene.Markers)
     # Initial state
-    assert not points.scaling
     assert node.scaling == "fixed"
     # Change scaling
-    points.scaling = True  # "scene"
-    assert node.scaling == "scene"
     points.scaling = "visual"
     assert node.scaling == "visual"
     points.scaling = "scene"
     assert node.scaling == "scene"
-    points.scaling = "fixed"
-    assert node.scaling == "fixed"
 
 
 def test_points_color(points: snx.Points, adaptor: adaptors.Points) -> None:

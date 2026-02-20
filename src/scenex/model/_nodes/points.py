@@ -32,7 +32,7 @@ SymbolName = Literal[
     "star",
     "cross_lines",
 ]
-ScalingMode = Literal[True, False, "fixed", "scene", "visual"]
+ScalingMode = Literal["fixed", "scene", "visual"]
 
 
 class Points(Node):
@@ -97,7 +97,7 @@ class Points(Node):
         >>> points = Points(
         ...     vertices=vertices,
         ...     size=10,
-        ...     scaling=False,
+        ...     scaling="fixed",
         ...     face_color=UniformColor(color=Color("blue")),
         ... )
 
@@ -135,8 +135,13 @@ class Points(Node):
     )
     # TODO: these are vispy-specific names.  Determine more general names
     scaling: ScalingMode = Field(
-        default=True,
-        description="Scaling mode: True/scene scales, False/fixed is constant",
+        default="scene",
+        description=(
+            "Scaling mode: '"
+            "'fixed' implies each point will maintain constant screen size,"
+            "'scene' implies each point will maintain constant world size, "
+            "'visual' is like 'fixed' but only scales with this node's transform."
+        ),
     )
 
     antialias: float = Field(

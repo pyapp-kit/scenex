@@ -122,7 +122,7 @@ def test_points_ray_intersection_transformed() -> None:
     points = snx.Points(
         vertices=vertices,
         size=4,
-        scaling=False,
+        scaling="fixed",
         transform=snx.Transform().translated((1, 1, 0)),
     )
 
@@ -153,7 +153,7 @@ def test_points_ray_intersection_edge_cases() -> None:
     """Test edge cases for ray-point intersection."""
     # Empty points
     empty_points = snx.Points(
-        vertices=np.array([]).reshape(0, 3), size=4, scaling=False
+        vertices=np.array([]).reshape(0, 3), size=4, scaling="fixed"
     )
     view = snx.View(scene=snx.Scene(children=[empty_points]))
     canvas = snx.Canvas(views=[view])
@@ -169,7 +169,7 @@ def test_points_ray_intersection_edge_cases() -> None:
         vertices=vertices,
         size=2,
         edge_width=2,  # Increases effective radius
-        scaling=False,
+        scaling="fixed",
     )
     # Create a new view with the edge points
     view = snx.View(scene=snx.Scene(children=[points_with_edge]))

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import vispy.scene
@@ -12,19 +12,9 @@ from scenex.model._color import UniformColor, VertexColors
 from ._node import Node
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
-
     import numpy.typing as npt
 
     from scenex import model
-
-SPACE_MAP: Mapping[model.ScalingMode, Literal["scene", "fixed", "visual"]] = {
-    True: "scene",
-    False: "fixed",
-    "fixed": "fixed",
-    "scene": "scene",
-    "visual": "visual",
-}
 
 
 class Points(Node, PointsAdaptor):
@@ -63,7 +53,7 @@ class Points(Node, PointsAdaptor):
         self._update_vispy_data()
 
     def _snx_set_scaling(self, scaling: model.ScalingMode) -> None:
-        self._vispy_node.scaling = SPACE_MAP[scaling]
+        self._vispy_node.scaling = scaling
         self._update_vispy_data()
 
     def _snx_set_antialias(self, antialias: float) -> None:
