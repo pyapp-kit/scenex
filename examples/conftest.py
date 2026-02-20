@@ -16,6 +16,8 @@ def pytest_collection_modifyitems(
         # For each notebook cell being tested...
         if not isinstance(item, IPyNbCell):
             continue
+
+        item.parent.skip_compare += ("stderr",)  # pyright: ignore
         # Add the following (regex) sanitations...
         # (Note that both the expected and actual cell outputs will be sanitized)
         item.parent.sanitize_patterns.update(  # pyright: ignore
