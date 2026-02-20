@@ -31,7 +31,7 @@ jobs:
         with:
           enable-cache: true
           python-version: "3.13"
-      - uses: j178/prek-action@v1
+      - run: uvx prek run --all-files
 
   test:
     name: test ${{ matrix.os }} py${{ matrix.python-version }} ${{ matrix.gfx }} ${{ matrix.canvas }}
