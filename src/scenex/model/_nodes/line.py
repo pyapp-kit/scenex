@@ -26,21 +26,6 @@ class Line(Node):
     Vertices can be 2D or 3D coordinates. For 2D vertices, the z-coordinate is assumed
     to be 0, placing the line in the xy-plane.
 
-    Attributes
-    ----------
-    vertices : array-like
-        Array of vertex positions defining the line path. Shape should be (N, 2) for
-        2D lines or (N, 3) for 3D lines, where N is the number of vertices.
-    color : UniformColor | VertexColors
-        Color specification for the line. Can be:
-        - UniformColor: Single color for the entire line
-        - VertexColors: One color per vertex, interpolated along segments
-        Default is uniform white.
-    width : float
-        Width of the line in pixels. Must be non-negative.
-    antialias : float
-        Anti-aliasing amount in pixels for smoother line rendering.
-
     Examples
     --------
     Create a simple line connecting several points:
@@ -72,16 +57,17 @@ class Line(Node):
         default=None,
         repr=False,
         exclude=True,
-        description="Array of vertex positions with shape (N, 2) or (N, 3)",
+        description="Array of N vertex positions, of shape (N, 2) or (N, 3)",
     )
 
     color: UniformColor | VertexColors = Field(
         default_factory=lambda: UniformColor(color=Color("white")),
         description="Color specification; uniform or per-vertex colors",
     )
+    # TODO: Support scaling modes like points do
     width: float = Field(default=1.0, ge=0.0, description="Width of the line in pixels")
     antialias: float = Field(
-        default=1.0, description="Anti-aliasing amount in pixels for smoother rendering"
+        default=1.0, description="Anti-aliasing amount (pixels) for rendering"
     )
 
     @property  # TODO: Cache?

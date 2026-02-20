@@ -52,17 +52,6 @@ class Camera(Node):
     the positive x-axis points right, the positive y-axis points up, and the positive
     z-axis points out of the screen toward the viewer.
 
-    Attributes
-    ----------
-    controller : CameraController | None
-        Describes response to user interactions (e.g., PanZoom, Orbit). If None, user
-        interactions are ignored.
-    interactive : bool
-        Whether the camera responds to user input events (mouse, keyboard).
-    projection : Transform
-        The projection transformation mapping 2D normalized device coordinates to 3D
-        rays. Default is an orthographic projection of a 2x2x2 cube centered at origin.
-
     Examples
     --------
     Create a camera with pan-zoom controller:
@@ -93,7 +82,7 @@ class Camera(Node):
     )
     projection: Transform = Field(
         default_factory=lambda: projections.orthographic(2, 2, 2),
-        description="Projection transformation mapping NDC to 3D rays in local space",
+        description="Transformation mapping NDC to 3D rays in local space",
     )
 
     @property  # TODO: Cache?

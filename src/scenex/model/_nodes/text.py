@@ -15,15 +15,6 @@ class Text(Node):
     making it useful for labels, annotations, and markers. The text is positioned at the
     node's transformed origin point.
 
-    Attributes
-    ----------
-    text : str
-        The string content to display.
-    color : Color
-        Color of the text. Default is white.
-    size : int
-        Font size in pixels. Must be non-negative.
-
     Examples
     --------
     Create a simple text label:
@@ -39,7 +30,10 @@ class Text(Node):
 
     text: str = Field(default="", description="The string content to display")
     color: Color = Field(default=Color("white"), description="Color of the text")
-    size: int = Field(default=12, ge=0, description="Font size in pixels")
+    # TODO: Support scaling modes like points do.
+    size: int = Field(
+        default=12, ge=0, description="Font size in pixels, must be non-negative"
+    )
 
     @property
     def bounding_box(self) -> AABB:

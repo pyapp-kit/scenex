@@ -36,17 +36,6 @@ class MouseButton(IntFlag):
     MouseButton uses IntFlag to allow bitwise operations, enabling representation
     of multiple simultaneous button presses.
 
-    Attributes
-    ----------
-    NONE : int
-        No mouse buttons pressed.
-    LEFT : int
-        Left mouse button.
-    MIDDLE : int
-        Middle mouse button (scroll wheel click).
-    RIGHT : int
-        Right mouse button.
-
     Examples
     --------
     Check if left button is pressed:

@@ -38,20 +38,6 @@ class View(EventedBase):
     on a single canvas, each potentially showing different scenes or the same scene from
     different camera angles.
 
-    Attributes
-    ----------
-    scene : Scene
-        The scene graph containing all visual elements to be rendered in this view.
-    camera : Camera
-        The camera defining the viewing perspective and projection for this view.
-    on_resize : ResizePolicy | None
-        Strategy for adjusting the camera projection when the view is resized. If None,
-        the camera projection remains unchanged on view resize.
-    layout : Layout
-        The layout defining the view's position, size, and visual styling on the canvas.
-    visible : bool
-        Whether the view is visible and should be rendered.
-
     Examples
     --------
     Create a view with a scene containing an image:
@@ -74,7 +60,7 @@ class View(EventedBase):
 
     scene: Scene = Field(
         default_factory=Scene,
-        description="The scene graph containing all visual elements to render",
+        description="The scenegraph to render",
     )
     camera: Camera = Field(
         default_factory=Camera,
@@ -87,7 +73,7 @@ class View(EventedBase):
     layout: Layout = Field(
         default_factory=Layout,
         frozen=True,
-        description="The layout defining position, size, and visual styling",
+        description="Defines view position, size, and styling upon the canvas",
     )
     visible: bool = Field(
         default=True, description="Whether the view is visible and should be rendered"

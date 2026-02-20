@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
-from annotated_types import Interval
 from cmap import Colormap
 from pydantic import Field
 
@@ -27,23 +26,6 @@ class Image(Node):
     The image's geometry spans from (-0.5, -0.5) to (width-0.5, height-0.5), meaning
     that pixel centers are at integer coordinates. This convention aligns with standard
     image processing practices.
-
-    Attributes
-    ----------
-    data : array-like
-        The 2D array of intensity values to display. Can be any array-like object with
-        a shape attribute (NumPy arrays, Dask arrays, etc.).
-    cmap : Colormap
-        The colormap used to convert intensity values to colors. Default is grayscale.
-    clims : tuple[float, float] | None
-        The (min, max) intensity values for normalization. Values outside this range
-        are clipped. If None, uses the data's min and max values.
-    gamma : float
-        Gamma correction factor applied after normalization. Must be in range (0, 2].
-        Default is 1.0 (no correction).
-    interpolation : Literal["nearest", "linear", "bicubic"]
-        Interpolation method for rendering between pixels. "nearest" shows sharp pixels,
-        "linear" smooths between neighbors, "bicubic" provides smoother results.
 
     Examples
     --------
@@ -78,19 +60,25 @@ class Image(Node):
     )
     cmap: Colormap = Field(
         default_factory=lambda: Colormap("gray"),
-        description="Colormap for converting intensity values to colors",
+        description="Converts intensity values to colors",
     )
     clims: tuple[float, float] | None = Field(
         default=None,
-        description="Min/max intensity values for normalization; None uses data range",
+        description=(
+            "Min/max intensity values for normalization. "
+            "Values outside this range are clipped. "
+            "None uses data range"
+        ),
     )
-    gamma: Annotated[float, Interval(gt=0, le=2)] = Field(
+    gamma: float = Field(
         default=1.0,
-        description="Gamma correction factor in range (0, 2]",
+        gt=0,
+        le=2,
+        description="Gamma correction factor. Applied after normalization",
     )
     interpolation: InterpolationMode = Field(
         default="nearest",
-        description="Interpolation method: 'nearest', 'linear', or 'bicubic'",
+        description="Defines color interpolation method between data values.",
     )
 
     @property  # TODO: Cache?

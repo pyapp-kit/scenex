@@ -25,21 +25,6 @@ class Mesh(Node):
     Meshes support ray-triangle intersection testing using the Möller-Trumbore
     algorithm, enabling efficient picking and interaction.
 
-    Attributes
-    ----------
-    vertices : array-like
-        Array of vertex positions. Shape should be (N, 2) or (N, 3) where N is the
-        number of vertices. For 2D vertices, z-coordinate is assumed to be 0.
-    faces : array-like
-        Array of face definitions. Shape should be (M, 3) where M is the number of
-        triangular faces. Each row contains three indices into the vertices array,
-        defining a triangle with counter-clockwise winding.
-    color : UniformColor | FaceColors | VertexColors
-        Color specification for the mesh. Can be:
-        - UniformColor: Single color for the entire mesh
-        - FaceColors: One color per face
-        - VertexColors: One color per vertex, interpolated across faces
-
     Examples
     --------
     Create a simple triangle mesh:
@@ -83,7 +68,7 @@ class Mesh(Node):
         default=None,
         repr=False,
         exclude=True,
-        description="Array of vertex positions with shape (N, 2) or (N, 3)",
+        description="Array of N vertex positions, of shape (N, 2) or (N, 3)",
     )
     # Note that the normal vector of each face (v1, v2, v3) is given by
     # n = (v2 - v1) x (v3 - v1).
@@ -91,7 +76,7 @@ class Mesh(Node):
         default=None,
         repr=False,
         exclude=True,
-        description="Array of face indices with shape (M, 3) defining triangles",
+        description="Array of M face triangles, of shape (M, 3)",
     )
 
     color: UniformColor | FaceColors | VertexColors = Field(

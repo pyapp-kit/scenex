@@ -46,19 +46,6 @@ class Canvas(EventedBase):
     it corresponds to a DOM element. Multiple views can be laid out horizontally on a
     single canvas; more complex layouts are planned in the near future.
 
-    Attributes
-    ----------
-    width : int
-        The width of the canvas in pixels.
-    height : int
-        The height of the canvas in pixels.
-    background_color : Color
-        The background color of the canvas.
-    visible : bool
-        Whether the canvas is visible. Set to True to show the canvas window.
-    title : str
-        The window title (desktop) or label for the canvas.
-
     Examples
     --------
     Create a simple canvas with default settings:

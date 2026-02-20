@@ -96,11 +96,6 @@ class Transform(RootModel):
     The Transform class is immutable (frozen). Operations like translated(), rotated(),
     and scaled() return new Transform instances rather than modifying the original.
 
-    Attributes
-    ----------
-    root : np.ndarray
-        The underlying 4x4 transformation matrix. Defaults to the identity matrix.
-
     Examples
     --------
     Create an identity transform:

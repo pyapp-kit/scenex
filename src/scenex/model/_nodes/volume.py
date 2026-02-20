@@ -26,13 +26,6 @@ class Volume(Image):
     correction. The rendering mode determines how the 3D data is projected onto the 2D
     viewing plane.
 
-    Attributes
-    ----------
-    render_mode : Literal["iso", "mip"]
-        Volume rendering method:
-        - "mip": Maximum Intensity Projection - shows the maximum value along each ray
-        - "iso": Isosurface rendering - renders a surface at a specific intensity value
-
     Examples
     --------
     Create a volume with MIP rendering:
@@ -60,7 +53,11 @@ class Volume(Image):
     node_type: Literal["volume"] = Field(default="volume", repr=False)  # type: ignore[assignment]
 
     render_mode: RenderMode = Field(
-        default="mip", description="Volume rendering method"
+        default="mip",
+        description=(
+            'Volume rendering method: "mip" projects the maximum intensity along each '
+            'ray; "iso" renders a surface at a specific intensity value.'
+        ),
     )
 
     @property  # TODO: Cache?

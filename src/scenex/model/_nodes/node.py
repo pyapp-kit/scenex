@@ -110,27 +110,6 @@ class Node(EventedBase):
     - Spatial relationships: Nodes can find paths to other nodes in the graph
     - Event handling: Interactive nodes can respond to user input
 
-    Attributes
-    ----------
-    parent : Node | None
-        The parent node in the scene graph hierarchy. None for root nodes.
-    name : str | None
-        Optional name for the node, useful for debugging and identification.
-    visible : bool
-        Whether this node and its children should be rendered.
-    interactive : bool
-        Whether this node can receive and respond to mouse and touch events.
-    opacity : float
-        Opacity of the node, from 0.0 (fully transparent) to 1.0 (fully opaque).
-    order : int
-        Drawing order within siblings. Higher values are drawn later (on top).
-        Children are always drawn after their parents.
-    transform : Transform
-        Transformation mapping the node's local coordinate frame to its parent's frame.
-        Applied hierarchically through the scene graph.
-    blending : BlendMode
-        How this node's colors blend with nodes behind it (opaque, alpha, or additive).
-
     Notes
     -----
     Do not instantiate Node directly. Use concrete subclasses instead.
@@ -147,11 +126,12 @@ class Node(EventedBase):
 
     name: str | None = Field(default=None, description="Name identifying the node")
     visible: bool = Field(
-        default=True, description="Whether this node and its children are visible"
+        default=True,
+        description="Whether this node and its children should be rendered",
     )
     interactive: bool = Field(
         default=False,
-        description="Whether this node can receive mouse and touch events",
+        description="Whether this node should respond to mouse and touch events",
         repr=False,
     )
     opacity: float = Field(

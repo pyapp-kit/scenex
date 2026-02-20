@@ -15,28 +15,7 @@ class Layout(EventedBase):
 
     The Layout model defines the position, size, and visual styling of rectangular
     areas. It uses a box model with margin, border, padding, and content areas,
-    similar to CSS. The layout coordinates are relative to the parent container.
-
-    Attributes
-    ----------
-    x : float
-        The x-coordinate of the layout's left edge (relative to parent).
-    y : float
-        The y-coordinate of the layout's top edge (relative to parent).
-    width : float
-        The total width of the layout in pixels.
-    height : float
-        The total height of the layout in pixels.
-    background_color : Color | None
-        The background color inside the border. None for transparent.
-    border_width : float
-        The width of the border in pixels.
-    border_color : Color | None
-        The color of the border.
-    padding : int
-        Space between content and border in pixels.
-    margin : int
-        Space outside the border in pixels.
+    similar to CSS.
 
     Examples
     --------
@@ -77,17 +56,21 @@ class Layout(EventedBase):
     """
 
     x: float = Field(
-        default=0, description="The x-coordinate of the object (wrt parent)."
+        default=0, description="The x-coordinate of the left edge of the layout"
     )
     y: float = Field(
-        default=0, description="The y-coordinate of the object (wrt parent)."
+        default=0, description="The y-coordinate of the top edge of the layout"
     )
-    width: float = Field(default=600, description="The width of the object.")
-    height: float = Field(default=600, description="The height of the object.")
+    width: float = Field(
+        default=600, description="The total width (including margin, border, padding)"
+    )
+    height: float = Field(
+        default=600, description="The total height (including margin, border, padding)"
+    )
     background_color: Color | None = Field(
         default=Color("black"),
         description="The background color (inside of the border). "
-        "None implies transparent.",
+        "None implies transparent",
     )
     border_width: float = Field(
         default=0, description="The width of the border in pixels."
@@ -97,11 +80,11 @@ class Layout(EventedBase):
     )
     padding: int = Field(
         default=0,
-        description="The amount of padding in the widget "
-        "(i.e. the space reserved between the contents and the border).",
+        description="Number of pixels between border and content",
     )
     margin: int = Field(
-        default=0, description="The margin to keep outside the widget's border"
+        default=0,
+        description="Number of pixels between top/left edge and border",
     )
 
     model_config = ConfigDict(extra="forbid")
