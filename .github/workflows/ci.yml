@@ -81,7 +81,7 @@ jobs:
           sudo apt install -y libegl1-mesa-dev libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers
 
       - name: Install dependencies
-        run: uv sync --no-dev --group test --extra ${{ matrix.gfx }} --extra ${{matrix.canvas}} ${{ matrix.python-version >= '3.12' && matrix.gfx == 'pygfx' && '--extra imgui' || '' }} ${{ matrix.canvas == 'pyqt6' && '--group testqt' || '' }} ${{ matrix.canvas == 'jupyter' && '--group testjupyter' || '' }}
+        run: uv sync --no-dev --group test --extra ${{ matrix.gfx }} --extra ${{matrix.canvas}} ${{ matrix.python-version >= '3.12' && matrix.gfx == 'pygfx' && '--extra imgui' || '' }} ${{ matrix.canvas == 'pyqt6' && '--group testqt' || '' }}
 
       - name: Test
         shell: bash
