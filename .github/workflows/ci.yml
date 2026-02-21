@@ -81,11 +81,16 @@ jobs:
           sudo apt install -y libegl1-mesa-dev libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers
 
       - name: Install dependencies
-        run: uv sync --no-dev --group test --extra ${{ matrix.gfx }} --extra ${{matrix.canvas}} ${{ matrix.python-version >= '3.12' && matrix.gfx == 'pygfx' && '--extra imgui' || '' }} ${{ matrix.canvas == 'pyqt6' && '--group testqt' || '' }}
+        run: uv sync --no-dev --group test --extra ${{ matrix.gfx }} --extra ${{matrix.canvas}} ${{ matrix.python-version >= '3.12' && matrix.gfx == 'pygfx' && '--extra imgui' || '' }} ${{ matrix.canvas == 'pyqt6' && '--group testqt' || '' }} ${{ matrix.canvas == 'jupyter' && '--group testjupyter' || '' }}
 
       - name: Test
         shell: bash
         run: uv run --no-sync coverage run -p -m pytest -v
+
+      - name: Test notebooks
+        if: matrix.canvas == 'jupyter'
+        shell: bash
+        run: uv run --no-sync coverage run -p -m pytest -v --nbval examples/*.ipynb
 
       - name: Upload coverage
         uses: actions/upload-artifact@v6
