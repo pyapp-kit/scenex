@@ -158,8 +158,6 @@ class QtAppWrap(App):
             # otherwise create a new QApplication
             # must be stored in a class variable to prevent garbage collection
             QtAppWrap._APP_INSTANCE = qapp = QApplication(sys.argv)
-            qapp.setOrganizationName("ndv")
-            qapp.setApplicationName("ndv")
 
         return qapp
 
