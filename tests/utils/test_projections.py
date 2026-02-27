@@ -123,11 +123,14 @@ def test_zoom_to_fit_orthographic() -> None:
 
 
 def test_zoom_to_fit_orthographic_preserving_aspect_ratio() -> None:
+    # Put a view on a (square) canvas
+    canvas = snx.Canvas(width=400, height=400)
     view = snx.View(
         scene=snx.Scene(
             children=[snx.Points(vertices=np.asarray([[0, 200, 1], [100, 0, 0]]))]
         )
     )
+    view.canvas = canvas
     # By default, the view is not square
     zoom_to_fit(view, type="orthographic")
     # Assert the camera is moved to the center of the scene

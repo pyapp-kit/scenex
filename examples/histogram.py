@@ -1,7 +1,4 @@
-"""An interactive histogram.
-
-TODO: Currently tracked in Git for use in programming view placement. Unclear whether it will stay
-"""
+"""An interactive histogram."""
 
 from __future__ import annotations
 
@@ -12,21 +9,22 @@ import numpy as np
 import numpy.typing as npt
 
 import scenex as snx
+from scenex.app import CursorType, app, events
 from scenex.utils import projections
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from scenex.app import events
-
 
 def gaussian_dataset(
-    n: int = 10000,
+    n: int = 100000,
     mean: float = 32767.5,
-    std: float = 8000.0,
-    dtype: np.dtype = np.dtype(np.uint16),
+    std: float = 80.0,
+    dtype: np.dtype | None = None,
 ) -> np.ndarray:
     """Generate a gaussian-distributed dataset clipped to the given dtype range."""
+    if dtype is None:
+        dtype = np.dtype(np.uint16)
     info = np.iinfo(dtype)
     data = np.random.normal(mean, std, n)
     return np.clip(data, info.min, info.max).astype(dtype)
@@ -40,21 +38,19 @@ def _calc_hist_bins(data: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
 
 
 class Histogram:
+    """A simple interactive histogram view with adjustable clims and gamma."""
+
     def __init__(self) -> None:
-        self.model = None
         self._clims: tuple[float, float] = (0, 65535)
         self._gamma = 1.0
         self._grabbed: snx.Node | None = None
-        self._initialized = False
 
-        # State variables - will be used when creating objects
         self._containers: dict[int, tuple[np.ndarray, np.ndarray]] = {}
         self._values: np.ndarray | None = None
         self._bins: np.ndarray | None = None
         self._log_base: float | None = None
         self._max_bin: float | None = None
 
-        # Create views with empty scenes in constructor
         self.x_view = snx.View(
             scene=snx.Scene(name="x axis"),
             camera=snx.Camera(),
@@ -75,46 +71,27 @@ class Histogram:
             visible=True,
         )
 
-        # Add views to canvas grid
-        self.y_view.layout.x = 0
-        self.y_view.layout.y = 0
-        self.y_view.layout.width = 40
-        self.y_view.layout.height = 600
-        self.x_view.layout.x = 0
-        self.x_view.layout.y = 560
-        self.x_view.layout.width = 600
-        self.x_view.layout.height = 40
-        self.view.layout.x = 40
-        self.view.layout.y = 0
-        self.view.layout.width = 560
-        self.view.layout.height = 560
+        # Lay out views using pixel-anchored strategies so resizing works correctly
+        _AXIS = 40  # pixels reserved for each axis strip
+        self.y_view.layout.region = snx.PixelRegion(
+            left=0, width=_AXIS, top=_AXIS, bottom=-_AXIS
+        )
+        self.x_view.layout.region = snx.PixelRegion(
+            left=0, right=-1, bottom=0, height=_AXIS
+        )
+        self.view.layout.region = snx.PixelRegion(
+            left=_AXIS, right=-1, top=_AXIS, bottom=-_AXIS
+        )
 
-        # Scene contents will be created on first set_data call
-        # FIXME: We do this because there's a VisPy bug that causes a blank canvas when
-        # there is a non-empty scene at first render.
-        # (RuntimeError: OpenGL got errors (periodic check): GL_INVALID_OPERATION)
-        # The same thing actually happens
-
-        self.x_axis: snx.Line | None = None
         self._tick_objects: list[snx.Text] = []
-        self.y_axis: snx.Line | None = None
-        self.y_max: snx.Text | None = None
-        self.mesh: snx.Mesh | None = None
-        self.highlight_line: snx.Line | None = None
-        self.left_clim: snx.Line | None = None
-        self.gamma_curve: snx.Line | None = None
-        self.right_clim: snx.Line | None = None
-        self.gamma_handle: snx.Points | None = None
-        self.controls: snx.Scene | None = None
+        self._init_x_view()
+        self._init_y_view()
+        self._init_main_view()
 
-    def _initialize_views(self) -> None:
-        """Lazy initialization of scene contents on first set_data call."""
-        if self._initialized:
-            return
-
-        # 1. Populate x axis view scene
+    def _init_x_view(self) -> None:
+        """Populate the x-axis view scene."""
         self.x_axis = snx.Line(
-            vertices=np.array([[0.10, 0, 0], [0.95, 0, 0]]),
+            vertices=np.array([[0, 0, 0], [1, 0, 0]]),
             width=2,
             color=snx.UniformColor(color=cmap.Color("white")),
         )
@@ -128,26 +105,28 @@ class Histogram:
                 color=snx.UniformColor(color=cmap.Color("white")),
                 transform=snx.Transform().translated((0, 0.4, 0)),
             )
-            tick_text = snx.Text(text="0", children=[tick_line])
+            tick_text = snx.Text(text="0", children=[tick_line])  # type: ignore
             self._tick_objects.append(tick_text)
 
-        # 2. Populate y axis view scene
+    def _init_y_view(self) -> None:
+        """Populate the y-axis view scene."""
         self.y_axis = snx.Line(
-            vertices=np.array([[0, 0.2, 0], [0, 0.8, 0]]),
+            # vertices=np.array([[0, 0.2, 0], [0, 0.8, 0]]),
+            vertices=np.array([[0, 0, 0], [0, 1, 0]]),
             width=2,
             color=snx.UniformColor(color=cmap.Color("white")),
         )
-        self.y_max = snx.Text(
-            text="1", transform=snx.Transform().translated((-0.5, 0.8))
-        )
+        self.y_max = snx.Text(text="1", transform=snx.Transform().translated((-0.5, 1)))
         self.y_view.scene.add_child(self.y_axis)
         self.y_view.scene.add_child(self.y_max)
 
-        # 3. Populate main histogram view scene
+    def _init_main_view(self) -> None:
+        """Populate the main histogram view scene and connect event handlers."""
         self.mesh = snx.Mesh(
             vertices=np.zeros((1, 3), dtype=np.float32),
             faces=np.zeros((1, 3), dtype=np.uint16),
             color=snx.UniformColor(color=cmap.Color("steelblue")),
+            order=0,
         )
 
         self.highlight_line = snx.Line(
@@ -161,14 +140,17 @@ class Histogram:
         self.left_clim = snx.Line(
             name="left clim",
             interactive=True,
+            order=1,
         )
         self.gamma_curve = snx.Line(
             name="gamma curve",
             interactive=False,
+            order=1,
         )
         self.right_clim = snx.Line(
             name="right clim",
             interactive=True,
+            order=1,
         )
         self.gamma_handle = snx.Points(
             name="gamma handle",
@@ -178,6 +160,7 @@ class Histogram:
             face_color=snx.UniformColor(color=cmap.Color("white")),
             edge_color=snx.UniformColor(color=cmap.Color("black")),
             interactive=True,
+            order=2,
         )
 
         self._create_static_clim_lines()
@@ -212,71 +195,78 @@ class Histogram:
         self.view.camera.events.projection.connect(self._update_x_axis)
         self.view.set_event_filter(self._on_main_view)
 
-        self._initialized = True
-
         # self.set_clims(self._clims)
 
     def _on_main_view(self, event: events.Event) -> bool:
-        # if not self._initialized:
-        #     return False
+        if isinstance(event, events.MousePressEvent):
+            intersections = [
+                node
+                for node, _dist in event.world_ray.intersections(self.controls)
+                if node.interactive
+            ]
+            if len(intersections):
+                self._grabbed = intersections[0]
+                self.view.camera.interactive = False
+        elif isinstance(event, events.MouseDoublePressEvent):
+            intersections = [
+                node
+                for node, _dist in event.world_ray.intersections(self.controls)
+                if node.interactive
+            ]
+            if self.gamma_handle in intersections:
+                self.set_gamma(1.0)
+        if isinstance(event, events.MouseMoveEvent):
+            if self._grabbed is self.left_clim:
+                # The left clim must stay to the left of the right clim
+                new_left = min(event.world_ray.origin[0], self._clims[1])
+                # ...and no less than the minimum value
+                if self._bins is not None:
+                    new_left = max(new_left, self._bins[0])
+                # Set it
+                self.set_clims((new_left, self._clims[1]))
+            elif self._grabbed is self.right_clim:
+                # The right clim must stay to the right of the left clim
+                new_right = max(self._clims[0], event.world_ray.origin[0])
+                # ...and no more than the minimum value
+                if self._bins is not None:
+                    new_right = min(new_right, self._bins[-1])
+                # Set it
+                self.set_clims((self._clims[0], new_right))
+            elif self._grabbed is self.gamma_handle:
+                # Set it
+                self.set_gamma(-np.log2(event.world_ray.origin[1]))
+            elif self._grabbed is None:
+                intersections = [
+                    node
+                    for node, _dist in event.world_ray.intersections(self.controls)
+                    if node.interactive
+                ]
+                if self.right_clim in intersections or self.left_clim in intersections:
+                    app().set_cursor(self.canvas, CursorType.H_ARROW)
+                elif self.gamma_handle in intersections:
+                    app().set_cursor(self.canvas, CursorType.V_ARROW)
+                else:
+                    app().set_cursor(self.canvas, CursorType.DEFAULT)
 
-        # if isinstance(event, events.MousePressEvent):
-        #     intersections = [
-        #         node
-        #         for node, _dist in event.world_ray.intersections(self.view.scene)
-        #         if node.interactive
-        #     ]
-        #     if len(intersections):
-        #         self._grabbed = intersections[0]
-        #         self.view.camera.interactive = False
-        # elif isinstance(event, events.MouseDoublePressEvent):
-        #     intersections = [
-        #         node
-        #         for node, _dist in event.world_ray.intersections(self.view.scene)
-        #         if node.interactive
-        #     ]
-        #     if self.gamma_handle in intersections and (model := self.model):
-        #         model.gamma = 1
-        # if isinstance(event, events.MouseMoveEvent):
-        #     if self._grabbed is self.left_clim:
-        #         # The left clim must stay to the left of the right clim
-        #         new_left = min(event.world_ray.origin[0], self._clims[1])
-        #         # ...and no less than the minimum value
-        #         if self._bins is not None:
-        #             new_left = max(new_left, self._bins[0])
-        #         # Set it
-        #         if model := self.model:
-        #             model.clims = ClimsManual(min=new_left, max=self._clims[1])
-        #     elif self._grabbed is self.right_clim:
-        #         # The right clim must stay to the right of the left clim
-        #         new_right = max(self._clims[0], event.world_ray.origin[0])
-        #         # ...and no more than the minimum value
-        #         if self._bins is not None:
-        #             new_right = min(new_right, self._bins[-1])
-        #         # Set it
-        #         if model := self.model:
-        #             model.clims = ClimsManual(min=self._clims[0], max=new_right)
-        #     elif self._grabbed is self.gamma_handle:
-        #         # Set it
-        #         if model := self.model:
-        #             model.gamma = -np.log2(event.world_ray.origin[1])
-        #     elif self._grabbed is None:
-        #         intersections = [
-        #             node
-        #             for node, _dist in event.world_ray.intersections(self.view.scene)
-        #             if node.interactive
-        #         ]
-        #         if self.right_clim in intersections or self.left_clim in intersections:
-        #             app().set_cursor(self.canvas, CursorType.H_ARROW)
-        #         elif self.gamma_handle in intersections:
-        #             app().set_cursor(self.canvas, CursorType.V_ARROW)
-        #         else:
-        #             app().set_cursor(self.canvas, CursorType.DEFAULT)
-
-        # if isinstance(event, (events.MouseReleaseEvent, events.MouseLeaveEvent)):
-        #     self._grabbed = None
-        #     self.view.camera.interactive = True
+        if isinstance(event, events.MouseReleaseEvent | events.MouseLeaveEvent):
+            self._grabbed = None
+            self.view.camera.interactive = True
         return False
+
+    def set_clims(self, clims: tuple[float, float]) -> None:
+        """Set the histogram clims."""
+        self._clims = clims
+        if self.controls is not None:
+            self.controls.transform = (
+                snx.Transform()
+                .scaled((self._clims[1] - self._clims[0], 1, 1))
+                .translated((self._clims[0], 0, 0))
+            )
+
+    def set_gamma(self, gamma: float) -> None:
+        """Set the gamma."""
+        self._gamma = gamma
+        self._update_lut_line()
 
     def _create_static_clim_lines(self) -> None:
         """Create the static left and right clim lines that don't change with gamma."""
@@ -315,7 +305,7 @@ class Histogram:
         # Gamma curve (non-interactive) - updates when gamma changes
         gamma_x = np.linspace(0, 1, npoints)
         gamma_y = np.linspace(0, 1, npoints) ** (
-            self.model.gamma if self.model is not None else 1
+            self._gamma if self._gamma is not None else 1
         )
         gamma_z = np.zeros(npoints)
         self.gamma_curve.vertices = np.column_stack((gamma_x, gamma_y, gamma_z))
@@ -326,13 +316,12 @@ class Histogram:
             for c in np.linspace(0.2, 0.8, npoints).repeat(3).reshape(-1, 3)
         ]
         self.gamma_curve.color = snx.VertexColors(color=gamma_colors)
-        gamma = self.model.gamma if self.model is not None else 1
-        self.gamma_handle.transform = snx.Transform().translated((0, 0.5**gamma - 0.5))
+        self.gamma_handle.transform = snx.Transform().translated(
+            (0, 0.5**self._gamma - 0.5)
+        )
 
     def set_data(self, source: np.ndarray) -> None:
-        # Initialize views on first call
-        self._initialize_views()
-
+        """Set the histogram data."""
         values, bin_edges = _calc_hist_bins(source)
         uninitialized = self._values is None
         # Update the histogram mesh
@@ -351,7 +340,9 @@ class Histogram:
         self._max_bin = np.max(self._values)
         if mesh := self.mesh:
             mesh.vertices, mesh.faces = self._hist_counts_to_mesh(
-                self._values, self._bins, False
+                self._values,
+                self._bins,  # type: ignore
+                False,
             )
         # Reapply log scaling if necessary
         if log := self._log_base:
@@ -365,11 +356,14 @@ class Histogram:
             self.set_range()
 
     def _has_data(self) -> bool:
-        return self.mesh is not None and self.mesh.vertices.shape[0] > 1
+        if self.mesh is None:
+            return False
+        return bool(np.asarray(self.mesh.vertices).size)
 
     # ---- LutView interface implementations ----
 
     def set_log_base(self, base: float | None) -> None:
+        """Sets the log base for the histogram y-axis."""
         if self.mesh is None:
             return
 
@@ -391,9 +385,7 @@ class Histogram:
     # ---- Viewable interface implementations ----
 
     def set_range(self) -> None:
-        if not self._initialized:
-            return
-
+        """Sets the range of the x axis."""
         projections.zoom_to_fit(self.view, "orthographic", zoom_factor=1)
         self.x_view.camera.projection = projections.orthographic(1, 1, 1)
         self.y_view.camera.projection = projections.orthographic(1, 1, 1)
@@ -425,8 +417,8 @@ class Histogram:
         approx_step = range_val / target_ticks
 
         # Find a "nice" step size
-        power10 = 10 ** floor(log10(approx_step))
-        for multiplier in [1, 2, 2.5, 5, 10]:
+        power10 = 10.0 ** floor(log10(approx_step))
+        for multiplier in [1.0, 2.0, 2.5, 5.0, 10.0]:
             step = multiplier * power10
             if step >= approx_step:
                 return step
@@ -483,11 +475,8 @@ class Histogram:
 
     def _update_x_axis(self) -> None:
         # Update the x-axis labels based on the current camera projection
-        if not self._initialized:
-            return
-
         cam = self.view.camera
-        left, *others = cam.transform.map(cam.projection.imap((-1, 0)))
+        left, *_others = cam.transform.map(cam.projection.imap((-1, 0)))
         right, *_others = cam.transform.map(cam.projection.imap((1, 0)))
 
         # Clear existing ticks and labels
@@ -561,7 +550,9 @@ class Histogram:
 
 
 histogram = Histogram()
-histogram.set_data(gaussian_dataset())
+data = gaussian_dataset(n=10000)
+histogram.set_data(data)
+histogram.set_clims((data.min(), data.max()))
 snx.show(histogram.canvas)
 histogram.set_range()
 snx.run()

@@ -88,14 +88,15 @@ def test_orbitcontroller_orbit() -> None:
     # center
     cam.transform = Transform().translated((10, 0, 0))
     cam.look_at((0, 0, 0), up=(0, 0, 1))
-    ray = canvas.to_world((view.layout.width / 2, view.layout.height / 2))
+    _, _, w, h = canvas.rect_for(view)
+    ray = canvas.to_world((w / 2, h / 2))
     assert ray is not None
     np.testing.assert_allclose(ray.origin, (10, 0, 0), atol=1e-7)
     np.testing.assert_allclose(ray.direction, (-1, 0, 0), atol=1e-7)
 
     pos_before = cam.transform.map((0, 0, 0))[:3]
     # Simulate mouse press
-    click_pos = (view.layout.width / 2, view.layout.height / 2)
+    click_pos = (w / 2, h / 2)
     press_event = MousePressEvent(
         canvas_pos=click_pos,
         world_ray=_validate_ray(canvas.to_world(click_pos)),
@@ -172,7 +173,8 @@ def test_orbitcontroller_pan() -> None:
     # Position the camera along the x-axis, looking in the negative x direction at the
     # center
     cam.transform = Transform().rotated(90, (0, 1, 0)).translated((10, 0, 0))
-    ray = canvas.to_world((view.layout.width / 2, view.layout.height / 2))
+    _, _, w, h = canvas.rect_for(view)
+    ray = canvas.to_world((w / 2, h / 2))
     assert ray is not None
     np.testing.assert_allclose(ray.origin, (10, 0, 0), atol=1e-7)
     np.testing.assert_allclose(ray.direction, (-1, 0, 0), atol=1e-7)
@@ -180,7 +182,7 @@ def test_orbitcontroller_pan() -> None:
     center_before = np.array(controller.center)
 
     # Simulate right mouse press
-    click_pos = (view.layout.width / 2, view.layout.height / 2)
+    click_pos = (w / 2, h / 2)
     world_ray_before = canvas.to_world(click_pos)
     assert world_ray_before is not None
     press_event = MousePressEvent(
@@ -190,7 +192,7 @@ def test_orbitcontroller_pan() -> None:
     )
     controller.handle_event(press_event, cam)
     # Simulate right mouse move (pan)
-    click_pos = (click_pos[0], click_pos[1] + view.layout.height // 2)
+    click_pos = (click_pos[0], click_pos[1] + int(h) // 2)
     world_ray_after = canvas.to_world(click_pos)
     assert world_ray_after is not None
     move_event = MouseMoveEvent(

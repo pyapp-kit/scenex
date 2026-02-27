@@ -51,10 +51,10 @@ from .model._color import (
     VertexColors,
 )
 from .model._layout import (
-    AnchorLayoutStrategy,
-    DefaultLayoutStrategy,
-    LayoutStrategy,
-    ProportionalLayoutStrategy,
+    FractionalRegion,
+    PixelRegion,
+    Region,
+    TiledRegion,
 )
 from .model._nodes.camera import Camera, CameraController, Orbit, PanZoom
 from .model._nodes.image import Image
@@ -70,26 +70,26 @@ from .model._view import Letterbox, ResizePolicy, View
 from .util import show
 
 __all__ = [
-    "AnchorLayoutStrategy",
     "Camera",
     "CameraController",
     "Canvas",
     "ColorModel",
-    "DefaultLayoutStrategy",
     "FaceColors",
+    "FractionalRegion",
     "Image",
-    "LayoutStrategy",
     "Letterbox",
     "Line",
     "Mesh",
     "Node",
     "Orbit",
     "PanZoom",
+    "PixelRegion",
     "Points",
-    "ProportionalLayoutStrategy",
+    "Region",
     "ResizePolicy",
     "Scene",
     "Text",
+    "TiledRegion",
     "Transform",
     "UniformColor",
     "VertexColors",

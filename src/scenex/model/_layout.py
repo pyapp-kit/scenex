@@ -2,167 +2,230 @@ from __future__ import annotations
 
 import logging
 from abc import abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Annotated, Literal, Union
 
 from cmap import Color
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, model_validator
 
 from ._base import EventedBase
 
 if TYPE_CHECKING:
     from scenex.model._canvas import Canvas
+    from scenex.model._view import View
 
 logger = logging.getLogger(__name__)
 
+AnyRegion = Annotated[
+    Union["PixelRegion", "FractionalRegion", "TiledRegion"], Field(discriminator="type")
+]
 
-class LayoutStrategy(EventedBase):
-    """Base class defining how a view's layout is computed relative to its canvas.
 
-    A LayoutStrategy determines the position and size of a view when the canvas
-    is resized or when views are added/removed. Strategies are attached to Layout
-    instances via the `strategy` field.
-    """
+class Region(EventedBase):
+    """Defines how a view is placed on a canvas."""
 
     @abstractmethod
-    def apply(
+    def compute_rect(
         self,
-        layout: Layout,
+        view: View,
         canvas: Canvas,
-    ) -> None:
-        """Compute the layout position and size based on the canvas."""
+    ) -> tuple[int, int, int, int]:
+        """Return pixel rect (x, y, width, height) for this view given its canvas."""
         ...
 
 
-class DefaultLayoutStrategy(LayoutStrategy):
-    """Default strategy that divides canvas width equally among views using it."""
+class TiledRegion(Region):
+    """Just put the view on the canvas.
 
-    def apply(
+    This is "reasonable default" region. It's behavior ensures:
+    1. If there is only one default view on the canvas, it will fill the entire canvas.
+    2. If there are multiple default views on the canvas, they will be stacked
+        horizontally in the order they were added, each taking an equal share of the
+        canvas width and the full height.
+    """
+
+    type: Literal["tiled"] = Field(default="tiled", repr=False)
+
+    def compute_rect(
         self,
-        layout: Layout,
+        view: View,
         canvas: Canvas,
-    ) -> None:
-        default_layouts = [
-            view.layout
-            for view in canvas.views
-            if isinstance(view.layout.strategy, DefaultLayoutStrategy)
+    ) -> tuple[int, int, int, int]:
+        default_views = [
+            v for v in canvas.views if isinstance(v.layout.region, TiledRegion)
         ]
-        idx = default_layouts.index(layout)
+        idx = default_views.index(view)
         cw, ch = canvas.size
-        layout.x = idx * (cw / len(default_layouts))
-        layout.y = 0
-        layout.width = cw / len(default_layouts)
-        layout.height = ch
+        n = len(default_views)
+        return (int(idx * (cw / n)), 0, int(cw / n), ch)
 
 
-class ProportionalLayoutStrategy(LayoutStrategy):
-    """Strategy that positions a view proportionally within the canvas."""
+class FractionalRegion(Region):
+    """Positions a view to cover a proportion of its canvas."""
 
     start: int | tuple[int, int] = Field(default=0)
     end: int | tuple[int, int] = Field(default=1)
     total: int | tuple[int, int] = Field(default=1)
 
-    def apply(
+    type: Literal["fractional"] = Field(default="fractional", repr=False)
+
+    def compute_rect(
         self,
-        layout: Layout,
+        view: View,
         canvas: Canvas,
-    ) -> None:
-        cw, ch = canvas.size
-        sw, sh = (
+    ) -> tuple[int, int, int, int]:
+        canvas_width, canvas_height = canvas.size
+        start_width, start_height = (
             self.start if isinstance(self.start, tuple) else (self.start, self.start)
         )
-        ew, eh = self.end if isinstance(self.end, tuple) else (self.end, self.end)
-        tw, th = (
+        end_width, end_height = (
+            self.end if isinstance(self.end, tuple) else (self.end, self.end)
+        )
+        total_width, total_height = (
             self.total if isinstance(self.total, tuple) else (self.total, self.total)
         )
-        layout.x = (sw / tw) * cw
-        layout.y = (sh / th) * ch
-        layout.width = ((ew - sw) / tw) * cw
-        layout.height = ((eh - sh) / th) * ch
+        return (
+            int((start_width / total_width) * canvas_width),
+            int((start_height / total_height) * canvas_height),
+            int(((end_width - start_width) / total_width) * canvas_width),
+            int(((end_height - start_height) / total_height) * canvas_height),
+        )
 
 
-class AnchorLayoutStrategy(LayoutStrategy):
-    """Strategy that anchors the layout to a fixed pixel position on the canvas.
+class PixelRegion(Region):
+    """Positions a view at absolute pixel coordinates within its canvas.
 
-    Primarily useful for overlays that should stay in a corner. Negative anchor
-    values are interpreted as offsets from the canvas edge.
-    """
+    ``left`` and ``top`` are measured from the **canvas top-left corner**.
+    Negative values count from the opposite edge (e.g. ``left=-100`` places
+    the left edge 100 px from the canvas right).
 
-    anchor: tuple[float, float] = Field(default=(0, 0))
+    ``right`` and ``bottom`` are also measured from the top-left corner for
+    positive values, but ``0`` and negative values count from the **opposite
+    canvas edge** (e.g. ``right=0`` is flush with the canvas right edge,
+    ``bottom=-40`` is 40 px from the canvas bottom).
 
-    def apply(
-        self,
-        layout: Layout,
-        canvas: Canvas,
-    ) -> None:
-        sw = self.anchor[0]
-        if sw < 0:
-            sw += canvas.size[0]
-        layout.x = sw
-
-        sh = self.anchor[1]
-        if sh < 0:
-            sh += canvas.size[1]
-        layout.y = sh
-
-
-class Layout(EventedBase):
-    """Rectangular layout model with positioning and styling.
-
-    The Layout model defines the position, size, and visual styling of rectangular
-    areas. It uses a box model with margin, border, padding, and content areas,
-    similar to CSS.
+    Specify exactly two of ``{left, right, width}`` for the horizontal axis,
+    and exactly two of ``{top, bottom, height}`` for the vertical axis.
 
     Examples
     --------
-    Create a layout at position (100, 100) with size 400x300:
-        >>> layout = Layout(x=100, y=100, width=400, height=300)
+    40px-wide strip anchored to the left edge, with 40px top/bottom margins:
+        >>> region = PixelRegion(left=0, width=40, top=40, bottom=-40)
 
-    Create a layout with border and padding:
-        >>> layout = Layout(
-        ...     width=200,
-        ...     height=200,
-        ...     border_width=2,
-        ...     border_color=Color("white"),
-        ...     padding=10,
-        ... )
+    Full-width bar anchored to the canvas bottom with a fixed 40px height:
+        >>> region = PixelRegion(left=0, right=0, bottom=0, height=40)
 
-    Notes
-    -----
-    The layout follows this box model::
+    Fill the area right of and below a 40px margin (flush to right/bottom):
+        >>> region = PixelRegion(left=40, right=0, top=40, bottom=0)
 
-            y
-            |
-            v
-        x-> +--------------------------------+  ^
-            |            margin              |  |
-            |  +--------------------------+  |  |
-            |  |         border           |  |  |
-            |  |  +--------------------+  |  |  |
-            |  |  |      padding       |  |  |  |
-            |  |  |  +--------------+  |  |  |   height
-            |  |  |  |   content    |  |  |  |  |
-            |  |  |  |              |  |  |  |  |
-            |  |  |  +--------------+  |  |  |  |
-            |  |  +--------------------+  |  |  |
-            |  +--------------------------+  |  |
-            +--------------------------------+  v
-
-            <------------ width ------------->
+    100x50 px tile pinned to the top-right corner:
+        >>> region = PixelRegion(left=-100, width=100, top=0, height=50)
     """
 
-    x: float = Field(
-        default=0, description="The x-coordinate of the left edge of the layout"
+    type: Literal["pixel"] = Field(default="pixel", repr=False)
+
+    left: int | None = Field(
+        default=None,
+        description=(
+            "X coordinate of the view's left edge from the canvas left. "
+            "Negative counts from the canvas right edge."
+        ),
     )
-    y: float = Field(
-        default=0, description="The y-coordinate of the top edge of the layout"
+    right: int | None = Field(
+        default=None,
+        description=("X coordinate of the view's right edge from the canvas left. "),
     )
-    width: float = Field(
-        default=600, description="The total width (including margin, border, padding)"
+    width: int | None = Field(default=None, description="Width of the view in pixels.")
+    top: int | None = Field(
+        default=None,
+        description=("Y coordinate of the view's top edge from the canvas top. "),
     )
-    height: float = Field(
-        default=600, description="The total height (including margin, border, padding)"
+    bottom: int | None = Field(
+        default=None,
+        description=("Y coordinate of the view's bottom edge from the canvas top. "),
     )
-    strategy: LayoutStrategy | None = Field(default_factory=DefaultLayoutStrategy)
+    height: int | None = Field(
+        default=None, description="Height of the view in pixels."
+    )
+
+    @model_validator(mode="after")
+    def _check_constraints(self) -> PixelRegion:
+        h_given = sum(v is not None for v in (self.left, self.right, self.width))
+        v_given = sum(v is not None for v in (self.top, self.bottom, self.height))
+        if h_given < 2:
+            raise ValueError(
+                "PixelRegion requires at least two of {left, right, width}"
+            )
+        if v_given < 2:
+            raise ValueError(
+                "PixelRegion requires at least two of {top, bottom, height}"
+            )
+        return self
+
+    def compute_rect(
+        self,
+        view: View,
+        canvas: Canvas,
+    ) -> tuple[int, int, int, int]:
+        cw, ch = canvas.size
+
+        def _start(val: int, size: int) -> int:
+            # left/top: negative counts from the far side
+            return size + val if val < 0 else val
+
+        def _end(val: int, size: int) -> int:
+            # right/bottom: negative count from the far side
+            return size + val if val <= 0 else val
+
+        # Resolve horizontal axis
+        if self.left is not None and self.right is not None:
+            x = _start(self.left, cw)
+            w = _end(self.right, cw) - x
+        elif self.left is not None and self.width is not None:
+            x = _start(self.left, cw)
+            w = self.width
+        else:  # right + width
+            assert self.right is not None and self.width is not None
+            x2 = _end(self.right, cw)
+            w = self.width
+            x = x2 - w
+
+        # Resolve vertical axis
+        if self.top is not None and self.bottom is not None:
+            y = _start(self.top, ch)
+            h = _end(self.bottom, ch) - y
+        elif self.top is not None and self.height is not None:
+            y = _start(self.top, ch)
+            h = self.height
+        else:  # bottom + height
+            assert self.bottom is not None and self.height is not None
+            y2 = _end(self.bottom, ch)
+            h = self.height
+            y = y2 - h
+
+        return (x, y, w, h)
+
+
+class Layout(EventedBase):
+    """Style model for a view's border, padding, background, and layout region.
+
+    The Layout holds visual styling properties and the region that determines
+    how the view is positioned and sized within its canvas. Actual pixel geometry
+    (x, y, width, height) is computed on demand by the canvas via
+    ``Canvas.rect_for(view)`` and ``Canvas.content_rect_for(view)``.
+
+    Examples
+    --------
+    Create a layout with a border:
+        >>> layout = Layout(border_width=2, border_color=Color("white"), padding=10)
+
+    Use a proportional region (left half of canvas):
+        >>> layout = Layout(region=FractionalRegion(end=1, total=2))
+
+    Use a pixel region (40px left strip, 40px top/bottom margin):
+        >>> layout = Layout(region=PixelRegion(left=0, width=40, top=40, bottom=40))
+    """
+
+    region: AnyRegion = Field(default_factory=TiledRegion)
     background_color: Color | None = Field(
         default=Color("black"),
         description="The background color (inside of the border). "
@@ -184,33 +247,3 @@ class Layout(EventedBase):
     )
 
     model_config = ConfigDict(extra="forbid")
-
-    @property
-    def position(self) -> tuple[float, float]:
-        """Return the x, y position of the layout as a tuple."""
-        return self.x, self.y
-
-    @property
-    def size(self) -> tuple[float, float]:
-        """Return the width, height of the layout as a tuple."""
-        return self.width, self.height
-
-    @property
-    def content_rect(self) -> tuple[float, float, float, float]:
-        """Return the (x, y, width, height) of the content area."""
-        offset = self.padding + self.border_width + self.margin
-        return (
-            self.x + offset,
-            self.y + offset,
-            self.width - 2 * offset,
-            self.height - 2 * offset,
-        )
-
-    def __contains__(self, pos: tuple[float, float]) -> bool:
-        offset = self.padding + self.border_width + self.margin
-
-        left = self.x + offset
-        right = self.x + self.width - offset
-        bottom = self.y + offset
-        top = self.y + self.height - offset
-        return left <= pos[0] and pos[0] <= right and bottom <= pos[1] and pos[1] <= top

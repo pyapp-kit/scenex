@@ -72,9 +72,7 @@ view3 = snx.View(
     camera=snx.Camera(interactive=False),
 )
 
-view3.layout.strategy = snx.AnchorLayoutStrategy(anchor=(-100, 0))
-view3.layout.width = 100
-view3.layout.height = 50
+view3.layout.region = snx.PixelRegion(left=-100, width=100, top=0, height=50)
 
 # And put them on the same canvas
 view_size = 400

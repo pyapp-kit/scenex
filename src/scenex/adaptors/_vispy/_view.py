@@ -40,6 +40,7 @@ class View(ViewAdaptor):
         self._snx_set_camera(view.camera)
         self._snx_set_scene(view.scene)
 
+        # FIXME: Should also listen for connection to a view, and similarly set the rect
         view.layout.events.all.connect(self._on_layout_changed)
         self._on_layout_changed()
 
@@ -49,10 +50,11 @@ class View(ViewAdaptor):
         self._cam_adaptor._set_view(w, h)
 
     def _on_layout_changed(self, event: Any | None = None) -> None:
-        rect = Rect(self._model.layout.content_rect)
-        self._vispy_viewbox.rect = rect
-        self._vispy_viewbox.update()
-        self._cam_adaptor._set_view(rect.width, rect.height)
+        if canvas := self._model.canvas:
+            rect = Rect(canvas.content_rect_for(self._model))
+            self._vispy_viewbox.rect = rect
+            self._vispy_viewbox.update()
+            self._cam_adaptor._set_view(rect.width, rect.height)
 
     def _snx_get_native(self) -> Any:
         return self._vispy_viewbox
