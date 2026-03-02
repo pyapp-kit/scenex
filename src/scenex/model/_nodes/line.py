@@ -66,8 +66,8 @@ class Line(Node):
     )
     # TODO: Support scaling modes like points do
     width: float = Field(default=1.0, ge=0.0, description="Width of the line in pixels")
-    antialias: float = Field(
-        default=1.0, description="Anti-aliasing amount (pixels) for rendering"
+    antialias: bool = Field(
+        default=True, description="Whether to apply anti-aliasing to line rendering"
     )
 
     @property  # TODO: Cache?

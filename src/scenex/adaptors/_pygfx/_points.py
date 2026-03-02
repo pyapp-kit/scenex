@@ -37,7 +37,7 @@ class Points(Node, PointsAdaptor):
         self._material = pygfx.PointsMarkerMaterial(
             size=points.size,  # pyright: ignore[reportArgumentType]
             size_space=SPACE_MAP[points.scaling],
-            aa=points.antialias > 0,
+            aa=points.antialias,
             edge_width=points.edge_width,
             opacity=points.opacity,
             # This value has model render order win for coplanar objects
@@ -102,8 +102,8 @@ class Points(Node, PointsAdaptor):
     def _snx_set_scaling(self, scaling: model.ScalingMode) -> None:
         self._material.size_space = SPACE_MAP[scaling]
 
-    def _snx_set_antialias(self, antialias: float) -> None:
-        self._material.aa = antialias > 0
+    def _snx_set_antialias(self, antialias: bool) -> None:
+        self._material.aa = antialias
 
     def _snx_set_opacity(self, arg: float) -> None:
         self._material.opacity = arg

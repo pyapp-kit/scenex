@@ -49,6 +49,14 @@ class Text(Node, TextAdaptor):
         if self._vispy_node.font_size != font_size:
             self._vispy_node.font_size = font_size
 
+    def _snx_set_antialias(self, arg: bool) -> None:
+        # vispy's TextVisual uses SDF-based rendering and cannot be tuned; antialiasing
+        # is always applied internally.
+        # TODO: Consider logging something here? There are bigger questions around how
+        # scenex should handle something that a backend doesn't support. For now let's
+        # be quiet.
+        pass
+
     def _snx_set_blending(self, arg: BlendMode) -> None:
         # Blending text makes it look very blocky
         pass

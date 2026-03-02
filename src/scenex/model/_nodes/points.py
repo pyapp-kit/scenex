@@ -115,8 +115,14 @@ class Points(Node):
         ),
     )
 
-    antialias: float = Field(
-        default=1, description="Anti-aliasing amount (pixels) for symbol rendering"
+    # e.g. VisPy supports an integer antialias property that "blurs" the edge as the
+    # value increases. pygfx supports a boolean property.
+    antialias: bool = Field(
+        default=True,
+        description=(
+            "Whether to apply anti-aliasing to symbol rendering. The anti-aliasing"
+            " implementation, when enabled, is left to the backend."
+        ),
     )
 
     @property  # TODO: Cache?
