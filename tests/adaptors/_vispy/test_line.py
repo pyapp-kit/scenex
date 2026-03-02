@@ -77,7 +77,7 @@ def test_line_antialias(line: snx.Line, adaptor: adaptors.Line) -> None:
     assert isinstance(node, vispy.scene.Line)
     # Initial state
     assert not line.antialias
-    assert node.antialias == (1.0 if line.antialias else 0.0)
+    assert node.antialias == line.antialias
     # Change antialias
     line.antialias = True
-    assert node.antialias == (1.0 if line.antialias else 0.0)
+    assert node.antialias == line.antialias
