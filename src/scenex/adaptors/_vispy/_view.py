@@ -40,7 +40,12 @@ class View(ViewAdaptor):
         self._snx_set_camera(view.camera)
         self._snx_set_scene(view.scene)
 
+        # -- Layout connections -- #
+        self._model.layout.events.background_color.connect(self._set_background_color)
         view.layout.events.all.connect(self._on_layout_changed)
+
+        # -- Layout initialization -- #
+        self._set_background_color(view.layout.background_color)
         self._on_layout_changed()
 
     def _on_vispy_viewbox_resized(self, event: Any) -> None:
@@ -121,6 +126,10 @@ class View(ViewAdaptor):
         warnings.warn(
             "set_margin not implemented for vispy", RuntimeWarning, stacklevel=2
         )
+
+    def _set_background_color(self, color: Color | None) -> None:
+        color_data = None if color is None else color.rgba
+        self._vispy_viewbox.bgcolor = color_data
 
     def _snx_render(self) -> np.ndarray:
         """Render to screenshot."""
