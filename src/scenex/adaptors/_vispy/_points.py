@@ -56,8 +56,8 @@ class Points(Node, PointsAdaptor):
         self._vispy_node.scaling = scaling
         self._update_vispy_data()
 
-    def _snx_set_antialias(self, antialias: float) -> None:
-        self._vispy_node.antialias = antialias
+    def _snx_set_antialias(self, antialias: bool) -> None:
+        self._vispy_node.antialias = 1.0 if antialias else 0.0
 
     def _snx_set_opacity(self, arg: float) -> None:
         self._vispy_node.alpha = arg

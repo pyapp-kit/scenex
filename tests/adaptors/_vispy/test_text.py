@@ -15,6 +15,7 @@ def text() -> snx.Text:
         text="Hello, World!",
         color=cmap.Color("red"),
         size=12,
+        antialias=False,
     )
 
 

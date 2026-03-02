@@ -21,7 +21,7 @@ def points() -> snx.Points:
         edge_width=1.0,
         symbol="disc",
         scaling="fixed",
-        antialias=0,
+        antialias=False,
     )
 
 
@@ -73,9 +73,12 @@ def test_points_antialias(points: snx.Points, adaptor: adaptors.Points) -> None:
     mat = node.material
     assert isinstance(mat, pygfx.PointsMaterial)
 
-    assert mat.aa == (points.antialias > 0)
-    points.antialias = 1
-    assert mat.aa is True
+    # Initial state
+    assert not points.antialias
+    assert mat.aa == points.antialias
+    # Change antialias
+    points.antialias = True
+    assert mat.aa
 
 
 def test_points_scaling(points: snx.Points, adaptor: adaptors.Points) -> None:

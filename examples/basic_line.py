@@ -60,7 +60,7 @@ def _view_event_filter(event: Event) -> bool:
     elif isinstance(event, MousePressEvent):
         if event.buttons & MouseButton.LEFT:
             if intersections := event.world_ray.intersections(view.scene):
-                # Find mesh intersection
+                # Find line intersection
                 for node, _distance in intersections:
                     if isinstance(node, snx.Line):
                         pressed = True

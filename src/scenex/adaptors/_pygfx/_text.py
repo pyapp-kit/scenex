@@ -28,6 +28,7 @@ class Text(Node, TextAdaptor):
             color=text.color.hex,
             # This value has model render order win for coplanar objects
             depth_compare="<=",
+            aa=text.antialias,
         )
         # create a pygfx Text visual
         self._pygfx_node = pygfx.Text(
@@ -45,3 +46,6 @@ class Text(Node, TextAdaptor):
 
     def _snx_set_size(self, arg: int) -> None:
         self._pygfx_node.font_size = arg
+
+    def _snx_set_antialias(self, arg: bool) -> None:
+        self._material.aa = arg

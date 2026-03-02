@@ -37,6 +37,9 @@ def _calc_hist_bins(data: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     return counts, bin_edges
 
 
+_AXIS = 40  # pixels reserved for each axis strip
+
+
 class Histogram:
     """A simple interactive histogram view with adjustable clims and gamma."""
 
@@ -72,7 +75,6 @@ class Histogram:
         )
 
         # Lay out views using pixel-anchored strategies so resizing works correctly
-        _AXIS = 40  # pixels reserved for each axis strip
         self.y_view.layout.region = snx.PixelRegion(
             left=0, width=_AXIS, top=_AXIS, bottom=-_AXIS
         )
@@ -105,7 +107,7 @@ class Histogram:
                 color=snx.UniformColor(color=cmap.Color("white")),
                 transform=snx.Transform().translated((0, 0.4, 0)),
             )
-            tick_text = snx.Text(text="0", children=[tick_line])  # type: ignore
+            tick_text = snx.Text(text="0", children=[tick_line], antialias=True)  # type: ignore
             self._tick_objects.append(tick_text)
 
     def _init_y_view(self) -> None:
@@ -116,7 +118,9 @@ class Histogram:
             width=2,
             color=snx.UniformColor(color=cmap.Color("white")),
         )
-        self.y_max = snx.Text(text="1", transform=snx.Transform().translated((-0.5, 1)))
+        self.y_max = snx.Text(
+            text="1", transform=snx.Transform().translated((-0.5, 1)), antialias=True
+        )
         self.y_view.scene.add_child(self.y_axis)
         self.y_view.scene.add_child(self.y_max)
 
@@ -193,6 +197,7 @@ class Histogram:
 
         self.view.camera.events.transform.connect(self._update_x_axis)
         self.view.camera.events.projection.connect(self._update_x_axis)
+        self.canvas.events.width.connect(self._update_x_axis)
         self.view.set_event_filter(self._on_main_view)
 
         # self.set_clims(self._clims)
@@ -486,6 +491,10 @@ class Histogram:
         tick_step = self._calculate_tick_step(left, right)
         unique_positions = self._get_tick_positions(left, right, tick_step)
 
+        _x, _y, w, _h = self.canvas.rect_for(self.x_view)
+        start = _AXIS / w
+        1 - _AXIS / w
+
         # Use cached tick objects for all positions
         tick_idx = 0
         for tick_val in unique_positions:
@@ -495,7 +504,7 @@ class Histogram:
 
             # Calculate normalized position (0.1 to 0.95 maps to left to right)
             if right != left:
-                norm_pos = 0.1 + (tick_val - left) / (right - left) * 0.85
+                norm_pos = start + (tick_val - left) / (right - left) * (1 - start)
             else:
                 norm_pos = 0.5  # Default to center if no range
 

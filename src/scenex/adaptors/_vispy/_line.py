@@ -30,7 +30,7 @@ class Line(Node, LineAdaptor):
         self._vispy_node = vispy.scene.Line(
             pos=np.asarray(line.vertices, dtype=np.float32),
             width=int(line.width),
-            antialias=line.antialias > 0,
+            antialias=line.antialias,
         )
         self._snx_set_color(line.color)
 
@@ -45,3 +45,6 @@ class Line(Node, LineAdaptor):
 
     def _snx_set_width(self, arg: float) -> None:
         self._vispy_node.set_data(width=arg)
+
+    def _snx_set_antialias(self, arg: bool) -> None:
+        self._vispy_node.antialias = arg

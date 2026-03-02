@@ -84,9 +84,6 @@ def _on_view_event(event: Event) -> bool:
 
 view.set_event_filter(_on_view_event)
 
-snx.use("pygfx")
-# snx.use("vispy")
-
 # Show and position camera
 snx.show(view)
 view.camera.projection = projections.orthographic(2, 2, 1e5)
