@@ -76,27 +76,9 @@ class View(ViewAdaptor):
 
         renderer.render(self._pygfx_scene, self._pygfx_cam, rect=rect, flush=False)
 
-    def _snx_set_position(self, arg: tuple[float, float]) -> None:
-        logger.warning("View.set_position not implemented for pygfx")
-
-    def _snx_set_size(self, arg: tuple[float, float] | None) -> None:
-        logger.warning("Ignoring View.set_size(None): Don't know how to handle this...")
-
     def _set_background_color(self, color: Color | None) -> None:
         rgba = color.rgba if color is not None else (0, 0, 0, 0)
         self._background_mat.set_colors(rgba)
-
-    def _snx_set_border_width(self, arg: float) -> None:
-        logger.warning("View.set_border_width not implemented for pygfx")
-
-    def _snx_set_border_color(self, arg: Color | None) -> None:
-        logger.warning("View.set_border_color not implemented for pygfx")
-
-    def _snx_set_padding(self, arg: int) -> None:
-        logger.warning("View.set_padding not implemented for pygfx")
-
-    def _snx_set_margin(self, arg: int) -> None:
-        logger.warning("View.set_margin not implemented for pygfx")
 
     def _snx_render(self) -> np.ndarray:
         """Render to offscreen buffer."""
