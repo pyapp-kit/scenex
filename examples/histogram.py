@@ -76,13 +76,13 @@ class Histogram:
 
         # Lay out views using pixel-anchored strategies so resizing works correctly
         self.y_view.layout.region = snx.PixelRegion(
-            left=0, width=_AXIS, top=_AXIS, bottom=-_AXIS
+            left=0, width=_AXIS, top=0, bottom=-_AXIS
         )
         self.x_view.layout.region = snx.PixelRegion(
-            left=0, right=-1, bottom=0, height=_AXIS
+            left=0, right=-1, top=-_AXIS, height=_AXIS
         )
         self.view.layout.region = snx.PixelRegion(
-            left=_AXIS, right=-1, top=_AXIS, bottom=-_AXIS
+            left=_AXIS, right=-1, top=0, bottom=-_AXIS
         )
 
         self._tick_objects: list[snx.Text] = []
@@ -119,7 +119,7 @@ class Histogram:
             color=snx.UniformColor(color=cmap.Color("white")),
         )
         self.y_max = snx.Text(
-            text="1", transform=snx.Transform().translated((-0.5, 1)), antialias=True
+            text="1", transform=snx.Transform().translated((-0.5, 0.95)), antialias=True
         )
         self.y_view.scene.add_child(self.y_axis)
         self.y_view.scene.add_child(self.y_max)
@@ -523,7 +523,7 @@ class Histogram:
 
         max_val = self.mesh.bounding_box[1][1]
         # Scale the y-axis to [0, 1]
-        self.mesh.transform = snx.Transform().scaled((1, 1 / max(max_val, 1), 1))
+        self.mesh.transform = snx.Transform().scaled((1, 0.95 / max(max_val, 1), 1))
         # Resize the y-axis against the new data
         self.y_max.text = f"{max_val:.2f}"
 
