@@ -50,13 +50,21 @@ class TiledRegion(Region):
         view: View,
         canvas: Canvas,
     ) -> tuple[int, int, int, int]:
+        # Find all views with tiled regions
         default_views = [
             v for v in canvas.views if isinstance(v.layout.region, TiledRegion)
         ]
+        # determine this view's index
         idx = default_views.index(view)
         cw, ch = canvas.size
         n = len(default_views)
-        return (int(idx * (cw / n)), 0, int(cw / n), ch)
+        # Divide the canvas width into n equal parts...
+        base_w = cw // n
+        # ...and distribute any remainder pixels among the last r views
+        r = cw % n
+        w = base_w + (1 if idx >= n - r else 0)
+        x = idx * base_w + max(0, idx - (n - r))
+        return (x, 0, w, ch)
 
 
 class FractionalRegion(Region):
@@ -83,12 +91,14 @@ class FractionalRegion(Region):
         total_width, total_height = (
             self.total if isinstance(self.total, tuple) else (self.total, self.total)
         )
-        return (
-            int((start_width / total_width) * canvas_width),
-            int((start_height / total_height) * canvas_height),
-            int(((end_width - start_width) / total_width) * canvas_width),
-            int(((end_height - start_height) / total_height) * canvas_height),
-        )
+        x = int((start_width / total_width) * canvas_width)
+        y = int((start_height / total_height) * canvas_height)
+        # Note that this method using x_end - x (and similarly for y) ensures no gaps
+        # between adjacent regions when the canvas size is not perfectly divisible by
+        # total_width.
+        x_end = int((end_width / total_width) * canvas_width)
+        y_end = int((end_height / total_height) * canvas_height)
+        return (x, y, x_end - x, y_end - y)
 
 
 class PixelRegion(Region):
@@ -112,10 +122,10 @@ class PixelRegion(Region):
         >>> region = PixelRegion(left=0, width=40, top=40, bottom=-40)
 
     Full-width bar anchored to the canvas bottom with a fixed 40px height:
-        >>> region = PixelRegion(left=0, right=0, bottom=0, height=40)
+        >>> region = PixelRegion(left=0, top=-40, height=40)
 
     Fill the area right of and below a 40px margin (flush to right/bottom):
-        >>> region = PixelRegion(left=40, right=0, top=40, bottom=0)
+        >>> region = PixelRegion(left=40, top=40, bottom=0)
 
     100x50 px tile pinned to the top-right corner:
         >>> region = PixelRegion(left=-100, width=100, top=0, height=50)
@@ -123,8 +133,7 @@ class PixelRegion(Region):
 
     type: Literal["pixel"] = Field(default="pixel", repr=False)
 
-    left: int | None = Field(
-        default=None,
+    left: int = Field(
         description=(
             "X coordinate of the view's left edge from the canvas left. "
             "Negative counts from the canvas right edge."
@@ -135,8 +144,7 @@ class PixelRegion(Region):
         description=("X coordinate of the view's right edge from the canvas left. "),
     )
     width: int | None = Field(default=None, description="Width of the view in pixels.")
-    top: int | None = Field(
-        default=None,
+    top: int = Field(
         description=("Y coordinate of the view's top edge from the canvas top. "),
     )
     bottom: int | None = Field(
@@ -149,16 +157,10 @@ class PixelRegion(Region):
 
     @model_validator(mode="after")
     def _check_constraints(self) -> PixelRegion:
-        h_given = sum(v is not None for v in (self.left, self.right, self.width))
-        v_given = sum(v is not None for v in (self.top, self.bottom, self.height))
-        if h_given < 2:
-            raise ValueError(
-                "PixelRegion requires at least two of {left, right, width}"
-            )
-        if v_given < 2:
-            raise ValueError(
-                "PixelRegion requires at least two of {top, bottom, height}"
-            )
+        if self.width is not None and self.right is not None:
+            raise ValueError("PixelRegion requires either width or right, not both")
+        if self.height is not None and self.bottom is not None:
+            raise ValueError("PixelRegion requires either height or bottom, not both")
         return self
 
     def compute_rect(
@@ -174,33 +176,29 @@ class PixelRegion(Region):
 
         def _end(val: int, size: int) -> int:
             # right/bottom: negative count from the far side
-            return size + val if val <= 0 else val
+            return size + val if val < 0 else val
 
         # Resolve horizontal axis
-        if self.left is not None and self.right is not None:
+        if self.right is not None:
             x = _start(self.left, cw)
             w = _end(self.right, cw) - x
-        elif self.left is not None and self.width is not None:
+        elif self.width is not None:
             x = _start(self.left, cw)
             w = self.width
-        else:  # right + width
-            assert self.right is not None and self.width is not None
-            x2 = _end(self.right, cw)
-            w = self.width
-            x = x2 - w
+        else:  # Left only
+            x = _start(self.left, cw)
+            w = cw - x
 
         # Resolve vertical axis
-        if self.top is not None and self.bottom is not None:
+        if self.bottom is not None:
             y = _start(self.top, ch)
             h = _end(self.bottom, ch) - y
-        elif self.top is not None and self.height is not None:
+        elif self.height is not None:
             y = _start(self.top, ch)
             h = self.height
-        else:  # bottom + height
-            assert self.bottom is not None and self.height is not None
-            y2 = _end(self.bottom, ch)
-            h = self.height
-            y = y2 - h
+        else:  # Top only
+            y = _start(self.top, ch)
+            h = ch - y
 
         return (x, y, w, h)
 
