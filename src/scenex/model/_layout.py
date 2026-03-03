@@ -11,12 +11,11 @@ from ._base import EventedBase
 
 if TYPE_CHECKING:
     from scenex.model._canvas import Canvas
-    from scenex.model._view import View
 
 logger = logging.getLogger(__name__)
 
 AnyRegion = Annotated[
-    Union["PixelRegion", "FractionalRegion", "TiledRegion"], Field(discriminator="type")
+    Union["PixelRegion", "FractionalRegion"], Field(discriminator="type")
 ]
 
 
@@ -26,45 +25,10 @@ class Region(EventedBase):
     @abstractmethod
     def compute_rect(
         self,
-        view: View,
         canvas: Canvas,
     ) -> tuple[int, int, int, int]:
-        """Return pixel rect (x, y, width, height) for this view given its canvas."""
+        """Return pixel rect (x, y, width, height) given a canvas."""
         ...
-
-
-class TiledRegion(Region):
-    """Just put the view on the canvas.
-
-    This is "reasonable default" region. It's behavior ensures:
-    1. If there is only one default view on the canvas, it will fill the entire canvas.
-    2. If there are multiple default views on the canvas, they will be stacked
-        horizontally in the order they were added, each taking an equal share of the
-        canvas width and the full height.
-    """
-
-    type: Literal["tiled"] = Field(default="tiled", repr=False)
-
-    def compute_rect(
-        self,
-        view: View,
-        canvas: Canvas,
-    ) -> tuple[int, int, int, int]:
-        # Find all views with tiled regions
-        default_views = [
-            v for v in canvas.views if isinstance(v.layout.region, TiledRegion)
-        ]
-        # determine this view's index
-        idx = default_views.index(view)
-        cw, ch = canvas.size
-        n = len(default_views)
-        # Divide the canvas width into n equal parts...
-        base_w = cw // n
-        # ...and distribute any remainder pixels among the last r views
-        r = cw % n
-        w = base_w + (1 if idx >= n - r else 0)
-        x = idx * base_w + max(0, idx - (n - r))
-        return (x, 0, w, ch)
 
 
 class FractionalRegion(Region):
@@ -78,7 +42,6 @@ class FractionalRegion(Region):
 
     def compute_rect(
         self,
-        view: View,
         canvas: Canvas,
     ) -> tuple[int, int, int, int]:
         canvas_width, canvas_height = canvas.size
@@ -165,7 +128,6 @@ class PixelRegion(Region):
 
     def compute_rect(
         self,
-        view: View,
         canvas: Canvas,
     ) -> tuple[int, int, int, int]:
         cw, ch = canvas.size
@@ -223,7 +185,9 @@ class Layout(EventedBase):
         >>> layout = Layout(region=PixelRegion(left=0, width=40, top=40, bottom=40))
     """
 
-    region: AnyRegion = Field(default_factory=TiledRegion)
+    region: AnyRegion = Field(
+        default_factory=lambda: FractionalRegion(start=0, end=1, total=1)
+    )
     background_color: Color | None = Field(
         default=Color("black"),
         description="The background color (inside of the border). "

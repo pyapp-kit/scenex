@@ -10,7 +10,7 @@ import numpy as np
 
 import scenex as snx
 import scenex.app.events as events
-from scenex import FractionalRegion, PixelRegion, TiledRegion
+from scenex import FractionalRegion, PixelRegion
 from scenex.utils.projections import zoom_to_fit
 
 try:
@@ -26,11 +26,28 @@ except Exception:
         data[:, j, 1] = j
 
 
-REGIONS: list[tuple[str, TiledRegion | PixelRegion | FractionalRegion]] = [
-    # --- TiledRegion ---
+REGIONS: list[tuple[str, PixelRegion | FractionalRegion]] = [
+    # --- FractionalRegion: scalar (same fraction for both axes) ---
     (
-        "TiledRegion (default): fills the entire canvas",
-        TiledRegion(),
+        "FractionalRegion start=0 end=1 total=1 (scalar): entire canvas",
+        FractionalRegion(start=0, end=1, total=1),
+    ),
+    (
+        "FractionalRegion start=0 end=1 total=2 (scalar): top-left quarter",
+        FractionalRegion(start=0, end=1, total=2),
+    ),
+    (
+        "FractionalRegion start=1 end=2 total=3 (scalar): middle ninth",
+        FractionalRegion(start=1, end=2, total=3),
+    ),
+    # --- FractionalRegion: tuple (independent x/y fractions) ---
+    (
+        "FractionalRegion start=(0,0) end=(1,1) total=(2,1): left half, full height",
+        FractionalRegion(start=(0, 0), end=(1, 1), total=(2, 1)),
+    ),
+    (
+        "FractionalRegion start=(1,0) end=(2,1) total=(2,1): right half, full height",
+        FractionalRegion(start=(1, 0), end=(2, 1), total=(2, 1)),
     ),
     # --- PixelRegion: absolute ---
     (
@@ -53,24 +70,6 @@ REGIONS: list[tuple[str, TiledRegion | PixelRegion | FractionalRegion]] = [
     (
         "PixelRegion left=0 top=-400 width=400 height=400: pins to the bottom",
         PixelRegion(left=100, top=-400, width=400, height=400),
-    ),
-    # --- FractionalRegion: scalar (same fraction for both axes) ---
-    (
-        "FractionalRegion start=0 end=1 total=2 (scalar): top-left quarter",
-        FractionalRegion(start=0, end=1, total=2),
-    ),
-    (
-        "FractionalRegion start=1 end=2 total=3 (scalar): middle ninth",
-        FractionalRegion(start=1, end=2, total=3),
-    ),
-    # --- FractionalRegion: tuple (independent x/y fractions) ---
-    (
-        "FractionalRegion start=(0,0) end=(1,1) total=(2,1): left half, full height",
-        FractionalRegion(start=(0, 0), end=(1, 1), total=(2, 1)),
-    ),
-    (
-        "FractionalRegion start=(1,0) end=(2,1) total=(2,1): right half, full height",
-        FractionalRegion(start=(1, 0), end=(2, 1), total=(2, 1)),
     ),
 ]
 

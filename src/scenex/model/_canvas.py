@@ -110,7 +110,7 @@ class Canvas(EventedBase):
 
     def rect_for(self, view: View) -> tuple[int, int, int, int]:
         """The pixel rect (x, y, width, height) for a view, computed from its region."""
-        return view.layout.region.compute_rect(view, self)
+        return view.layout.region.compute_rect(self)
 
     def content_rect_for(self, view: View) -> tuple[int, int, int, int]:
         """The pixel rect (x, y, width, height) of the content area for a view.

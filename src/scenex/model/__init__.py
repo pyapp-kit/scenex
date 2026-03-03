@@ -95,7 +95,6 @@ from ._layout import (
     Layout,
     PixelRegion,
     Region,
-    TiledRegion,
 )
 from ._nodes.camera import (
     AnyController,
@@ -147,7 +146,6 @@ __all__ = [
     "Scene",
     "SymbolName",
     "Text",
-    "TiledRegion",
     "Transform",
     "UniformColor",
     "VertexColors",

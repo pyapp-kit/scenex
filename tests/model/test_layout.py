@@ -1,4 +1,5 @@
 from scenex import Canvas, FractionalRegion, PixelRegion, View
+from scenex.model._layout import Layout
 
 
 def test_default_layout_full_canvas() -> None:
@@ -9,33 +10,6 @@ def test_default_layout_full_canvas() -> None:
     # When the canvas size changes, the view should still fill the entire canvas.
     canvas.width = 200
     assert canvas.rect_for(view) == (0, 0, 200, 100)
-
-
-def test_two_default_layouts() -> None:
-    """Ensures multiple single "default" view fills the entire canvas."""
-    view1 = View()
-    view2 = View()
-    canvas = Canvas(views=[view1, view2], width=100, height=100)
-    assert canvas.rect_for(view1) == (0, 0, 50, 100)
-    assert canvas.rect_for(view2) == (50, 0, 50, 100)
-    # When the canvas size changes, the views should split the new space evenly.
-    canvas.width = 200
-    assert canvas.rect_for(view1) == (0, 0, 100, 100)
-    assert canvas.rect_for(view2) == (100, 0, 100, 100)
-
-
-def test_default_layouts_uneven_pixels() -> None:
-    """Ensure default layouts handle uneven pixel counts."""
-    views = [View() for _ in range(3)]
-    canvas = Canvas(views=views, width=32, height=100)
-    assert canvas.rect_for(views[0]) == (0, 0, 10, 100)
-    assert canvas.rect_for(views[1]) == (10, 0, 11, 100)
-    assert canvas.rect_for(views[2]) == (21, 0, 11, 100)
-    # When the canvas size changes, the views should split the new space evenly.
-    canvas.width = 35
-    assert canvas.rect_for(views[0]) == (0, 0, 11, 100)
-    assert canvas.rect_for(views[1]) == (11, 0, 12, 100)
-    assert canvas.rect_for(views[2]) == (23, 0, 12, 100)
 
 
 def test_pixel_layout() -> None:
@@ -170,3 +144,22 @@ def test_fractional_region_covers_all_pixels() -> None:
     # Total width accounts for every pixel
     rects = [canvas.rect_for(v) for v in views]
     assert sum(r[2] for r in rects) == 100
+
+
+def test_layout_serialization() -> None:
+    layout = Layout(region=FractionalRegion(start=1, end=3, total=4))
+    json = layout.model_dump_json()
+    layout2 = Layout.model_validate_json(json)
+    assert isinstance(layout2.region, FractionalRegion)
+    assert layout2.region.start == 1
+    assert layout2.region.end == 3
+    assert layout2.region.total == 4
+
+    layout.region = PixelRegion(left=0, width=40, top=40, bottom=40)
+    json = layout.model_dump_json()
+    layout2 = Layout.model_validate_json(json)
+    assert isinstance(layout2.region, PixelRegion)
+    assert layout2.region.left == 0
+    assert layout2.region.width == 40
+    assert layout2.region.top == 40
+    assert layout2.region.bottom == 40

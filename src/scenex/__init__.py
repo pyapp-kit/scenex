@@ -54,7 +54,6 @@ from .model._layout import (
     FractionalRegion,
     PixelRegion,
     Region,
-    TiledRegion,
 )
 from .model._nodes.camera import Camera, CameraController, Orbit, PanZoom
 from .model._nodes.image import Image
@@ -89,7 +88,6 @@ __all__ = [
     "ResizePolicy",
     "Scene",
     "Text",
-    "TiledRegion",
     "Transform",
     "UniformColor",
     "VertexColors",
