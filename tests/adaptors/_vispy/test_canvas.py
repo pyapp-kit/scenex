@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import scenex as snx
 import scenex.adaptors._vispy as adaptors
-from scenex.model._layout import fr
+from scenex.model._layout import Fraction
 
 
 def test_close() -> None:
@@ -18,11 +18,11 @@ def test_close() -> None:
 def test_multiple_views() -> None:
     # Create a canvas with two views
     view1 = snx.View()  # Left half
-    view1.layout.x_start = fr(0)
-    view1.layout.x_end = fr(0.5)
+    view1.layout.x_start = Fraction(num=0, denom=1)
+    view1.layout.x_end = Fraction(num=1, denom=2)
     view2 = snx.View()  # Right half
-    view2.layout.x_start = fr(0.5)
-    view2.layout.x_end = fr(1)
+    view2.layout.x_start = Fraction(num=1, denom=2)
+    view2.layout.x_end = Fraction(num=1, denom=1)
     canvas = snx.Canvas(views=[view1, view2], width=400, height=400)
     vis_canvas = adaptors.adaptors.get_adaptor(canvas, create=True)
     assert isinstance(vis_canvas, adaptors.Canvas)

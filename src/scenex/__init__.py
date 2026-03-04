@@ -51,10 +51,9 @@ from .model._color import (
     VertexColors,
 )
 from .model._layout import (
-    Dim,
+    Fraction,
     Layout,
-    fr,
-    px,
+    Pixel,
 )
 from .model._nodes.camera import Camera, CameraController, Orbit, PanZoom
 from .model._nodes.image import Image
@@ -74,8 +73,8 @@ __all__ = [
     "CameraController",
     "Canvas",
     "ColorModel",
-    "Dim",
     "FaceColors",
+    "Fraction",
     "Image",
     "Layout",
     "Letterbox",
@@ -84,6 +83,7 @@ __all__ = [
     "Node",
     "Orbit",
     "PanZoom",
+    "Pixel",
     "Points",
     "ResizePolicy",
     "Scene",
@@ -93,8 +93,6 @@ __all__ = [
     "VertexColors",
     "View",
     "Volume",
-    "fr",
-    "px",
     "run",
     "show",
     "use",

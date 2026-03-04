@@ -2,8 +2,8 @@
 Demonstrates the different layout options for positioning a view on a canvas.
 
 Each layout is described by x_start, x_end, y_start, y_end Dim values using
-fr() for fractional and px() for pixel units. Click anywhere on the view to
-cycle through the examples. The active layout is printed to the terminal.
+Fraction for fractional and Pixel for pixel units. Click anywhere on the view
+to cycle through the examples. The active layout is printed to the terminal.
 Resize the window to see how each configuration responds.
 """
 
@@ -11,7 +11,7 @@ import numpy as np
 
 import scenex as snx
 import scenex.app.events as events
-from scenex.model._layout import AnyDim, fr, px
+from scenex.model._layout import AnyDim, Fraction, Pixel
 from scenex.utils.projections import zoom_to_fit
 
 try:
@@ -28,107 +28,53 @@ except Exception:
 
 
 REGIONS: list[tuple[str, AnyDim, AnyDim, AnyDim, AnyDim]] = [
-    # --- Fractional: both axes (proportional placement) ---
+    # Full canvas (default)
     (
-        "Fractional full canvas:",
-        fr(0),
-        fr(1),
-        fr(0),
-        fr(1),
+        "Full canvas:",
+        Fraction(num=0, denom=1),
+        Fraction(num=1, denom=1),
+        Fraction(num=0, denom=1),
+        Fraction(num=1, denom=1),
     ),
+    # Right half, full height
     (
-        "Fractional top-left quarter:",
-        fr(0),
-        fr(0.5),
-        fr(0),
-        fr(0.5),
+        "Right half:",
+        Fraction(num=1, denom=2),
+        Fraction(num=1, denom=1),
+        Fraction(num=0, denom=1),
+        Fraction(num=1, denom=1),
     ),
+    # Fixed 400x400 region at (50, 50)
     (
-        "Fractional middle ninth:",
-        fr(1 / 3),
-        fr(2 / 3),
-        fr(1 / 3),
-        fr(2 / 3),
+        "Fixed 400x400 at (50, 50):",
+        Pixel(pixels=50),
+        Pixel(pixels=450),
+        Pixel(pixels=50),
+        Pixel(pixels=450),
     ),
+    # Fixed 400x400 region at bottom right corner
     (
-        "Fractional left half, full height:",
-        fr(0),
-        fr(0.5),
-        fr(0),
-        fr(1),
+        "Fixed 400x400 at bottom right corner:",
+        Pixel(pixels=-400),
+        Fraction(num=1, denom=1),
+        Pixel(pixels=-400),
+        Fraction(num=1, denom=1),
     ),
-    (
-        "Fractional right half, full height:",
-        fr(0.5),
-        fr(1),
-        fr(0),
-        fr(1),
-    ),
-    # --- Pixel: absolute pixel placement ---
-    (
-        "Pixel fixed, 400x400 at (50, 50):",
-        px(50),
-        px(450),
-        px(50),
-        px(450),
-    ),
-    (
-        "Pixel pin to right edge, 400px wide:",
-        px(-400),
-        fr(1),
-        px(50),
-        px(450),
-    ),
-    (
-        "Pixel pin to bottom, 400px tall:",
-        px(100),
-        px(500),
-        px(-400),
-        fr(1),
-    ),
-    # --- Inset from canvas edges ---
+    # 50px inset on all four sides using negative pixels for far edges
     (
         "50px inset all sides:",
-        px(50),
-        px(-50),
-        px(50),
-        px(-50),
+        Pixel(pixels=50),
+        Pixel(pixels=-50),
+        Pixel(pixels=50),
+        Pixel(pixels=-50),
     ),
+    # Centered 200px-wide strip using Dim arithmetic
     (
-        "Stretch from (50, 50) to canvas edge:",
-        px(50),
-        fr(1),
-        px(50),
-        fr(1),
-    ),
-    (
-        "150px left/right inset, full height:",
-        px(150),
-        px(-150),
-        fr(0),
-        fr(1),
-    ),
-    # --- Mixed: fractional on one axis, pixel on the other ---
-    (
-        "Mixed: x=left half, y=100px from top 300px tall:",
-        fr(0),
-        fr(0.5),
-        px(100),
-        px(400),
-    ),
-    (
-        "Mixed: x=100px each side, y=middle third:",
-        px(100),
-        px(-100),
-        fr(1 / 3),
-        fr(2 / 3),
-    ),
-    (
-        "Mixed: x=pin right 200px wide, y=top third:",
-        px(-200),
-        fr(1),
-        fr(0),
-        fr(1 / 3),
+        "Centered 200px-wide strip (fr - px, fr + px):",
+        Fraction(num=1, denom=2) - Pixel(pixels=100),
+        Fraction(num=1, denom=2) + Pixel(pixels=100),
+        Fraction(num=0, denom=1),
+        Fraction(num=1, denom=1),
     ),
 ]
 

@@ -20,10 +20,10 @@ class Dim(BaseModel):
     two ``Dim`` values produces a :class:`ComposedDim` that delegates to each
     operand at resolve time.
 
-    Create values with :func:`px` and :func:`fr`::
+    Examples::
 
-        px(-40)  # 40px from the far edge
-        fr(0.5) - px(200)  # midpoint minus 200px
+        Pixel(pixels=-40)  # 40px from the far edge
+        Fraction(num=1, denom=2) - Pixel(pixels=200)  # midpoint minus 200px
     """
 
     model_config = ConfigDict(frozen=True)
@@ -78,7 +78,7 @@ class Pixel(Dim):
         return Pixel(pixels=-self.pixels)
 
     def __repr__(self) -> str:
-        return f"px({self.pixels})"
+        return f"Pixel(pixels={self.pixels})"
 
 
 class Fraction(Dim):
@@ -107,39 +107,13 @@ class Fraction(Dim):
         return self.__mul__(scalar)
 
     def __repr__(self) -> str:
-        val = self.num / self.denom
-        frac_str = str(self.num) if self.denom == 1 else repr(val)
-        return f"fr({frac_str})"
+        return f"Fraction(num={self.num}, denom={self.denom})"
 
 
 AnyDim = ComposedDim | Pixel | Fraction
 
 # Resolve the forward reference in ComposedDim.dim1 / dim2.
 ComposedDim.model_rebuild()
-
-
-def px(n: int) -> Pixel:
-    """A pixel-only dimension.
-
-    Positive values are measured from the near edge (left / top).
-    Negative values are measured from the far edge (right / bottom)::
-
-        px(40)  # 40px from the near edge
-        px(-40)  # 40px from the far edge  (equivalent to fr(1) - px(40))
-    """
-    return Pixel(pixels=n)
-
-
-def fr(f: float) -> Fraction:
-    """A fractional dimension — a proportion of the canvas size.
-
-    ``fr(1)`` is the full canvas width/height; ``fr(0.5)`` is the midpoint.
-    Combine with :func:`px` to add a fixed pixel offset::
-
-        fr(0.5) - px(200)  # midpoint minus 200px
-    """
-    r = _fractions.Fraction(f).limit_denominator(1000)
-    return Fraction(num=r.numerator, denom=r.denominator)
 
 
 class Layout(EventedBase):
@@ -161,34 +135,45 @@ class Layout(EventedBase):
 
     Fixed 400x300 region starting at (50, 50)::
 
-        Layout(x_start=px(50), x_end=px(450), y_start=px(50), y_end=px(350))
+        Layout(
+            x_start=Pixel(pixels=50),
+            x_end=Pixel(pixels=450),
+            y_start=Pixel(pixels=50),
+            y_end=Pixel(pixels=350),
+        )
 
     Left half, full height::
 
-        Layout(x_end=fr(0.5))
+        Layout(x_end=Fraction(num=1, denom=2))
 
     40px inset on every side::
 
-        Layout(x_start=px(40), x_end=px(-40), y_start=px(40), y_end=px(-40))
+        Layout(
+            x_start=Pixel(pixels=40),
+            x_end=Pixel(pixels=-40),
+            y_start=Pixel(pixels=40),
+            y_end=Pixel(pixels=-40),
+        )
 
     Centered 400px-wide strip::
 
-        Layout(x_start=fr(0.5) - px(200), x_end=fr(0.5) + px(200))
+        half = Fraction(num=1, denom=2)
+        Layout(x_start=half - Pixel(pixels=200), x_end=half + Pixel(pixels=200))
 
     40px left column, main area fills remainder::
 
-        sidebar = Layout(x_start=px(0), x_end=px(40))
-        main = Layout(x_start=px(40), x_end=fr(1))
+        sidebar = Layout(x_start=Pixel(pixels=0), x_end=Pixel(pixels=40))
+        main = Layout(x_start=Pixel(pixels=40), x_end=Fraction(num=1, denom=1))
 
     Create a layout with a border::
 
         Layout(border_width=2, border_color=Color("white"), padding=10)
     """
 
-    x_start: AnyDim = Field(default_factory=lambda: fr(0))
-    x_end: AnyDim = Field(default_factory=lambda: fr(1))
-    y_start: AnyDim = Field(default_factory=lambda: fr(0))
-    y_end: AnyDim = Field(default_factory=lambda: fr(1))
+    x_start: AnyDim = Field(default_factory=lambda: Fraction(num=0, denom=1))
+    x_end: AnyDim = Field(default_factory=lambda: Fraction(num=1, denom=1))
+    y_start: AnyDim = Field(default_factory=lambda: Fraction(num=0, denom=1))
+    y_end: AnyDim = Field(default_factory=lambda: Fraction(num=1, denom=1))
 
     @property
     def x(self) -> tuple[AnyDim, AnyDim]:

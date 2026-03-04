@@ -10,7 +10,6 @@ import numpy.typing as npt
 
 import scenex as snx
 from scenex.app import CursorType, app, events
-from scenex.model._layout import fr, px
 from scenex.utils import projections
 
 if TYPE_CHECKING:
@@ -76,13 +75,13 @@ class Histogram:
         )
 
         # Lay out views using pixel-anchored strategies so resizing works correctly
-        self.y_view.layout.x = px(0), px(_AXIS)
-        self.y_view.layout.y = px(0), px(-_AXIS)
+        self.y_view.layout.x_end = snx.Pixel(pixels=_AXIS)
+        self.y_view.layout.y_end = snx.Pixel(pixels=-_AXIS)
 
-        self.x_view.layout.y = px(-_AXIS), fr(1)
+        self.x_view.layout.y_start = snx.Pixel(pixels=-_AXIS)
 
-        self.view.layout.x = px(_AXIS), fr(1)
-        self.view.layout.y = px(0), px(-_AXIS)
+        self.view.layout.x_start = snx.Pixel(pixels=_AXIS)
+        self.view.layout.y_end = snx.Pixel(pixels=-_AXIS)
 
         self._tick_objects: list[snx.Text] = []
         self._init_x_view()

@@ -2,7 +2,7 @@ import numpy as np
 
 import scenex as snx
 from scenex.app.events import Ray
-from scenex.model._layout import fr
+from scenex.model._layout import Fraction
 from scenex.utils import projections
 
 # Default canvas size used across tests
@@ -82,11 +82,11 @@ def test_to_world_projection() -> None:
 def test_multiple_views() -> None:
     # Create a canvas with two views
     view1 = snx.View()  # Left half
-    view1.layout.x_start = fr(0)
-    view1.layout.x_end = fr(0.5)
+    view1.layout.x_start = Fraction(num=0, denom=1)
+    view1.layout.x_end = Fraction(num=1, denom=2)
     view2 = snx.View()  # Right half
-    view2.layout.x_start = fr(0.5)
-    view2.layout.x_end = fr(1)
+    view2.layout.x_start = Fraction(num=1, denom=2)
+    view2.layout.x_end = Fraction(num=1, denom=1)
     canvas = snx.Canvas(width=800, height=600, views=[view1, view2])
 
     x1, y1, w1, h1 = canvas.rect_for(view1)
