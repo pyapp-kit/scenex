@@ -170,7 +170,7 @@ def show(
             scene = model.Scene(children=[obj])
             view = model.View(scene=scene)
 
-        canvas = model.Canvas()
+        canvas = model.Canvas(width=600, height=600)
         if view:
             # FIXME: If the view's layout is defined in pixels, resize the canvas?
             canvas.views.append(view)
