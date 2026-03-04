@@ -10,6 +10,7 @@ import numpy.typing as npt
 
 import scenex as snx
 from scenex.app import CursorType, app, events
+from scenex.model._layout import fr, px
 from scenex.utils import projections
 
 if TYPE_CHECKING:
@@ -75,14 +76,13 @@ class Histogram:
         )
 
         # Lay out views using pixel-anchored strategies so resizing works correctly
-        self.y_view.layout.x_span = snx.OffsetPlusSize(offset=0, size=_AXIS)
-        self.y_view.layout.y_span = snx.PixelGaps(left=0, right=_AXIS)
+        self.y_view.layout.x = px(0), px(_AXIS)
+        self.y_view.layout.y = px(0), px(-_AXIS)
 
-        self.x_view.layout.x_span = snx.PixelGaps(left=0, right=0)
-        self.x_view.layout.y_span = snx.OffsetPlusSize(offset=-_AXIS, size=_AXIS)
+        self.x_view.layout.y = px(-_AXIS), fr(1)
 
-        self.view.layout.x_span = snx.PixelGaps(left=_AXIS, right=0)
-        self.view.layout.y_span = snx.PixelGaps(left=0, right=_AXIS)
+        self.view.layout.x = px(_AXIS), fr(1)
+        self.view.layout.y = px(0), px(-_AXIS)
 
         self._tick_objects: list[snx.Text] = []
         self._init_x_view()
@@ -492,7 +492,6 @@ class Histogram:
 
         _x, _y, w, _h = self.canvas.rect_for(self.x_view)
         start = _AXIS / w
-        1 - _AXIS / w
 
         # Use cached tick objects for all positions
         tick_idx = 0

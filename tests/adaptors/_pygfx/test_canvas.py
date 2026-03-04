@@ -4,6 +4,7 @@ import pygfx
 
 import scenex as snx
 import scenex.adaptors._pygfx as adaptors
+from scenex.model._layout import fr
 
 
 def test_close() -> None:
@@ -19,9 +20,11 @@ def test_close() -> None:
 def test_multiple_views() -> None:
     # Create a canvas with two views
     view1 = snx.View()  # Left half
-    view1.layout.x_span = snx.Fractional(start=0, end=1, total=2)
+    view1.layout.x_start = fr(0)
+    view1.layout.x_end = fr(0.5)
     view2 = snx.View()  # Right half
-    view2.layout.x_span = snx.Fractional(start=1, end=2, total=2)
+    view2.layout.x_start = fr(0.5)
+    view2.layout.x_end = fr(1)
     canvas = snx.Canvas(views=[view1, view2], width=400, height=400)
     py_canvas = adaptors.adaptors.get_adaptor(canvas, create=True)
     assert isinstance(py_canvas, adaptors.Canvas)

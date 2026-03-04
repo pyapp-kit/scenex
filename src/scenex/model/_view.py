@@ -87,8 +87,10 @@ class View(EventedBase):
         """Post-initialization hook for the model."""
         super().model_post_init(__context)
         self.camera.parent = self.scene
-        self.layout.events.x_span.connect(self._on_size_change)
-        self.layout.events.y_span.connect(self._on_size_change)
+        self.layout.events.x_start.connect(self._on_size_change)
+        self.layout.events.x_end.connect(self._on_size_change)
+        self.layout.events.y_start.connect(self._on_size_change)
+        self.layout.events.y_end.connect(self._on_size_change)
 
     def _on_size_change(self, *args: Any) -> None:
         if on_resize := self.on_resize:

@@ -109,9 +109,11 @@ class Canvas(EventedBase):
             cast("CanvasAdaptor", adaptor)._snx_close()
 
     def rect_for(self, view: View) -> tuple[int, int, int, int]:
-        """The pixel rect (x, y, width, height) for a view, computed from its region."""
-        x, w = view.layout.x_span.resolve(self.width)
-        y, h = view.layout.y_span.resolve(self.height)
+        """The pixel rect (x, y, width, height) for a view, computed from its layout."""
+        x = view.layout.x_start.resolve(self.width)
+        w = view.layout.x_end.resolve(self.width) - x
+        y = view.layout.y_start.resolve(self.height)
+        h = view.layout.y_end.resolve(self.height) - y
         return (x, y, w, h)
 
     def content_rect_for(self, view: View) -> tuple[int, int, int, int]:

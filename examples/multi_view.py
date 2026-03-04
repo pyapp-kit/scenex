@@ -12,6 +12,7 @@ import numpy as np
 import scenex as snx
 from scenex.app.events import Event, MouseMoveEvent
 from scenex.model import BlendMode
+from scenex.model._layout import fr, px
 from scenex.model._transform import Transform
 from scenex.utils import projections
 
@@ -73,11 +74,15 @@ view3 = snx.View(
 )
 
 
-view1.layout.x_span = snx.Fractional(start=0, end=1, total=2)
-view2.layout.x_span = snx.Fractional(start=1, end=2, total=2)
+view1.layout.x_start = fr(0)
+view1.layout.x_end = fr(0.5)
+view2.layout.x_start = fr(0.5)
+view2.layout.x_end = fr(1)
 
-view3.layout.x_span = snx.OffsetPlusSize(offset=-100, size=100)
-view3.layout.y_span = snx.OffsetPlusSize(offset=0, size=50)
+view3.layout.x_start = px(-100)
+view3.layout.x_end = fr(1)
+view3.layout.y_start = px(0)
+view3.layout.y_end = px(50)
 
 # And put them on the same canvas
 view_size = 400

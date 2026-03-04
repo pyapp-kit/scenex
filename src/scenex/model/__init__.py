@@ -91,11 +91,10 @@ from ._color import (
     VertexColors,
 )
 from ._layout import (
-    Fractional,
+    Dim,
     Layout,
-    OffsetPlusSize,
-    PixelGaps,
-    Span,
+    fr,
+    px,
 )
 from ._nodes.camera import (
     AnyController,
@@ -126,9 +125,9 @@ __all__ = [
     "Color",
     "ColorModel",
     "Colormap",
+    "Dim",
     "EventedBase",
     "FaceColors",
-    "Fractional",
     "Image",
     "InterpolationMode",
     "Layout",
@@ -136,25 +135,23 @@ __all__ = [
     "Line",
     "Mesh",
     "Node",
-    "OffsetPlusSize",
     "Orbit",
     "PanZoom",
-    "PixelGaps",
     "Points",
     "RenderMode",
     "ResizePolicy",
     "ScalingMode",
     "Scene",
-    "Span",
     "SymbolName",
     "Text",
     "Transform",
     "UniformColor",
     "VertexColors",
     "View",
-    "View",
     "Volume",
+    "fr",
     "objects",
+    "px",
 ]
 
 for obj in list(globals().values()):
