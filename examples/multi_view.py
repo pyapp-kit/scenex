@@ -72,7 +72,12 @@ view3 = snx.View(
     camera=snx.Camera(interactive=False),
 )
 
-view3.layout.region = snx.PixelRegion(left=-100, width=100, top=0, height=50)
+
+view1.layout.x_span = snx.Fractional(start=0, end=1, total=2)
+view2.layout.x_span = snx.Fractional(start=1, end=2, total=2)
+
+view3.layout.x_span = snx.OffsetPlusSize(offset=-100, size=100)
+view3.layout.y_span = snx.OffsetPlusSize(offset=0, size=50)
 
 # And put them on the same canvas
 view_size = 400

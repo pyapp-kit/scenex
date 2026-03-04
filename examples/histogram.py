@@ -75,15 +75,14 @@ class Histogram:
         )
 
         # Lay out views using pixel-anchored strategies so resizing works correctly
-        self.y_view.layout.region = snx.PixelRegion(
-            left=0, width=_AXIS, top=0, bottom=-_AXIS
-        )
-        self.x_view.layout.region = snx.PixelRegion(
-            left=0, right=-1, top=-_AXIS, height=_AXIS
-        )
-        self.view.layout.region = snx.PixelRegion(
-            left=_AXIS, right=-1, top=0, bottom=-_AXIS
-        )
+        self.y_view.layout.x_span = snx.OffsetPlusSize(offset=0, size=_AXIS)
+        self.y_view.layout.y_span = snx.PixelGaps(left=0, right=_AXIS)
+
+        self.x_view.layout.x_span = snx.PixelGaps(left=0, right=0)
+        self.x_view.layout.y_span = snx.OffsetPlusSize(offset=-_AXIS, size=_AXIS)
+
+        self.view.layout.x_span = snx.PixelGaps(left=_AXIS, right=0)
+        self.view.layout.y_span = snx.PixelGaps(left=0, right=_AXIS)
 
         self._tick_objects: list[snx.Text] = []
         self._init_x_view()

@@ -51,9 +51,10 @@ from .model._color import (
     VertexColors,
 )
 from .model._layout import (
-    FractionalRegion,
-    PixelRegion,
-    Region,
+    Fractional,
+    OffsetPlusSize,
+    PixelGaps,
+    Span,
 )
 from .model._nodes.camera import Camera, CameraController, Orbit, PanZoom
 from .model._nodes.image import Image
@@ -74,19 +75,20 @@ __all__ = [
     "Canvas",
     "ColorModel",
     "FaceColors",
-    "FractionalRegion",
+    "Fractional",
     "Image",
     "Letterbox",
     "Line",
     "Mesh",
     "Node",
+    "OffsetPlusSize",
     "Orbit",
     "PanZoom",
-    "PixelRegion",
+    "PixelGaps",
     "Points",
-    "Region",
     "ResizePolicy",
     "Scene",
+    "Span",
     "Text",
     "Transform",
     "UniformColor",

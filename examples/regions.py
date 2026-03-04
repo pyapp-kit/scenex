@@ -1,16 +1,16 @@
 """
-Demonstrates the different region types for positioning a view on a canvas.
+Demonstrates the different span types for positioning a view on a canvas.
 
-Click anywhere on the view to cycle through region options. The active
-region is printed to the terminal. Resize the window to see how each
-region responds.
+Each layout is described by an independent x_span and y_span. Click anywhere
+on the view to cycle through the examples. The active spans are printed to the
+terminal. Resize the window to see how each configuration responds.
 """
 
 import numpy as np
 
 import scenex as snx
 import scenex.app.events as events
-from scenex import FractionalRegion, PixelRegion
+from scenex import Fractional, OffsetPlusSize, PixelGaps
 from scenex.utils.projections import zoom_to_fit
 
 try:
@@ -26,50 +26,80 @@ except Exception:
         data[:, j, 1] = j
 
 
-REGIONS: list[tuple[str, PixelRegion | FractionalRegion]] = [
-    # --- FractionalRegion: scalar (same fraction for both axes) ---
+REGIONS: list[tuple[str, snx.Span, snx.Span]] = [
+    # --- Fractional: both axes (proportional placement) ---
     (
-        "FractionalRegion start=0 end=1 total=1 (scalar): entire canvas",
-        FractionalRegion(start=0, end=1, total=1),
+        "Fractional full canvas:",
+        Fractional(start=0, end=1, total=1),
+        Fractional(start=0, end=1, total=1),
     ),
     (
-        "FractionalRegion start=0 end=1 total=2 (scalar): top-left quarter",
-        FractionalRegion(start=0, end=1, total=2),
+        "Fractional top-left quarter:",
+        Fractional(start=0, end=1, total=2),
+        Fractional(start=0, end=1, total=2),
     ),
     (
-        "FractionalRegion start=1 end=2 total=3 (scalar): middle ninth",
-        FractionalRegion(start=1, end=2, total=3),
-    ),
-    # --- FractionalRegion: tuple (independent x/y fractions) ---
-    (
-        "FractionalRegion start=(0,0) end=(1,1) total=(2,1): left half, full height",
-        FractionalRegion(start=(0, 0), end=(1, 1), total=(2, 1)),
+        "Fractional middle ninth:",
+        Fractional(start=1, end=2, total=3),
+        Fractional(start=1, end=2, total=3),
     ),
     (
-        "FractionalRegion start=(1,0) end=(2,1) total=(2,1): right half, full height",
-        FractionalRegion(start=(1, 0), end=(2, 1), total=(2, 1)),
-    ),
-    # --- PixelRegion: absolute ---
-    (
-        "PixelRegion left=50 top=50 width=400 height=400: fixed 400x400 at (50,50)",
-        PixelRegion(left=50, top=50, width=400, height=400),
+        "Fractional left half, full height:",
+        Fractional(start=0, end=1, total=2),
+        Fractional(start=0, end=1, total=1),
     ),
     (
-        "PixelRegion left=50 top=50: stretches to fill right and bottom",
-        PixelRegion(left=50, top=50),
+        "Fractional right half, full height:",
+        Fractional(start=1, end=2, total=2),
+        Fractional(start=0, end=1, total=1),
     ),
-    # --- PixelRegion: negative (from far edge) ---
+    # --- OffsetPlusSize: both axes (absolute pixel placement) ---
     (
-        "PixelRegion left=-400 top=50 width=400 height=400: pin to the right edge",
-        PixelRegion(left=-400, top=50, width=400, height=400),
-    ),
-    (
-        "PixelRegion left=50 right=-50 top=50 bottom=-50: 50px margin all sides",
-        PixelRegion(left=50, right=-50, top=50, bottom=-50),
+        "OffsetPlusSize fixed 400x400 at (50, 50):",
+        OffsetPlusSize(offset=50, size=400),
+        OffsetPlusSize(offset=50, size=400),
     ),
     (
-        "PixelRegion left=0 top=-400 width=400 height=400: pins to the bottom",
-        PixelRegion(left=100, top=-400, width=400, height=400),
+        "OffsetPlusSize pin to right edge:",
+        OffsetPlusSize(offset=-400, size=400),
+        OffsetPlusSize(offset=50, size=400),
+    ),
+    (
+        "OffsetPlusSize pin to bottom:",
+        OffsetPlusSize(offset=100, size=400),
+        OffsetPlusSize(offset=-400, size=400),
+    ),
+    # --- PixelGaps: both axes (gaps on each side) ---
+    (
+        "PixelGaps 50px margin all sides:",
+        PixelGaps(left=50, right=50),
+        PixelGaps(left=50, right=50),
+    ),
+    (
+        "PixelGaps stretch from (50, 50) to canvas edge:",
+        PixelGaps(left=50, right=0),
+        PixelGaps(left=50, right=0),
+    ),
+    (
+        "PixelGaps 150px left/right, 0px top/bottom:",
+        PixelGaps(left=150, right=150),
+        PixelGaps(left=0, right=0),
+    ),
+    # --- Mixed span types across axes ---
+    (
+        "Mixed: x=Fractional left half, y=OffsetPlusSize 100px from top size 300",
+        Fractional(start=0, end=1, total=2),
+        OffsetPlusSize(offset=100, size=300),
+    ),
+    (
+        "Mixed: x=PixelGaps 100px each side, y=Fractional middle third",
+        PixelGaps(left=100, right=100),
+        Fractional(start=1, end=2, total=3),
+    ),
+    (
+        "Mixed: x=OffsetPlusSize pin right 200px wide, y=Fractional top third",
+        OffsetPlusSize(offset=-200, size=200),
+        Fractional(start=0, end=1, total=3),
     ),
 ]
 
@@ -88,17 +118,18 @@ def _on_click(event: events.Event) -> bool:
     global region_idx
     if isinstance(event, events.MousePressEvent):
         region_idx = (region_idx + 1) % len(REGIONS)
-        name, region = REGIONS[region_idx]
-        view.layout.region = region
+        name, x_span, y_span = REGIONS[region_idx]
+        view.layout.x_span = x_span  # type: ignore
+        view.layout.y_span = y_span  # type: ignore
         print(f"[{region_idx + 1}/{len(REGIONS)}] {name}")
     return False
 
 
 view.set_event_filter(_on_click)
 
-name, _ = REGIONS[region_idx]
+name, _, _ = REGIONS[region_idx]
 print(f"[{region_idx + 1}/{len(REGIONS)}] {name}")
-print("Click the view to cycle through region options.")
+print("Click the view to cycle through span options.")
 
 snx.show(canvas)
 zoom_to_fit(view)

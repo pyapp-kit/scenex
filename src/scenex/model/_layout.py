@@ -2,167 +2,103 @@ from __future__ import annotations
 
 import logging
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Annotated, Literal, Union
+from typing import Annotated, Literal, Union
 
 from cmap import Color
-from pydantic import ConfigDict, Field, model_validator
+from pydantic import ConfigDict, Field
 
 from ._base import EventedBase
 
-if TYPE_CHECKING:
-    from scenex.model._canvas import Canvas
-
 logger = logging.getLogger(__name__)
 
-AnyRegion = Annotated[
-    Union["PixelRegion", "FractionalRegion"], Field(discriminator="type")
+AnySpan = Annotated[
+    Union["OffsetPlusSize", "Fractional", "PixelGaps"], Field(discriminator="type")
 ]
 
 
-class Region(EventedBase):
+class Span(EventedBase):
     """Defines how a view is placed on a canvas."""
 
     @abstractmethod
-    def compute_rect(
+    def resolve(
         self,
-        canvas: Canvas,
-    ) -> tuple[int, int, int, int]:
-        """Return pixel rect (x, y, width, height) given a canvas."""
+        total: int,
+    ) -> tuple[int, int]:
+        """Return pixel span [start, stop) given a canvas."""
         ...
 
 
-class FractionalRegion(Region):
-    """Positions a view to cover a proportion of its canvas."""
+class Fractional(Span):
+    """Defines a span as a constant proportion."""
 
-    start: int | tuple[int, int] = Field(default=0)
-    end: int | tuple[int, int] = Field(default=1)
-    total: int | tuple[int, int] = Field(default=1)
+    start: int = Field(default=0)
+    end: int = Field(default=1)
+    total: int = Field(default=1)
 
     type: Literal["fractional"] = Field(default="fractional", repr=False)
 
-    def compute_rect(
+    def resolve(
         self,
-        canvas: Canvas,
-    ) -> tuple[int, int, int, int]:
-        canvas_width, canvas_height = canvas.size
-        start_width, start_height = (
-            self.start if isinstance(self.start, tuple) else (self.start, self.start)
-        )
-        end_width, end_height = (
-            self.end if isinstance(self.end, tuple) else (self.end, self.end)
-        )
-        total_width, total_height = (
-            self.total if isinstance(self.total, tuple) else (self.total, self.total)
-        )
-        x = int((start_width / total_width) * canvas_width)
-        y = int((start_height / total_height) * canvas_height)
-        # Note that this method using x_end - x (and similarly for y) ensures no gaps
-        # between adjacent regions when the canvas size is not perfectly divisible by
-        # total_width.
-        x_end = int((end_width / total_width) * canvas_width)
-        y_end = int((end_height / total_height) * canvas_height)
-        return (x, y, x_end - x, y_end - y)
+        total: int,
+    ) -> tuple[int, int]:
+        resolved_start = int((self.start / self.total) * total)
+        resolved_end = int((self.end / self.total) * total)
+        return (resolved_start, resolved_end - resolved_start)
 
 
-class PixelRegion(Region):
-    """Positions a view at absolute pixel coordinates within its canvas.
+class OffsetPlusSize(Span):
+    """Defines a span by its start offset and width.
 
-    ``left`` and ``top`` are measured from the **canvas top-left corner**.
-    Negative values count from the opposite edge (e.g. ``left=-100`` places
-    the left edge 100 px from the canvas right).
-
-    ``right`` and ``bottom`` are also measured from the top-left corner for
-    positive values, but ``0`` and negative values count from the **opposite
-    canvas edge** (e.g. ``right=0`` is flush with the canvas right edge,
-    ``bottom=-40`` is 40 px from the canvas bottom).
-
-    Specify exactly two of ``{left, right, width}`` for the horizontal axis,
-    and exactly two of ``{top, bottom, height}`` for the vertical axis.
-
-    Examples
-    --------
-    40px-wide strip anchored to the left edge, with 40px top/bottom margins:
-        >>> region = PixelRegion(left=0, width=40, top=40, bottom=-40)
-
-    Full-width bar anchored to the canvas bottom with a fixed 40px height:
-        >>> region = PixelRegion(left=0, top=-40, height=40)
-
-    Fill the area right of and below a 40px margin (flush to right/bottom):
-        >>> region = PixelRegion(left=40, top=40, bottom=0)
-
-    100x50 px tile pinned to the top-right corner:
-        >>> region = PixelRegion(left=-100, width=100, top=0, height=50)
+    TODO: Work pixel into the class name
     """
 
-    type: Literal["pixel"] = Field(default="pixel", repr=False)
+    type: Literal["start_offset"] = Field(default="start_offset", repr=False)
+
+    offset: int = Field(
+        description="Offset of the span. Negative counts from the canvas right edge.",
+    )
+    size: int = Field(
+        description="Length of the span.",
+    )
+
+    def resolve(
+        self,
+        total: int,
+    ) -> tuple[int, int]:
+        start = self.offset if self.offset >= 0 else total + self.offset
+        return (start, self.size)
+
+
+class PixelGaps(Span):
+    """Defines a span by the number of pixels to leave as a gap on each side.
+
+    TODO: Better names than left and right
+    """
+
+    type: Literal["pixel_gaps"] = Field(default="pixel_gaps", repr=False)
 
     left: int = Field(
+        default=0,
         description=(
-            "X coordinate of the view's left edge from the canvas left. "
-            "Negative counts from the canvas right edge."
+            "Number of pixels to leave as a gap on the left. "
+            "Negative counts from the right edge."
         ),
     )
-    right: int | None = Field(
-        default=None,
-        description=("X coordinate of the view's right edge from the canvas left. "),
-    )
-    width: int | None = Field(default=None, description="Width of the view in pixels.")
-    top: int = Field(
-        description=("Y coordinate of the view's top edge from the canvas top. "),
-    )
-    bottom: int | None = Field(
-        default=None,
-        description=("Y coordinate of the view's bottom edge from the canvas top. "),
-    )
-    height: int | None = Field(
-        default=None, description="Height of the view in pixels."
+    right: int = Field(
+        default=0,
+        description=(
+            "Number of pixels to leave as a gap on the right. "
+            "Negative counts from the left edge."
+        ),
     )
 
-    @model_validator(mode="after")
-    def _check_constraints(self) -> PixelRegion:
-        if self.width is not None and self.right is not None:
-            raise ValueError("PixelRegion requires either width or right, not both")
-        if self.height is not None and self.bottom is not None:
-            raise ValueError("PixelRegion requires either height or bottom, not both")
-        return self
-
-    def compute_rect(
+    def resolve(
         self,
-        canvas: Canvas,
-    ) -> tuple[int, int, int, int]:
-        cw, ch = canvas.size
-
-        def _start(val: int, size: int) -> int:
-            # left/top: negative counts from the far side
-            return size + val if val < 0 else val
-
-        def _end(val: int, size: int) -> int:
-            # right/bottom: negative count from the far side
-            return size + val if val < 0 else val
-
-        # Resolve horizontal axis
-        if self.right is not None:
-            x = _start(self.left, cw)
-            w = _end(self.right, cw) - x
-        elif self.width is not None:
-            x = _start(self.left, cw)
-            w = self.width
-        else:  # Left only
-            x = _start(self.left, cw)
-            w = cw - x
-
-        # Resolve vertical axis
-        if self.bottom is not None:
-            y = _start(self.top, ch)
-            h = _end(self.bottom, ch) - y
-        elif self.height is not None:
-            y = _start(self.top, ch)
-            h = self.height
-        else:  # Top only
-            y = _start(self.top, ch)
-            h = ch - y
-
-        return (x, y, w, h)
+        total: int,
+    ) -> tuple[int, int]:
+        start = self.left if self.left >= 0 else total + self.left
+        end = total - self.right if self.right >= 0 else total + self.right
+        return (start, end - self.left)
 
 
 class Layout(EventedBase):
@@ -179,15 +115,17 @@ class Layout(EventedBase):
         >>> layout = Layout(border_width=2, border_color=Color("white"), padding=10)
 
     Use a proportional region (left half of canvas):
-        >>> layout = Layout(region=FractionalRegion(end=1, total=2))
+        >>> layout = Layout(x_span=Fractional(start=0, end=1, total=2))
 
     Use a pixel region (40px left strip, 40px top/bottom margin):
-        >>> layout = Layout(region=PixelRegion(left=0, width=40, top=40, bottom=40))
+        >>> layout = Layout(
+        ...     x_span=OffsetPlusSize(offset=0, size=40),
+        ...     y_span=PixelGaps(left=40, right=40),
+        ... )
     """
 
-    region: AnyRegion = Field(
-        default_factory=lambda: FractionalRegion(start=0, end=1, total=1)
-    )
+    x_span: AnySpan = Field(default_factory=lambda: Fractional(start=0, end=1, total=1))
+    y_span: AnySpan = Field(default_factory=lambda: Fractional(start=0, end=1, total=1))
     background_color: Color | None = Field(
         default=Color("black"),
         description="The background color (inside of the border). "

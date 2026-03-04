@@ -17,9 +17,9 @@ def test_close() -> None:
 def test_multiple_views() -> None:
     # Create a canvas with two views
     view1 = snx.View()  # Left half
-    view1.layout.region = snx.FractionalRegion(start=(0, 0), end=(1, 1), total=(2, 1))
+    view1.layout.x_span = snx.Fractional(start=0, end=1, total=2)
     view2 = snx.View()  # Right half
-    view2.layout.region = snx.FractionalRegion(start=(1, 0), end=(2, 1), total=(2, 1))
+    view2.layout.x_span = snx.Fractional(start=1, end=2, total=2)
     canvas = snx.Canvas(views=[view1, view2], width=400, height=400)
     vis_canvas = adaptors.adaptors.get_adaptor(canvas, create=True)
     assert isinstance(vis_canvas, adaptors.Canvas)
