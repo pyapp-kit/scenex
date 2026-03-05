@@ -75,12 +75,6 @@ class View(ViewAdaptor):
         self._vispy_viewbox._scene = new
         new.parent = self._vispy_viewbox
 
-        # FIXME: Viewbox expects there to always be a Clipper
-        # Let's just copy the old one?
-        if isinstance(prev, vispy.scene.subscene.SubScene):
-            new._clipper = prev.clipper
-            new.clip_children = prev.clip_children
-
         # Add the camera to the scene
         if hasattr(self, "_vispy_cam"):
             self._vispy_camera.parent = new
