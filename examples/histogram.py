@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from math import ceil, floor, log10
 from typing import TYPE_CHECKING
 
 import cmap
@@ -38,6 +39,8 @@ def _calc_hist_bins(data: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
 
 
 _AXIS = 40  # pixels reserved for each axis strip
+_LEGEND_W = 160  # legend width in pixels
+_LEGEND_H = 50  # legend height in pixels
 
 
 class Histogram:
@@ -48,11 +51,8 @@ class Histogram:
         self._gamma = 1.0
         self._grabbed: snx.Node | None = None
 
-        self._containers: dict[int, tuple[np.ndarray, np.ndarray]] = {}
         self._values: np.ndarray | None = None
         self._bins: np.ndarray | None = None
-        self._log_base: float | None = None
-        self._max_bin: float | None = None
 
         self.x_view = snx.View(
             scene=snx.Scene(name="x axis"),
@@ -66,11 +66,16 @@ class Histogram:
             scene=snx.Scene(name="y axis"),
             camera=snx.Camera(),
         )
+        self.legend_view = snx.View(
+            scene=snx.Scene(name="legend"),
+            camera=snx.Camera(),
+        )
+        self.legend_view.layout.background_color = cmap.Color((0, 0, 0, 0))
         # Create canvas early so it's available before set_data
         self.canvas = snx.Canvas(
             width=600,
             height=600,
-            views=[self.x_view, self.y_view, self.view],
+            views=[self.x_view, self.y_view, self.view, self.legend_view],
             visible=True,
         )
 
@@ -83,10 +88,15 @@ class Histogram:
         self.view.layout.x_start = snx.Pixel(pixels=_AXIS)
         self.view.layout.y_end = snx.Pixel(pixels=-_AXIS)
 
+        # Legend: top-right corner, floating over the main view
+        self.legend_view.layout.x_start = snx.Pixel(pixels=-_LEGEND_W)
+        self.legend_view.layout.y_end = snx.Pixel(pixels=_LEGEND_H)
+
         self._tick_objects: list[snx.Text] = []
         self._init_x_view()
         self._init_y_view()
         self._init_main_view()
+        self._init_legend_view()
 
     def _init_x_view(self) -> None:
         """Populate the x-axis view scene."""
@@ -111,7 +121,6 @@ class Histogram:
     def _init_y_view(self) -> None:
         """Populate the y-axis view scene."""
         self.y_axis = snx.Line(
-            # vertices=np.array([[0, 0.2, 0], [0, 0.8, 0]]),
             vertices=np.array([[0, 0, 0], [0, 1, 0]]),
             width=2,
             color=snx.UniformColor(color=cmap.Color("white")),
@@ -122,6 +131,24 @@ class Histogram:
         self.y_view.scene.add_child(self.y_axis)
         self.y_view.scene.add_child(self.y_max)
 
+    def _init_legend_view(self) -> None:
+        """Populate the legend view with clim/gamma text."""
+        self.legend_clims = snx.Text(antialias=True)
+        self.legend_gamma = snx.Text(antialias=True)
+
+        self.legend_clims.transform = snx.Transform().translated((0.5, 0.6, 0))
+        self.legend_gamma.transform = snx.Transform().translated((0.5, 0.2, 0))
+
+        self.legend_view.scene.add_child(self.legend_clims)
+        self.legend_view.scene.add_child(self.legend_gamma)
+        self._update_legend()
+
+    def _update_legend(self) -> None:
+        """Refresh legend text to reflect current clims and gamma."""
+        lo, hi = self._clims
+        self.legend_clims.text = f"Min/Max: ({lo:.0f}, {hi:.0f})"
+        self.legend_gamma.text = f"Gamma: {self._gamma:.2f}"
+
     def _init_main_view(self) -> None:
         """Populate the main histogram view scene and connect event handlers."""
         self.mesh = snx.Mesh(
@@ -129,13 +156,6 @@ class Histogram:
             faces=np.zeros((1, 3), dtype=np.uint16),
             color=snx.UniformColor(color=cmap.Color("steelblue")),
             order=0,
-        )
-
-        self.highlight_line = snx.Line(
-            vertices=np.array([[0, 0, 0], [0, 1, 0]]),
-            width=2,
-            color=snx.UniformColor(color=cmap.Color("yellow")),
-            visible=False,  # Start hidden
         )
 
         # Split LUT line into three interactive components
@@ -186,9 +206,6 @@ class Histogram:
         # 1: controls (clim lines, gamma curve, handle)
         self.controls.order = 1
         self.view.scene.add_child(self.controls)
-        # 2: highlight line
-        self.highlight_line.order = 2
-        self.view.scene.add_child(self.highlight_line)
 
         # Set up event handlers and controllers
         self.view.camera.controller = snx.PanZoom(lock_y=True)
@@ -197,8 +214,6 @@ class Histogram:
         self.view.camera.events.projection.connect(self._update_x_axis)
         self.canvas.events.width.connect(self._update_x_axis)
         self.view.set_event_filter(self._on_main_view)
-
-        # self.set_clims(self._clims)
 
     def _on_main_view(self, event: events.Event) -> bool:
         if isinstance(event, events.MousePressEvent):
@@ -225,18 +240,15 @@ class Histogram:
                 # ...and no less than the minimum value
                 if self._bins is not None:
                     new_left = max(new_left, self._bins[0])
-                # Set it
                 self.set_clims((new_left, self._clims[1]))
             elif self._grabbed is self.right_clim:
                 # The right clim must stay to the right of the left clim
                 new_right = max(self._clims[0], event.world_ray.origin[0])
-                # ...and no more than the minimum value
+                # ...and no more than the maximum value
                 if self._bins is not None:
                     new_right = min(new_right, self._bins[-1])
-                # Set it
                 self.set_clims((self._clims[0], new_right))
             elif self._grabbed is self.gamma_handle:
-                # Set it
                 self.set_gamma(-np.log2(event.world_ray.origin[1]))
             elif self._grabbed is None:
                 intersections = [
@@ -259,17 +271,18 @@ class Histogram:
     def set_clims(self, clims: tuple[float, float]) -> None:
         """Set the histogram clims."""
         self._clims = clims
-        if self.controls is not None:
-            self.controls.transform = (
-                snx.Transform()
-                .scaled((self._clims[1] - self._clims[0], 1, 1))
-                .translated((self._clims[0], 0, 0))
-            )
+        self.controls.transform = (
+            snx.Transform()
+            .scaled((self._clims[1] - self._clims[0], 1, 1))
+            .translated((self._clims[0], 0, 0))
+        )
+        self._update_legend()
 
     def set_gamma(self, gamma: float) -> None:
         """Set the gamma."""
         self._gamma = gamma
         self._update_lut_line()
+        self._update_legend()
 
     def _create_static_clim_lines(self) -> None:
         """Create the static left and right clim lines that don't change with gamma."""
@@ -277,39 +290,30 @@ class Histogram:
         left_x = np.array([0, 0, 0])
         left_y = np.array([1, 0.5, 0])
         left_z = np.zeros(3)
-        if line := self.left_clim:
-            line.vertices = np.column_stack((left_x, left_y, left_z))
+        self.left_clim.vertices = np.column_stack((left_x, left_y, left_z))
 
         # Right clim line (vertical line)
         right_x = np.array([1, 1, 1])
         right_y = np.array([1, 0.5, 0])
         right_z = np.zeros(3)
-        if line := self.right_clim:
-            line.vertices = np.column_stack((right_x, right_y, right_z))
+        self.right_clim.vertices = np.column_stack((right_x, right_y, right_z))
 
         # Color the clim lines
         dark_clim_color = cmap.Color((0.4, 0.4, 0.4))
         light_clim_color = cmap.Color((0.7, 0.7, 0.7))
-        if line := self.left_clim:
-            line.color = snx.VertexColors(
-                color=[dark_clim_color, light_clim_color, dark_clim_color],
-            )
-        if line := self.right_clim:
-            line.color = snx.VertexColors(
-                color=[dark_clim_color, light_clim_color, dark_clim_color],
-            )
+        self.left_clim.color = snx.VertexColors(
+            color=[dark_clim_color, light_clim_color, dark_clim_color],
+        )
+        self.right_clim.color = snx.VertexColors(
+            color=[dark_clim_color, light_clim_color, dark_clim_color],
+        )
 
     def _update_lut_line(self) -> None:
         """Updates the gamma curve vertices and colors."""
-        if self.gamma_curve is None or self.gamma_handle is None:
-            return
-
         npoints = 256
         # Gamma curve (non-interactive) - updates when gamma changes
         gamma_x = np.linspace(0, 1, npoints)
-        gamma_y = np.linspace(0, 1, npoints) ** (
-            self._gamma if self._gamma is not None else 1
-        )
+        gamma_y = np.linspace(0, 1, npoints) ** self._gamma
         gamma_z = np.zeros(npoints)
         self.gamma_curve.vertices = np.column_stack((gamma_x, gamma_y, gamma_z))
 
@@ -326,66 +330,15 @@ class Histogram:
     def set_data(self, source: np.ndarray) -> None:
         """Set the histogram data."""
         values, bin_edges = _calc_hist_bins(source)
-        uninitialized = self._values is None
-        # Update the histogram mesh
-        if self._values is None:
-            self._values = np.copy(values)
-            self._bins = np.copy(bin_edges)
-            self._containers[id(source)] = (values, bin_edges)
-        else:
-            if id(source) in self._containers:
-                old_values, _old_bins = self._containers[id(source)]
-                self._values -= old_values
-
-            self._values += values
-            self._containers[id(source)] = (values, bin_edges)
-
-        self._max_bin = np.max(self._values)
-        if mesh := self.mesh:
-            mesh.vertices, mesh.faces = self._hist_counts_to_mesh(
-                self._values,
-                self._bins,  # type: ignore
-                False,
-            )
-        # Reapply log scaling if necessary
-        if log := self._log_base:
-            self._log_base = None
-            self.set_log_base(log)
-
-        # Rescale the y axis
+        first_data = self._values is None
+        self._values = values
+        self._bins = bin_edges
+        self.mesh.vertices, self.mesh.faces = self._hist_counts_to_mesh(
+            values, bin_edges
+        )
         self._update_y_axis()
-
-        if uninitialized:
+        if first_data:
             self.set_range()
-
-    def _has_data(self) -> bool:
-        if self.mesh is None:
-            return False
-        return bool(np.asarray(self.mesh.vertices).size)
-
-    # ---- LutView interface implementations ----
-
-    def set_log_base(self, base: float | None) -> None:
-        """Sets the log base for the histogram y-axis."""
-        if self.mesh is None:
-            return
-
-        old_log, new_log = self._log_base, base
-        verts = np.zeros_like(self.mesh.vertices)
-        verts[:, :] = self.mesh.vertices[:, :]
-        if old_log is not None:
-            verts[:, 1] = np.power(old_log, verts[:, 1]) - 1
-        # use a count+1 histogram to gracefully handle 0, 1
-        self._log_base = base
-        if new_log is not None:
-            verts[:, 1] = np.log(verts[:, 1] + 1) / np.log(new_log)
-        # FIXME: Just telling scenex to refresh would be great
-        verts[:, 0] = self.mesh.vertices[:, 0]
-        self.mesh.vertices = verts
-
-        self._update_y_axis()
-
-    # ---- Viewable interface implementations ----
 
     def set_range(self) -> None:
         """Sets the range of the x axis."""
@@ -393,26 +346,15 @@ class Histogram:
         self.x_view.camera.projection = projections.orthographic(1, 1, 1)
         self.y_view.camera.projection = projections.orthographic(1, 1, 1)
         # FIXME: Vispy doesn't render the lines if they're on the edge.
-        self.x_view.camera.transform = snx.Transform().translated((0.5, -0.499, 0))
-        self.y_view.camera.transform = snx.Transform().translated((-0.499, 0.5, 0))
-
-    def highlight(self, value: float | None) -> None:
-        """Highlight a specific value on the histogram."""
-        if self.highlight_line is None:
-            return
-        self.highlight_line.visible = value is not None
-        self.highlight_line.transform = (
-            self.highlight_line.transform
-            if value is None
-            else snx.Transform().translated((value, 0, 0))
-        )
+        self.x_view.camera.transform = snx.Transform().translated((0.5, -0.5, 0))
+        self.y_view.camera.transform = snx.Transform().translated((-0.5, 0.5, 0))
+        self.legend_view.camera.projection = projections.orthographic(1, 1, 1)
+        self.legend_view.camera.transform = snx.Transform().translated((0.5, 0.5, 0))
 
     def _calculate_tick_step(
         self, min_val: float, max_val: float, target_ticks: int = 5
     ) -> float:
         """Calculate a nice tick step for the given range."""
-        from math import floor, log10
-
         if max_val <= min_val:
             return 1.0
 
@@ -432,8 +374,6 @@ class Histogram:
         self, min_val: float, max_val: float, step: float
     ) -> list[float]:
         """Get tick positions within range, including min/max and culling overlaps."""
-        from math import ceil, floor
-
         if step <= 0:
             return [min_val, max_val]
 
@@ -447,23 +387,18 @@ class Histogram:
             intermediate_ticks.append(current)
             current += step
 
-        # Filter out ticks that are too close to min/max to avoid overlap
-        min_distance = step * 0.15  # Minimum distance between ticks
-        filtered_ticks = []
-        for tick_val in intermediate_ticks:
-            if (
-                abs(tick_val - min_val) >= min_distance
-                and abs(tick_val - max_val) >= min_distance
-            ):
-                filtered_ticks.append(tick_val)
+        # Filter out ticks too close to min/max to avoid overlap
+        min_distance = step * 0.15
+        filtered_ticks = [
+            t
+            for t in intermediate_ticks
+            if abs(t - min_val) >= min_distance and abs(t - max_val) >= min_distance
+        ]
 
-        # Always include min and max values, plus filtered intermediate ticks
-        all_ticks = [min_val, *filtered_ticks, max_val]
-
-        # Remove duplicates while preserving order
-        seen = set()
+        # Always include min and max, deduplicate while preserving order
+        seen: set[float] = set()
         unique_ticks: list[float] = []
-        for tick in all_ticks:
+        for tick in [min_val, *filtered_ticks, max_val]:
             if tick not in seen:
                 seen.add(tick)
                 unique_ticks.append(tick)
@@ -493,18 +428,16 @@ class Histogram:
         start = _AXIS / w
 
         # Use cached tick objects for all positions
-        tick_idx = 0
-        for tick_val in unique_positions:
-            # Don't exceed our pre-created tick objects
+        for tick_idx, tick_val in enumerate(unique_positions):
             if tick_idx >= len(self._tick_objects):
                 break
 
             # Calculate normalized position (0.1 to 0.95 maps to left to right)
-            if right != left:
-                norm_pos = start + (tick_val - left) / (right - left) * (1 - start)
-            else:
-                norm_pos = 0.5  # Default to center if no range
-
+            norm_pos = (
+                start + (tick_val - left) / (right - left) * (1 - start)
+                if right != left
+                else 0.5
+            )
             # Reuse pre-created tick object
             tick_obj = self._tick_objects[tick_idx]
             tick_obj.text = f"{tick_val:.0f}"
@@ -512,12 +445,8 @@ class Histogram:
 
             # Add to scene
             self.x_view.scene.add_child(tick_obj)
-            tick_idx += 1
 
     def _update_y_axis(self) -> None:
-        if self.mesh is None or self.y_max is None:
-            return
-
         max_val = self.mesh.bounding_box[1][1]
         # Scale the y-axis to [0, 1]
         self.mesh.transform = snx.Transform().scaled((1, 0.95 / max(max_val, 1), 1))
@@ -528,11 +457,9 @@ class Histogram:
         self,
         values: Sequence[float] | npt.NDArray,
         bin_edges: Sequence[float] | npt.NDArray,
-        vertical: bool = False,
     ) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.uint32]]:
         """Convert histogram counts to mesh vertices and faces for plotting."""
         n_edges = len(bin_edges)
-        X, Y = (1, 0) if vertical else (0, 1)
 
         #   4-5
         #   | |
@@ -542,9 +469,9 @@ class Histogram:
         # construct vertices
         # TODO: Reusing the arrays would be nice.
         vertices = np.zeros((3 * n_edges - 2, 3), np.float32)
-        vertices[:, X] = np.repeat(bin_edges, 3)[1:-1]
-        vertices[1::3, Y] = values
-        vertices[2::3, Y] = values
+        vertices[:, 0] = np.repeat(bin_edges, 3)[1:-1]
+        vertices[1::3, 1] = values
+        vertices[2::3, 1] = values
         vertices[vertices == float("-inf")] = 0
 
         # construct triangles
