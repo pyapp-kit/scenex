@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
@@ -40,7 +39,12 @@ class View(ViewAdaptor):
         self._snx_set_camera(view.camera)
         self._snx_set_scene(view.scene)
 
+        # -- Layout connections -- #
+        self._model.layout.events.background_color.connect(self._set_background_color)
         view.layout.events.all.connect(self._on_layout_changed)
+
+        # -- Layout initialization -- #
+        self._set_background_color(view.layout.background_color)
         self._on_layout_changed()
 
     def _on_vispy_viewbox_resized(self, event: Any) -> None:
@@ -53,9 +57,6 @@ class View(ViewAdaptor):
         self._vispy_viewbox.rect = rect
         self._vispy_viewbox.update()
         self._cam_adaptor._set_view(rect.width, rect.height)
-
-    def _snx_get_native(self) -> Any:
-        return self._vispy_viewbox
 
     def _snx_set_visible(self, arg: bool) -> None:
         pass
@@ -96,31 +97,9 @@ class View(ViewAdaptor):
     def _draw(self) -> None:
         self._vispy_viewbox.update()
 
-    def _snx_set_position(self, arg: tuple[float, float]) -> None:
-        raise NotImplementedError()
-
-    def _snx_set_size(self, arg: tuple[float, float] | None) -> None:
-        raise NotImplementedError()
-
-    def _snx_set_border_width(self, arg: float) -> None:
-        warnings.warn(
-            "set_border_width not implemented for vispy", RuntimeWarning, stacklevel=2
-        )
-
-    def _snx_set_border_color(self, arg: Color | None) -> None:
-        warnings.warn(
-            "set_border_color not implemented for vispy", RuntimeWarning, stacklevel=2
-        )
-
-    def _snx_set_padding(self, arg: int) -> None:
-        warnings.warn(
-            "set_padding not implemented for vispy", RuntimeWarning, stacklevel=2
-        )
-
-    def _snx_set_margin(self, arg: int) -> None:
-        warnings.warn(
-            "set_margin not implemented for vispy", RuntimeWarning, stacklevel=2
-        )
+    def _set_background_color(self, color: Color | None) -> None:
+        color_data = None if color is None else color.rgba
+        self._vispy_viewbox.bgcolor = color_data
 
     def _snx_render(self) -> np.ndarray:
         """Render to screenshot."""
