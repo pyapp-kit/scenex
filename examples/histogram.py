@@ -54,49 +54,54 @@ class Histogram:
         self._values: np.ndarray | None = None
         self._bins: np.ndarray | None = None
 
+        # Canvas
+        self.canvas = snx.Canvas(
+            width=600,
+            height=600,
+            visible=True,
+        )
+
+        # -- Views -- ##
+
+        # x-axis
         self.x_view = snx.View(
             scene=snx.Scene(name="x axis"),
             camera=snx.Camera(),
         )
-        self.view = snx.View(
-            scene=snx.Scene(name="main scene"),
-            camera=snx.Camera(interactive=True),
-        )
+        self.x_view.layout.y_start = snx.Pixel(pixels=-_AXIS)
+        self._init_x_view()
+        self.canvas.views.append(self.x_view)
+
+        # y-axis
         self.y_view = snx.View(
             scene=snx.Scene(name="y axis"),
             camera=snx.Camera(),
         )
+        self.y_view.layout.x_end = snx.Pixel(pixels=_AXIS)
+        self.y_view.layout.y_end = snx.Pixel(pixels=-_AXIS)
+        self._init_y_view()
+        self.canvas.views.append(self.y_view)
+
+        # plot
+        self.view = snx.View(
+            scene=snx.Scene(name="main scene"),
+            camera=snx.Camera(interactive=True),
+        )
+        self.view.layout.x_start = snx.Pixel(pixels=_AXIS)
+        self.view.layout.y_end = snx.Pixel(pixels=-_AXIS)
+        self._init_main_view()
+        self.canvas.views.append(self.view)
+
+        # legend
         self.legend_view = snx.View(
             scene=snx.Scene(name="legend"),
             camera=snx.Camera(),
         )
         self.legend_view.layout.background_color = cmap.Color((0, 0, 0, 0))
-        # Create canvas early so it's available before set_data
-        self.canvas = snx.Canvas(
-            width=600,
-            height=600,
-            views=[self.x_view, self.y_view, self.view, self.legend_view],
-            visible=True,
-        )
-
-        # Lay out views using pixel-anchored strategies so resizing works correctly
-        self.y_view.layout.x_end = snx.Pixel(pixels=_AXIS)
-        self.y_view.layout.y_end = snx.Pixel(pixels=-_AXIS)
-
-        self.x_view.layout.y_start = snx.Pixel(pixels=-_AXIS)
-
-        self.view.layout.x_start = snx.Pixel(pixels=_AXIS)
-        self.view.layout.y_end = snx.Pixel(pixels=-_AXIS)
-
-        # Legend: top-right corner, floating over the main view
         self.legend_view.layout.x_start = snx.Pixel(pixels=-_LEGEND_W)
         self.legend_view.layout.y_end = snx.Pixel(pixels=_LEGEND_H)
-
-        self._tick_objects: list[snx.Text] = []
-        self._init_x_view()
-        self._init_y_view()
-        self._init_main_view()
         self._init_legend_view()
+        self.canvas.views.append(self.legend_view)
 
     def _init_x_view(self) -> None:
         """Populate the x-axis view scene."""
@@ -106,6 +111,7 @@ class Histogram:
             color=snx.UniformColor(color=cmap.Color("white")),
         )
         self.x_view.scene.add_child(self.x_axis)
+        self._tick_objects: list[snx.Text] = []
 
         # Pre-create 10 tick objects with line children (enough for min, max, and ticks)
         for _ in range(10):
@@ -482,10 +488,13 @@ class Histogram:
         return vertices, faces
 
 
+# Create the histogram
 histogram = Histogram()
+# Show the histogram
+snx.show(histogram.canvas)
+# Add some data
 data = gaussian_dataset(n=10000)
 histogram.set_data(data)
 histogram.set_clims((data.min(), data.max()))
-snx.show(histogram.canvas)
-histogram.set_range()
+# Run!
 snx.run()
