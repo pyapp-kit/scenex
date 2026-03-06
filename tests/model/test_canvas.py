@@ -5,9 +5,6 @@ from scenex.app.events import Ray
 from scenex.model._layout import Fraction
 from scenex.utils import projections
 
-# Default canvas size used across tests
-_W, _H = 500, 500
-
 
 def test_to_world() -> None:
     """Tests Canvas.to_world"""
@@ -18,7 +15,7 @@ def test_to_world() -> None:
         interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
-    canvas = snx.Canvas(width=_W, height=_H, views=[view])
+    canvas = snx.Canvas(views=[view])
     w, h = canvas.rect_for(view)[2:]
 
     # Test center of canvas
@@ -46,7 +43,7 @@ def test_to_world_translated() -> None:
         interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
-    canvas = snx.Canvas(width=_W, height=_H, views=[view])
+    canvas = snx.Canvas(views=[view])
 
     ray = canvas.to_world((0, 0))
     assert ray == Ray(origin=(0, 2, 1), direction=(0, 0, -1), source=view)
@@ -72,7 +69,7 @@ def test_to_world_projection() -> None:
         interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
-    canvas = snx.Canvas(width=_W, height=_H, views=[view])
+    canvas = snx.Canvas(views=[view])
 
     ray = canvas.to_world((0, 0))
     assert ray == Ray(origin=(-0.5, 0.5, 0), direction=(0, 0, -1), source=view)
@@ -87,7 +84,7 @@ def test_multiple_views() -> None:
     view2 = snx.View()  # Right half
     view2.layout.x_start = Fraction(num=1, denom=2)
     view2.layout.x_end = Fraction(num=1, denom=1)
-    canvas = snx.Canvas(width=800, height=600, views=[view1, view2])
+    canvas = snx.Canvas(views=[view1, view2])
 
     x1, y1, w1, h1 = canvas.rect_for(view1)
     x2, y2, w2, h2 = canvas.rect_for(view2)
@@ -99,8 +96,8 @@ def test_multiple_views() -> None:
     assert y1 == y2
 
     # Changing the canvas size should preserve the equal-split relationship
-    canvas.width = 400
-    canvas.height = 400
+    canvas.width = canvas.width // 2
+    canvas.height = canvas.height * 2
 
     x1, y1, w1, h1 = canvas.rect_for(view1)
     x2, y2, w2, h2 = canvas.rect_for(view2)
