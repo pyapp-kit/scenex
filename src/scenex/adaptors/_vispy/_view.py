@@ -39,6 +39,7 @@ class View(ViewAdaptor):
         self._snx_set_camera(view.camera)
         self._snx_set_scene(view.scene)
 
+        # FIXME: Should also listen for connection to a view, and similarly set the rect
         # -- Layout connections -- #
         self._model.layout.events.background_color.connect(self._set_background_color)
         view.layout.events.all.connect(self._on_layout_changed)
@@ -53,10 +54,11 @@ class View(ViewAdaptor):
         self._cam_adaptor._set_view(w, h)
 
     def _on_layout_changed(self, event: Any | None = None) -> None:
-        rect = Rect(self._model.layout.content_rect)
-        self._vispy_viewbox.rect = rect
-        self._vispy_viewbox.update()
-        self._cam_adaptor._set_view(rect.width, rect.height)
+        if canvas := self._model.canvas:
+            rect = Rect(canvas.content_rect_for(self._model))
+            self._vispy_viewbox.rect = rect
+            self._vispy_viewbox.update()
+            self._cam_adaptor._set_view(rect.width, rect.height)
 
     def _snx_set_visible(self, arg: bool) -> None:
         pass
@@ -72,12 +74,6 @@ class View(ViewAdaptor):
         new = cast("_scene.Scene", get_adaptor(scene))._vispy_node
         self._vispy_viewbox._scene = new
         new.parent = self._vispy_viewbox
-
-        # FIXME: Viewbox expects there to always be a Clipper
-        # Let's just copy the old one?
-        if isinstance(prev, vispy.scene.subscene.SubScene):
-            new._clipper = prev.clipper
-            new.clip_children = prev.clip_children
 
         # Add the camera to the scene
         if hasattr(self, "_vispy_cam"):

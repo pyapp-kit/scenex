@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
@@ -43,8 +44,9 @@ class Canvas(EventedBase):
 
     The Canvas represents the top-level rendering context where views are displayed.
     In desktop applications, a canvas corresponds to a window. In web applications,
-    it corresponds to a DOM element. Multiple views can be laid out horizontally on a
-    single canvas; more complex layouts are planned in the near future.
+    it corresponds to a DOM element. Multiple views can be arranged on a single canvas
+    using their layout parameters.
+
 
     Examples
     --------
@@ -58,8 +60,8 @@ class Canvas(EventedBase):
         >>> canvas = Canvas(width=800, height=400, views=[View(), View()])
     """
 
-    width: int = Field(default=500, description="The width of the canvas in pixels")
-    height: int = Field(default=500, description="The height of the canvas in pixels")
+    width: int = Field(default=600, description="The width of the canvas in pixels")
+    height: int = Field(default=600, description="The height of the canvas in pixels")
     background_color: Color = Field(
         default=Color("black"), description="The background color of the canvas"
     )
@@ -70,7 +72,9 @@ class Canvas(EventedBase):
         default="",
         description="The title displayed on the canvas window",
     )
-    views: EventedList[View] = Field(default_factory=EventedList, frozen=True)
+    views: EventedList[View] = Field(
+        default_factory=EventedList,
+    )
 
     # Private state for tracking mouse view transitions
     _last_mouse_view: View | None = PrivateAttr(default=None)
@@ -91,26 +95,59 @@ class Canvas(EventedBase):
         """Post-initialization hook for the model."""
         # Update all current views
         for view in self.views:
-            view._canvas = self
+            view.canvas = self
 
-        self.events.width.connect(self._compute_layout)
-        self.events.height.connect(self._compute_layout)
-
-        self._compute_layout()
+        self.views.item_inserted.connect(self._on_view_inserted)
+        self.views.item_removed.connect(self._on_view_removed)
+        self.views.item_changed.connect(self._on_view_changed)
 
     def close(self) -> None:
         """Close the canvas and release resources."""
         for adaptor in self._get_adaptors():
             cast("CanvasAdaptor", adaptor)._snx_close()
 
-    def _compute_layout(self) -> None:
-        total = len(self.views)
-        # TODO: Support more complex layouts
-        for i, view in enumerate(self.views):
-            view.layout.x = (i / total) * self.width
-            view.layout.y = 0
-            view.layout.width = self.width / total
-            view.layout.height = self.height
+    def rect_for(self, view: View) -> tuple[int, int, int, int]:
+        """The pixel rect (x, y, width, height) for a view, computed from its layout."""
+        x = view.layout.x_start.resolve(self.width)
+        w = view.layout.x_end.resolve(self.width) - x
+        y = view.layout.y_start.resolve(self.height)
+        h = view.layout.y_end.resolve(self.height) - y
+        return (x, y, w, h)
+
+    def content_rect_for(self, view: View) -> tuple[int, int, int, int]:
+        """The pixel rect (x, y, width, height) of the content area for a view.
+
+        Applies the view's padding, border_width, and margin insets to the
+        outer rect returned by ``rect_for``.
+        """
+        x, y, w, h = self.rect_for(view)
+        layout = view.layout
+        offset = int(layout.padding + layout.border_width + layout.margin)
+        return (x + offset, y + offset, w - 2 * offset, h - 2 * offset)
+
+    def _on_view_inserted(self, idx: int, view: View) -> None:
+        # Set canvas reference to this if it isn't already
+        if view.canvas is not self:
+            view.canvas = self
+
+    def _on_view_removed(self, idx: int, view: View) -> None:
+        view.canvas = None
+
+    def _on_view_changed(
+        self,
+        idx: int | slice,
+        old_views: View | Sequence[View],
+        new_views: View | Sequence[View],
+    ) -> None:
+        if not isinstance(old_views, Sequence):
+            old_views = [old_views]
+        for view in old_views:
+            view.canvas = None
+
+        if not isinstance(new_views, Sequence):
+            new_views = [new_views]
+        for view in new_views:
+            view.canvas = self
 
     @property
     def size(self) -> tuple[int, int]:
@@ -181,18 +218,15 @@ class Canvas(EventedBase):
         if view is None:
             return None
 
-        # Get position relative to viewport
-        pos_rel = (
-            canvas_pos[0] - view.layout.x,
-            canvas_pos[1] - view.layout.y,
-        )
+        x, y, width, height = self.rect_for(view)
 
-        width, height = view.layout.size
+        # Get position relative to viewport
+        pos_rel = (canvas_pos[0] - x, canvas_pos[1] - y)
 
         # Convert position to Normalized Device Coordinates (NDC) - i.e., within [-1, 1]
-        x = pos_rel[0] / width * 2 - 1
-        y = -(pos_rel[1] / height * 2 - 1)
-        return (x, y)
+        ndc_x = pos_rel[0] / width * 2 - 1
+        ndc_y = -(pos_rel[1] / height * 2 - 1)
+        return (ndc_x, ndc_y)
 
     def to_world(self, canvas_pos: tuple[float, float]) -> Ray | None:
         """Map XY canvas position (pixels) to a Ray traveling through world space."""
@@ -229,6 +263,12 @@ class Canvas(EventedBase):
 
     def _containing_view(self, pos: tuple[float, float]) -> View | None:
         for view in self.views:
-            if pos in view.layout:
+            x, y, w, h = self.rect_for(view)
+            offset = view.layout.padding + view.layout.border_width + view.layout.margin
+            left = x + offset
+            right = x + w - offset
+            top = y + offset
+            bottom = y + h - offset
+            if left <= pos[0] <= right and top <= pos[1] <= bottom:
                 return view
         return None

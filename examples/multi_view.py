@@ -12,6 +12,7 @@ import numpy as np
 import scenex as snx
 from scenex.app.events import Event, MouseMoveEvent
 from scenex.model import BlendMode
+from scenex.model._layout import Fraction
 from scenex.model._transform import Transform
 from scenex.utils import projections
 
@@ -68,9 +69,13 @@ view2 = snx.View(
     camera=snx.Camera(interactive=True),
 )
 
+# Partition the canvas into two halves for the first two views
+view1.layout.x_end = Fraction(num=1, denom=2)
+view2.layout.x_start = Fraction(num=1, denom=2)
+
 # And put them on the same canvas
 view_size = 400
-canvas = snx.Canvas(views=[view1, view2], width=2 * view_size, height=view_size)
+canvas = snx.Canvas(width=2 * view_size, height=view_size, views=[view1, view2])
 
 
 # Interaction: The left view shows the full gray volume with a perspective camera.

@@ -170,12 +170,9 @@ def show(
             scene = model.Scene(children=[obj])
             view = model.View(scene=scene)
 
-        canvas = model.Canvas(
-            # Respect the view size if provided
-            width=int(view.layout.width),
-            height=int(view.layout.height),
-            views=[view],
-        )
+        canvas = model.Canvas()
+        if view:
+            canvas.views.append(view)
 
     canvas.visible = True
     reg = get_adaptor_registry(backend=backend)

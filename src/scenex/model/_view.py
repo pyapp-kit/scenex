@@ -79,18 +79,23 @@ class View(EventedBase):
         default=True, description="Whether the view is visible and should be rendered"
     )
 
+    # FIXME: This should be a public field with an after validator that adds this view
+    # to the canvas's views list
     _canvas: Canvas | None = PrivateAttr(None)
 
     def model_post_init(self, __context: Any) -> None:
         """Post-initialization hook for the model."""
         super().model_post_init(__context)
         self.camera.parent = self.scene
+        # It is vital that whenever the view size changes, we allow the ResizePolicy to
+        # respond. That size can change when (a) the layout changes, or (b) the canvas
+        # resizes. We listen to (a) here and (b) in the canvas setter.
+        self.layout.events.x_start.connect(self._on_size_change)
+        self.layout.events.x_end.connect(self._on_size_change)
+        self.layout.events.y_start.connect(self._on_size_change)
+        self.layout.events.y_end.connect(self._on_size_change)
 
-        # FIXME: Reconnect this when the layout is changed
-        self.layout.events.width.connect(self._on_layout_change)
-        self.layout.events.height.connect(self._on_layout_change)
-
-    def _on_layout_change(self, *args: Any) -> None:
+    def _on_size_change(self, *args: Any) -> None:
         if on_resize := self.on_resize:
             on_resize.handle_resize(self)
 
@@ -107,11 +112,22 @@ class View(EventedBase):
         return canvas
 
     @canvas.setter
-    def canvas(self, value: Canvas) -> None:
+    def canvas(self, value: Canvas | None) -> None:
+        # Disconnect old canvas events
+        if self._canvas:
+            self._canvas.events.width.disconnect(self._on_size_change)
+            self._canvas.events.height.disconnect(self._on_size_change)
+            if self in self._canvas.views:
+                self._canvas.views.remove(self)
+
         self._canvas = value
-        # If this view is not already on the canvas, just add it to the end
-        if self not in value.views:
-            value.views.append(self)
+
+        # Connect new canvas events
+        if self._canvas:
+            self._canvas.events.width.connect(self._on_size_change)
+            self._canvas.events.height.connect(self._on_size_change)
+            if self not in self._canvas.views:
+                self._canvas.views.append(self)
 
     def render(self) -> np.ndarray:
         """Render the view to an array."""
@@ -295,8 +311,11 @@ class Letterbox(ResizePolicy):
         if view.camera.projection != self._last_adjustment or self._reference is None:
             self._reference = view.camera.projection
 
-        view_width = int(view.layout.width)
-        view_height = int(view.layout.height)
+        if view._canvas is None or self._reference is None:
+            return
+        _, _, view_width, view_height = view._canvas.rect_for(view)
+        view_width = int(view_width)
+        view_height = int(view_height)
         if view_height == 0 or self._reference is None:
             return
 

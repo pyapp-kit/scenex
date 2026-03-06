@@ -67,14 +67,20 @@ class Canvas(CanvasAdaptor):
         # directly also works.
         vis_view._vispy_viewbox.parent = self._canvas.central_widget
 
-        get_adaptor(view.camera)._set_view(view.layout.width, view.layout.height)  # type:ignore
+        cast("View", get_adaptor(view))._on_layout_changed()
         self._views.append(view)
 
     def _snx_set_width(self, arg: int) -> None:
         self._canvas.size = self._model.size
+        self._update_view_rects()
 
     def _snx_set_height(self, arg: int) -> None:
         self._canvas.size = self._model.size
+        self._update_view_rects()
+
+    def _update_view_rects(self) -> None:
+        for view in self._views:
+            cast("View", get_adaptor(view))._on_layout_changed()
 
     def _snx_set_background_color(self, arg: Color | None) -> None:
         if arg is None:

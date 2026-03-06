@@ -134,18 +134,24 @@ class Points(Node):
         )  # type: ignore
 
     def passes_through(self, ray: Ray) -> float | None:
-        if self.scaling in (False, "fixed"):
+        if self.scaling == "fixed":
             # Note that fixed-size points are tested in screen/canvas space
+            # i.e. we'll need a canvas to determine the pixel size.
+            if ray.source._canvas is None:
+                raise ValueError(
+                    f"Ray source {ray.source} must be displayed on a canvas for "
+                    "intersection tests with 'fixed'-scaled points."
+                )
             # There's then a question of what the returned "distance" means here.
             # For our purposes, consider a plane, perpendicular to the ray, passing
             # through the closest intersected point. The returned distance is then the
             # distance along the ray to that plane.
             return self._passes_through_screen(ray)
-        elif self.scaling in (True, "scene"):
+        elif self.scaling == "scene":
             return self._passes_through_world(ray)
-        else:  # "scene"
+        else:  # "visual"
             raise NotImplementedError(
-                "Points with 'scene' scaling mode do not (yet) support "
+                "Points with 'visual' scaling mode do not (yet) support "
                 "ray intersection tests."
             )
 
@@ -208,20 +214,21 @@ class Points(Node):
     @staticmethod
     def _world_to_canvas(ray: Ray, points: np.ndarray) -> np.ndarray:
         """Convert world coordinates to canvas coordinates."""
-        cam = ray.source.camera
-        layout = ray.source.layout
+        view = ray.source
+        cam = view.camera
         ndc_points = cam.projection.map(cam.transform.imap(points))[:, :2]
-        return (ndc_points + 1) / 2 * (layout.width, layout.height)
+        _, _, w, h = view.canvas.rect_for(view)
+        return (ndc_points + 1) / 2 * (w, h)
 
     def _node_to_canvas(self, view: View) -> np.ndarray:
         """Convert node coordinates to canvas coordinates."""
         cam = view.camera
-        layout = view.layout
         tform_to_root_scene = self.transform_to_node(view.scene)
         ndc_points = cam.projection.map(
             cam.transform.imap(tform_to_root_scene.map(self.vertices))
         )[:, :2]
-        return np.asarray((ndc_points + 1) / 2 * (layout.width, layout.height))
+        _, _, w, h = view.canvas.rect_for(view)
+        return np.asarray((ndc_points + 1) / 2 * (w, h))
 
     def _passes_through_world(self, ray: Ray) -> float | None:
         # Math graciously adapted from:

@@ -10,13 +10,12 @@ Scene Graph Structure
 The scene graph follows this hierarchy::
 
     Canvas (rendering surface)
-    └── Grid (layout manager)
-        └── View (viewport)
-            ├── Scene (root node)
-            │   └── Node (visual elements)
-            │       ├── Image, Points, Line, Mesh, Volume, Text
-            │       └── Child nodes with transforms
-            └── Camera (viewing perspective)
+    └── View (viewport)
+        ├── Scene (root node)
+        │   └── Node (visual elements)
+        │       ├── Image, Points, Line, Mesh, Volume, Text
+        │       └── Child nodes with transforms
+        └── Camera (viewing perspective)
 
 Parent node properties (like transforms, visibility, and opacity) are composed with
 child properties during rendering rather than mutating the children themselves. This
@@ -29,7 +28,6 @@ Main Model Categories
     - Canvas: Top-level rendering surface (window or canvas element)
     - View: Rectangular viewport displaying a scene through a camera
     - Scene: Root container for visual elements
-    - Grid: Layout system for arranging multiple views on a single canvas
 
 **Visual Nodes**
     - Image: 2D images with colormapping and intensity normalization
@@ -42,7 +40,6 @@ Main Model Categories
 **Supporting Models**
     - Camera: Viewing perspective and projection
     - Transform: 4x4 affine transformations
-    - Layout: Position, size, and styling for rectangular areas
     - ColorModel: Color specification (uniform, per-face, per-vertex)
 
 **Interaction Models**
@@ -92,7 +89,11 @@ from ._color import (
     UniformColor,
     VertexColors,
 )
-from ._layout import Layout
+from ._layout import (
+    Fraction,
+    Layout,
+    Pixel,
+)
 from ._nodes.camera import (
     AnyController,
     Camera,
@@ -124,6 +125,7 @@ __all__ = [
     "Colormap",
     "EventedBase",
     "FaceColors",
+    "Fraction",
     "Image",
     "InterpolationMode",
     "Layout",
@@ -133,6 +135,7 @@ __all__ = [
     "Node",
     "Orbit",
     "PanZoom",
+    "Pixel",
     "Points",
     "RenderMode",
     "ResizePolicy",
@@ -143,7 +146,6 @@ __all__ = [
     "Transform",
     "UniformColor",
     "VertexColors",
-    "View",
     "View",
     "Volume",
     "objects",

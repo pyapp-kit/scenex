@@ -58,7 +58,11 @@ class View(ViewAdaptor):
         self._pygfx_cam = self._cam_adaptor._pygfx_node
 
     def _draw(self, renderer: pygfx.renderers.WgpuRenderer) -> None:
-        rect = self._model.layout.content_rect
+        if not (canvas := self._model._canvas):
+            # Can't draw if you don't have a canvas!
+            return
+        # TODO: Cache this
+        rect = canvas.content_rect_for(self._model)
         # FIXME: On Qt, for HiDPI screens, the logical screen size (the rect
         # variable above) can, through rounding error during resizing, become
         # slightly larger than the physical size, which causes pygfx to error.
