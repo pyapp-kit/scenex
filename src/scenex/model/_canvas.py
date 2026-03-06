@@ -101,8 +101,6 @@ class Canvas(EventedBase):
         self.views.item_removed.connect(self._on_view_removed)
         self.views.item_changed.connect(self._on_view_changed)
 
-        self._notify_views_layout_changed()
-
     def close(self) -> None:
         """Close the canvas and release resources."""
         for adaptor in self._get_adaptors():
@@ -127,18 +125,13 @@ class Canvas(EventedBase):
         offset = int(layout.padding + layout.border_width + layout.margin)
         return (x + offset, y + offset, w - 2 * offset, h - 2 * offset)
 
-    def _notify_views_layout_changed(self) -> None:
-        """Notify each view that its canvas-computed layout may have changed."""
-        for view in self.views:
-            view._on_size_change()
-
     def _on_view_inserted(self, idx: int, view: View) -> None:
-        view._canvas = self
-        self._notify_views_layout_changed()
+        # Set canvas reference to this if it isn't already
+        if view.canvas is not self:
+            view.canvas = self
 
     def _on_view_removed(self, idx: int, view: View) -> None:
-        view._canvas = None
-        self._notify_views_layout_changed()
+        view.canvas = None
 
     def _on_view_changed(
         self,
@@ -149,13 +142,12 @@ class Canvas(EventedBase):
         if not isinstance(old_views, Sequence):
             old_views = [old_views]
         for view in old_views:
-            view._canvas = None
+            view.canvas = None
 
         if not isinstance(new_views, Sequence):
             new_views = [new_views]
         for view in new_views:
-            view._canvas = self
-        self._notify_views_layout_changed()
+            view.canvas = self
 
     @property
     def size(self) -> tuple[int, int]:
@@ -218,7 +210,6 @@ class Canvas(EventedBase):
         elif isinstance(event, ResizeEvent):
             # TODO: How might some event filter tap into the resize?
             self.size = (event.width, event.height)
-            self._notify_views_layout_changed()
         return handled
 
     def to_ndc(self, canvas_pos: tuple[float, float]) -> tuple[float, float] | None:

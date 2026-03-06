@@ -109,12 +109,13 @@ class View(EventedBase):
         return canvas
 
     @canvas.setter
-    def canvas(self, value: Canvas) -> None:
+    def canvas(self, value: Canvas | None) -> None:
         # Disconnect old canvas events
         if self._canvas:
             self._canvas.events.width.disconnect(self._on_size_change)
             self._canvas.events.height.disconnect(self._on_size_change)
-            self._canvas.views.remove(self)
+            if self in self._canvas.views:
+                self._canvas.views.remove(self)
 
         self._canvas = value
 
@@ -122,7 +123,7 @@ class View(EventedBase):
         if self._canvas:
             self._canvas.events.width.connect(self._on_size_change)
             self._canvas.events.height.connect(self._on_size_change)
-            if self not in value.views:
+            if self not in self._canvas.views:
                 self._canvas.views.append(self)
 
     def render(self) -> np.ndarray:
