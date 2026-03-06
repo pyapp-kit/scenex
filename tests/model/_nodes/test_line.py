@@ -1,7 +1,4 @@
-"""Basic test to verify Line node implementation.
-
-FIXME: Move to tests/model/_nodes/test_line.py
-"""
+"""Basic test to verify Line node implementation."""
 
 import numpy as np
 
