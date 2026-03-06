@@ -60,8 +60,8 @@ class Canvas(EventedBase):
         >>> canvas = Canvas(width=800, height=400, views=[View(), View()])
     """
 
-    width: int = Field(default=500, description="The width of the canvas in pixels")
-    height: int = Field(default=500, description="The height of the canvas in pixels")
+    width: int = Field(default=600, description="The width of the canvas in pixels")
+    height: int = Field(default=600, description="The height of the canvas in pixels")
     background_color: Color = Field(
         default=Color("black"), description="The background color of the canvas"
     )
