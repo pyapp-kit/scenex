@@ -190,6 +190,44 @@ def show(
     return canvas
 
 
+def run() -> None:
+    """Start the GUI event loop to display interactive visualizations.
+
+    This function enters the native event loop of the graphics backend, allowing
+    interactive visualizations to respond to user input (mouse, keyboard) and remain
+    visible. The function blocks until the visualization window is closed.
+
+    Call this function after creating and showing your visualizations with `show()`.
+    It is only needed for desktop applications; in Jupyter notebooks, visualizations
+    are displayed automatically without calling `run()`.
+
+    Examples
+    --------
+    Basic usage with a scene:
+        >>> import numpy as np
+        >>> import scenex as snx
+        >>> scene = snx.Scene(
+        ...     children=[snx.Image(data=np.random.rand(100, 100).astype(np.float32))]
+        ... )
+        >>> snx.show(scene)
+        Canvas(...)
+        >>> snx.run()  # Blocks until window is closed
+
+    Create multiple views and run:
+        >>> canvas = snx.Canvas(views=[snx.View(), snx.View()])
+        >>> canvas.visible = True
+        >>> snx.run()
+
+    Notes
+    -----
+    - This function blocks execution until all visualization windows are closed
+    - Not needed in Jupyter notebooks or other interactive environments
+    - Must be called after `show()` has been used to create visualizations
+    - The event loop handles user interactions like pan, zoom, and picking
+    """
+    app().run()
+
+
 def _cls_name_with_id(obj: Any) -> str:
     return f"{obj.__class__.__name__}:{id(obj)}"
 
