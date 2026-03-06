@@ -1,10 +1,9 @@
 """
-Demonstrates the different layout options for positioning a view on a canvas.
+Demonstrates various layout options for positioning a view on a canvas.
 
-Each layout is described by x_start, x_end, y_start, y_end Dim values using
-Fraction for fractional and Pixel for pixel units. Click anywhere on the view
-to cycle through the examples. The active layout is printed to the terminal.
-Resize the window to see how each configuration responds.
+Each layout is described by x_start, x_end, y_start, and y_end Dim values.
+Click on the image to cycle through the examples. The active layout is printed to the
+terminal. Resize the window to see how each configuration responds!
 """
 
 import numpy as np
