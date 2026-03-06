@@ -59,6 +59,7 @@ class View(ViewAdaptor):
 
     def _draw(self, renderer: pygfx.renderers.WgpuRenderer) -> None:
         if not (canvas := self._model._canvas):
+            # Can't draw if you don't have a canvas!
             return
         # TODO: Cache this
         rect = canvas.content_rect_for(self._model)
