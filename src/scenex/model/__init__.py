@@ -91,6 +91,7 @@ from ._color import (
 )
 from ._layout import (
     Fraction,
+    Layout,
     Pixel,
 )
 from ._nodes.camera import (
@@ -127,6 +128,7 @@ __all__ = [
     "Fraction",
     "Image",
     "InterpolationMode",
+    "Layout",
     "Letterbox",
     "Line",
     "Mesh",
