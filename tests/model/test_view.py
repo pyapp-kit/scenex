@@ -9,8 +9,6 @@ import scenex as snx
 from scenex.app.events import Event, MouseButton, MouseMoveEvent
 from scenex.utils import projections
 
-_W, _H = 500, 500
-
 
 def test_events() -> None:
     # Create a view with an image
@@ -25,7 +23,7 @@ def test_events() -> None:
     view.camera.projection = projections.orthographic(1, 1, 1)
 
     # Put it on a canvas
-    canvas = snx.Canvas(width=_W, height=_H, views=[view])
+    canvas = snx.Canvas(views=[view])
     _, _, w, _h = canvas.rect_for(view)
 
     # Mouse over that image in the top right corner
@@ -53,7 +51,7 @@ def test_filter_returning_None() -> None:
         return None  # type: ignore[return-value]
 
     view.set_event_filter(faulty_filter)
-    canvas = snx.Canvas(width=_W, height=_H, views=[view])
+    canvas = snx.Canvas(views=[view])
 
     canvas_pos = (0, 0)
     world_ray = canvas.to_world(canvas_pos)
