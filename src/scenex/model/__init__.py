@@ -40,7 +40,6 @@ Main Model Categories
 **Supporting Models**
     - Camera: Viewing perspective and projection
     - Transform: 4x4 affine transformations
-    - Layout: Position, size, and styling for rectangular areas
     - ColorModel: Color specification (uniform, per-face, per-vertex)
 
 **Interaction Models**
@@ -92,7 +91,6 @@ from ._color import (
 )
 from ._layout import (
     Fraction,
-    Layout,
     Pixel,
 )
 from ._nodes.camera import (
@@ -129,7 +127,6 @@ __all__ = [
     "Fraction",
     "Image",
     "InterpolationMode",
-    "Layout",
     "Letterbox",
     "Line",
     "Mesh",

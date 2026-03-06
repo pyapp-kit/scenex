@@ -52,7 +52,6 @@ from .model._color import (
 )
 from .model._layout import (
     Fraction,
-    Layout,
     Pixel,
 )
 from .model._nodes.camera import Camera, CameraController, Orbit, PanZoom
@@ -76,7 +75,6 @@ __all__ = [
     "FaceColors",
     "Fraction",
     "Image",
-    "Layout",
     "Letterbox",
     "Line",
     "Mesh",
