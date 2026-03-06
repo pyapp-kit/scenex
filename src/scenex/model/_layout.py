@@ -168,6 +168,27 @@ class Layout(EventedBase):
     Create a layout with a border::
 
         Layout(border_width=2, border_color=Color("white"), padding=10)
+
+    Notes
+    -----
+    The layout follows this box model::
+
+                  x_start                          x_end
+                  |                                |
+                  v                                v
+        y_start-> +--------------------------------+
+                  |            margin              |
+                  |  +--------------------------+  |
+                  |  |         border           |  |
+                  |  |  +--------------------+  |  |
+                  |  |  |      padding       |  |  |
+                  |  |  |  +--------------+  |  |  |
+                  |  |  |  |   content    |  |  |  |
+                  |  |  |  |              |  |  |  |
+                  |  |  |  +--------------+  |  |  |
+                  |  |  +--------------------+  |  |
+                  |  +--------------------------+  |
+          y_end-> +--------------------------------+
     """
 
     x_start: AnyDim = Field(default_factory=lambda: Fraction(num=0, denom=1))
