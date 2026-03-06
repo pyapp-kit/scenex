@@ -1,9 +1,9 @@
 import scenex as snx
 
 
-# FIXME: This test probably belongs in test_view, or maybe test_layout
-def test_show_canvas_size(basic_view: snx.View) -> None:
-    """Tests that show_canvas respects the size of the canvas."""
+def test_show_canvas_size() -> None:
+    """Ensures a (default) View passed to `show()` spans the entire canvas."""
+    basic_view = snx.View()
     canvas = snx.show(basic_view)
     view_rect = canvas.rect_for(basic_view)
     assert canvas.width == view_rect[2]
