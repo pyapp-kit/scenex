@@ -165,10 +165,6 @@ class Layout(EventedBase):
         sidebar = Layout(x_start=Pixel(pixels=0), x_end=Pixel(pixels=40))
         main = Layout(x_start=Pixel(pixels=40), x_end=Fraction(num=1, denom=1))
 
-    Create a layout with a border::
-
-        Layout(border_width=2, border_color=Color("white"), padding=10)
-
     Notes
     -----
     The layout follows this box model::
