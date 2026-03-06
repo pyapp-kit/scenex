@@ -217,8 +217,7 @@ class Points(Node):
         view = ray.source
         cam = view.camera
         ndc_points = cam.projection.map(cam.transform.imap(points))[:, :2]
-        assert view._canvas is not None
-        _, _, w, h = view._canvas.rect_for(view)
+        _, _, w, h = view.canvas.rect_for(view)
         return (ndc_points + 1) / 2 * (w, h)
 
     def _node_to_canvas(self, view: View) -> np.ndarray:
@@ -228,8 +227,7 @@ class Points(Node):
         ndc_points = cam.projection.map(
             cam.transform.imap(tform_to_root_scene.map(self.vertices))
         )[:, :2]
-        assert view._canvas is not None
-        _, _, w, h = view._canvas.rect_for(view)
+        _, _, w, h = view.canvas.rect_for(view)
         return np.asarray((ndc_points + 1) / 2 * (w, h))
 
     def _passes_through_world(self, ray: Ray) -> float | None:
