@@ -87,6 +87,9 @@ class View(EventedBase):
         """Post-initialization hook for the model."""
         super().model_post_init(__context)
         self.camera.parent = self.scene
+        # It is vital that whenever the view size changes, we allow the ResizePolicy to
+        # respond. That size can change when (a) the layout changes, or (b) the canvas
+        # resizes. We listen to (a) here and (b) in the canvas setter.
         self.layout.events.x_start.connect(self._on_size_change)
         self.layout.events.x_end.connect(self._on_size_change)
         self.layout.events.y_start.connect(self._on_size_change)
