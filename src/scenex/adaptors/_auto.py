@@ -138,8 +138,6 @@ def run() -> None:
     It is only needed for desktop applications; in Jupyter notebooks, visualizations
     are displayed automatically without calling `run()`.
 
-    FIXME: Move to app module
-
     Examples
     --------
     Basic usage with a scene:
