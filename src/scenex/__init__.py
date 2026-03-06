@@ -42,7 +42,7 @@ try:
 except PackageNotFoundError:
     __version__ = "uninstalled"
 
-from .adaptors import run, use
+from .adaptors import use
 from .model._canvas import Canvas
 from .model._color import (
     ColorModel,
@@ -66,7 +66,7 @@ from .model._nodes.text import Text
 from .model._nodes.volume import Volume
 from .model._transform import Transform
 from .model._view import Letterbox, ResizePolicy, View
-from .util import show
+from .util import run, show
 
 __all__ = [
     "Camera",
