@@ -123,10 +123,6 @@ class Layout(EventedBase):
     each edge of the view rect — resolved against the canvas size at render
     time via :meth:`~scenex.Canvas.rect_for`.
 
-    Each ``Dim`` is either a :class:`Pixel`, a :class:`Fraction`, or a
-    :class:`ComposedDim` combining the two.  Use the :func:`px` and :func:`fr`
-    helpers to build them, and combine with ``+`` and ``-``:
-
     Examples
     --------
     Full canvas (default)::
@@ -145,25 +141,6 @@ class Layout(EventedBase):
     Left half, full height::
 
         Layout(x_end=Fraction(num=1, denom=2))
-
-    40px inset on every side::
-
-        Layout(
-            x_start=Pixel(pixels=40),
-            x_end=Pixel(pixels=-40),
-            y_start=Pixel(pixels=40),
-            y_end=Pixel(pixels=-40),
-        )
-
-    Centered 400px-wide strip::
-
-        half = Fraction(num=1, denom=2)
-        Layout(x_start=half - Pixel(pixels=200), x_end=half + Pixel(pixels=200))
-
-    40px left column, main area fills remainder::
-
-        sidebar = Layout(x_start=Pixel(pixels=0), x_end=Pixel(pixels=40))
-        main = Layout(x_start=Pixel(pixels=40), x_end=Fraction(num=1, denom=1))
 
     Notes
     -----
