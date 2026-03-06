@@ -12,7 +12,7 @@ import numpy as np
 import scenex as snx
 from scenex.app.events import Event, MouseMoveEvent
 from scenex.model import BlendMode
-from scenex.model._layout import Fraction, Pixel
+from scenex.model._layout import Fraction
 from scenex.model._transform import Transform
 from scenex.utils import projections
 
@@ -68,23 +68,14 @@ view2 = snx.View(
     scene=_make_scene(),
     camera=snx.Camera(interactive=True),
 )
-view3 = snx.View(
-    scene=snx.Scene(children=[snx.Text(text="Top Right Corner")]),
-    camera=snx.Camera(interactive=False),
-)
-
 
 # Partition the canvas into two halves for the first two views
 view1.layout.x_end = Fraction(num=1, denom=2)
 view2.layout.x_start = Fraction(num=1, denom=2)
 
-# Put the third view in the top right corner
-view3.layout.x_start = Pixel(pixels=-100)
-view3.layout.y_end = Pixel(pixels=50)
-
 # And put them on the same canvas
 view_size = 400
-canvas = snx.Canvas(width=2 * view_size, height=view_size, views=[view1, view2, view3])
+canvas = snx.Canvas(width=2 * view_size, height=view_size, views=[view1, view2])
 
 
 # Interaction: The left view shows the full gray volume with a perspective camera.
@@ -131,7 +122,5 @@ view2.camera.transform = Transform().translated(orbit_center).translated((0, 0, 
 view2.camera.projection = projections.orthographic(
     img_data.shape[1], img_data.shape[2], depth=1000
 )
-
-projections.zoom_to_fit(view3, type="orthographic")
 
 snx.run()
