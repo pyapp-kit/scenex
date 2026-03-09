@@ -163,7 +163,7 @@ class Line(Node):
         if (rect := view.content_rect) is None:
             raise ValueError(
                 f"Ray source {ray.source} must be displayed on a canvas for "
-                "intersection tests with 'fixed'-scaled points."
+                "line intersections."  # TODO: when scaling=\"fixed\""
             )
         cam = view.camera
         ndc_points = cam.projection.map(cam.transform.imap(points))[:, :2]
@@ -174,7 +174,7 @@ class Line(Node):
         if (rect := view.content_rect) is None:
             raise ValueError(
                 f"Ray source {view} must be displayed on a canvas for "
-                "intersection tests with 'fixed'-scaled points."
+                "line intersections."  # TODO: when scaling=\"fixed\""
             )
         cam = view.camera
         tform_to_root_scene = self.transform_to_node(view.scene)
