@@ -47,7 +47,6 @@ class Canvas(EventedBase):
     it corresponds to a DOM element. Multiple views can be arranged on a single canvas
     using their layout parameters.
 
-
     Examples
     --------
     Create a simple canvas with default settings:
