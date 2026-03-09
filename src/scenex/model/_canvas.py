@@ -267,12 +267,9 @@ class Canvas(EventedBase):
 
     def _containing_view(self, pos: tuple[float, float]) -> View | None:
         for view in self.views:
-            x, y, w, h = self.rect_for(view)
-            offset = view.layout.padding + view.layout.border_width + view.layout.margin
-            left = x + offset
-            right = x + w - offset
-            top = y + offset
-            bottom = y + h - offset
-            if left <= pos[0] <= right and top <= pos[1] <= bottom:
+            if view.content_rect is None:
+                continue
+            x, y, w, h = view.content_rect
+            if x <= pos[0] <= x + w and y <= pos[1] <= y + h:
                 return view
         return None
