@@ -111,6 +111,9 @@ def add_imgui_controls(view: View) -> None:
     - Mesh node (color, opacity, blending, etc.)
     """
     snx_canvas_model = view.canvas
+    if snx_canvas_model is None:
+        # No canvas to render to
+        return
     try:
         snx_canvas_adaptor = snx_canvas_model._get_adaptors(backend="pygfx")[0]
         snx_view_adaptor = view._get_adaptors(backend="pygfx")[0]
