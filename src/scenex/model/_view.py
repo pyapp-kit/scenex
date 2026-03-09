@@ -81,6 +81,8 @@ class View(EventedBase):
 
     # Backreference to the canvas displaying this view. Used to make the View size
     # concrete for canvas intersection and resizing policy computations.
+    # This variable should not be set directly; use the canvas property instead to
+    # ensure proper event connections.
     _canvas: Canvas | None = PrivateAttr(None)
 
     def model_post_init(self, __context: Any) -> None:
@@ -100,16 +102,9 @@ class View(EventedBase):
             on_resize.handle_resize(self)
 
     @property
-    def canvas(self) -> Canvas:
-        """The canvas that the view is on.
-
-        If one hasn't been created/assigned, a new one is created.
-        """
-        if (canvas := self._canvas) is None:
-            from ._canvas import Canvas
-
-            self.canvas = canvas = Canvas()
-        return canvas
+    def canvas(self) -> Canvas | None:
+        """The canvas that the view is on."""
+        return self._canvas
 
     @canvas.setter
     def canvas(self, value: Canvas | None) -> None:
