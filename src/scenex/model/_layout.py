@@ -17,7 +17,7 @@ class Dim(BaseModel):
     """Abstract base for layout dimensions.
 
     Each concrete subclass owns its own resolution logic.  Arithmetic on any
-    two ``Dim`` values produces a :class:`ComposedDim` that delegates to each
+    two ``Dim`` values produces a ``ComposedDim`` that delegates to each
     operand at resolve time.
 
     Examples::
@@ -44,7 +44,7 @@ class Dim(BaseModel):
 
 
 class ComposedDim(Dim):
-    """Result of arithmetic on two :class:`Dim` values."""
+    """Result of arithmetic on two ``Dim`` values."""
 
     dim1: AnyDim
     dim2: AnyDim
@@ -61,7 +61,7 @@ class ComposedDim(Dim):
 
 
 class Pixel(Dim):
-    """Pixel-only dimension returned by :func:`px`.
+    """A dimension specified in pixels.
 
     Positive values are measured from the near edge (left / top).
     Negative values are measured from the far edge (right / bottom).
@@ -82,11 +82,7 @@ class Pixel(Dim):
 
 
 class Fraction(Dim):
-    """Fractional dimension returned by :func:`fr`.
-
-    Stored as an exact rational (``num / denom``) to avoid floating-point
-    drift when the same fraction is reused at different canvas sizes.
-    """
+    """A dimension specified as a fraction of the total canvas size."""
 
     num: int
     denom: int
@@ -119,9 +115,9 @@ ComposedDim.model_rebuild()
 class Layout(EventedBase):
     """Style model for a view's border, padding, background, and placement.
 
-    Placement is defined by four independent :class:`Dim` values — one for
+    Placement is defined by four independent ``Dim`` values — one for
     each edge of the view rect — resolved against the canvas size at render
-    time via :meth:`~scenex.Canvas.rect_for`.
+    time via ``Canvas.rect_for``.
 
     Examples
     --------
