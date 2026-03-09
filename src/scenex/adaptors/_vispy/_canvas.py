@@ -67,20 +67,22 @@ class Canvas(CanvasAdaptor):
         # directly also works.
         vis_view._vispy_viewbox.parent = self._canvas.central_widget
 
-        cast("View", get_adaptor(view))._on_layout_changed()
+        cast("View", get_adaptor(view))._on_size_changed()
         self._views.append(view)
 
     def _snx_set_width(self, arg: int) -> None:
+        """When the canvas size changes we need to tell the vispy viewbox about it."""
         self._canvas.size = self._model.size
         self._update_view_rects()
 
     def _snx_set_height(self, arg: int) -> None:
+        """When the canvas size changes we need to tell the vispy viewbox about it."""
         self._canvas.size = self._model.size
         self._update_view_rects()
 
     def _update_view_rects(self) -> None:
         for view in self._views:
-            cast("View", get_adaptor(view))._on_layout_changed()
+            cast("View", get_adaptor(view))._on_size_changed()
 
     def _snx_set_background_color(self, arg: Color | None) -> None:
         if arg is None:

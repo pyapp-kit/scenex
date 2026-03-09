@@ -40,13 +40,19 @@ class View(ViewAdaptor):
 
         # -- Layout connections -- #
         self._model.layout.events.background_color.connect(self._set_background_color)
-        view.layout.events.all.connect(self._on_layout_changed)
+        # It is vital that whenever the view size changes, we allow the ResizePolicy to
+        # respond. That size can change when (a) the layout changes, or (b) the canvas
+        # resizes. We listen to (a) here and (b) in the vispy canvas adaptor.
+        self._model.layout.events.x_start.connect(self._on_size_changed)
+        self._model.layout.events.x_end.connect(self._on_size_changed)
+        self._model.layout.events.y_start.connect(self._on_size_changed)
+        self._model.layout.events.y_end.connect(self._on_size_changed)
 
         # -- Initialization -- #
         self._set_background_color(view.layout.background_color)
-        self._on_layout_changed()
+        self._on_size_changed()
 
-    def _on_layout_changed(self, event: Any | None = None) -> None:
+    def _on_size_changed(self, event: Any | None = None) -> None:
         """When the view size changes we need to update the vispy viewbox and camera."""
         if rect := self._model.content_rect:
             self._vispy_viewbox.rect = Rect(*rect)
