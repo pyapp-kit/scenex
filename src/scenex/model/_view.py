@@ -79,8 +79,8 @@ class View(EventedBase):
         default=True, description="Whether the view is visible and should be rendered"
     )
 
-    # FIXME: This should be a public field with an after validator that adds this view
-    # to the canvas's views list
+    # Backreference to the canvas displaying this view. Used to make the View size
+    # concrete for canvas intersection and resizing policy computations.
     _canvas: Canvas | None = PrivateAttr(None)
 
     def model_post_init(self, __context: Any) -> None:
@@ -128,6 +128,26 @@ class View(EventedBase):
             self._canvas.events.height.connect(self._on_size_change)
             if self not in self._canvas.views:
                 self._canvas.views.append(self)
+
+    @property
+    def rect(self) -> tuple[int, int, int, int] | None:
+        """Pixel rect (x, y, width, height) of this view on its canvas.
+
+        None if the view is not on a canvas.
+        """
+        if self._canvas is not None:
+            return self._canvas.rect_for(self)
+        return None
+
+    @property
+    def content_rect(self) -> tuple[int, int, int, int] | None:
+        """Pixel content rect (x, y, width, height) of this view, excluding insets.
+
+        None if the view is not on a canvas.
+        """
+        if self._canvas is not None:
+            return self._canvas.content_rect_for(self)
+        return None
 
     def render(self) -> np.ndarray:
         """Render the view to an array."""
@@ -311,9 +331,10 @@ class Letterbox(ResizePolicy):
         if view.camera.projection != self._last_adjustment or self._reference is None:
             self._reference = view.camera.projection
 
-        if view._canvas is None or self._reference is None:
+        if (view_rect := view.rect) is None or self._reference is None:
+            # Nothing to do.
             return
-        _, _, view_width, view_height = view._canvas.rect_for(view)
+        _, _, view_width, view_height = view_rect
         view_width = int(view_width)
         view_height = int(view_height)
         if view_height == 0 or self._reference is None:

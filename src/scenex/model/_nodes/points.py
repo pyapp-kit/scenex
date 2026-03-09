@@ -137,7 +137,7 @@ class Points(Node):
         if self.scaling == "fixed":
             # Note that fixed-size points are tested in screen/canvas space
             # i.e. we'll need a canvas to determine the pixel size.
-            if ray.source._canvas is None:
+            if ray.source.rect is None:
                 raise ValueError(
                     f"Ray source {ray.source} must be displayed on a canvas for "
                     "intersection tests with 'fixed'-scaled points."
@@ -217,7 +217,7 @@ class Points(Node):
         view = ray.source
         cam = view.camera
         ndc_points = cam.projection.map(cam.transform.imap(points))[:, :2]
-        _, _, w, h = view.canvas.rect_for(view)
+        _, _, w, h = view.rect  # type: ignore[misc]
         return (ndc_points + 1) / 2 * (w, h)
 
     def _node_to_canvas(self, view: View) -> np.ndarray:
@@ -227,7 +227,7 @@ class Points(Node):
         ndc_points = cam.projection.map(
             cam.transform.imap(tform_to_root_scene.map(self.vertices))
         )[:, :2]
-        _, _, w, h = view.canvas.rect_for(view)
+        _, _, w, h = view.rect  # type: ignore[misc]
         return np.asarray((ndc_points + 1) / 2 * (w, h))
 
     def _passes_through_world(self, ray: Ray) -> float | None:

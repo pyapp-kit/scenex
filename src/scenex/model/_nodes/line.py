@@ -160,14 +160,14 @@ class Line(Node):
     @staticmethod
     def _world_to_canvas(ray: Ray, points: np.ndarray) -> np.ndarray:
         view = ray.source
-        if view._canvas is None:
+        if (view_rect := view.rect) is None:
             raise ValueError(
                 f"Ray source {ray.source} must be displayed on a canvas for "
                 "intersection tests with 'fixed'-scaled points."
             )
         cam = view.camera
         ndc_points = cam.projection.map(cam.transform.imap(points))[:, :2]
-        _, _, w, h = view.canvas.rect_for(view)
+        _, _, w, h = view_rect
         return (ndc_points + 1) / 2 * (w, h)
 
     def _node_to_canvas(self, view: View) -> np.ndarray:
@@ -176,5 +176,5 @@ class Line(Node):
         ndc_points = cam.projection.map(
             cam.transform.imap(tform_to_root_scene.map(self.vertices))
         )[:, :2]
-        _, _, w, h = view.canvas.rect_for(view)
+        _, _, w, h = view.rect  # type: ignore
         return (ndc_points + 1) / 2 * (w, h)
