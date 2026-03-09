@@ -330,9 +330,7 @@ class Letterbox(ResizePolicy):
             # Nothing to do.
             return
         _, _, view_width, view_height = view_rect
-        view_width = int(view_width)
-        view_height = int(view_height)
-        if view_height == 0 or self._reference is None:
+        if view_height == 0:
             return
 
         # Extract projection scales that define the content aspect ratio
