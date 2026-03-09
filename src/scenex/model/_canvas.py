@@ -73,6 +73,7 @@ class Canvas(EventedBase):
     )
     views: EventedList[View] = Field(
         default_factory=EventedList,
+        frozen=True,
     )
 
     # Private state for tracking mouse view transitions
@@ -125,12 +126,14 @@ class Canvas(EventedBase):
         return (x + offset, y + offset, w - 2 * offset, h - 2 * offset)
 
     def _on_view_inserted(self, idx: int, view: View) -> None:
-        # Set canvas reference to this if it isn't already
+        # Set canvas reference to this if it isn't set
         if view.canvas is not self:
             view.canvas = self
 
     def _on_view_removed(self, idx: int, view: View) -> None:
-        view.canvas = None
+        # Unset canvas reference to this if it is still set
+        if view.canvas is self:
+            view.canvas = None
 
     def _on_view_changed(
         self,
@@ -141,12 +144,14 @@ class Canvas(EventedBase):
         if not isinstance(old_views, Sequence):
             old_views = [old_views]
         for view in old_views:
-            view.canvas = None
+            if view.canvas is self:
+                view.canvas = None
 
         if not isinstance(new_views, Sequence):
             new_views = [new_views]
         for view in new_views:
-            view.canvas = self
+            if view.canvas is not self:
+                view.canvas = self
 
     @property
     def size(self) -> tuple[int, int]:

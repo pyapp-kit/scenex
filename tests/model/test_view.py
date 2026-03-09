@@ -101,6 +101,25 @@ def test_view_resizer() -> None:
     assert new_aspect == pytest.approx(2.0, rel=1e-6)
 
 
+def test_view_canvas_assignment() -> None:
+    """Test that assigning a canvas to a view properly updates the view's canvas
+    reference and the canvas's views list.
+    """
+    view = snx.View()
+    canvas = snx.Canvas()
+
+    # Assign canvas to view
+    view.canvas = canvas
+
+    # Check that the canvas's views list includes the view
+    assert view in canvas.views
+
+    # Now set the canvas to None and check that references are cleared
+    view.canvas = None
+    assert view.canvas is None
+    assert view not in canvas.views
+
+
 def test_view_serialization() -> None:
     resize_policy = snx.Letterbox()
     view = snx.View(on_resize=resize_policy)

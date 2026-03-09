@@ -108,14 +108,14 @@ class View(EventedBase):
 
     @canvas.setter
     def canvas(self, value: Canvas | None) -> None:
-        # Disconnect old canvas events
-        if self._canvas:
-            self._canvas.events.width.disconnect(self._on_size_change)
-            self._canvas.events.height.disconnect(self._on_size_change)
-            if self in self._canvas.views:
-                self._canvas.views.remove(self)
+        old, self._canvas = self._canvas, value
 
-        self._canvas = value
+        # Disconnect old canvas events
+        if old:
+            old.events.width.disconnect(self._on_size_change)
+            old.events.height.disconnect(self._on_size_change)
+            if self in old.views:
+                old.views.remove(self)
 
         # Connect new canvas events
         if self._canvas:
