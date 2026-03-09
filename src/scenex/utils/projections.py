@@ -131,7 +131,7 @@ def zoom_to_fit(
             raise Exception("Cannot preserve aspect ratio without a canvas.")
         _, _, pw, ph = canvas.rect_for(view)
         aspect_ratio = pw / ph if ph else None
-        if aspect_ratio is not None:
+        if aspect_ratio is not None and h > 0:
             if w / h > aspect_ratio:
                 h = w / aspect_ratio
             else:

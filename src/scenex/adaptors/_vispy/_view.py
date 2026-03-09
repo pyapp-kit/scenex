@@ -34,31 +34,26 @@ class View(ViewAdaptor):
     def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
         self._model = view
         self._vispy_viewbox = vispy.scene.ViewBox()
-        self._vispy_viewbox.events.resize.connect(self._on_vispy_viewbox_resized)  # pyright: ignore
 
         self._snx_set_camera(view.camera)
         self._snx_set_scene(view.scene)
 
-        # FIXME: Should also listen for connection to a view, and similarly set the rect
         # -- Layout connections -- #
         self._model.layout.events.background_color.connect(self._set_background_color)
         view.layout.events.all.connect(self._on_layout_changed)
 
-        # -- Layout initialization -- #
+        # -- Initialization -- #
         self._set_background_color(view.layout.background_color)
         self._on_layout_changed()
 
-    def _on_vispy_viewbox_resized(self, event: Any) -> None:
-        # Update camera's _from_NDC transform
-        w, h = self._vispy_viewbox.rect.size
-        self._cam_adaptor._set_view(w, h)
-
     def _on_layout_changed(self, event: Any | None = None) -> None:
-        if canvas := self._model.canvas:
-            rect = Rect(canvas.content_rect_for(self._model))
-            self._vispy_viewbox.rect = rect
+        """When the view size changes we need to update the vispy viewbox and camera."""
+        if rect := self._model.content_rect:
+            self._vispy_viewbox.rect = Rect(*rect)
             self._vispy_viewbox.update()
-            self._cam_adaptor._set_view(rect.width, rect.height)
+            # The camera also needs to be made aware of its new size
+            _, _, w, h = rect
+            self._cam_adaptor._set_view(w, h)
 
     def _snx_set_visible(self, arg: bool) -> None:
         pass
