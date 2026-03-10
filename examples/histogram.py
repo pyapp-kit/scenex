@@ -68,7 +68,7 @@ class Histogram:
             scene=snx.Scene(name="x axis"),
             camera=snx.Camera(),
         )
-        self.x_view.layout.y_start = snx.Pixel(pixels=-_AXIS)
+        self.x_view.layout.y_start = f"-{_AXIS}px"
         self._init_x_view()
         self.canvas.views.append(self.x_view)
 
@@ -77,8 +77,8 @@ class Histogram:
             scene=snx.Scene(name="y axis"),
             camera=snx.Camera(),
         )
-        self.y_view.layout.x_end = snx.Pixel(pixels=_AXIS)
-        self.y_view.layout.y_end = snx.Pixel(pixels=-_AXIS)
+        self.y_view.layout.x_end = f"{_AXIS}px"
+        self.y_view.layout.y_end = f"-{_AXIS}px"
         self._init_y_view()
         self.canvas.views.append(self.y_view)
 
@@ -87,8 +87,8 @@ class Histogram:
             scene=snx.Scene(name="main scene"),
             camera=snx.Camera(interactive=True),
         )
-        self.view.layout.x_start = snx.Pixel(pixels=_AXIS)
-        self.view.layout.y_end = snx.Pixel(pixels=-_AXIS)
+        self.view.layout.x_start = f"{_AXIS}px"
+        self.view.layout.y_end = f"-{_AXIS}px"
         self._init_main_view()
         self.canvas.views.append(self.view)
 
@@ -98,8 +98,8 @@ class Histogram:
             camera=snx.Camera(),
         )
         self.legend_view.layout.background_color = cmap.Color((0, 0, 0, 0))
-        self.legend_view.layout.x_start = snx.Pixel(pixels=-_LEGEND_W)
-        self.legend_view.layout.y_end = snx.Pixel(pixels=_LEGEND_H)
+        self.legend_view.layout.x_start = f"-{_LEGEND_W}px"
+        self.legend_view.layout.y_end = f"{_LEGEND_H}px"
         self._init_legend_view()
         self.canvas.views.append(self.legend_view)
 

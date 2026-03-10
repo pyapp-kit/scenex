@@ -1,123 +1,71 @@
 from __future__ import annotations
 
-import fractions as _fractions
 import logging
-from abc import abstractmethod
-from typing import Literal
+import re
+from typing import Annotated
 
 from cmap import Color
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, ConfigDict, Field
 
 from ._base import EventedBase
 
 logger = logging.getLogger(__name__)
 
 
-class Dim(BaseModel):
-    """Abstract base for layout dimensions.
+def resolve_dim(value: str, total: int) -> int:
+    """Resolve a CSS-style dimension string to an integer pixel position.
 
-    Each concrete subclass owns its own resolution logic.  Arithmetic on any
-    two ``Dim`` values produces a ``ComposedDim`` that delegates to each
-    operand at resolve time.
-
-    Examples::
-
-        Pixel(pixels=-40)  # 40px from the far edge
-        Fraction(num=1, denom=2) - Pixel(pixels=200)  # midpoint minus 200px
+    Parameters
+    ----------
+    value :
+        A validated dimension string: ``"XX%"`` (fraction of *total*),
+        ``"XXpx"`` (pixel offset; negative values are measured from the far
+        edge), or an arithmetic expression such as ``"50% - 20px"`` or
+        ``"-40px+100%"``.  Spaces around operators are optional.
+    total :
+        The canvas size along the relevant axis, in pixels.
     """
-
-    model_config = ConfigDict(frozen=True)
-
-    @abstractmethod
-    def resolve(self, total: int) -> int:
-        """Return the integer pixel position for a canvas of the given size."""
-        ...
-
-    @abstractmethod
-    def __repr__(self) -> str: ...
-
-    def __add__(self, other: AnyDim) -> ComposedDim:
-        return ComposedDim(dim1=self, dim2=other, operand="add")  # pyright: ignore[reportArgumentType]
-
-    def __sub__(self, other: AnyDim) -> ComposedDim:
-        return ComposedDim(dim1=self, dim2=other, operand="sub")  # pyright: ignore[reportArgumentType]
-
-
-class ComposedDim(Dim):
-    """Result of arithmetic on two ``Dim`` values."""
-
-    dim1: AnyDim
-    dim2: AnyDim
-    operand: Literal["add", "sub"]
-
-    def resolve(self, total: int) -> int:
-        if self.operand == "add":
-            return self.dim1.resolve(total) + self.dim2.resolve(total)
-        return self.dim1.resolve(total) - self.dim2.resolve(total)
-
-    def __repr__(self) -> str:
-        op = "+" if self.operand == "add" else "-"
-        return f"{self.dim1!r} {op} {self.dim2!r}"
+    # Remove all whitespace
+    v = value.replace(" ", "")
+    if not len(v):
+        raise ValueError("Empty dimension string")
+    # Tokenize into signed terms (e.g. "-40px+100%" → ["-40px", "+100%"])
+    tokens = [t for t in re.split(r"(?=[+-])", v) if t]
+    # Sum up each token
+    result = 0
+    for tok in tokens:
+        if tok.endswith("%"):
+            result += int(float(tok[:-1]) / 100 * total)
+        elif tok.endswith("px"):
+            result += int(tok[:-2])
+        else:
+            raise ValueError(f"Invalid dimension term {tok!r}")
+    # Negative result is measured from the far edge (e.g. -40px → total-40).
+    return total + result if result < 0 else result
 
 
-class Pixel(Dim):
-    """A dimension specified in pixels.
-
-    Positive values are measured from the near edge (left / top).
-    Negative values are measured from the far edge (right / bottom).
-    """
-
-    pixels: int
-
-    def resolve(self, total: int) -> int:
-        if self.pixels < 0:
-            return total + self.pixels
-        return self.pixels
-
-    def __neg__(self) -> Pixel:
-        return Pixel(pixels=-self.pixels)
-
-    def __repr__(self) -> str:
-        return f"Pixel(pixels={self.pixels})"
+def _validate_coord(value: str) -> str:
+    """Validate a Unit."""
+    # Check to see that it resolves with an arbitrarily large total
+    resolve_dim(value, 100000)
+    # Then return the original string (with whitespace stripped)
+    return value
 
 
-class Fraction(Dim):
-    """A dimension specified as a fraction of the total canvas size."""
-
-    num: int
-    denom: int
-
-    def resolve(self, total: int) -> int:
-        return int(self.num / self.denom * total)
-
-    def __neg__(self) -> Fraction:
-        return Fraction(num=-self.num, denom=self.denom)
-
-    def __mul__(self, scalar: float) -> Fraction:
-        r = _fractions.Fraction(self.num, self.denom) * _fractions.Fraction(
-            scalar
-        ).limit_denominator(1000)
-        return Fraction(num=r.numerator, denom=r.denominator)
-
-    def __rmul__(self, scalar: float) -> Fraction:
-        return self.__mul__(scalar)
-
-    def __repr__(self) -> str:
-        return f"Fraction(num={self.num}, denom={self.denom})"
-
-
-AnyDim = ComposedDim | Pixel | Fraction
-
-# Resolve the forward reference in ComposedDim.dim1 / dim2.
-ComposedDim.model_rebuild()
+# A CSS-like length unit
+Unit = Annotated[str, AfterValidator(_validate_coord)]
 
 
 class Layout(EventedBase):
     """Style model for a view's border, padding, background, and placement.
 
-    Placement is defined by four independent ``Dim`` values — one for
-    each edge of the view rect — resolved against the canvas size at render
-    time via ``Canvas.rect_for``.
+    Placement is defined by four independent strings — one for each
+    edge of the view rect — resolved against the canvas size at render time via
+    ``Canvas.rect_for``. Accepted strings must follow CSS conventions:
+
+    * ``"XX%"`` — a percentage of the canvas size along that axis
+    * ``"XXpx"`` — a fixed pixel offset; negative values are measured from the
+      far edge (right / bottom)
 
     Examples
     --------
@@ -127,16 +75,11 @@ class Layout(EventedBase):
 
     Fixed 400x300 region starting at (50, 50)::
 
-        Layout(
-            x_start=Pixel(pixels=50),
-            x_end=Pixel(pixels=450),
-            y_start=Pixel(pixels=50),
-            y_end=Pixel(pixels=350),
-        )
+        Layout(x_start="50px", x_end="450px", y_start="50px", y_end="350px")
 
     Left half, full height::
 
-        Layout(x_end=Fraction(num=1, denom=2))
+        Layout(x_end="50%")
 
     Notes
     -----
@@ -160,28 +103,28 @@ class Layout(EventedBase):
           y_end-> +--------------------------------+
     """
 
-    x_start: AnyDim = Field(default_factory=lambda: Fraction(num=0, denom=1))
-    x_end: AnyDim = Field(default_factory=lambda: Fraction(num=1, denom=1))
-    y_start: AnyDim = Field(default_factory=lambda: Fraction(num=0, denom=1))
-    y_end: AnyDim = Field(default_factory=lambda: Fraction(num=1, denom=1))
+    x_start: Unit = "0%"
+    x_end: Unit = "100%"
+    y_start: Unit = "0%"
+    y_end: Unit = "100%"
 
     @property
-    def x(self) -> tuple[AnyDim, AnyDim]:
+    def x(self) -> tuple[Unit, Unit]:
         """The x-axis start/end as a tuple."""
         return self.x_start, self.x_end
 
     @x.setter
-    def x(self, value: tuple[AnyDim, AnyDim]) -> None:
+    def x(self, value: tuple[Unit, Unit]) -> None:
         """Set the x-axis start/end from a tuple."""
         self.x_start, self.x_end = value
 
     @property
-    def y(self) -> tuple[AnyDim, AnyDim]:
+    def y(self) -> tuple[Unit, Unit]:
         """The y-axis start/end as a tuple."""
         return self.y_start, self.y_end
 
     @y.setter
-    def y(self, value: tuple[AnyDim, AnyDim]) -> None:
+    def y(self, value: tuple[Unit, Unit]) -> None:
         """Set the y-axis start/end from a tuple."""
         self.y_start, self.y_end = value
 

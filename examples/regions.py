@@ -10,7 +10,6 @@ import numpy as np
 
 import scenex as snx
 import scenex.app.events as events
-from scenex.model._layout import AnyDim, Fraction, Pixel
 from scenex.utils.projections import zoom_to_fit
 
 try:
@@ -26,54 +25,24 @@ except Exception:
         data[:, j, 1] = j
 
 
-REGIONS: list[tuple[str, AnyDim, AnyDim, AnyDim, AnyDim]] = [
+REGIONS: list[tuple[str, str, str, str, str]] = [
     # Full canvas (default)
-    (
-        "Full canvas:",
-        Fraction(num=0, denom=1),
-        Fraction(num=1, denom=1),
-        Fraction(num=0, denom=1),
-        Fraction(num=1, denom=1),
-    ),
+    ("Full canvas:", "0%", "100%", "0%", "100%"),
     # Right half, full height
-    (
-        "Right half:",
-        Fraction(num=1, denom=2),
-        Fraction(num=1, denom=1),
-        Fraction(num=0, denom=1),
-        Fraction(num=1, denom=1),
-    ),
+    ("Right half:", "50%", "100%", "0%", "100%"),
     # Fixed 400x400 region at (50, 50)
-    (
-        "Fixed 400x400 at (50, 50):",
-        Pixel(pixels=50),
-        Pixel(pixels=450),
-        Pixel(pixels=50),
-        Pixel(pixels=450),
-    ),
+    ("Fixed 400x400 at (50, 50):", "50px", "450px", "50px", "450px"),
     # Fixed 400x400 region at bottom right corner
-    (
-        "Fixed 400x400 at bottom right corner:",
-        Pixel(pixels=-400),
-        Fraction(num=1, denom=1),
-        Pixel(pixels=-400),
-        Fraction(num=1, denom=1),
-    ),
+    ("Fixed 400x400 at bottom right corner:", "-400px", "100%", "-400px", "100%"),
     # 50px inset on all four sides using negative pixels for far edges
+    ("50px inset all sides:", "50px", "-50px", "50px", "-50px"),
+    # Centered 200px-wide strip using compound Dim expressions
     (
-        "50px inset all sides:",
-        Pixel(pixels=50),
-        Pixel(pixels=-50),
-        Pixel(pixels=50),
-        Pixel(pixels=-50),
-    ),
-    # Centered 200px-wide strip using Dim arithmetic
-    (
-        "Centered 200px-wide strip (fr - px, fr + px):",
-        Fraction(num=1, denom=2) - Pixel(pixels=100),
-        Fraction(num=1, denom=2) + Pixel(pixels=100),
-        Fraction(num=0, denom=1),
-        Fraction(num=1, denom=1),
+        "Centered 200px-wide strip (50% - 100px, 50% + 100px):",
+        "50% - 100px",
+        "50% + 100px",
+        "0%",
+        "100%",
     ),
 ]
 

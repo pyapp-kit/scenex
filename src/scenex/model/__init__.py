@@ -90,9 +90,7 @@ from ._color import (
     VertexColors,
 )
 from ._layout import (
-    Fraction,
     Layout,
-    Pixel,
 )
 from ._nodes.camera import (
     AnyController,
@@ -125,7 +123,6 @@ __all__ = [
     "Colormap",
     "EventedBase",
     "FaceColors",
-    "Fraction",
     "Image",
     "InterpolationMode",
     "Layout",
@@ -135,7 +132,6 @@ __all__ = [
     "Node",
     "Orbit",
     "PanZoom",
-    "Pixel",
     "Points",
     "RenderMode",
     "ResizePolicy",
