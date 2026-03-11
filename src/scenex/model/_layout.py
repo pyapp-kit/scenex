@@ -2,58 +2,86 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Annotated
+from typing import Any
 
 from cmap import Color
-from pydantic import AfterValidator, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_serializer, model_validator
 
 from ._base import EventedBase
 
 logger = logging.getLogger(__name__)
 
 
-def resolve_dim(value: str, total: int) -> int:
-    """Resolve a CSS-style dimension string to an integer pixel position.
+class Coord(BaseModel):
+    """Distance along a number of pixels. Expressed using CSS-style strings."""
 
-    Parameters
-    ----------
-    value :
-        A validated dimension string: ``"XX%"`` (fraction of *total*),
-        ``"XXpx"`` (pixel offset; negative values are measured from the far
-        edge), or an arithmetic expression such as ``"50% - 20px"`` or
-        ``"-40px+100%"``.  Spaces around operators are optional.
-    total :
-        The canvas size along the relevant axis, in pixels.
-    """
-    # Remove all whitespace
-    v = value.replace(" ", "")
-    if not len(v):
-        raise ValueError("Empty dimension string")
-    # Tokenize into signed terms (e.g. "-40px+100%" → ["-40px", "+100%"])
-    tokens = [t for t in re.split(r"(?=[+-])", v) if t]
-    # Sum up each token
-    result = 0
-    for tok in tokens:
-        if tok.endswith("%"):
-            result += int(float(tok[:-1]) / 100 * total)
-        elif tok.endswith("px"):
-            result += int(tok[:-2])
-        else:
-            raise ValueError(f"Invalid dimension term {tok!r}")
-    # Negative result is measured from the far edge (e.g. -40px → total-40).
-    return total + result if result < 0 else result
+    pct: float = Field(
+        default=0.0,
+        ge=-100,
+        le=100,
+        description=(
+            "Percentage of the total number of pixels (negative values measured back "
+            "from the total)"
+        ),
+    )
+    px: int = Field(
+        default=0,
+        description="Number of pixels (negative values measured back from the total)",
+    )
 
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            return cls._parse(v)
+        if isinstance(v, dict):
+            return v
+        raise ValueError(f"Invalid Coord value {v!r}")
 
-def _validate_coord(value: str) -> str:
-    """Validate a Unit."""
-    # Check to see that it resolves with an arbitrarily large total
-    resolve_dim(value, 100000)
-    # Then return the original string (with whitespace stripped)
-    return value
+    @staticmethod
+    def _parse(value: str) -> dict:
+        v = value.replace(" ", "")
+        if not v:
+            raise ValueError("Empty Coord string")
+        tokens = [t for t in re.split(r"(?=[+-])", v) if t]
+        pct, px = 0.0, 0
+        for tok in tokens:
+            if tok.endswith("%"):
+                pct += float(tok[:-1])
+            elif tok.endswith("px"):
+                px += int(tok[:-2])
+            else:
+                raise ValueError(f"Invalid Coord term {tok!r}")
+        return {"pct": pct, "px": px}
 
+    def resolve(self, total: int) -> int:
+        result = int(self.pct / 100 * total) + self.px
+        return total + result if result < 0 else result
 
-# A CSS-like length unit
-Unit = Annotated[str, AfterValidator(_validate_coord)]
+    @model_serializer
+    def _serialize(self) -> str:
+        return str(self)
+
+    def __eq__(self, other: object) -> bool:
+        # If comparing to a string, ensure it would parse to the equivalent Coord
+        if isinstance(other, str):
+            try:
+                other = Coord(**Coord._parse(other))
+            except (ValueError, Exception):
+                return False
+        return super().__eq__(other)
+
+    def __str__(self) -> str:
+        parts = []
+        if self.pct:
+            parts.append(f"{self.pct:g}%")
+        if self.px or not parts:
+            parts.append(f"{self.px}px")
+        if len(parts) < 2:
+            return parts[0]
+        pct_str, px_str = parts
+        sep = " " if px_str.startswith("-") else " + "
+        return f"{pct_str}{sep}{px_str}"
 
 
 class Layout(EventedBase):
@@ -103,28 +131,28 @@ class Layout(EventedBase):
           y_end-> +--------------------------------+
     """
 
-    x_start: Unit = "0%"
-    x_end: Unit = "100%"
-    y_start: Unit = "0%"
-    y_end: Unit = "100%"
+    x_start: Coord = Coord(pct=0)
+    x_end: Coord = Coord(pct=100)
+    y_start: Coord = Coord(pct=0)
+    y_end: Coord = Coord(pct=100)
 
     @property
-    def x(self) -> tuple[Unit, Unit]:
+    def x(self) -> tuple[Coord, Coord]:
         """The x-axis start/end as a tuple."""
         return self.x_start, self.x_end
 
     @x.setter
-    def x(self, value: tuple[Unit, Unit]) -> None:
+    def x(self, value: tuple[Coord, Coord]) -> None:
         """Set the x-axis start/end from a tuple."""
         self.x_start, self.x_end = value
 
     @property
-    def y(self) -> tuple[Unit, Unit]:
+    def y(self) -> tuple[Coord, Coord]:
         """The y-axis start/end as a tuple."""
         return self.y_start, self.y_end
 
     @y.setter
-    def y(self, value: tuple[Unit, Unit]) -> None:
+    def y(self, value: tuple[Coord, Coord]) -> None:
         """Set the y-axis start/end from a tuple."""
         self.y_start, self.y_end = value
 

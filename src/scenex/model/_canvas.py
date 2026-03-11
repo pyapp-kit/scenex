@@ -20,7 +20,6 @@ from scenex.app.events import (
 from scenex.model._evented_list import EventedList
 
 from ._base import EventedBase
-from ._layout import resolve_dim
 from ._view import View  # noqa: TC001
 
 if TYPE_CHECKING:
@@ -109,10 +108,10 @@ class Canvas(EventedBase):
 
     def rect_for(self, view: View) -> tuple[int, int, int, int]:
         """The pixel rect (x, y, width, height) for a view, computed from its layout."""
-        x = resolve_dim(view.layout.x_start, self.width)
-        w = resolve_dim(view.layout.x_end, self.width) - x
-        y = resolve_dim(view.layout.y_start, self.height)
-        h = resolve_dim(view.layout.y_end, self.height) - y
+        x = view.layout.x_start.resolve(self.width)
+        w = view.layout.x_end.resolve(self.width) - x
+        y = view.layout.y_start.resolve(self.height)
+        h = view.layout.y_end.resolve(self.height) - y
         return (x, y, w, h)
 
     def content_rect_for(self, view: View) -> tuple[int, int, int, int]:

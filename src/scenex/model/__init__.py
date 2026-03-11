@@ -90,6 +90,7 @@ from ._color import (
     VertexColors,
 )
 from ._layout import (
+    Coord,
     Layout,
 )
 from ._nodes.camera import (
@@ -121,6 +122,7 @@ __all__ = [
     "Color",
     "ColorModel",
     "Colormap",
+    "Coord",
     "EventedBase",
     "FaceColors",
     "Image",

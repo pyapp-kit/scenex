@@ -175,6 +175,9 @@ warn_required_dynamic_aliases = true
 include = ["src"]
 pythonVersion = "3.10"
 enableExperimentalFeatures = true
+# Conflicts with pydantic type coercion
+reportAttributeAccessIssue = false
+reportArgumentType = false
 verboseOutput = true
 venv = ".venv"
 

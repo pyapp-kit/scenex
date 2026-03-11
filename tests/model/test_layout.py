@@ -1,7 +1,7 @@
 import pytest
 
 import scenex as snx
-from scenex.model._layout import Layout, resolve_dim
+from scenex.model._layout import Coord, Layout
 
 
 def test_default_layout_full_canvas() -> None:
@@ -155,8 +155,8 @@ def test_mixed_units() -> None:
         ("-40px + 10px + 10px", 200, 180),
     ],
 )
-def test_resolve_dim(value: str, total: int, expected: int) -> None:
-    assert resolve_dim(value, total) == expected
+def test_coord_coercion(value: str, total: int, expected: int) -> None:
+    assert Coord.model_validate(value).resolve(total) == expected
 
 
 @pytest.mark.parametrize("bad", ["50", "50em", "abc%", "12.5.5px", ""])
