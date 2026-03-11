@@ -73,6 +73,7 @@ class Canvas(EventedBase):
     )
     views: EventedList[View] = Field(
         default_factory=EventedList,
+        # Prevent reassigning this field - we'd lose our signal connections
         frozen=True,
     )
 
