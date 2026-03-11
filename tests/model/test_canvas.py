@@ -14,14 +14,11 @@ def test_to_world() -> None:
         interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
-    canvas = snx.Canvas(
-        width=int(view.layout.width),
-        height=int(view.layout.height),
-        views=[view],
-    )
+    canvas = snx.Canvas(views=[view])
+    w, h = canvas.rect_for(view)[2:]
 
     # Test center of canvas
-    canvas_pos = (view.layout.width // 2, view.layout.height // 2)
+    canvas_pos = (w // 2, h // 2)
     ray = canvas.to_world(canvas_pos)
     assert ray == Ray(origin=(0, 0, 0), direction=(0, 0, -1), source=view)
 
@@ -31,7 +28,7 @@ def test_to_world() -> None:
     assert ray == Ray(origin=(-1, 1, 0), direction=(0, 0, -1), source=view)
 
     # Test outside the view
-    canvas_pos = (view.layout.width * 2, view.layout.height * 2)
+    canvas_pos = (w * 2, h * 2)
     ray = canvas.to_world(canvas_pos)
     assert ray is None
 
@@ -45,11 +42,7 @@ def test_to_world_translated() -> None:
         interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
-    canvas = snx.Canvas(
-        width=int(view.layout.width),
-        height=int(view.layout.height),
-        views=[view],
-    )
+    canvas = snx.Canvas(views=[view])
 
     ray = canvas.to_world((0, 0))
     assert ray == Ray(origin=(0, 2, 1), direction=(0, 0, -1), source=view)
@@ -75,11 +68,7 @@ def test_to_world_projection() -> None:
         interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
-    canvas = snx.Canvas(
-        width=int(view.layout.width),
-        height=int(view.layout.height),
-        views=[view],
-    )
+    canvas = snx.Canvas(views=[view])
 
     ray = canvas.to_world((0, 0))
     assert ray == Ray(origin=(-0.5, 0.5, 0), direction=(0, 0, -1), source=view)
@@ -88,25 +77,28 @@ def test_to_world_projection() -> None:
 
 def test_multiple_views() -> None:
     # Create a canvas with two views
-    view1 = snx.View()
-    view2 = snx.View()
-    canvas = snx.Canvas(
-        width=800,
-        height=600,
-        views=[view1, view2],
-    )
+    view1 = snx.View()  # Left half
+    view1.layout.x = "0%", "50%"
+    view2 = snx.View()  # Right half
+    view2.layout.x = "50%", "100%"
+    canvas = snx.Canvas(views=[view1, view2])
 
-    # Assert the by default the views are equally sized
-    assert view1.layout.width == view2.layout.width
-    assert view1.layout.height == view2.layout.height
-    # And side-by-side (we'll add other behaviors later)
-    assert view1.layout.x + view1.layout.width == view2.layout.x
-    assert view1.layout.y == view2.layout.y
+    x1, y1, w1, h1 = canvas.rect_for(view1)
+    x2, y2, w2, h2 = canvas.rect_for(view2)
 
-    # Assert changing the width and height of the canvas updates the views
-    canvas.width = 400
-    canvas.height = 400
-    assert view1.layout.width == view2.layout.width
-    assert view1.layout.height == view2.layout.height
-    assert view1.layout.x + view1.layout.width == view2.layout.x
-    assert view1.layout.y == view2.layout.y
+    # By default the views are equally sized and side-by-side
+    assert w1 == w2
+    assert h1 == h2
+    assert x1 + w1 == x2
+    assert y1 == y2
+
+    # Changing the canvas size should preserve the equal-split relationship
+    canvas.width = canvas.width // 2
+    canvas.height = canvas.height * 2
+
+    x1, y1, w1, h1 = canvas.rect_for(view1)
+    x2, y2, w2, h2 = canvas.rect_for(view2)
+    assert w1 == w2
+    assert h1 == h2
+    assert x1 + w1 == x2
+    assert y1 == y2

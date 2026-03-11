@@ -44,7 +44,7 @@ def _doctest_setup(doctest_namespace: dict) -> Iterator[None]:
             # Unless this starts happening outside of doctests, let's just ignore it.
             from rendercanvas.wx import WxRenderWidget
 
-            WxRenderWidget._rc_close = Mock(return_value=None)  # type: ignore[method-assign]
+            WxRenderWidget._rc_close = Mock(return_value=None)
 
         except ImportError:
             pass

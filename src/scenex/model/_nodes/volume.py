@@ -50,7 +50,7 @@ class Volume(Image):
 
     # Note that since we inherit from Image, which has node_type defined,
     # we need to ignore the type check for assignment here.
-    node_type: Literal["volume"] = Field(default="volume", repr=False)  # type: ignore[assignment]
+    node_type: Literal["volume"] = Field(default="volume", repr=False)  # pyright: ignore[reportIncompatibleVariableOverride]
 
     render_mode: RenderMode = Field(
         default="mip",

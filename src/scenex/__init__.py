@@ -50,6 +50,10 @@ from .model._color import (
     UniformColor,
     VertexColors,
 )
+from .model._layout import (
+    Coord,
+    Layout,
+)
 from .model._nodes.camera import Camera, CameraController, Orbit, PanZoom
 from .model._nodes.image import Image
 from .model._nodes.line import Line
@@ -68,8 +72,10 @@ __all__ = [
     "CameraController",
     "Canvas",
     "ColorModel",
+    "Coord",
     "FaceColors",
     "Image",
+    "Layout",
     "Letterbox",
     "Line",
     "Mesh",

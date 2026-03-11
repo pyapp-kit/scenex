@@ -1,72 +1,161 @@
 from __future__ import annotations
 
 import logging
+import re
+from typing import Any
 
 from cmap import Color
-from pydantic import ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_serializer, model_validator
 
 from ._base import EventedBase
 
 logger = logging.getLogger(__name__)
 
 
-class Layout(EventedBase):
-    """Rectangular layout model with positioning and styling.
+class Coord(BaseModel):
+    """Distance along a number of pixels. Expressed using CSS-style strings."""
 
-    The Layout model defines the position, size, and visual styling of rectangular
-    areas. It uses a box model with margin, border, padding, and content areas,
-    similar to CSS.
+    pct: float = Field(
+        default=0.0,
+        ge=-100,
+        le=100,
+        description=(
+            "Percentage of the total number of pixels (negative values measured back "
+            "from the total)"
+        ),
+    )
+    px: int = Field(
+        default=0,
+        description="Number of pixels (negative values measured back from the total)",
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            return cls._parse(v)
+        if isinstance(v, dict):
+            return v
+        raise ValueError(f"Invalid Coord value {v!r}")
+
+    @staticmethod
+    def _parse(value: str) -> dict:
+        v = value.replace(" ", "")
+        if not v:
+            raise ValueError("Empty Coord string")
+        tokens = [t for t in re.split(r"(?=[+-])", v) if t]
+        pct, px = 0.0, 0
+        for tok in tokens:
+            if tok.endswith("%"):
+                pct += float(tok[:-1])
+            elif tok.endswith("px"):
+                px += int(tok[:-2])
+            else:
+                raise ValueError(f"Invalid Coord term {tok!r}")
+        return {"pct": pct, "px": px}
+
+    def resolve(self, total: int) -> int:
+        result = int(self.pct / 100 * total) + self.px
+        return total + result if result < 0 else result
+
+    @model_serializer
+    def _serialize(self) -> str:
+        return str(self)
+
+    def __eq__(self, other: object) -> bool:
+        # If comparing to a string, ensure it would parse to the equivalent Coord
+        if isinstance(other, str):
+            try:
+                other = Coord(**Coord._parse(other))
+            except (ValueError, Exception):
+                return False
+        return super().__eq__(other)
+
+    def __str__(self) -> str:
+        parts = []
+        if self.pct:
+            parts.append(f"{self.pct:g}%")
+        if self.px or not parts:
+            parts.append(f"{self.px}px")
+        if len(parts) < 2:
+            return parts[0]
+        pct_str, px_str = parts
+        sep = " " if px_str.startswith("-") else " + "
+        return f"{pct_str}{sep}{px_str}"
+
+
+class Layout(EventedBase):
+    """Style model for a view's border, padding, background, and placement.
+
+    Placement is defined by four independent strings — one for each
+    edge of the view rect — resolved against the canvas size at render time via
+    ``Canvas.rect_for``. Accepted strings must follow CSS conventions:
+
+    * ``"XX%"`` — a percentage of the canvas size along that axis
+    * ``"XXpx"`` — a fixed pixel offset; negative values are measured from the
+      far edge (right / bottom)
 
     Examples
     --------
-    Create a layout at position (100, 100) with size 400x300:
-        >>> layout = Layout(x=100, y=100, width=400, height=300)
+    Full canvas (default)::
 
-    Create a layout with border and padding:
-        >>> layout = Layout(
-        ...     width=200,
-        ...     height=200,
-        ...     border_width=2,
-        ...     border_color=Color("white"),
-        ...     padding=10,
-        ... )
+        Layout()
+
+    Fixed 400x300 region starting at (50, 50)::
+
+        Layout(x_start="50px", x_end="450px", y_start="50px", y_end="350px")
+
+    Left half, full height::
+
+        Layout(x_end="50%")
 
     Notes
     -----
     The layout follows this box model::
 
-            y
-            |
-            v
-        x-> +--------------------------------+  ^
-            |            margin              |  |
-            |  +--------------------------+  |  |
-            |  |         border           |  |  |
-            |  |  +--------------------+  |  |  |
-            |  |  |      padding       |  |  |  |
-            |  |  |  +--------------+  |  |  |   height
-            |  |  |  |   content    |  |  |  |  |
-            |  |  |  |              |  |  |  |  |
-            |  |  |  +--------------+  |  |  |  |
-            |  |  +--------------------+  |  |  |
-            |  +--------------------------+  |  |
-            +--------------------------------+  v
-
-            <------------ width ------------->
+                  x_start                          x_end
+                  |                                |
+                  v                                v
+        y_start-> +--------------------------------+
+                  |            margin              |
+                  |  +--------------------------+  |
+                  |  |         border           |  |
+                  |  |  +--------------------+  |  |
+                  |  |  |      padding       |  |  |
+                  |  |  |  +--------------+  |  |  |
+                  |  |  |  |   content    |  |  |  |
+                  |  |  |  |              |  |  |  |
+                  |  |  |  +--------------+  |  |  |
+                  |  |  +--------------------+  |  |
+                  |  +--------------------------+  |
+          y_end-> +--------------------------------+
     """
 
-    x: float = Field(
-        default=0, description="The x-coordinate of the left edge of the layout"
-    )
-    y: float = Field(
-        default=0, description="The y-coordinate of the top edge of the layout"
-    )
-    width: float = Field(
-        default=600, description="The total width (including margin, border, padding)"
-    )
-    height: float = Field(
-        default=600, description="The total height (including margin, border, padding)"
-    )
+    x_start: Coord = Coord(pct=0)
+    x_end: Coord = Coord(pct=100)
+    y_start: Coord = Coord(pct=0)
+    y_end: Coord = Coord(pct=100)
+
+    @property
+    def x(self) -> tuple[Coord, Coord]:
+        """The x-axis start/end as a tuple."""
+        return self.x_start, self.x_end
+
+    @x.setter
+    def x(self, value: tuple[Coord, Coord]) -> None:
+        """Set the x-axis start/end from a tuple."""
+        self.x_start, self.x_end = value
+
+    @property
+    def y(self) -> tuple[Coord, Coord]:
+        """The y-axis start/end as a tuple."""
+        return self.y_start, self.y_end
+
+    @y.setter
+    def y(self, value: tuple[Coord, Coord]) -> None:
+        """Set the y-axis start/end from a tuple."""
+        self.y_start, self.y_end = value
+
     background_color: Color | None = Field(
         default=Color("black"),
         description="The background color (inside of the border). "
@@ -88,33 +177,3 @@ class Layout(EventedBase):
     )
 
     model_config = ConfigDict(extra="forbid")
-
-    @property
-    def position(self) -> tuple[float, float]:
-        """Return the x, y position of the layout as a tuple."""
-        return self.x, self.y
-
-    @property
-    def size(self) -> tuple[float, float]:
-        """Return the width, height of the layout as a tuple."""
-        return self.width, self.height
-
-    @property
-    def content_rect(self) -> tuple[float, float, float, float]:
-        """Return the (x, y, width, height) of the content area."""
-        offset = self.padding + self.border_width + self.margin
-        return (
-            self.x + offset,
-            self.y + offset,
-            self.width - 2 * offset,
-            self.height - 2 * offset,
-        )
-
-    def __contains__(self, pos: tuple[float, float]) -> bool:
-        offset = self.padding + self.border_width + self.margin
-
-        left = self.x + offset
-        right = self.x + self.width - offset
-        bottom = self.y + offset
-        top = self.y + self.height - offset
-        return left <= pos[0] and pos[0] <= right and bottom <= pos[1] and pos[1] <= top
