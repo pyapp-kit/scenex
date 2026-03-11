@@ -157,6 +157,7 @@ show_error_codes = true
 pretty = true
 plugins = ["pydantic.mypy"]
 untyped_calls_exclude = ["rendercanvas", "IPython", "pytestqt"]
+# Conflicts with pydantic type coercion
 disable_error_code = ["assignment"]
 
 [[tool.mypy.overrides]]
@@ -178,6 +179,7 @@ pythonVersion = "3.10"
 enableExperimentalFeatures = true
 # Conflicts with pydantic type coercion
 reportAttributeAccessIssue = false
+# Conflicts with pydantic type coercion
 reportArgumentType = false
 verboseOutput = true
 venv = ".venv"
