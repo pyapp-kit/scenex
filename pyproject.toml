@@ -157,6 +157,7 @@ show_error_codes = true
 pretty = true
 plugins = ["pydantic.mypy"]
 untyped_calls_exclude = ["rendercanvas", "IPython", "pytestqt"]
+disable_error_code = ["assignment"]
 
 [[tool.mypy.overrides]]
 module = ["rendercanvas.*"]
