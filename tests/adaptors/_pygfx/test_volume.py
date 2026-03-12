@@ -76,9 +76,9 @@ def test_blending(volume: snx.Volume, adaptor: adaptors.Volume) -> None:
 
 
 def test_downcasting() -> None:
-    """Tests that volume data is downcasted when necessary."""
+    """Pygfx does not allow 64-bit data. This test ensures 64-bit data is downcasted."""
     rng = np.random.default_rng()
-    # Test that 64-bit float data is downcast to 32-bit for pygfx compatibility
+    # Test 64-bit float
     volume = snx.Volume(
         data=rng.random((3, 100, 100), dtype=np.float64),
     )
@@ -86,7 +86,7 @@ def test_downcasting() -> None:
     assert isinstance(adaptor, adaptors.Volume)
     assert adaptor._texture.data.dtype == np.float32  # pyright: ignore
 
-    # Test that 64-bit integer data is downcast to 32-bit for pygfx compatibility
+    # Test 64-bit integer
     volume = snx.Volume(
         data=rng.integers(0, 255, (3, 100, 100), dtype=np.int64),
     )
@@ -94,7 +94,7 @@ def test_downcasting() -> None:
     assert isinstance(adaptor, adaptors.Volume)
     assert adaptor._texture.data.dtype == np.int32  # pyright: ignore
 
-    # Test that 64-bit uinteger data is downcast to 32-bit for pygfx compatibility
+    # Test 64-bit unsigned integer
     volume = snx.Volume(
         data=rng.integers(0, 255, (3, 100, 100), dtype=np.uint64),
     )
