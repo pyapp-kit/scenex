@@ -1,14 +1,17 @@
 from __future__ import annotations
 
-import warnings
+import logging
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pygfx
 
 from scenex.adaptors._base import VolumeAdaptor
+from scenex.adaptors._pygfx._image import DOWNCASTS
 
 from ._node import Node
+
+logger = logging.getLogger("scenex.adaptors.pygfx")
 
 if TYPE_CHECKING:
     from cmap import Colormap
@@ -40,10 +43,8 @@ class Volume(Node, VolumeAdaptor):
 
     def _snx_set_interpolation(self, arg: model.InterpolationMode) -> None:
         if arg == "bicubic":
-            warnings.warn(
+            logger.warning(
                 "Bicubic interpolation not supported by pygfx - falling back to linear",
-                RuntimeWarning,
-                stacklevel=2,
             )
             arg = "linear"
         self._material.interpolation = arg
@@ -51,6 +52,16 @@ class Volume(Node, VolumeAdaptor):
     def _create_texture(self, data: np.ndarray) -> pygfx.Texture:
         if data.ndim != 3:
             raise Exception("Volumes must be 3-dimensional")
+        if data.dtype in DOWNCASTS:
+            cast_to = DOWNCASTS[data.dtype]
+            # pygfx doesn't support 64-bit dtypes; downcast transparently.
+            # The user hasn't done anything wrong — this is a backend limitation.
+            logger.warning(
+                "Downcasting volume data from %s to %s for pygfx compatibility",
+                data.dtype.name,
+                cast_to.name,
+            )
+            data = data.astype(cast_to)
         return pygfx.Texture(data, dim=data.ndim)
 
     def _snx_set_data(self, data: ArrayLike) -> None:
