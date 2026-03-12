@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import warnings
 from typing import TYPE_CHECKING, Any
 
@@ -7,6 +8,7 @@ import numpy as np
 import pygfx
 
 from scenex.adaptors._base import VolumeAdaptor
+from scenex.adaptors._pygfx._image import DOWNCASTS
 
 from ._node import Node
 
@@ -15,6 +17,8 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
     from scenex import model
+
+logger = logging.getLogger("scenex.adaptors.pygfx")
 
 
 class Volume(Node, VolumeAdaptor):
@@ -51,6 +55,13 @@ class Volume(Node, VolumeAdaptor):
     def _create_texture(self, data: np.ndarray) -> pygfx.Texture:
         if data.ndim != 3:
             raise Exception("Volumes must be 3-dimensional")
+        if data.dtype.type in DOWNCASTS:
+            downcasted_type = DOWNCASTS[data.dtype.type]
+            logger.warning(
+                f"Downcasting volume data from {data.dtype} to "
+                f"{downcasted_type} for pygfx compatibility",
+            )
+            data = data.astype(downcasted_type)
         return pygfx.Texture(data, dim=data.ndim)
 
     def _snx_set_data(self, data: ArrayLike) -> None:

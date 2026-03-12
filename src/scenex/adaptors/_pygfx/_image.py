@@ -18,6 +18,14 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger("scenex.adaptors.pygfx")
 
+# Certain numpy data type are not supported by pygfx. We downcast them to another type
+# defined in this dict.
+DOWNCASTS = {
+    np.float64: np.float32,
+    np.int64: np.int32,
+    np.uint64: np.uint32,
+}
+
 
 class Image(Node, ImageAdaptor):
     """pygfx backend adaptor for an Image node."""
@@ -52,19 +60,24 @@ class Image(Node, ImageAdaptor):
         if arg == "bicubic":
             logger.warning(
                 "Bicubic interpolation not supported by pygfx - falling back to linear",
-                RuntimeWarning,
-                stacklevel=2,
             )
             self._model.interpolation = "linear"
             return
         self._material.interpolation = arg
 
     def _create_texture(self, data: ArrayLike | None) -> pygfx.Texture:
-        data = np.asanyarray(data)
         if data is not None:
+            data = np.asanyarray(data)
             dim = data.ndim
             if dim > 2 and data.shape[-1] <= 4:
                 dim -= 1  # last array dim is probably (a subset of) rgba
+            if data.dtype.type in DOWNCASTS:
+                downcasted_type = DOWNCASTS[data.dtype.type]
+                logger.warning(
+                    f"Downcasting image data from {data.dtype} to "
+                    f"{downcasted_type} for pygfx compatibility",
+                )
+                data = data.astype(downcasted_type)
         else:
             dim = 2
         # TODO: unclear whether get_view() is better here...

@@ -94,3 +94,34 @@ def test_rgb(image: snx.Image, adaptor: adaptors.Image) -> None:
         cmap.Colormap("blue").to_pygfx().texture.data,
         adaptor._pygfx_node.material.map.texture.data,  # type: ignore
     )
+
+
+def test_downcasting() -> None:
+    """Tests that downcasting to ImageAdaptor works."""
+    rng = np.random.default_rng()
+    # Test that 64-bit float data is downcast to 32-bit for pygfx compatibility
+    image = snx.Image(
+        data=rng.random((100, 100), dtype=np.float64),
+        cmap=cmap.Colormap("viridis"),
+    )
+    adaptor = get_adaptor_registry().get_adaptor(image, create=True)
+    assert isinstance(adaptor, adaptors.Image)
+    assert adaptor._texture.data.dtype == np.float32  # pyright: ignore
+
+    # Test that 64-bit integer data is downcast to 32-bit for pygfx compatibility
+    image = snx.Image(
+        data=rng.integers(0, 255, (100, 100), dtype=np.int64),
+        cmap=cmap.Colormap("viridis"),
+    )
+    adaptor = get_adaptor_registry().get_adaptor(image, create=True)
+    assert isinstance(adaptor, adaptors.Image)
+    assert adaptor._texture.data.dtype == np.int32  # pyright: ignore
+
+    # Test that 64-bit uinteger data is downcast to 32-bit for pygfx compatibility
+    image = snx.Image(
+        data=rng.integers(0, 255, (100, 100), dtype=np.uint64),
+        cmap=cmap.Colormap("viridis"),
+    )
+    adaptor = get_adaptor_registry().get_adaptor(image, create=True)
+    assert isinstance(adaptor, adaptors.Image)
+    assert adaptor._texture.data.dtype == np.uint32  # pyright: ignore
