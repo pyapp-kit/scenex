@@ -75,29 +75,24 @@ def test_blending(volume: snx.Volume, adaptor: adaptors.Volume) -> None:
     assert adaptor._material.alpha_mode == "solid"
 
 
-def test_downcasting() -> None:
+@pytest.mark.parametrize(
+    ("src_dtype", "expected_dtype"),
+    [
+        (np.float64, np.float32),
+        (np.int64, np.int32),
+        (np.uint64, np.uint32),
+    ],
+)
+def test_downcasting(
+    src_dtype: np.dtype, expected_dtype: np.dtype, caplog: pytest.LogCaptureFixture
+) -> None:
     """Pygfx does not allow 64-bit data. This test ensures 64-bit data is downcasted."""
     rng = np.random.default_rng()
-    # Test 64-bit float
-    volume = snx.Volume(
-        data=rng.random((3, 100, 100), dtype=np.float64),
-    )
+    if np.issubdtype(src_dtype, np.floating):
+        data = rng.random((3, 100, 100), dtype=src_dtype)
+    else:
+        data = rng.integers(0, 255, (3, 100, 100), dtype=src_dtype)
+    volume = snx.Volume(data=data)
     adaptor = get_adaptor_registry().get_adaptor(volume, create=True)
     assert isinstance(adaptor, adaptors.Volume)
-    assert adaptor._texture.data.dtype == np.float32  # pyright: ignore
-
-    # Test 64-bit integer
-    volume = snx.Volume(
-        data=rng.integers(0, 255, (3, 100, 100), dtype=np.int64),
-    )
-    adaptor = get_adaptor_registry().get_adaptor(volume, create=True)
-    assert isinstance(adaptor, adaptors.Volume)
-    assert adaptor._texture.data.dtype == np.int32  # pyright: ignore
-
-    # Test 64-bit unsigned integer
-    volume = snx.Volume(
-        data=rng.integers(0, 255, (3, 100, 100), dtype=np.uint64),
-    )
-    adaptor = get_adaptor_registry().get_adaptor(volume, create=True)
-    assert isinstance(adaptor, adaptors.Volume)
-    assert adaptor._texture.data.dtype == np.uint32  # pyright: ignore
+    assert adaptor._texture.data.dtype == expected_dtype  # pyright: ignore

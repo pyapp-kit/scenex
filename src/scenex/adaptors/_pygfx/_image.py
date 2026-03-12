@@ -18,12 +18,12 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger("scenex.adaptors.pygfx")
 
-# Certain numpy data type are not supported by pygfx. We downcast them to another type
+# Certain numpy data types are not supported by pygfx. We downcast them to another type
 # defined in this dict.
 DOWNCASTS = {
-    np.float64: np.float32,
-    np.int64: np.int32,
-    np.uint64: np.uint32,
+    np.dtype("float64"): np.dtype("float32"),
+    np.dtype("int64"): np.dtype("int32"),
+    np.dtype("uint64"): np.dtype("uint32"),
 }
 
 
@@ -71,13 +71,16 @@ class Image(Node, ImageAdaptor):
             dim = data.ndim
             if dim > 2 and data.shape[-1] <= 4:
                 dim -= 1  # last array dim is probably (a subset of) rgba
-            if data.dtype.type in DOWNCASTS:
-                downcasted_type = DOWNCASTS[data.dtype.type]
+            if data.dtype in DOWNCASTS:
+                cast_to = DOWNCASTS[data.dtype]
+                # pygfx doesn't support 64-bit dtypes; downcast transparently.
+                # The user hasn't done anything wrong — this is a backend limitation.
                 logger.warning(
-                    f"Downcasting image data from {data.dtype} to "
-                    f"{downcasted_type} for pygfx compatibility",
+                    "Downcasting image data from %s to %s for pygfx compatibility",
+                    data.dtype.name,
+                    cast_to.name,
                 )
-                data = data.astype(downcasted_type)
+                data = data.astype(cast_to)
         else:
             dim = 2
         # TODO: unclear whether get_view() is better here...

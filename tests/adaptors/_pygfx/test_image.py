@@ -96,33 +96,22 @@ def test_rgb(image: snx.Image, adaptor: adaptors.Image) -> None:
     )
 
 
-def test_downcasting() -> None:
+@pytest.mark.parametrize(
+    ("src_dtype", "expected_dtype"),
+    [
+        (np.float64, np.float32),
+        (np.int64, np.int32),
+        (np.uint64, np.uint32),
+    ],
+)
+def test_downcasting(src_dtype: np.dtype, expected_dtype: np.dtype) -> None:
     """Pygfx does not allow 64-bit data. This test ensures 64-bit data is downcasted."""
     rng = np.random.default_rng()
-
-    # Test 64-bit float
-    image = snx.Image(
-        data=rng.random((100, 100), dtype=np.float64),
-        cmap=cmap.Colormap("viridis"),
-    )
+    if np.issubdtype(src_dtype, np.floating):
+        data = rng.random((100, 100), dtype=src_dtype)
+    else:
+        data = rng.integers(0, 255, (100, 100), dtype=src_dtype)
+    image = snx.Image(data=data, cmap=cmap.Colormap("viridis"))
     adaptor = get_adaptor_registry().get_adaptor(image, create=True)
     assert isinstance(adaptor, adaptors.Image)
-    assert adaptor._texture.data.dtype == np.float32  # pyright: ignore
-
-    # Test 64-bit integer
-    image = snx.Image(
-        data=rng.integers(0, 255, (100, 100), dtype=np.int64),
-        cmap=cmap.Colormap("viridis"),
-    )
-    adaptor = get_adaptor_registry().get_adaptor(image, create=True)
-    assert isinstance(adaptor, adaptors.Image)
-    assert adaptor._texture.data.dtype == np.int32  # pyright: ignore
-
-    # Test 64-bit unsigned integer
-    image = snx.Image(
-        data=rng.integers(0, 255, (100, 100), dtype=np.uint64),
-        cmap=cmap.Colormap("viridis"),
-    )
-    adaptor = get_adaptor_registry().get_adaptor(image, create=True)
-    assert isinstance(adaptor, adaptors.Image)
-    assert adaptor._texture.data.dtype == np.uint32  # pyright: ignore
+    assert adaptor._texture.data.dtype == expected_dtype  # pyright: ignore
