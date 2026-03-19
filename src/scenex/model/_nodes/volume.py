@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Literal
 from pydantic import Field
 
 from .image import Image, _passes_through_parallelogram
-from .node import AABB  # noqa: TC001
 
 if TYPE_CHECKING:
     from scenex.app.events._events import Ray
@@ -60,17 +59,10 @@ class Volume(Image):
         ),
     )
 
-    @property  # TODO: Cache?
-    def bounding_box(self) -> AABB:
-        bb = super().bounding_box
-        # We can reuse the image version, but the first dimension needs to be swapped
-        # To account for the ZYX convention.
-        return ((bb[0][1], bb[0][2], bb[0][0]), (bb[1][1], bb[1][2], bb[1][0]))
-
     def passes_through(self, ray: Ray) -> float | None:
         # The ray passes through our volume if it passes through any of the six faces
         mi, ma = self.bounding_box
-        d, w, h = self.data.shape
+        d, h, w = self.data.shape
 
         # We can describe each face using a parallelogram using:
         # A point for the Top, Left, and Front faces
