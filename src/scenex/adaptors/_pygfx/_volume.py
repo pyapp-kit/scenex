@@ -7,7 +7,9 @@ import numpy as np
 import pygfx
 
 from scenex.adaptors._base import VolumeAdaptor
-from scenex.adaptors._pygfx._image import DOWNCASTS
+from scenex.adaptors._pygfx._image import (
+    _coerce_data,
+)
 
 from ._node import Node
 
@@ -25,12 +27,12 @@ class Volume(Node, VolumeAdaptor):
 
     _pygfx_node: pygfx.Volume
     _material: pygfx.VolumeBasicMaterial
-    _geometry: pygfx.Geometry
 
     def __init__(self, volume: model.Volume, **backend_kwargs: Any) -> None:
-        self._snx_set_data(volume.data)
+        self._model = volume
         self._snx_set_render_mode(volume.render_mode, volume.interpolation)
-        self._pygfx_node = pygfx.Volume(self._geometry, self._material)
+        self._pygfx_node = pygfx.Volume(material=self._material)
+        self._snx_set_data(volume.data)
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
         self._material.map = arg.to_pygfx()
@@ -49,26 +51,37 @@ class Volume(Node, VolumeAdaptor):
             arg = "linear"
         self._material.interpolation = arg
 
-    def _create_texture(self, data: np.ndarray) -> pygfx.Texture:
-        if data.ndim != 3:
-            raise Exception("Volumes must be 3-dimensional")
-        if data.dtype in DOWNCASTS:
-            cast_to = DOWNCASTS[data.dtype]
-            # pygfx doesn't support 64-bit dtypes; downcast transparently.
-            # The user hasn't done anything wrong — this is a backend limitation.
-            logger.warning(
-                "Downcasting volume data from %s to %s for pygfx compatibility",
-                data.dtype.name,
-                cast_to.name,
-            )
-            data = data.astype(cast_to)
-        return pygfx.Texture(data, dim=data.ndim)
+    def _snx_set_transform(self, arg: model.Transform) -> None:
+        if not hasattr(self, "_pygfx_node"):
+            return  # _snx_set_data hasn't run yet to set initial factors
+        x_fac = self._model.data.shape[2] / self._texture.size[0]
+        y_fac = self._model.data.shape[1] / self._texture.size[1]
+        z_fac = self._model.data.shape[0] / self._texture.size[2]
+        self._pygfx_node.local.matrix = (
+            arg.scaled((x_fac, y_fac, z_fac))
+            .translated((0.5 * (x_fac - 1), 0.5 * (y_fac - 1), 0.5 * (z_fac - 1)))
+            .root.T
+        )
 
     def _snx_set_data(self, data: ArrayLike) -> None:
-        self._texture = self._create_texture(np.asanyarray(data))
-        self._geometry = pygfx.Geometry(grid=self._texture)
-        if hasattr(self, "_pygfx_node"):
-            self._pygfx_node.geometry = self._geometry
+        arr = np.asanyarray(data)
+        if arr.ndim != 3:
+            raise Exception("Volumes must be 3-dimensional")
+        processed = _coerce_data(arr, n_spatial=3)
+
+        current: pygfx.Texture | None = getattr(self, "_texture", None)
+        if current is not None and _can_reuse_volume(current, processed):
+            # Reuse the existing texture: overwrite its buffer and mark dirty.
+            current.data[:] = processed  # pyright: ignore
+            current.update_full()
+        else:
+            # Copy so later in-place reuse won't mutate the originally-passed array.
+            new_buffer = processed.copy()
+            self._texture = pygfx.Texture(new_buffer, dim=new_buffer.ndim)
+            self._pygfx_node.geometry = pygfx.Geometry(grid=self._texture)
+
+        # Keep transform compensation in sync whenever data or factors change.
+        self._snx_set_transform(self._model.transform)
 
     def _snx_set_render_mode(
         self,
@@ -95,3 +108,12 @@ class Volume(Node, VolumeAdaptor):
 
         if hasattr(self, "_pygfx_node"):
             self._pygfx_node.material = self._material
+
+
+def _can_reuse_volume(texture: pygfx.Texture, processed: np.ndarray) -> bool:
+    """True if *texture* can hold *processed* without reallocation."""
+    return (
+        texture.data is not None
+        and texture.data.shape == processed.shape
+        and texture.data.dtype == processed.dtype
+    )

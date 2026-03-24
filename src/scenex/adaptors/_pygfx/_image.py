@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 import pygfx
@@ -33,7 +33,6 @@ class Image(Node, ImageAdaptor):
 
     _pygfx_node: pygfx.Image
     _material: pygfx.ImageBasicMaterial
-    _geometry: pygfx.Geometry
 
     def __init__(self, image: model.Image, **backend_kwargs: Any) -> None:
         self._model = image
@@ -79,7 +78,7 @@ class Image(Node, ImageAdaptor):
 
     def _snx_set_data(self, data: ArrayLike) -> None:
         arr = np.asanyarray(data)
-        processed = _coerce_data(arr)
+        processed = _coerce_data(arr, n_spatial=2)
 
         current: pygfx.Texture | None = getattr(self, "_texture", None)
         if current is not None and _can_reuse(current, processed):
@@ -109,7 +108,7 @@ class Image(Node, ImageAdaptor):
 
 
 def _texture_dim(data: np.ndarray) -> int:
-    """Spatial dimensionality of *data* for a pygfx Texture."""
+    """Spatial dimensionality of *image data* for a pygfx Texture."""
     return data.ndim - 1 if data.ndim > 2 and data.shape[-1] <= 4 else data.ndim
 
 
@@ -128,37 +127,36 @@ def _get_max_texture_sizes() -> tuple[int | None, int | None]:
         return None, None
 
 
-def _downsample_data(data: np.ndarray, max_size: int) -> np.ndarray:
-    """Downsample spatial axes of *data* so none exceeds *max_size*.
+def _downsample_data(data: np.ndarray, max_size: int, n_spatial: int) -> np.ndarray:
+    """Downsample the spatial axes of *data* so none exceeds *max_size*.
 
-    Uses a strided NumPy view (no copy). For 2-D arrays the shape is
-    ``(rows, cols)``; for 3-D arrays with a trailing colour channel
-    (shape[-1] <= 4) only the two spatial axes are checked.
+    Uses a strided NumPy view (no copy). Any trailing non-spatial axis (e.g. a
+    colour channel) is left untouched.
 
     Returns the (possibly downsampled) array.
     """
-    has_channel = data.ndim == 3 and data.shape[-1] <= 4
-    spatial_shape = data.shape[:-1] if has_channel else data.shape
-    row_f, col_f = (
-        int(np.ceil(s / max_size)) if s > max_size else 1 for s in spatial_shape
+    # If the data has more than n_spatial axes, assume the last one is a channel (RGBA).
+    has_channel = data.ndim > n_spatial
+    strides = tuple(
+        int(np.ceil(s / max_size)) if s > max_size else 1
+        for s in data.shape[:n_spatial]
     )
-    if row_f == 1 and col_f == 1:
+    if all(s == 1 for s in strides):
         return data
     logger.warning(
         "Data shape %s exceeds max texture dimension (%d) and will be "
-        "downsampled for rendering (strides: (%d, %d)).",
+        "downsampled for rendering (strides: %s).",
         data.shape,
         max_size,
-        row_f,
-        col_f,
+        strides,
     )
-    slices: tuple[slice, ...] = (slice(None, None, row_f), slice(None, None, col_f))
+    slices: tuple[slice, ...] = tuple(slice(None, None, s) for s in strides)
     if has_channel:
         slices = (*slices, slice(None))
     return data[slices]
 
 
-def _coerce_data(data: np.ndarray) -> np.ndarray:
+def _coerce_data(data: np.ndarray, n_spatial: Literal[2, 3]) -> np.ndarray:
     """Downcast and downsample *data* for GPU upload.
 
     Returns a (possibly strided) view — callers that need to own the
@@ -167,15 +165,16 @@ def _coerce_data(data: np.ndarray) -> np.ndarray:
     if data.dtype in DOWNCASTS:
         cast_to = DOWNCASTS[data.dtype]
         logger.warning(
-            "Downcasting image data from %s to %s for pygfx compatibility",
+            "Downcasting %s data from %s to %s for pygfx compatibility",
+            "image" if n_spatial == 2 else "volume",
             data.dtype.name,
             cast_to.name,
         )
         data = data.astype(cast_to)  # astype always returns a copy
 
-    max_size = _get_max_texture_sizes()[0]
+    max_size = _get_max_texture_sizes()[0 if n_spatial == 2 else 1]  # 2D or 3D limit
     if max_size is not None:
-        data = _downsample_data(data, max_size)
+        data = _downsample_data(data, max_size, n_spatial=n_spatial)
 
     return data
 
