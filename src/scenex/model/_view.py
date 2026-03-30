@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
     from scenex import Transform
     from scenex.adaptors._base import ViewAdaptor
-    from scenex.app.events import Event
+    from scenex.app.events import Event, Ray
 
     from ._canvas import Canvas
 
@@ -143,6 +143,21 @@ class View(EventedBase):
         if self._canvas is not None:
             return self._canvas.content_rect_for(self)
         return None
+
+    def to_ray(self, canvas_pos: tuple[float, float]) -> Ray | None:
+        """Compute the world-space ray for a canvas position within this view.
+
+        Parameters
+        ----------
+        canvas_pos : tuple[float, float]
+            The (x, y) position in canvas pixel coordinates.
+
+        Returns
+        -------
+        Ray | None
+            The world-space ray, or None if this view has no canvas.
+        """
+        return self._canvas.to_world(canvas_pos) if self._canvas else None
 
     def render(self) -> np.ndarray:
         """Render the view to an array."""

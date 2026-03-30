@@ -67,15 +67,13 @@ class WxEventFilter(EventFilter):
 
     def _on_enter_window(self, event: wx.MouseEvent) -> None:
         pos = event.GetPosition()
-        if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            self._model_canvas.handle(
-                MouseEnterEvent(
-                    canvas_pos=(pos.x, pos.y),
-                    world_ray=ray,
-                    buttons=self._active_button,
-                )
+        self._model_canvas.handle(
+            MouseEnterEvent(
+                canvas_pos=(pos.x, pos.y),
+                buttons=self._active_button,
             )
-            event.Skip()
+        )
+        event.Skip()
 
     def _on_resize(self, event: wx.SizeEvent) -> None:
         self._model_canvas.handle(
@@ -90,57 +88,50 @@ class WxEventFilter(EventFilter):
         btn = self._map_button(event)
         self._active_button |= btn
         pos = event.GetPosition()
-        if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            self._model_canvas.handle(
-                MousePressEvent(canvas_pos=(pos.x, pos.y), world_ray=ray, buttons=btn)
-            )
-            event.Skip()
+        self._model_canvas.handle(
+            MousePressEvent(canvas_pos=(pos.x, pos.y), buttons=btn)
+        )
+        event.Skip()
 
     def _on_mouse_up(self, event: wx.MouseEvent) -> None:
         btn = self._map_button(event)
         self._active_button &= ~btn
         pos = event.GetPosition()
-        if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            self._model_canvas.handle(
-                MouseReleaseEvent(
-                    canvas_pos=(pos.x, pos.y),
-                    world_ray=ray,
-                    buttons=btn,
-                )
+        self._model_canvas.handle(
+            MouseReleaseEvent(
+                canvas_pos=(pos.x, pos.y),
+                buttons=btn,
             )
-            event.Skip()
+        )
+        event.Skip()
 
     def _on_mouse_move(self, event: wx.MouseEvent) -> None:
         pos = event.GetPosition()
-        if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            self._model_canvas.handle(
-                MouseMoveEvent(
-                    canvas_pos=(pos.x, pos.y),
-                    world_ray=ray,
-                    buttons=self._active_button,
-                )
+        self._model_canvas.handle(
+            MouseMoveEvent(
+                canvas_pos=(pos.x, pos.y),
+                buttons=self._active_button,
             )
-            event.Skip()
+        )
+        event.Skip()
 
     def _on_wheel(self, event: wx.MouseEvent) -> None:
         pos = event.GetPosition()
-        if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            if event.GetWheelAxis() == 0:
-                # Vertical Scroll
-                angle_delta = (0, event.GetWheelRotation())
-            else:
-                # Horizontal Scroll
-                angle_delta = (event.GetWheelRotation(), 0)
+        if event.GetWheelAxis() == 0:
+            # Vertical Scroll
+            angle_delta = (0, event.GetWheelRotation())
+        else:
+            # Horizontal Scroll
+            angle_delta = (event.GetWheelRotation(), 0)
 
-            self._model_canvas.handle(
-                WheelEvent(
-                    canvas_pos=(pos.x, pos.y),
-                    world_ray=ray,
-                    buttons=self._active_button,
-                    angle_delta=angle_delta,
-                )
+        self._model_canvas.handle(
+            WheelEvent(
+                canvas_pos=(pos.x, pos.y),
+                buttons=self._active_button,
+                angle_delta=angle_delta,
             )
-            event.Skip()
+        )
+        event.Skip()
 
     def _map_button(self, event: wx.MouseEvent) -> MouseButton:
         if event.LeftDown() or event.LeftUp():

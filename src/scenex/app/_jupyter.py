@@ -52,53 +52,45 @@ class JupyterEventFilter(EventFilter):
                         for b in btns:
                             filter._active_button |= JupyterEventFilter.mouse_btn(b)
                     canvas_pos = (ev["x"], ev["y"])
-                    if world_ray := filter._model_canvas.to_world(canvas_pos):
-                        filter._model_canvas.handle(
-                            MouseMoveEvent(
-                                canvas_pos=canvas_pos,
-                                world_ray=world_ray,
-                                buttons=filter._active_button,
-                            )
+                    filter._model_canvas.handle(
+                        MouseMoveEvent(
+                            canvas_pos=canvas_pos,
+                            buttons=filter._active_button,
                         )
+                    )
                 elif etype == "pointer_down":
                     canvas_pos = (ev["x"], ev["y"])
                     btn = JupyterEventFilter.mouse_btn(ev["button"])
                     filter._active_button |= btn
-                    if world_ray := filter._model_canvas.to_world(canvas_pos):
-                        filter._model_canvas.handle(
-                            MousePressEvent(
-                                canvas_pos=canvas_pos,
-                                world_ray=world_ray,
-                                buttons=btn,
-                            )
+                    filter._model_canvas.handle(
+                        MousePressEvent(
+                            canvas_pos=canvas_pos,
+                            buttons=btn,
                         )
+                    )
                 elif etype == "double_click":
                     btn = JupyterEventFilter.mouse_btn(ev["button"])
                     canvas_pos = (ev["x"], ev["y"])
-                    if world_ray := filter._model_canvas.to_world(canvas_pos):
-                        # FIXME: in Jupyter, a double_click event is not a pointer
-                        # event. In other words, there will be no release following.
-                        # This could cause unintended behavior. See
-                        # https://github.com/vispy/jupyter_rfb/blob/62831dd5a87bc19b4fd5f921d802ed21141e61ec/js/lib/widget.js#L270
-                        filter._model_canvas.handle(
-                            MouseDoublePressEvent(
-                                canvas_pos=canvas_pos,
-                                world_ray=world_ray,
-                                buttons=btn,
-                            )
+                    # FIXME: in Jupyter, a double_click event is not a pointer
+                    # event. In other words, there will be no release following.
+                    # This could cause unintended behavior. See
+                    # https://github.com/vispy/jupyter_rfb/blob/62831dd5a87bc19b4fd5f921d802ed21141e61ec/js/lib/widget.js#L270
+                    filter._model_canvas.handle(
+                        MouseDoublePressEvent(
+                            canvas_pos=canvas_pos,
+                            buttons=btn,
                         )
+                    )
                 elif etype == "pointer_up":
                     canvas_pos = (ev["x"], ev["y"])
                     btn = JupyterEventFilter.mouse_btn(ev["button"])
                     filter._active_button &= ~btn
-                    if world_ray := filter._model_canvas.to_world(canvas_pos):
-                        filter._model_canvas.handle(
-                            MouseReleaseEvent(
-                                canvas_pos=canvas_pos,
-                                world_ray=world_ray,
-                                buttons=btn,
-                            )
+                    filter._model_canvas.handle(
+                        MouseReleaseEvent(
+                            canvas_pos=canvas_pos,
+                            buttons=btn,
                         )
+                    )
                 elif etype == "pointer_enter":
                     canvas_pos = (ev["x"], ev["y"])
                     filter._active_button = MouseButton.NONE
@@ -107,28 +99,24 @@ class JupyterEventFilter(EventFilter):
                     elif btns := ev.get("buttons", None):
                         for b in btns:
                             filter._active_button |= JupyterEventFilter.mouse_btn(b)
-                    if world_ray := filter._model_canvas.to_world(canvas_pos):
-                        filter._model_canvas.handle(
-                            MouseEnterEvent(
-                                canvas_pos=canvas_pos,
-                                world_ray=world_ray,
-                                buttons=filter._active_button,
-                            )
+                    filter._model_canvas.handle(
+                        MouseEnterEvent(
+                            canvas_pos=canvas_pos,
+                            buttons=filter._active_button,
                         )
+                    )
                 elif etype == "pointer_leave":
                     filter._model_canvas.handle(MouseLeaveEvent())
                 elif etype == "wheel":
                     canvas_pos = (ev["x"], ev["y"])
-                    if world_ray := filter._model_canvas.to_world(canvas_pos):
-                        filter._model_canvas.handle(
-                            WheelEvent(
-                                canvas_pos=canvas_pos,
-                                world_ray=world_ray,
-                                buttons=filter._active_button,
-                                # Note that Jupyter_rfb uses a different y convention
-                                angle_delta=(ev["dx"], -ev["dy"]),
-                            )
+                    filter._model_canvas.handle(
+                        WheelEvent(
+                            canvas_pos=canvas_pos,
+                            buttons=filter._active_button,
+                            # Note that Jupyter_rfb uses a different y convention
+                            angle_delta=(ev["dx"], -ev["dy"]),
                         )
+                    )
                 elif etype == "resize":
                     filter._model_canvas.handle(
                         ResizeEvent(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, cast
 
@@ -11,6 +12,8 @@ from typing_extensions import Unpack
 
 from scenex.app.events import (
     Event,
+    KeyPressEvent,
+    KeyReleaseEvent,
     MouseEnterEvent,
     MouseEvent,
     MouseLeaveEvent,
@@ -23,7 +26,7 @@ from ._base import EventedBase
 from ._view import View  # noqa: TC001
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Callable, Iterable
 
     from typing_extensions import TypedDict
 
@@ -37,6 +40,9 @@ if TYPE_CHECKING:
         background_color: Color
         visible: bool
         title: str
+
+
+logger = logging.getLogger(__name__)
 
 
 class Canvas(EventedBase):
@@ -79,6 +85,7 @@ class Canvas(EventedBase):
 
     # Private state for tracking mouse view transitions
     _last_mouse_view: View | None = PrivateAttr(default=None)
+    _filter: Callable[[Event], bool] | None = PrivateAttr(default=None)
 
     model_config = ConfigDict(extra="forbid")
 
@@ -170,52 +177,84 @@ class Canvas(EventedBase):
             return cast("CanvasAdaptor", adaptors[0])._snx_render()
         raise RuntimeError("No adaptor found for Canvas.")
 
+    def set_event_filter(
+        self, callable: Callable[[Event], bool] | None
+    ) -> Callable[[Event], bool] | None:
+        """Register a callable to filter all canvas events before view dispatch.
+
+        Parameters
+        ----------
+        callable : Callable[[Event], bool] | None
+            A callable that takes an Event and returns True if the event was handled
+            and should not be propagated further, False otherwise. Pass None to remove
+            any existing filter.
+
+        Returns
+        -------
+        Callable[[Event], bool] | None
+            The previous event filter, or None if there was no filter.
+        """
+        old, self._filter = self._filter, callable
+        return old
+
+    def filter_event(self, event: Event) -> bool:
+        """Pass *event* through the canvas-level filter, if any.
+
+        Returns True iff the event was handled and should not propagate.
+        """
+        if self._filter:
+            handled = self._filter(event)
+            if not isinstance(handled, bool):
+                logger.warning(
+                    f"Canvas event filter {self._filter} did not return a boolean. "
+                    "Returning False."
+                )
+                handled = False
+            return handled
+        return False
+
     def handle(self, event: Event) -> bool:
         """Handle the passed event."""
-        handled = False
+        # 1. Canvas-level filter sees all events first.
+        if self.filter_event(event):
+            return True
+
         if isinstance(event, MouseEvent):
             current_view = self._containing_view(event.canvas_pos)
 
-            # Check if we've moved between views and handle transitions
-            # BEGIN UNTESTED CODE!
+            # Handle view-transition enter/leave events.
             # TODO: Add a test for this once multiple views are better supported
             if self._last_mouse_view != current_view:
-                # Send leave event to the previous view
                 if self._last_mouse_view is not None:
-                    leave_event = MouseLeaveEvent()
-                    self._last_mouse_view.filter_event(leave_event)
-
-                    # Send enter event to the new view (if any)
-                    if current_view is not None:
-                        enter_event = MouseEnterEvent(
-                            canvas_pos=event.canvas_pos,
-                            world_ray=event.world_ray,
-                            buttons=event.buttons,
-                        )
-                        current_view.filter_event(enter_event)
-
+                    self._last_mouse_view.filter_event(MouseLeaveEvent())
+                if current_view is not None:
+                    enter = MouseEnterEvent(
+                        canvas_pos=event.canvas_pos,
+                        buttons=event.buttons,
+                    )
+                    current_view.filter_event(enter)
             self._last_mouse_view = current_view
-            # END UNTESTED CODE!
 
-            # Handle the original mouse event in the current view
             if current_view is not None:
-                # Give the view a chance to observe the result
                 if current_view.filter_event(event):
                     return True
-
-                # No nodes in the view handled the event - pass it to the camera
                 if current_view.camera.interactive:
-                    if on_mouse := current_view.camera.controller:
-                        handled |= on_mouse.handle_event(event, current_view.camera)
+                    if ctrl := current_view.camera.controller:
+                        return ctrl.handle_event(event, current_view)
+
         elif isinstance(event, MouseLeaveEvent):
-            # Mouse left the entire canvas
             if self._last_mouse_view is not None:
-                handled = self._last_mouse_view.filter_event(event)
+                self._last_mouse_view.filter_event(event)
                 self._last_mouse_view = None
+
         elif isinstance(event, ResizeEvent):
-            # TODO: How might some event filter tap into the resize?
             self.size = (event.width, event.height)
-        return handled
+
+        elif isinstance(event, KeyPressEvent | KeyReleaseEvent):
+            if self._last_mouse_view is not None:
+                return self._last_mouse_view.filter_event(event)
+
+        return False
 
     def to_ndc(self, canvas_pos: tuple[float, float]) -> tuple[float, float] | None:
         """Map XY canvas position (pixels) to normalized device coordinates (NDC)."""

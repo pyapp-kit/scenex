@@ -4,6 +4,8 @@ import sys
 from concurrent.futures import Future
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
+from app_model.backends.qt import qkeycombo2modelkey
+from app_model.types import KeyBinding, SimpleKeyBinding
 from qtpy.QtCore import (
     QCoreApplication,
     QEvent,
@@ -13,12 +15,20 @@ from qtpy.QtCore import (
     QThread,
     QTimer,
 )
-from qtpy.QtGui import QEnterEvent, QMouseEvent, QResizeEvent, QWheelEvent
+from qtpy.QtGui import (
+    QEnterEvent,
+    QKeyEvent,
+    QMouseEvent,
+    QResizeEvent,
+    QWheelEvent,
+)
 from qtpy.QtWidgets import QApplication, QWidget
 
 from scenex.app._auto import App, CursorType
 from scenex.app.events import (
     EventFilter,
+    KeyPressEvent,
+    KeyReleaseEvent,
     MouseButton,
     MouseDoublePressEvent,
     MouseEnterEvent,
@@ -82,42 +92,35 @@ class QtEventFilter(QObject, EventFilter):
         if isinstance(qevent, QMouseEvent | QEnterEvent):
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
-            if not (ray := self._model_canvas.to_world(canvas_pos)):
-                return None
 
             etype = qevent.type()
             btn = self.mouse_btn(qevent.button())
             if etype == QEvent.Type.MouseMove:
                 return MouseMoveEvent(
                     canvas_pos=canvas_pos,
-                    world_ray=ray,
                     buttons=self._active_buttons,
                 )
             elif etype == QEvent.Type.MouseButtonDblClick:
                 self._active_buttons |= btn
                 return MouseDoublePressEvent(
                     canvas_pos=canvas_pos,
-                    world_ray=ray,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonPress:
                 self._active_buttons |= btn
                 return MousePressEvent(
                     canvas_pos=canvas_pos,
-                    world_ray=ray,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonRelease:
                 self._active_buttons &= ~btn
                 return MouseReleaseEvent(
                     canvas_pos=canvas_pos,
-                    world_ray=ray,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.Enter:
                 return MouseEnterEvent(
                     canvas_pos=canvas_pos,
-                    world_ray=ray,
                     buttons=self._active_buttons,
                 )
 
@@ -128,11 +131,8 @@ class QtEventFilter(QObject, EventFilter):
             # TODO: Figure out the buttons
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
-            if not (ray := self._model_canvas.to_world(canvas_pos)):
-                return None
             return WheelEvent(
                 canvas_pos=canvas_pos,
-                world_ray=ray,
                 buttons=self._active_buttons,
                 angle_delta=(qevent.angleDelta().x(), qevent.angleDelta().y()),
             )
@@ -143,6 +143,15 @@ class QtEventFilter(QObject, EventFilter):
                 width=size.width(),
                 height=size.height(),
             )
+
+        elif isinstance(qevent, QKeyEvent):
+            model_key = qkeycombo2modelkey(qevent.keyCombination())
+            part = SimpleKeyBinding.from_int(model_key)
+            keys = KeyBinding(parts=[part])
+            if qevent.type() == QEvent.Type.KeyPress:
+                return KeyPressEvent(key=keys)
+            elif qevent.type() == QEvent.Type.KeyRelease:
+                return KeyReleaseEvent(key=keys)
 
         return None
 

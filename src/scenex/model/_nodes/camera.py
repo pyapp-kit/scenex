@@ -21,6 +21,7 @@ from scenex.utils import projections
 from .node import Node
 
 if TYPE_CHECKING:
+    from scenex import View
     from scenex.app.events import Event
     from scenex.model._transform import Transform
 
@@ -203,7 +204,7 @@ class CameraController(EventedBase):
     """
 
     @abstractmethod
-    def handle_event(self, event: Event, camera: Camera) -> bool:
+    def handle_event(self, event: Event, view: View) -> bool:
         """
         Handle a user interaction event to control the camera.
 
@@ -215,8 +216,8 @@ class CameraController(EventedBase):
         event : Event
             The input event to handle (MouseMoveEvent, MousePressEvent, WheelEvent,
             KeyPressEvent, etc.)
-        camera : Camera
-            The camera node to manipulate.
+        view : View
+            The view containing the camera to manipulate.
 
         Returns
         -------
@@ -292,24 +293,21 @@ class PanZoom(CameraController):
     # Private state for tracking interactions
     _drag_pos: tuple[float, float] | None = PrivateAttr(default=None)
 
-    def handle_event(self, event: Event, camera: Camera) -> bool:
+    def handle_event(self, event: Event, view: View) -> bool:
         """Handle mouse and wheel events to pan/zoom the camera."""
-        from scenex.app.events import (
-            MouseButton,
-            MouseMoveEvent,
-            MousePressEvent,
-            WheelEvent,
-        )
-
-        if not camera.interactive:
+        if not view.camera.interactive:
             return False
 
         handled = False
 
+        if not isinstance(event, MouseEvent):
+            return False
+        if (ray := view.to_ray(event.canvas_pos)) is None:
+            return False
         # Panning involves keeping a particular position underneath the cursor.
         # That position is recorded on a left mouse button press.
         if isinstance(event, MousePressEvent) and MouseButton.LEFT in event.buttons:
-            self._drag_pos = event.world_ray.origin[:2]
+            self._drag_pos = ray.origin[:2]
         # Every time the cursor is moved, until the left mouse button is released,
         # We translate the camera such that the position is back under the cursor
         # (i.e. under the world ray origin)
@@ -318,13 +316,13 @@ class PanZoom(CameraController):
             and MouseButton.LEFT in event.buttons
             and self._drag_pos
         ):
-            new_pos = event.world_ray.origin[:2]
+            new_pos = ray.origin[:2]
             dx = self._drag_pos[0] - new_pos[0]
             if not self.lock_x:
-                camera.transform = camera.transform.translated((dx, 0))
+                view.camera.transform = view.camera.transform.translated((dx, 0))
             dy = self._drag_pos[1] - new_pos[1]
             if not self.lock_y:
-                camera.transform = camera.transform.translated((0, dy))
+                view.camera.transform = view.camera.transform.translated((0, dy))
             handled = True
 
         # Note that while panning adjusts the camera's transform matrix, zooming
@@ -335,7 +333,7 @@ class PanZoom(CameraController):
             if dy:
                 # Step 1: Adjust the projection matrix to zoom in or out.
                 zoom = self._zoom_factor(dy)
-                camera.projection = camera.projection.scaled(
+                view.camera.projection = view.camera.projection.scaled(
                     (1 if self.lock_x else zoom, 1 if self.lock_y else zoom, 1.0)
                 )
 
@@ -344,15 +342,15 @@ class PanZoom(CameraController):
                 # https://github.com/pygfx/pygfx/blob/520af2d5bb2038ec309ef645e4a60d502f00d181/pygfx/controllers/_panzoom.py#L164
 
                 # Find the distance between the world ray and the camera
-                zoom_center = np.asarray(event.world_ray.origin)[:2]
-                camera_center = np.asarray(camera.transform.map((0, 0)))[:2]
+                zoom_center = np.asarray(ray.origin)[:2]
+                camera_center = np.asarray(view.camera.transform.map((0, 0)))[:2]
                 # Compute the world distance before the zoom
                 delta_screen1 = zoom_center - camera_center
                 # Compute the world distance after the zoom
                 delta_screen2 = delta_screen1 * zoom
                 # The pan is the difference between the two
                 pan = (delta_screen2 - delta_screen1) / zoom
-                camera.transform = camera.transform.translated(
+                view.camera.transform = view.camera.transform.translated(
                     (
                         pan[0] if not self.lock_x else 0,
                         pan[1] if not self.lock_y else 0,
@@ -470,14 +468,18 @@ class Orbit(CameraController):
     _last_canvas_pos: tuple[float, float] | None = PrivateAttr(default=None)
     _pan_ray: Any = PrivateAttr(default=None)  # Ray type
 
-    def handle_event(self, event: Event, camera: Camera) -> bool:
+    def handle_event(self, event: Event, view: View) -> bool:
         """Handle mouse and wheel events to orbit the camera."""
-        if not camera.interactive:
+        if not view.camera.interactive:
             return False
 
         handled = False
         center_array = np.asarray(self.center)
 
+        if not isinstance(event, MouseEvent):
+            return False
+        if (ray := view.to_ray(event.canvas_pos)) is None:
+            return False
         # Orbit on mouse move with left button held
         if (
             isinstance(event, MouseMoveEvent)
@@ -505,9 +507,9 @@ class Orbit(CameraController):
             #           that centerpoint.
 
             # Step 0: Gather transform components, relative to camera center
-            orbit_mat = camera.transform.translated(-center_array)
+            orbit_mat = view.camera.transform.translated(-center_array)
             position, _rotation, _scale = la.mat_decompose(orbit_mat.T)
-            camera_right = np.cross(camera.forward, camera.up)
+            camera_right = np.cross(view.camera.forward, view.camera.up)
 
             # Step 1
             d_azimuth = self._last_canvas_pos[0] - event.canvas_pos[0]
@@ -521,8 +523,8 @@ class Orbit(CameraController):
                 d_elevation = 180 - e_bound
 
             # Step 3
-            camera.transform = (
-                camera.transform.translated(-center_array)  # 3a
+            view.camera.transform = (
+                view.camera.transform.translated(-center_array)  # 3a
                 .rotated(d_elevation, camera_right)  # 3b
                 .rotated(d_azimuth, self.polar_axis)  # 3c
                 .translated(center_array)  # 3d
@@ -532,7 +534,7 @@ class Orbit(CameraController):
 
         # Pan on mouse press with right button
         elif isinstance(event, MousePressEvent) and event.buttons == MouseButton.RIGHT:
-            self._pan_ray = event.world_ray
+            self._pan_ray = ray
 
         # Pan on mouse move with right button held
         elif (
@@ -540,15 +542,13 @@ class Orbit(CameraController):
             and event.buttons == MouseButton.RIGHT
             and self._pan_ray is not None
         ):
-            dr = np.linalg.norm(camera.transform.map((0, 0, 0))[:3] - center_array)
+            dr = np.linalg.norm(view.camera.transform.map((0, 0, 0))[:3] - center_array)
             old_center = self._pan_ray.origin[:3] + np.multiply(
                 dr, self._pan_ray.direction
             )
-            new_center = event.world_ray.origin[:3] + np.multiply(
-                dr, event.world_ray.direction
-            )
+            new_center = ray.origin[:3] + np.multiply(dr, ray.direction)
             diff = np.subtract(old_center, new_center)
-            camera.transform = camera.transform.translated(diff)
+            view.camera.transform = view.camera.transform.translated(diff)
             # Update the center
             new_center_array = center_array + diff
             new_center_tuple = (
@@ -562,9 +562,11 @@ class Orbit(CameraController):
         elif isinstance(event, WheelEvent):
             _dx, dy = event.angle_delta
             if dy:
-                dr = camera.transform.map((0, 0, 0))[:3] - center_array
+                dr = view.camera.transform.map((0, 0, 0))[:3] - center_array
                 zoom = self._zoom_factor(dy)
-                camera.transform = camera.transform.translated(dr * (zoom - 1))
+                view.camera.transform = view.camera.transform.translated(
+                    dr * (zoom - 1)
+                )
             handled = True
 
         if isinstance(event, MouseEvent):

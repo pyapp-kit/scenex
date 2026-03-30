@@ -6,10 +6,13 @@ from typing import TYPE_CHECKING, cast
 from unittest.mock import patch
 
 import pytest
+from app_model.types import KeyBinding
 
 import scenex as snx
 from scenex.app import CursorType, GuiFrontend, app, determine_app
 from scenex.app.events import (
+    KeyPressEvent,
+    KeyReleaseEvent,
     MouseButton,
     MouseDoublePressEvent,
     MouseEnterEvent,
@@ -17,7 +20,6 @@ from scenex.app.events import (
     MouseMoveEvent,
     MousePressEvent,
     MouseReleaseEvent,
-    Ray,
 )
 from scenex.model._transform import Transform
 
@@ -52,11 +54,6 @@ def evented_canvas(qtbot: QtBot) -> snx.Canvas:
     return canvas
 
 
-def _validate_ray(maybe_ray: Ray | None) -> Ray:
-    assert maybe_ray is not None
-    return maybe_ray
-
-
 def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     native = cast(
         "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
@@ -70,7 +67,6 @@ def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     mock_handle.assert_called_once_with(
         MousePressEvent(
             canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
         )
     )
@@ -82,7 +78,6 @@ def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     mock_handle.assert_called_once_with(
         MousePressEvent(
             canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.RIGHT,
         )
     )
@@ -100,7 +95,6 @@ def test_mouse_release(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     mock_handle.assert_called_once_with(
         MouseReleaseEvent(
             canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
         ),
     )
@@ -120,7 +114,6 @@ def test_mouse_move(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
         mock_handle.assert_called_once_with(
             MouseMoveEvent(
                 canvas_pos=press_point,
-                world_ray=_validate_ray(evented_canvas.to_world(press_point)),
                 buttons=MouseButton.LEFT | MouseButton.RIGHT,
             ),
         )
@@ -138,14 +131,12 @@ def test_mouse_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     assert mock_handle.call_args_list[0].args == (
         MousePressEvent(
             canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
         ),
     )
     assert mock_handle.call_args_list[1].args == (
         MouseReleaseEvent(
             canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
         ),
     )
@@ -164,7 +155,6 @@ def test_mouse_double_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     assert mock_handle.call_args_list[0].args == (
         MouseDoublePressEvent(
             canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
             buttons=MouseButton.LEFT,
         ),
     )
@@ -210,7 +200,6 @@ def test_mouse_enter(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     mock_handle.assert_called_once_with(
         MouseEnterEvent(
             canvas_pos=enter_point,
-            world_ray=_validate_ray(evented_canvas.to_world(enter_point)),
             buttons=MouseButton.NONE,
         )
     )
@@ -242,6 +231,24 @@ def test_mouse_leave(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
     # Verify MouseLeaveEvent was passed to Canvas.handle
     mock_handle.assert_called_once_with(MouseLeaveEvent())
+
+
+def test_key_event(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    qtbot.add_widget(native)
+
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        qtbot.keyPress(native, Qt.Key.Key_A)
+        qtbot.keyRelease(native, Qt.Key.Key_A)
+
+    assert mock_handle.call_args_list[0].args == (
+        KeyPressEvent(key=KeyBinding.from_str("A")),
+    )
+    assert mock_handle.call_args_list[1].args == (
+        KeyReleaseEvent(key=KeyBinding.from_str("A")),
+    )
 
 
 def test_set_cursor(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:

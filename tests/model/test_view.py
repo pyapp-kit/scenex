@@ -30,13 +30,12 @@ def test_events() -> None:
     canvas_pos = (w, 0)
     world_ray = canvas.to_world(canvas_pos)
     assert world_ray is not None
-    event = MouseMoveEvent(
-        canvas_pos=canvas_pos, world_ray=world_ray, buttons=MouseButton.NONE
-    )
+    event = MouseMoveEvent(canvas_pos=canvas_pos, buttons=MouseButton.NONE)
 
     # And show the view saw the event
     canvas.handle(event)
-    view_filter.assert_called_once_with(event)
+    # NOTE: There will also be a MouseEnterEvent when the mouse enters the view
+    view_filter.assert_called_with(event)
 
 
 def test_filter_returning_None() -> None:
@@ -56,9 +55,7 @@ def test_filter_returning_None() -> None:
     canvas_pos = (0, 0)
     world_ray = canvas.to_world(canvas_pos)
     assert world_ray is not None
-    event = MouseMoveEvent(
-        canvas_pos=canvas_pos, world_ray=world_ray, buttons=MouseButton.NONE
-    )
+    event = MouseMoveEvent(canvas_pos=canvas_pos, buttons=MouseButton.NONE)
 
     handled = view.filter_event(event)
     assert isinstance(handled, bool)

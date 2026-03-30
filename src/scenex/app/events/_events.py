@@ -5,6 +5,8 @@ from enum import IntFlag, auto
 from typing import TYPE_CHECKING, NamedTuple, TypeAlias
 
 if TYPE_CHECKING:
+    from app_model.types import KeyBinding
+
     from scenex import Node, View
 
 
@@ -41,7 +43,6 @@ class MouseButton(IntFlag):
     Check if left button is pressed:
         >>> event = MousePressEvent(
         ...     canvas_pos=(100, 150),
-        ...     world_ray=Ray(origin=(0, 0, 0), direction=(0, 0, -1), source=None),
         ...     buttons=MouseButton.LEFT | MouseButton.RIGHT,
         ... )
         >>> if event.buttons & MouseButton.LEFT:
@@ -202,18 +203,16 @@ class MouseEvent(Event):
     """Base class for all mouse-related interaction events.
 
     MouseEvent provides common fields for all mouse interactions, including the
-    2D canvas position, the 3D world ray for picking, and the state of mouse buttons.
-    Specific mouse event types (move, press, release, etc.) inherit from this base.
+    2D canvas position and the state of mouse buttons. Specific mouse event types
+    (move, press, release, etc.) inherit from this base.
+
+    To obtain the 3D world ray for a mouse event, use ``ViewMouseEvent.view.to_ray()``.
 
     Attributes
     ----------
     canvas_pos : tuple[float, float]
         The (x, y) position of the mouse cursor in canvas pixel coordinates, with
         origin at the top-left corner.
-    world_ray : Ray
-        The 3D ray in world space corresponding to this mouse position, used for
-        3D picking and intersection testing. The ray passes from the camera through
-        the cursor position.
     buttons : MouseButton
         Bit flags indicating which mouse buttons are currently pressed. Use bitwise
         operations to test button states (e.g., buttons & MouseButton.LEFT).
@@ -224,11 +223,10 @@ class MouseEvent(Event):
     MousePressEvent : Mouse button press
     MouseReleaseEvent : Mouse button release
     WheelEvent : Mouse wheel scroll
-    Ray : 3D ray for picking
+    ViewMouseEvent : Mouse event enriched with view and ray access
     """
 
     canvas_pos: tuple[float, float]
-    world_ray: Ray
     buttons: MouseButton
 
 
@@ -342,6 +340,51 @@ class WheelEvent(MouseEvent):
     """
 
     angle_delta: tuple[float, float]
+
+
+@dataclass
+class KeyEvent(Event):
+    """Base class for keyboard events.
+
+    Attributes
+    ----------
+    key : KeyBinding
+        The key (or chord) that was pressed or released.
+        Use ``KeyBinding.from_str("Ctrl+A")`` to construct from a string,
+        or access ``key.part0`` for the first (usually only) key and its
+        modifier state (``ctrl``, ``shift``, ``alt``, ``meta``).
+
+    See Also
+    --------
+    KeyPressEvent : Key press
+    KeyReleaseEvent : Key release
+    """
+
+    key: KeyBinding
+
+
+@dataclass
+class KeyPressEvent(KeyEvent):
+    """Keyboard key press.
+
+    See Also
+    --------
+    KeyReleaseEvent : Key release
+    """
+
+    pass
+
+
+@dataclass
+class KeyReleaseEvent(KeyEvent):
+    """Keyboard key release.
+
+    See Also
+    --------
+    KeyPressEvent : Key press
+    """
+
+    pass
 
 
 class EventFilter:
