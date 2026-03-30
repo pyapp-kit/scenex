@@ -18,7 +18,6 @@ from scenex.app.events import (
     MouseMoveEvent,
     MousePressEvent,
     MouseReleaseEvent,
-    Ray,
     WheelEvent,
 )
 from scenex.model._transform import Transform
@@ -53,11 +52,6 @@ def evented_canvas() -> snx.Canvas:
     return canvas
 
 
-def _validate_ray(maybe_ray: Ray | None) -> Ray:
-    assert maybe_ray is not None
-    return maybe_ray
-
-
 # See jupyter_rfb.events
 NONE = 0
 LEFT_MOUSE = 1
@@ -84,8 +78,7 @@ def test_pointer_down(evented_canvas: snx.Canvas) -> None:
 
     mock_handle.assert_called_once_with(
         MousePressEvent(
-            canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            pos=press_point,
             buttons=MouseButton.LEFT,
         ),
     )
@@ -103,8 +96,7 @@ def test_pointer_down(evented_canvas: snx.Canvas) -> None:
 
     mock_handle.assert_called_once_with(
         MousePressEvent(
-            canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            pos=press_point,
             buttons=MouseButton.RIGHT,
         ),
     )
@@ -128,8 +120,7 @@ def test_pointer_up(evented_canvas: snx.Canvas) -> None:
 
     mock_handle.assert_called_once_with(
         MouseReleaseEvent(
-            canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            pos=press_point,
             buttons=MouseButton.LEFT,
         ),
     )
@@ -153,8 +144,7 @@ def test_pointer_move(evented_canvas: snx.Canvas) -> None:
 
         mock_handle.assert_called_once_with(
             MouseMoveEvent(
-                canvas_pos=press_point,
-                world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+                pos=press_point,
                 buttons=MouseButton.LEFT,
             ),
         )
@@ -171,8 +161,7 @@ def test_pointer_move(evented_canvas: snx.Canvas) -> None:
 
         mock_handle.assert_called_once_with(
             MouseMoveEvent(
-                canvas_pos=press_point,
-                world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+                pos=press_point,
                 buttons=MouseButton.LEFT | MouseButton.RIGHT,
             ),
         )
@@ -196,8 +185,7 @@ def test_mouse_double_click(evented_canvas: snx.Canvas) -> None:
 
     mock_handle.assert_called_once_with(
         MouseDoublePressEvent(
-            canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            pos=press_point,
             buttons=MouseButton.LEFT,
         ),
     )
@@ -222,8 +210,7 @@ def test_wheel(evented_canvas: snx.Canvas) -> None:
 
     mock_handle.assert_called_once_with(
         WheelEvent(
-            canvas_pos=press_point,
-            world_ray=_validate_ray(evented_canvas.to_world(press_point)),
+            pos=press_point,
             buttons=MouseButton.NONE,
             angle_delta=(0, 120),
         ),
@@ -269,8 +256,7 @@ def test_pointer_enter(evented_canvas: snx.Canvas) -> None:
     # Verify MouseEnterEvent was passed to Canvas.handle
     mock_handle.assert_called_once_with(
         MouseEnterEvent(
-            canvas_pos=enter_point,
-            world_ray=_validate_ray(evented_canvas.to_world(enter_point)),
+            pos=enter_point,
             buttons=MouseButton.NONE,
         )
     )
