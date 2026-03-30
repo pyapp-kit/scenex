@@ -66,7 +66,7 @@ def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
     mock_handle.assert_called_once_with(
         MousePressEvent(
-            canvas_pos=press_point,
+            pos=press_point,
             buttons=MouseButton.LEFT,
         )
     )
@@ -77,7 +77,7 @@ def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
     mock_handle.assert_called_once_with(
         MousePressEvent(
-            canvas_pos=press_point,
+            pos=press_point,
             buttons=MouseButton.RIGHT,
         )
     )
@@ -94,7 +94,7 @@ def test_mouse_release(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
     mock_handle.assert_called_once_with(
         MouseReleaseEvent(
-            canvas_pos=press_point,
+            pos=press_point,
             buttons=MouseButton.LEFT,
         ),
     )
@@ -113,7 +113,7 @@ def test_mouse_move(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
         qtbot.mouseMove(native, pos=QPoint(*press_point))
         mock_handle.assert_called_once_with(
             MouseMoveEvent(
-                canvas_pos=press_point,
+                pos=press_point,
                 buttons=MouseButton.LEFT | MouseButton.RIGHT,
             ),
         )
@@ -130,13 +130,13 @@ def test_mouse_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
     assert mock_handle.call_args_list[0].args == (
         MousePressEvent(
-            canvas_pos=press_point,
+            pos=press_point,
             buttons=MouseButton.LEFT,
         ),
     )
     assert mock_handle.call_args_list[1].args == (
         MouseReleaseEvent(
-            canvas_pos=press_point,
+            pos=press_point,
             buttons=MouseButton.LEFT,
         ),
     )
@@ -154,7 +154,7 @@ def test_mouse_double_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
     assert mock_handle.call_args_list[0].args == (
         MouseDoublePressEvent(
-            canvas_pos=press_point,
+            pos=press_point,
             buttons=MouseButton.LEFT,
         ),
     )
@@ -199,7 +199,7 @@ def test_mouse_enter(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     # Verify MouseEnterEvent was passed to Canvas.handle
     mock_handle.assert_called_once_with(
         MouseEnterEvent(
-            canvas_pos=enter_point,
+            pos=enter_point,
             buttons=MouseButton.NONE,
         )
     )

@@ -220,7 +220,7 @@ class Canvas(EventedBase):
             return True
 
         if isinstance(event, MouseEvent):
-            current_view = self._containing_view(event.canvas_pos)
+            current_view = self._containing_view(event.pos)
 
             # Handle view-transition enter/leave events.
             # TODO: Add a test for this once multiple views are better supported
@@ -229,7 +229,7 @@ class Canvas(EventedBase):
                     self._last_mouse_view.filter_event(MouseLeaveEvent())
                 if current_view is not None:
                     enter = MouseEnterEvent(
-                        canvas_pos=event.canvas_pos,
+                        pos=event.pos,
                         buttons=event.buttons,
                     )
                     current_view.filter_event(enter)

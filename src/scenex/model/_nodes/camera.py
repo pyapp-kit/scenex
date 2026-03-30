@@ -302,7 +302,7 @@ class PanZoom(CameraController):
 
         if not isinstance(event, MouseEvent):
             return False
-        if (ray := view.to_ray(event.canvas_pos)) is None:
+        if (ray := view.to_ray(event.pos)) is None:
             return False
         # Panning involves keeping a particular position underneath the cursor.
         # That position is recorded on a left mouse button press.
@@ -478,7 +478,7 @@ class Orbit(CameraController):
 
         if not isinstance(event, MouseEvent):
             return False
-        if (ray := view.to_ray(event.canvas_pos)) is None:
+        if (ray := view.to_ray(event.pos)) is None:
             return False
         # Orbit on mouse move with left button held
         if (
@@ -512,8 +512,8 @@ class Orbit(CameraController):
             camera_right = np.cross(view.camera.forward, view.camera.up)
 
             # Step 1
-            d_azimuth = self._last_canvas_pos[0] - event.canvas_pos[0]
-            d_elevation = self._last_canvas_pos[1] - event.canvas_pos[1]
+            d_azimuth = self._last_canvas_pos[0] - event.pos[0]
+            d_elevation = self._last_canvas_pos[1] - event.pos[1]
 
             # Step 2
             e_bound = float(la.vec_angle(position, (0, 0, 1)) * 180 / math.pi)
@@ -570,7 +570,7 @@ class Orbit(CameraController):
             handled = True
 
         if isinstance(event, MouseEvent):
-            self._last_canvas_pos = event.canvas_pos
+            self._last_canvas_pos = event.pos
         return handled
 
     def _zoom_factor(self, delta: float) -> float:

@@ -42,7 +42,7 @@ class MouseButton(IntFlag):
     --------
     Check if left button is pressed:
         >>> event = MousePressEvent(
-        ...     canvas_pos=(100, 150),
+        ...     pos=(100, 150),
         ...     buttons=MouseButton.LEFT | MouseButton.RIGHT,
         ... )
         >>> if event.buttons & MouseButton.LEFT:
@@ -180,18 +180,18 @@ class Ray(NamedTuple):
 
 @dataclass
 class ResizeEvent(Event):
-    """Canvas window resize event.
+    """Window resize event.
 
-    Fired when the canvas window changes dimensions, whether from user interaction
+    Fired when a window changes dimensions, whether from user interaction
     (dragging window edges), programmatic resizing, or window manager actions. This
-    event allows views and other components to adapt to new canvas dimensions.
+    event allows views and other components to adapt to new window dimensions.
 
     Attributes
     ----------
     width : int
-        The new width of the canvas in pixels.
+        The new width of the window in pixels.
     height : int
-        The new height of the canvas in pixels.
+        The new height of the window in pixels.
     """
 
     width: int  # in pixels
@@ -203,15 +203,15 @@ class MouseEvent(Event):
     """Base class for all mouse-related interaction events.
 
     MouseEvent provides common fields for all mouse interactions, including the
-    2D canvas position and the state of mouse buttons. Specific mouse event types
+    2D position and the state of mouse buttons. Specific mouse event types
     (move, press, release, etc.) inherit from this base.
 
     To obtain the 3D world ray for a mouse event, use ``ViewMouseEvent.view.to_ray()``.
 
     Attributes
     ----------
-    canvas_pos : tuple[float, float]
-        The (x, y) position of the mouse cursor in canvas pixel coordinates, with
+    pos : tuple[float, float]
+        The (x, y) position of the mouse cursor in pixel coordinates, with
         origin at the top-left corner.
     buttons : MouseButton
         Bit flags indicating which mouse buttons are currently pressed. Use bitwise
@@ -226,7 +226,7 @@ class MouseEvent(Event):
     ViewMouseEvent : Mouse event enriched with view and ray access
     """
 
-    canvas_pos: tuple[float, float]
+    pos: tuple[float, float]
     buttons: MouseButton
 
 

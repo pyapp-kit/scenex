@@ -92,13 +92,13 @@ def test_panzoom_pan(ortho_view: snx.View) -> None:
     interaction = ortho_view.camera.controller = snx.PanZoom()
     # Simulate mouse press at canvas (0, 0), world (-50, 50)
     press_event = MousePressEvent(
-        canvas_pos=(0, 0),
+        pos=(0, 0),
         buttons=MouseButton.LEFT,
     )
     interaction.handle_event(press_event, ortho_view)
     # Simulate mouse move to canvas (5, 10)
     move_event = MouseMoveEvent(
-        canvas_pos=(5, 10),
+        pos=(5, 10),
         buttons=MouseButton.LEFT,
     )
     interaction.handle_event(move_event, ortho_view)
@@ -113,7 +113,7 @@ def test_panzoom_zoom(ortho_view: snx.View) -> None:
     interaction = ortho_view.camera.controller = snx.PanZoom()
     # Simulate wheel event
     wheel_event = WheelEvent(
-        canvas_pos=(0, 0),
+        pos=(0, 0),
         buttons=MouseButton.NONE,
         angle_delta=(0, 120),
     )
@@ -147,14 +147,14 @@ def test_orbit_orbiting() -> None:
     # Simulate mouse press
     click_pos = (w / 2, h / 2)
     press_event = MousePressEvent(
-        canvas_pos=click_pos,
+        pos=click_pos,
         buttons=MouseButton.LEFT,
     )
     interaction.handle_event(press_event, view)
     # Simulate mouse move (orbit) of one horizontal pixel and one vertical pixel
     move_pos = (click_pos[0] + 1, click_pos[1] + 1)
     move_event = MouseMoveEvent(
-        canvas_pos=move_pos,
+        pos=move_pos,
         buttons=MouseButton.LEFT,
     )
     interaction.handle_event(move_event, view)
@@ -187,7 +187,7 @@ def test_orbit_zoom() -> None:
     tform_before = cam.transform
     # Simulate wheel event
     wheel_event = WheelEvent(
-        canvas_pos=(0, 0),
+        pos=(0, 0),
         buttons=MouseButton.NONE,
         angle_delta=(0, 120),
     )
@@ -199,7 +199,7 @@ def test_orbit_zoom() -> None:
 
     # Simulate wheel event in other direction
     wheel_event = WheelEvent(
-        canvas_pos=(0, 0),
+        pos=(0, 0),
         buttons=MouseButton.NONE,
         angle_delta=(0, -120),
     )
@@ -233,7 +233,7 @@ def test_orbit_pan() -> None:
     world_ray_before = canvas.to_world(click_pos)
     assert world_ray_before is not None
     press_event = MousePressEvent(
-        canvas_pos=click_pos,
+        pos=click_pos,
         buttons=MouseButton.RIGHT,
     )
     interaction.handle_event(press_event, view)
@@ -242,7 +242,7 @@ def test_orbit_pan() -> None:
     world_ray_after = canvas.to_world(click_pos)
     assert world_ray_after is not None
     move_event = MouseMoveEvent(
-        canvas_pos=click_pos,
+        pos=click_pos,
         buttons=MouseButton.RIGHT,
     )
     interaction.handle_event(move_event, view)

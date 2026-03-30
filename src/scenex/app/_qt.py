@@ -97,30 +97,30 @@ class QtEventFilter(QObject, EventFilter):
             btn = self.mouse_btn(qevent.button())
             if etype == QEvent.Type.MouseMove:
                 return MouseMoveEvent(
-                    canvas_pos=canvas_pos,
+                    pos=canvas_pos,
                     buttons=self._active_buttons,
                 )
             elif etype == QEvent.Type.MouseButtonDblClick:
                 self._active_buttons |= btn
                 return MouseDoublePressEvent(
-                    canvas_pos=canvas_pos,
+                    pos=canvas_pos,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonPress:
                 self._active_buttons |= btn
                 return MousePressEvent(
-                    canvas_pos=canvas_pos,
+                    pos=canvas_pos,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonRelease:
                 self._active_buttons &= ~btn
                 return MouseReleaseEvent(
-                    canvas_pos=canvas_pos,
+                    pos=canvas_pos,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.Enter:
                 return MouseEnterEvent(
-                    canvas_pos=canvas_pos,
+                    pos=canvas_pos,
                     buttons=self._active_buttons,
                 )
 
@@ -132,7 +132,7 @@ class QtEventFilter(QObject, EventFilter):
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
             return WheelEvent(
-                canvas_pos=canvas_pos,
+                pos=canvas_pos,
                 buttons=self._active_buttons,
                 angle_delta=(qevent.angleDelta().x(), qevent.angleDelta().y()),
             )

@@ -54,7 +54,7 @@ class JupyterEventFilter(EventFilter):
                     canvas_pos = (ev["x"], ev["y"])
                     filter._model_canvas.handle(
                         MouseMoveEvent(
-                            canvas_pos=canvas_pos,
+                            pos=canvas_pos,
                             buttons=filter._active_button,
                         )
                     )
@@ -64,7 +64,7 @@ class JupyterEventFilter(EventFilter):
                     filter._active_button |= btn
                     filter._model_canvas.handle(
                         MousePressEvent(
-                            canvas_pos=canvas_pos,
+                            pos=canvas_pos,
                             buttons=btn,
                         )
                     )
@@ -77,7 +77,7 @@ class JupyterEventFilter(EventFilter):
                     # https://github.com/vispy/jupyter_rfb/blob/62831dd5a87bc19b4fd5f921d802ed21141e61ec/js/lib/widget.js#L270
                     filter._model_canvas.handle(
                         MouseDoublePressEvent(
-                            canvas_pos=canvas_pos,
+                            pos=canvas_pos,
                             buttons=btn,
                         )
                     )
@@ -87,7 +87,7 @@ class JupyterEventFilter(EventFilter):
                     filter._active_button &= ~btn
                     filter._model_canvas.handle(
                         MouseReleaseEvent(
-                            canvas_pos=canvas_pos,
+                            pos=canvas_pos,
                             buttons=btn,
                         )
                     )
@@ -101,7 +101,7 @@ class JupyterEventFilter(EventFilter):
                             filter._active_button |= JupyterEventFilter.mouse_btn(b)
                     filter._model_canvas.handle(
                         MouseEnterEvent(
-                            canvas_pos=canvas_pos,
+                            pos=canvas_pos,
                             buttons=filter._active_button,
                         )
                     )
@@ -111,7 +111,7 @@ class JupyterEventFilter(EventFilter):
                     canvas_pos = (ev["x"], ev["y"])
                     filter._model_canvas.handle(
                         WheelEvent(
-                            canvas_pos=canvas_pos,
+                            pos=canvas_pos,
                             buttons=filter._active_button,
                             # Note that Jupyter_rfb uses a different y convention
                             angle_delta=(ev["dx"], -ev["dy"]),

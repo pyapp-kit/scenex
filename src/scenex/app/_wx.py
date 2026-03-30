@@ -69,7 +69,7 @@ class WxEventFilter(EventFilter):
         pos = event.GetPosition()
         self._model_canvas.handle(
             MouseEnterEvent(
-                canvas_pos=(pos.x, pos.y),
+                pos=(pos.x, pos.y),
                 buttons=self._active_button,
             )
         )
@@ -88,9 +88,7 @@ class WxEventFilter(EventFilter):
         btn = self._map_button(event)
         self._active_button |= btn
         pos = event.GetPosition()
-        self._model_canvas.handle(
-            MousePressEvent(canvas_pos=(pos.x, pos.y), buttons=btn)
-        )
+        self._model_canvas.handle(MousePressEvent(pos=(pos.x, pos.y), buttons=btn))
         event.Skip()
 
     def _on_mouse_up(self, event: wx.MouseEvent) -> None:
@@ -99,7 +97,7 @@ class WxEventFilter(EventFilter):
         pos = event.GetPosition()
         self._model_canvas.handle(
             MouseReleaseEvent(
-                canvas_pos=(pos.x, pos.y),
+                pos=(pos.x, pos.y),
                 buttons=btn,
             )
         )
@@ -109,7 +107,7 @@ class WxEventFilter(EventFilter):
         pos = event.GetPosition()
         self._model_canvas.handle(
             MouseMoveEvent(
-                canvas_pos=(pos.x, pos.y),
+                pos=(pos.x, pos.y),
                 buttons=self._active_button,
             )
         )
@@ -126,7 +124,7 @@ class WxEventFilter(EventFilter):
 
         self._model_canvas.handle(
             WheelEvent(
-                canvas_pos=(pos.x, pos.y),
+                pos=(pos.x, pos.y),
                 buttons=self._active_button,
                 angle_delta=angle_delta,
             )

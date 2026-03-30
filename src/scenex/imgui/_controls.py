@@ -162,7 +162,7 @@ def add_imgui_controls(view: View) -> None:
             # It may capture more events (notably, keypresses).
             # We will have to intercept scenex events here if that occurs
             if isinstance(event, MouseMoveEvent):
-                move_dict = {"x": event.canvas_pos[0], "y": event.canvas_pos[1]}
+                move_dict = {"x": event.pos[0], "y": event.pos[1]}
                 imgui_renderer._on_mouse_move(move_dict)
                 if move_dict.get("stop_propagation", False):
                     return True
