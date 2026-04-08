@@ -38,7 +38,8 @@ dependencies = ["cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10",
 jupyter = [
     "ipywidgets >=8.0.5",
     "jupyter >=1.1",
-    "jupyter_rfb >=0.3.3",
+    # TODO: Enforce a minimum bound once >1.0.2 released
+    "jupyter_rfb >=0.3.3, <= 0.5.4",
     # Note that this dep is only needed for Vispy, something like simplejpeg would work fine if just pygfx.
     "glfw",
     # Otherwise jupyter_rfb will use PNG, which is apparently slower
