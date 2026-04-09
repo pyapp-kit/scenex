@@ -27,18 +27,21 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger("scenex.adaptors.vispy")
 
-# Certain numpy data types are not supported by vispy. We downcast them to another type
+# Certain numpy data types are not supported by vispy. We cast them to another type
 # defined in this dict.
 # See the following link for supported data types (subject to change):
 # https://github.com/vispy/vispy/blob/0a6da357f091bc3966abee805ff01914105e0979/vispy/visuals/_scalable_textures.py#L370
-DOWNCASTS: dict[np.dtype, np.dtype] = {
+CASTS: dict[np.dtype, np.dtype] = {
     # VisPy only supports 32-bit floats
     np.dtype("float64"): np.dtype("float32"),
-    # Vispy only supports <=uint16, and no signed options
-    np.dtype("int32"): np.dtype("uint16"),
-    np.dtype("int64"): np.dtype("uint16"),
-    np.dtype("uint32"): np.dtype("uint16"),
-    np.dtype("uint64"): np.dtype("uint16"),
+    # Vispy only supports <=uint16, and no signed options. Given the options of
+    # downcasting to uint16 (causing clipping/wrap around) or float32 (which can
+    # represent the full range of int32/64) we choose the latter. We may lose some
+    # precision for large integers, but this is likely less bad than downcasting
+    np.dtype("int32"): np.dtype("float32"),
+    np.dtype("int64"): np.dtype("float32"),
+    np.dtype("uint32"): np.dtype("float32"),
+    np.dtype("uint64"): np.dtype("float32"),
 }
 
 
@@ -171,10 +174,10 @@ def _coerce_data(data: ArrayLike, n_spatial: Literal[2, 3]) -> np.ndarray:
     buffer must ``.copy()`` it.
     """
     data = np.asarray(data)
-    if data.dtype in DOWNCASTS:
-        cast_to = DOWNCASTS[data.dtype]
+    if data.dtype in CASTS:
+        cast_to = CASTS[data.dtype]
         logger.warning(
-            "Downcasting %s data from %s to %s for vispy compatibility",
+            "Casting %s data from %s to %s for vispy compatibility",
             "image" if n_spatial == 2 else "volume",
             data.dtype.name,
             cast_to.name,

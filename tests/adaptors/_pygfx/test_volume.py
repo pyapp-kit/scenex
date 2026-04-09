@@ -82,14 +82,14 @@ def test_blending(volume: snx.Volume, adaptor: adaptors.Volume) -> None:
     ("src_dtype", "expected_dtype"),
     [
         (np.float64, np.float32),
-        (np.int64, np.int32),
-        (np.uint64, np.uint32),
+        (np.int64, np.float32),
+        (np.uint64, np.float32),
     ],
 )
-def test_downcasting(
+def test_casting(
     src_dtype: np.dtype, expected_dtype: np.dtype, caplog: pytest.LogCaptureFixture
 ) -> None:
-    """Pygfx does not allow 64-bit data. This test ensures 64-bit data is downcasted."""
+    """Pygfx does not allow several dtypes. This test ensures those are casted."""
     rng = np.random.default_rng()
     if np.issubdtype(src_dtype, np.floating):
         data = rng.random((3, 100, 100), dtype=src_dtype)

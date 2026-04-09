@@ -19,12 +19,15 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger("scenex.adaptors.pygfx")
 
-# Certain numpy data types are not supported by pygfx. We downcast them to another type
-# defined in this dict.
-DOWNCASTS = {
+# Certain numpy data types are not supported by pygfx. We downthem to another type
+# defined in this dict. Given the options of downcasting to uint16 (causing
+# clipping/wrap around) or float32 (which can represent the full range of int32/64) we
+# choose the latter. We may lose some precision for large integers, but this is likely
+# less bad than downcasting
+CASTS = {
     np.dtype("float64"): np.dtype("float32"),
-    np.dtype("int64"): np.dtype("int32"),
-    np.dtype("uint64"): np.dtype("uint32"),
+    np.dtype("int64"): np.dtype("float32"),
+    np.dtype("uint64"): np.dtype("float32"),
 }
 
 
@@ -171,10 +174,10 @@ def _coerce_data(data: np.ndarray, n_spatial: Literal[2, 3]) -> np.ndarray:
     Returns a (possibly strided) view — callers that need to own the
     buffer must ``.copy()`` it.
     """
-    if data.dtype in DOWNCASTS:
-        cast_to = DOWNCASTS[data.dtype]
+    if data.dtype in CASTS:
+        cast_to = CASTS[data.dtype]
         logger.warning(
-            "Downcasting %s data from %s to %s for pygfx compatibility",
+            "Casting %s data from %s to %s for pygfx compatibility",
             "image" if n_spatial == 2 else "volume",
             data.dtype.name,
             cast_to.name,

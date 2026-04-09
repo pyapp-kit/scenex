@@ -100,14 +100,14 @@ def test_oversized_texture() -> None:
     ("src_dtype", "expected_dtype"),
     [
         (np.float64, np.float32),
-        (np.int32, np.uint16),
-        (np.int64, np.uint16),
-        (np.uint32, np.uint16),
-        (np.uint64, np.uint16),
+        (np.int32, np.float32),
+        (np.int64, np.float32),
+        (np.uint32, np.float32),
+        (np.uint64, np.float32),
     ],
 )
-def test_downcasting(src_dtype: np.dtype, expected_dtype: np.dtype) -> None:
-    """Vispy does not allow 64-bit data. This test ensures 64-bit data is downcasted."""
+def test_casting(src_dtype: np.dtype, expected_dtype: np.dtype) -> None:
+    """Vispy does not allow several dtypes. This test ensures those are casted."""
     rng = np.random.default_rng()
     if np.issubdtype(src_dtype, np.floating):
         data = rng.random((100, 100), dtype=src_dtype)
