@@ -68,21 +68,25 @@ class Image(Node, ImageAdaptor):
     def _snx_set_transform(self, arg: model.Transform) -> None:
         if not hasattr(self, "_pygfx_node"):
             return  # _snx_set_data hasn't run yet to set initial factors
-        x_fac = self._model.data.shape[0] / self._texture.size[1]
-        y_fac = self._model.data.shape[1] / self._texture.size[0]
+        # Compensate for downscaled textures
+        # NOTE that image axes are YX in model space
+        # but the pygfx Texture shape will be (X, Y, 1).
+        y_fac = self._model.data.shape[0] / self._texture.size[1]
+        x_fac = self._model.data.shape[1] / self._texture.size[0]
         self._pygfx_node.local.matrix = (
-            arg.scaled((y_fac, x_fac, 1))
-            .translated((0.5 * (y_fac - 1), 0.5 * (x_fac - 1), 0))
+            arg.scaled((x_fac, y_fac, 1))
+            .translated((0.5 * (x_fac - 1), 0.5 * (y_fac - 1), 0))
             .root.T
         )
 
     def _snx_set_data(self, data: ArrayLike) -> None:
-        arr = np.asanyarray(data)
-        processed = _coerce_data(arr, n_spatial=2)
+        # Coerce the data to something that can be displayed by pygfx
+        processed = _coerce_data(np.asanyarray(data), n_spatial=2)
 
+        # If we have a texture already, see whether we can reuse it:
         current: pygfx.Texture | None = getattr(self, "_texture", None)
         if current is not None and _can_reuse(current, processed):
-            # Reuse the existing texture: overwrite its buffer and mark dirty.
+            # To reuse, we overwrite its buffer and mark dirty.
             current.data[:] = processed  # pyright: ignore
             current.update_full()
         else:
@@ -98,9 +102,9 @@ class Image(Node, ImageAdaptor):
                 if current is not None and current.data is not None
                 else None
             )
-            if prev_ndim != arr.ndim:
+            if prev_ndim != processed.ndim:
                 self._material.map = (
-                    None if arr.ndim == 3 else self._model.cmap.to_pygfx()
+                    None if processed.ndim == 3 else self._model.cmap.to_pygfx()
                 )
 
         # Keep transform compensation in sync whenever data or factors change.
@@ -109,7 +113,11 @@ class Image(Node, ImageAdaptor):
 
 def _texture_dim(data: np.ndarray) -> int:
     """Spatial dimensionality of *image data* for a pygfx Texture."""
-    return data.ndim - 1 if data.ndim > 2 and data.shape[-1] <= 4 else data.ndim
+    if data.ndim > 2 and data.shape[-1] in (3, 4):
+        # RGB or RGBA image - treat as 2D with a channel dimension, not 3D
+        return 2
+    # Otherwise the number of spatial dimensions is just the number of dimensions
+    return data.ndim
 
 
 @lru_cache(maxsize=1)
@@ -120,8 +128,9 @@ def _get_max_texture_sizes() -> tuple[int | None, int | None]:
 
         adapter = wgpu.gpu.request_adapter_sync()
         limits = adapter.limits
-        return limits.get("max-texture-dimension-2d"), limits.get(
-            "max-texture-dimension-3d"
+        return (
+            limits.get("max-texture-dimension-2d"),
+            limits.get("max-texture-dimension-3d"),
         )
     except Exception:
         return None, None

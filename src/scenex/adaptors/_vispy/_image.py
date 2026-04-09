@@ -60,9 +60,11 @@ class Image(Node, ImageAdaptor):
     def _snx_set_transform(self, arg: Transform) -> None:
         # Offset accounting for vispy's pixel centers at half-integer locations
         offset = arg.map([-0.5, -0.5, 0, 0])
-        x_fac = self._model.data.shape[0] / self._vispy_node._data.shape[0]  # pyright: ignore
-        y_fac = self._model.data.shape[1] / self._vispy_node._data.shape[1]  # pyright: ignore
-        super()._snx_set_transform(arg.scaled((y_fac, x_fac, 1)).translated(offset))
+        # Compensate for downscaled textures
+        # Note that image axes are YX
+        y_fac = self._model.data.shape[0] / self._vispy_node._data.shape[0]  # pyright: ignore
+        x_fac = self._model.data.shape[1] / self._vispy_node._data.shape[1]  # pyright: ignore
+        super()._snx_set_transform(arg.scaled((x_fac, y_fac, 1)).translated(offset))
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
         self._vispy_node.cmap = arg.to_vispy()
