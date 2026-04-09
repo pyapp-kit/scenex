@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-import numpy as np
 import vispy.scene
 import vispy.visuals
 
 from scenex.adaptors._base import VolumeAdaptor
+from scenex.adaptors._vispy._image import _coerce_data
 
 from ._node import Node
 
@@ -24,15 +24,21 @@ class Volume(Node, VolumeAdaptor):
     _vispy_node: vispy.visuals.VolumeVisual
 
     def __init__(self, volume: model.Volume, **backend_kwargs: Any) -> None:
+        self._model = volume
         # TODO: What if volume.data is None?
         self._vispy_node = vispy.scene.Volume(
-            volume.data, texture_format="auto", **backend_kwargs
+            _coerce_data(volume.data, n_spatial=3),
+            texture_format="auto",
+            **backend_kwargs,
         )
 
     def _snx_set_transform(self, arg: Transform) -> None:
         # Offset accounting for vispy's pixel centers at half-integer locations
         offset = arg.map([-0.5, -0.5, -0.5, 0])
-        super()._snx_set_transform(arg.translated(offset))
+        x_fac = self._model.data.shape[2] / self._vispy_node._texture.shape[2]  # pyright: ignore
+        y_fac = self._model.data.shape[1] / self._vispy_node._texture.shape[1]  # pyright: ignore
+        z_fac = self._model.data.shape[0] / self._vispy_node._texture.shape[0]  # pyright: ignore
+        super()._snx_set_transform(arg.scaled((x_fac, y_fac, z_fac)).translated(offset))
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
         self._vispy_node.cmap = arg.to_vispy()
@@ -47,7 +53,8 @@ class Volume(Node, VolumeAdaptor):
         self._vispy_node.interpolation = arg
 
     def _snx_set_data(self, data: ArrayLike) -> None:
-        self._vispy_node.set_data(np.asarray(data))
+        processed = _coerce_data(data, n_spatial=3)
+        self._vispy_node.set_data(processed)
 
     def _snx_set_render_mode(
         self,
