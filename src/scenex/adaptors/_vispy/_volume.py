@@ -35,6 +35,8 @@ class Volume(Node, VolumeAdaptor):
     def _snx_set_transform(self, arg: Transform) -> None:
         # Offset accounting for vispy's pixel centers at half-integer locations
         offset = arg.map([-0.5, -0.5, -0.5, 0])
+        # Compensate for downscaled textures
+        # Note that volume axes are ZYX
         x_fac = self._model.data.shape[2] / self._vispy_node._texture.shape[2]  # pyright: ignore
         y_fac = self._model.data.shape[1] / self._vispy_node._texture.shape[1]  # pyright: ignore
         z_fac = self._model.data.shape[0] / self._vispy_node._texture.shape[0]  # pyright: ignore
@@ -53,6 +55,7 @@ class Volume(Node, VolumeAdaptor):
         self._vispy_node.interpolation = arg
 
     def _snx_set_data(self, data: ArrayLike) -> None:
+        # Coerce the data to something that can be displayed by vispy
         processed = _coerce_data(data, n_spatial=3)
         self._vispy_node.set_data(processed)
 
