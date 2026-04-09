@@ -49,13 +49,14 @@ class Image(Node, ImageAdaptor):
 
     def __init__(self, image: model.Image, **backend_kwargs: Any) -> None:
         self._model = image
+        # Initialize the vispy node with dummy data
         self._vispy_node = vispy.scene.Image(
-            data=_coerce_data(image.data, n_spatial=2),
+            data=np.zeros((1, 1), dtype=np.uint8),
             texture_format="auto",
             **backend_kwargs,
         )
+        # Then set the data through the setter to ensure all processing is applied
         self._snx_set_data(image.data)
-        self._vispy_node.visible = True
 
     def _snx_set_transform(self, arg: Transform) -> None:
         # Offset accounting for vispy's pixel centers at half-integer locations

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+import numpy as np
 import vispy.scene
 import vispy.visuals
 
@@ -25,12 +26,14 @@ class Volume(Node, VolumeAdaptor):
 
     def __init__(self, volume: model.Volume, **backend_kwargs: Any) -> None:
         self._model = volume
-        # TODO: What if volume.data is None?
+        # Initialize the vispy node with dummy data
         self._vispy_node = vispy.scene.Volume(
-            _coerce_data(volume.data, n_spatial=3),
+            vol=np.zeros((1, 1, 1), dtype=np.uint8),
             texture_format="auto",
             **backend_kwargs,
         )
+        # Then set the data through the setter to ensure all processing is applied
+        self._snx_set_data(volume.data)
 
     def _snx_set_transform(self, arg: Transform) -> None:
         # Offset accounting for vispy's pixel centers at half-integer locations
