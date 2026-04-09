@@ -17,8 +17,9 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def image() -> snx.Image:
+    # Width (x-axis) is 80 and Height (y-axis) is 100
     return snx.Image(
-        data=np.random.randint(0, 255, (100, 100), dtype=np.uint8),
+        data=np.random.randint(0, 255, (100, 80), dtype=np.uint8),
     )
 
 
@@ -32,35 +33,35 @@ def adaptor(image: snx.Image) -> adaptors.Image:
 def test_transform(image: snx.Image, adaptor: adaptors.Image) -> None:
     # No Transform
     image.transform = Transform()
-    exp_bounds = np.asarray([[-0.5, -0.5, 0], [99.5, 99.5, 0]])
+    exp_bounds = np.asarray([[-0.5, -0.5, 0], [79.5, 99.5, 0]])
     bb = _bounds(adaptor._vispy_node)
     assert bb is not None
     assert np.array_equal(exp_bounds, bb)
 
     # Just Translation
     image.transform = Transform().translated((-10, -10))
-    exp_bounds = np.asarray([[-10.5, -10.5, 0], [89.5, 89.5, 0]])
+    exp_bounds = np.asarray([[-10.5, -10.5, 0], [69.5, 89.5, 0]])
     bb = _bounds(adaptor._vispy_node)
     assert bb is not None
     assert np.array_equal(exp_bounds, bb)
 
     # Just Scaling
     image.transform = Transform().scaled((0.5, 0.5, 0.5))
-    exp_bounds = np.asarray([[-0.25, -0.25, 0], [49.75, 49.75, 0]])
+    exp_bounds = np.asarray([[-0.25, -0.25, 0], [39.75, 49.75, 0]])
     bb = _bounds(adaptor._vispy_node)
     assert bb is not None
     assert np.array_equal(exp_bounds, bb)
 
     # Scaling then Translation
     image.transform = Transform().scaled((0.5, 0.5, 0.5)).translated((-10, -10))
-    exp_bounds = np.asarray([[-10.25, -10.25, 0], [39.75, 39.75, 0]])
+    exp_bounds = np.asarray([[-10.25, -10.25, 0], [29.75, 39.75, 0]])
     bb = _bounds(adaptor._vispy_node)
     assert bb is not None
     assert np.array_equal(exp_bounds, bb)
 
     # Translation then Scaling
     image.transform = Transform().translated((-10, -10)).scaled((0.5, 0.5, 0.5))
-    exp_bounds = np.asarray([[-5.25, -5.25, 0], [44.75, 44.75, 0]])
+    exp_bounds = np.asarray([[-5.25, -5.25, 0], [34.75, 44.75, 0]])
     bb = _bounds(adaptor._vispy_node)
     assert bb is not None
     assert np.array_equal(exp_bounds, bb)
