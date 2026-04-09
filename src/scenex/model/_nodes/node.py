@@ -275,7 +275,7 @@ class Node(EventedBase):
                 new_parent._children.append(cast("AnyNode", node))
                 new_parent.child_added.emit(node)
             if old_parent is not None and node in old_parent._children:
-                old_parent._children.remove(cast("AnyNode", node))
+                old_parent._children.remove(node)
                 old_parent.child_removed.emit(node)
 
     @model_serializer(mode="wrap")

@@ -38,7 +38,8 @@ dependencies = ["app-model>=0.3", "cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1",
 jupyter = [
     "ipywidgets >=8.0.5",
     "jupyter >=1.1",
-    "jupyter_rfb >=0.3.3",
+    # TODO: Enforce a minimum bound once >1.0.2 released
+    "jupyter_rfb >=0.3.3, <= 0.5.4",
     # Note that this dep is only needed for Vispy, something like simplejpeg would work fine if just pygfx.
     "glfw",
     # Otherwise jupyter_rfb will use PNG, which is apparently slower
@@ -165,7 +166,7 @@ module = ["rendercanvas.*"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
-module = ["pygfx.*", "vispy.*", "wgpu.*", "glfw.*", "pylinalg.*", "qtpy.*", "ipywidgets.*", "IPython.*", "jupyter", "jupyter_rfb.*", "wx.*", "pytestqt.*"]
+module = ["pygfx.*", "vispy.*", "wgpu.*", "pylinalg.*", "qtpy.*", "ipywidgets.*", "IPython.*", "jupyter", "jupyter_rfb.*", "wx.*", "pytestqt.*"]
 ignore_missing_imports = true
 
 [tool.pydantic-mypy]

@@ -7,6 +7,7 @@ import vispy.scene
 import vispy.visuals
 
 from scenex.adaptors._base import VolumeAdaptor
+from scenex.adaptors._vispy._image import _coerce_data
 
 from ._node import Node
 
@@ -24,15 +25,25 @@ class Volume(Node, VolumeAdaptor):
     _vispy_node: vispy.visuals.VolumeVisual
 
     def __init__(self, volume: model.Volume, **backend_kwargs: Any) -> None:
-        # TODO: What if volume.data is None?
+        self._model = volume
+        # Initialize the vispy node with dummy data
         self._vispy_node = vispy.scene.Volume(
-            volume.data, texture_format="auto", **backend_kwargs
+            vol=np.zeros((1, 1, 1), dtype=np.uint8),
+            texture_format="auto",
+            **backend_kwargs,
         )
+        # Then set the data through the setter to ensure all processing is applied
+        self._snx_set_data(volume.data)
 
     def _snx_set_transform(self, arg: Transform) -> None:
         # Offset accounting for vispy's pixel centers at half-integer locations
         offset = arg.map([-0.5, -0.5, -0.5, 0])
-        super()._snx_set_transform(arg.translated(offset))
+        # Compensate for downscaled textures
+        # Note that volume axes are ZYX
+        x_fac = self._model.data.shape[2] / self._vispy_node._texture.shape[2]  # pyright: ignore
+        y_fac = self._model.data.shape[1] / self._vispy_node._texture.shape[1]  # pyright: ignore
+        z_fac = self._model.data.shape[0] / self._vispy_node._texture.shape[0]  # pyright: ignore
+        super()._snx_set_transform(arg.scaled((x_fac, y_fac, z_fac)).translated(offset))
 
     def _snx_set_cmap(self, arg: Colormap) -> None:
         self._vispy_node.cmap = arg.to_vispy()
@@ -47,7 +58,12 @@ class Volume(Node, VolumeAdaptor):
         self._vispy_node.interpolation = arg
 
     def _snx_set_data(self, data: ArrayLike) -> None:
-        self._vispy_node.set_data(np.asarray(data))
+        # Coerce the data to something that can be displayed by vispy
+        processed = _coerce_data(data, n_spatial=3)
+        self._vispy_node.set_data(processed)
+
+        # Update transform in case downsampling has changed the compensation factors.
+        self._snx_set_transform(self._model.transform)
 
     def _snx_set_render_mode(
         self,
