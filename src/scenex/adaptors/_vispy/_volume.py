@@ -59,6 +59,9 @@ class Volume(Node, VolumeAdaptor):
         processed = _coerce_data(data, n_spatial=3)
         self._vispy_node.set_data(processed)
 
+        # Update transform in case downsampling has changed the compensation factors.
+        self._snx_set_transform(self._model.transform)
+
     def _snx_set_render_mode(
         self,
         data: model.RenderMode,

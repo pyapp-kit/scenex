@@ -86,9 +86,8 @@ class Image(Node, ImageAdaptor):
         # Coerce the data to something that can be displayed by vispy
         processed = _coerce_data(data, n_spatial=2)
         self._vispy_node.set_data(processed)
-        self._vispy_node.update()
 
-        # Keep transform compensation in sync whenever factors change.
+        # Update transform in case downsampling has changed the compensation factors.
         self._snx_set_transform(self._model.transform)
 
 
