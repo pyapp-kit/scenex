@@ -88,10 +88,11 @@ class Image(Node):
         shape = self.data.shape
         min_x = -0.5
         min_y = -0.5
-        min_z = 0 if len(shape) == 2 else -0.5
-        max_x = min_x + shape[-1]
-        max_y = min_y + shape[-2]
-        max_z = min_z + (0 if len(shape) == 2 else shape[-3])
+        min_z = 0
+        # NOTE: the way this is written works for grayscale and RGB(A) images.
+        max_x = min_x + shape[1]
+        max_y = min_y + shape[0]
+        max_z = min_z
 
         return ((min_x, min_y, min_z), (max_x, max_y, max_z))
 

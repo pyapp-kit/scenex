@@ -9,6 +9,8 @@ from .image import Image, _passes_through_parallelogram
 if TYPE_CHECKING:
     from scenex.app.events._events import Ray
 
+    from .node import AABB
+
 RenderMode = Literal["iso", "mip"]
 
 
@@ -58,6 +60,20 @@ class Volume(Image):
             'ray; "iso" renders a surface at a specific intensity value.'
         ),
     )
+
+    @property  # TODO: Cache?
+    def bounding_box(self) -> AABB:
+        if not hasattr(self.data, "shape"):
+            raise TypeError(f"{self.data} does not have a shape!")
+        shape = self.data.shape
+        min_x = -0.5
+        min_y = -0.5
+        min_z = -0.5
+        max_x = min_x + shape[2]
+        max_y = min_y + shape[1]
+        max_z = min_z + shape[0]
+
+        return ((min_x, min_y, min_z), (max_x, max_y, max_z))
 
     def passes_through(self, ray: Ray) -> float | None:
         # The ray passes through our volume if it passes through any of the six faces

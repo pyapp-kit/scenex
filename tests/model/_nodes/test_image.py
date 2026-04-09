@@ -20,6 +20,14 @@ def image() -> snx.Image:
 
 
 def test_bounding_box(image: snx.Image) -> None:
+    """Bounding box sanity test."""
+    exp_bounding_box = np.asarray(((-0.5, -0.5, 0), (99.5, 199.5, 0)))
+    assert np.array_equal(exp_bounding_box, image.bounding_box)
+
+
+def test_rgb_bounding_box() -> None:
+    """Bounding box sanity test for an RGB image."""
+    image = snx.Image(data=np.random.randint(0, 255, (200, 100, 3), dtype=np.uint8))
     exp_bounding_box = np.asarray(((-0.5, -0.5, 0), (99.5, 199.5, 0)))
     assert np.array_equal(exp_bounding_box, image.bounding_box)
 
