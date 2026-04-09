@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from contextlib import contextmanager
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Literal, TypeVar
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 import vispy.scene
@@ -90,9 +90,6 @@ class Image(Node, ImageAdaptor):
 
         # Keep transform compensation in sync whenever factors change.
         self._snx_set_transform(self._model.transform)
-
-
-T = TypeVar("T", bound="np.ndarray | None")
 
 
 @contextmanager
