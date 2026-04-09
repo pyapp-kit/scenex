@@ -8,6 +8,7 @@ import pytest
 import scenex as snx
 import scenex.adaptors._vispy as adaptors
 from scenex.adaptors._auto import get_adaptor_registry
+from scenex.adaptors._vispy._image import _get_max_texture_sizes
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
@@ -63,6 +64,58 @@ def test_transform(image: snx.Image, adaptor: adaptors.Image) -> None:
     bb = _bounds(adaptor._vispy_node)
     assert bb is not None
     assert np.array_equal(exp_bounds, bb)
+
+
+def test_oversized_texture() -> None:
+    """Demonstrates that textures exceeding GPU dimension limits are downsampled.
+
+    When image data exceeds the GPU's max texture dimension, vispy will silently send
+    smaller data (TODO: Better explanation - this particular size shows a single pixel)
+    The adaptor should detect oversized data and transparently downsample it (e.g. via a
+    strided view) before uploading, avoiding this erroneous behavior.
+    """
+    max_dim = _get_max_texture_sizes()[0]  # 2D limit
+    if max_dim is None:
+        pytest.skip("GPU does not report a max texture size, cannot test downsampling")
+
+    # Create an image that exceeds the GPU limits
+    oversized_shape = (1, max_dim + 1)
+    image = snx.Image(data=np.zeros(oversized_shape, dtype=np.uint8))
+    # Create an adaptor for it
+    adaptor = image._get_adaptors(create=True)[0]
+    assert isinstance(adaptor, adaptors.Image)
+    # And check the texture was downsampled to fit within the GPU limits
+    assert adaptor._vispy_node._data.shape == (  # pyright: ignore
+        oversized_shape[0],
+        (oversized_shape[1] + 1) // 2,
+    )
+    # But ensure that the adaptor's transform is still correctly compensating for the
+    # downsampling, so the image appears at the correct size
+    bb = _bounds(adaptor._vispy_node)
+    np.testing.assert_almost_equal(bb, image.bounding_box)
+
+
+@pytest.mark.parametrize(
+    ("src_dtype", "expected_dtype"),
+    [
+        (np.float64, np.float32),
+        (np.int32, np.uint16),
+        (np.int64, np.uint16),
+        (np.uint32, np.uint16),
+        (np.uint64, np.uint16),
+    ],
+)
+def test_downcasting(src_dtype: np.dtype, expected_dtype: np.dtype) -> None:
+    """Vispy does not allow 64-bit data. This test ensures 64-bit data is downcasted."""
+    rng = np.random.default_rng()
+    if np.issubdtype(src_dtype, np.floating):
+        data = rng.random((100, 100), dtype=src_dtype)
+    else:
+        data = rng.integers(0, 255, (100, 100), dtype=src_dtype)
+    image = snx.Image(data=data)
+    adaptor = get_adaptor_registry().get_adaptor(image, create=True)
+    assert isinstance(adaptor, adaptors.Image)
+    assert adaptor._vispy_node._data.dtype == expected_dtype  # pyright: ignore
 
 
 def _bounds(node: ImageVisual) -> np.ndarray:
