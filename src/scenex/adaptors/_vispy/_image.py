@@ -83,6 +83,7 @@ class Image(Node, ImageAdaptor):
         self._vispy_node.update()
 
     def _snx_set_data(self, data: ArrayLike) -> None:
+        # Coerce the data to something that can be displayed by vispy
         processed = _coerce_data(data, n_spatial=2)
         self._vispy_node.set_data(processed)
         self._vispy_node.update()

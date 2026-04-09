@@ -54,6 +54,9 @@ class Volume(Node, VolumeAdaptor):
     def _snx_set_transform(self, arg: model.Transform) -> None:
         if not hasattr(self, "_pygfx_node"):
             return  # _snx_set_data hasn't run yet to set initial factors
+        # Compensate for downscaled textures
+        # NOTE that image axes are ZYX in model space
+        # but the pygfx Texture shape will be (X, Y, Z).
         x_fac = self._model.data.shape[2] / self._texture.size[0]
         y_fac = self._model.data.shape[1] / self._texture.size[1]
         z_fac = self._model.data.shape[0] / self._texture.size[2]
@@ -67,11 +70,13 @@ class Volume(Node, VolumeAdaptor):
         arr = np.asanyarray(data)
         if arr.ndim != 3:
             raise Exception("Volumes must be 3-dimensional")
+        # Coerce the data to something that can be displayed by pygfx
         processed = _coerce_data(arr, n_spatial=3)
 
+        # If we have a texture already, see whether we can reuse it:
         current: pygfx.Texture | None = getattr(self, "_texture", None)
         if current is not None and _can_reuse_volume(current, processed):
-            # Reuse the existing texture: overwrite its buffer and mark dirty.
+            # To reuse, we overwrite its buffer and mark dirty.
             current.data[:] = processed  # pyright: ignore
             current.update_full()
         else:
