@@ -96,7 +96,7 @@ class Image(Node, ImageAdaptor):
 def _opengl_context() -> Generator[None, None, None]:
     """Assure we are running with a valid OpenGL context.
 
-    Only create a Canvas is one doesn't exist. Creating and closing a
+    Only create a Canvas if one doesn't exist. Creating and closing a
     Canvas causes vispy to process Qt events which can cause problems.
     """
     canvas = Canvas(show=False) if get_current_canvas() is None else None
