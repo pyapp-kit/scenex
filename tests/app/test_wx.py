@@ -54,7 +54,7 @@ def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None
         ev = wx.SizeEvent(kwargs["sz"], evt.typeId)
     elif evt in (wx.EVT_KEY_DOWN, wx.EVT_KEY_UP):
         ev = wx.KeyEvent(evt.typeId)
-        ev.m_keyCode = kwargs["keyCode"]
+        ev.SetKeyCode(kwargs["keyCode"])
     else:
         ev = wx.MouseEvent(evt.typeId)
         ev.SetPosition(kwargs["pos"])
