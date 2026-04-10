@@ -5,7 +5,7 @@ continue to work as normal via the PanZoom controller.
 """
 
 import numpy as np
-from app_model.types import KeyCode
+from app_model.types import KeyBinding, KeyCode
 
 import scenex as snx
 from scenex.app.events import Event, KeyPressEvent
@@ -26,6 +26,13 @@ canvas = snx.Canvas(views=[view])
 _PAN_STEP = 20.0  # world units per arrow-key press
 _ZOOM_STEP = 1.25  # multiplicative factor per +/- press
 
+LEFT = KeyBinding.validate(KeyCode.LeftArrow)
+RIGHT = KeyBinding.validate(KeyCode.RightArrow)
+UP = KeyBinding.validate(KeyCode.UpArrow)
+DOWN = KeyBinding.validate(KeyCode.DownArrow)
+ZOOM_IN = KeyBinding.validate(KeyCode.NumpadAdd)  # + key
+ZOOM_OUT = KeyBinding.validate(KeyCode.NumpadSubtract)  # - key
+
 
 def _key_filter(event: Event) -> bool:
     """Pan with arrow keys; zoom with + / -."""
@@ -33,25 +40,23 @@ def _key_filter(event: Event) -> bool:
         return False
 
     key = event.key  # KeyCode (or KeyCombo for modified keys)
+    print(f"key_down: {key}")
     cam = view.camera
 
-    if key == KeyCode.UpArrow:
-        cam.transform = cam.transform.translated((0, _PAN_STEP))
-    elif key == KeyCode.DownArrow:
+    if key == UP:
         cam.transform = cam.transform.translated((0, -_PAN_STEP))
-    elif key == KeyCode.LeftArrow:
-        cam.transform = cam.transform.translated((-_PAN_STEP, 0))
-    elif key == KeyCode.RightArrow:
+    elif key == DOWN:
+        cam.transform = cam.transform.translated((0, _PAN_STEP))
+    elif key == LEFT:
         cam.transform = cam.transform.translated((_PAN_STEP, 0))
-    elif key in (KeyCode.Equal, KeyCode.NumpadAdd):  # + / numpad +
+    elif key == RIGHT:
+        cam.transform = cam.transform.translated((-_PAN_STEP, 0))
+    elif key == ZOOM_IN:
         s = _ZOOM_STEP
         cam.projection = cam.projection.scaled((s, s, 1.0))
-    elif key == KeyCode.Minus:  # -
+    elif key == ZOOM_OUT:
         s = 1.0 / _ZOOM_STEP
         cam.projection = cam.projection.scaled((s, s, 1.0))
-    else:
-        print(f"Unhandled key: {key}")
-        return False
 
     return True
 

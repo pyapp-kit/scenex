@@ -4,10 +4,14 @@ from concurrent.futures import Future
 from typing import TYPE_CHECKING, Any, cast
 
 import wx
+from app_model.types import KeyBinding, SimpleKeyBinding
 
 from scenex.app._auto import App, CursorType
+from scenex.app._wx_keymap import wxevent2modelkey
 from scenex.app.events._events import (
     EventFilter,
+    KeyPressEvent,
+    KeyReleaseEvent,
     MouseButton,
     MouseEnterEvent,
     MouseLeaveEvent,
@@ -49,6 +53,8 @@ class WxEventFilter(EventFilter):
         self._canvas.Bind(wx.EVT_LEAVE_WINDOW, handler=self._on_leave_window)
         self._canvas.Bind(wx.EVT_ENTER_WINDOW, handler=self._on_enter_window)
         self._canvas.Bind(wx.EVT_SIZE, handler=self._on_resize)
+        self._canvas.Bind(wx.EVT_KEY_DOWN, handler=self._on_key_down)
+        self._canvas.Bind(wx.EVT_KEY_UP, handler=self._on_key_up)
 
     def uninstall(self) -> None:
         self._canvas.Unbind(wx.EVT_LEFT_DOWN)
@@ -60,6 +66,8 @@ class WxEventFilter(EventFilter):
         self._canvas.Unbind(wx.EVT_MOTION)
         self._canvas.Unbind(wx.EVT_MOUSEWHEEL)
         self._canvas.Unbind(wx.EVT_SIZE)
+        self._canvas.Unbind(wx.EVT_KEY_DOWN)
+        self._canvas.Unbind(wx.EVT_KEY_UP)
 
     def _on_leave_window(self, event: wx.MouseEvent) -> None:
         self._model_canvas.handle(MouseLeaveEvent())
@@ -129,6 +137,18 @@ class WxEventFilter(EventFilter):
                 angle_delta=angle_delta,
             )
         )
+        event.Skip()
+
+    def _on_key_down(self, event: wx.KeyEvent) -> None:
+        model_key = wxevent2modelkey(event)
+        part = SimpleKeyBinding.from_int(model_key)
+        self._model_canvas.handle(KeyPressEvent(key=KeyBinding(parts=[part])))
+        event.Skip()
+
+    def _on_key_up(self, event: wx.KeyEvent) -> None:
+        model_key = wxevent2modelkey(event)
+        part = SimpleKeyBinding.from_int(model_key)
+        self._model_canvas.handle(KeyReleaseEvent(key=KeyBinding(parts=[part])))
         event.Skip()
 
     def _map_button(self, event: wx.MouseEvent) -> MouseButton:

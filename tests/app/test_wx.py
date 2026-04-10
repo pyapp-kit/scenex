@@ -6,10 +6,13 @@ from typing import TYPE_CHECKING, cast
 from unittest.mock import patch
 
 import pytest
+from app_model.types import KeyBinding
 
 import scenex as snx
 from scenex.app import CursorType, GuiFrontend, app, determine_app
 from scenex.app.events import (
+    KeyPressEvent,
+    KeyReleaseEvent,
     MouseButton,
     MouseEnterEvent,
     MouseLeaveEvent,
@@ -49,6 +52,9 @@ def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None
     """
     if evt == wx.EVT_SIZE:
         ev = wx.SizeEvent(kwargs["sz"], evt.typeId)
+    elif evt in (wx.EVT_KEY_DOWN, wx.EVT_KEY_UP):
+        ev = wx.KeyEvent(evt.typeId)
+        ev.m_keyCode = kwargs["keyCode"]
     else:
         ev = wx.MouseEvent(evt.typeId)
         ev.SetPosition(kwargs["pos"])
@@ -209,3 +215,20 @@ def test_set_cursor(evented_canvas: snx.Canvas) -> None:
     old = native.GetCursor()
     app().set_cursor(evented_canvas, CursorType.CROSS)
     assert not native.GetCursor().IsSameAs(old)
+
+
+def test_key_event(evented_canvas: snx.Canvas) -> None:
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        _processEvent(wx.EVT_KEY_DOWN, native, keyCode=ord("A"))
+        _processEvent(wx.EVT_KEY_UP, native, keyCode=ord("A"))
+
+    assert mock_handle.call_args_list[0].args == (
+        KeyPressEvent(key=KeyBinding.from_str("A")),
+    )
+    assert mock_handle.call_args_list[1].args == (
+        KeyReleaseEvent(key=KeyBinding.from_str("A")),
+    )

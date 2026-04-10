@@ -6,11 +6,14 @@ from typing import TYPE_CHECKING, cast
 from unittest.mock import patch
 
 import pytest
+from app_model.types import KeyBinding
 
 import scenex as snx
 from scenex.adaptors._auto import determine_backend
 from scenex.app import CursorType, GuiFrontend, app, determine_app
 from scenex.app.events import (
+    KeyPressEvent,
+    KeyReleaseEvent,
     MouseButton,
     MouseDoublePressEvent,
     MouseEnterEvent,
@@ -295,3 +298,21 @@ def test_set_cursor(evented_canvas: snx.Canvas) -> None:
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
     app().set_cursor(evented_canvas, CursorType.CROSS)
     assert native.cursor == "crosshair"
+
+
+def test_key_event(evented_canvas: snx.Canvas) -> None:
+    snx.show(evented_canvas)
+    native = cast(
+        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+
+    with patch.object(snx.Canvas, "handle") as mock_handle:
+        native.handle_event({"event_type": "key_down", "key": "a", "modifiers": []})
+        native.handle_event({"event_type": "key_up", "key": "a", "modifiers": []})
+
+    assert mock_handle.call_args_list[0].args == (
+        KeyPressEvent(key=KeyBinding.from_str("A")),
+    )
+    assert mock_handle.call_args_list[1].args == (
+        KeyReleaseEvent(key=KeyBinding.from_str("A")),
+    )

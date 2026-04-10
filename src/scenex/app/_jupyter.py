@@ -3,12 +3,16 @@ from __future__ import annotations
 from types import MethodType
 from typing import TYPE_CHECKING, Any, cast
 
+from app_model.types import KeyBinding, SimpleKeyBinding
 from IPython import display
 from jupyter_rfb import RemoteFrameBuffer
 
 from scenex.app._auto import App, CursorType
+from scenex.app._jupyter_keymap import jupyterkey2modelkey
 from scenex.app.events._events import (
     EventFilter,
+    KeyPressEvent,
+    KeyReleaseEvent,
     MouseButton,
     MouseDoublePressEvent,
     MouseEnterEvent,
@@ -116,6 +120,18 @@ class JupyterEventFilter(EventFilter):
                             # Note that Jupyter_rfb uses a different y convention
                             angle_delta=(ev["dx"], -ev["dy"]),
                         )
+                    )
+                elif etype == "key_down":
+                    model_key = jupyterkey2modelkey(ev)
+                    part = SimpleKeyBinding.from_int(model_key)
+                    filter._model_canvas.handle(
+                        KeyPressEvent(key=KeyBinding(parts=[part]))
+                    )
+                elif etype == "key_up":
+                    model_key = jupyterkey2modelkey(ev)
+                    part = SimpleKeyBinding.from_int(model_key)
+                    filter._model_canvas.handle(
+                        KeyReleaseEvent(key=KeyBinding(parts=[part]))
                     )
                 elif etype == "resize":
                     filter._model_canvas.handle(
