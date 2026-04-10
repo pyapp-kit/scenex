@@ -83,9 +83,11 @@ canvas = snx.Canvas(width=2 * view_size, height=view_size, views=[view1, view2])
 # -z axis and has no mouse interaction.
 def _view1_event_filter(event: Event) -> bool:
     if isinstance(event, MouseMoveEvent):
-        for node, distance in event.world_ray.intersections(view1.scene):
+        if not (ray := view1.to_ray(event.pos)):
+            return False
+        for node, distance in ray.intersections(view1.scene):
             if node in vols:
-                intersection = event.world_ray.point_at_distance(distance)
+                intersection = ray.point_at_distance(distance)
                 idx = max(0, min(59, round(intersection[2])))
                 for img in imgs:
                     img.data = img_data[idx]

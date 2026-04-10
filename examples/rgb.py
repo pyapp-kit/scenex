@@ -43,7 +43,9 @@ cmaps = ["red", "green", "blue"]
 
 def _event_filter(event: events.Event) -> bool:
     if isinstance(event, events.MousePressEvent):
-        for node, _distance in event.world_ray.intersections(view.scene):
+        if not (ray := view.to_ray(event.pos)):
+            return False
+        for node, _distance in ray.intersections(view.scene):
             if node == img:
                 global idx
                 img.data = data[:, :, idx % 3]

@@ -25,7 +25,9 @@ view = snx.View(scene=snx.Scene(children=[img]))
 def _view_filter(event: Event) -> bool:
     """Example event drawing a square that reacts to the cursor."""
     if isinstance(event, MouseMoveEvent):
-        intersections = event.world_ray.intersections(view.scene)
+        if not (ray := view.to_ray(event.pos)):
+            return False
+        intersections = ray.intersections(view.scene)
         if not intersections:
             # Clear the image if the mouse is not over it
             img.data = np.zeros((200, 200), dtype=np.uint8)
@@ -33,7 +35,7 @@ def _view_filter(event: Event) -> bool:
         for node, distance in intersections:
             if not isinstance(node, snx.Image):
                 continue
-            intersection = event.world_ray.point_at_distance(distance)
+            intersection = ray.point_at_distance(distance)
             data = np.zeros((200, 200), dtype=np.uint8)
             x = int(intersection[0])
             min_x = max(0, x - 5)

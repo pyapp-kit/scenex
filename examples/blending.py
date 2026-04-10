@@ -61,7 +61,9 @@ def change_blend_mode(event: Event) -> bool:
     """Change the blend mode of a volume when it is clicked."""
     if not isinstance(event, (MousePressEvent)):
         return False
-    intersected_nodes = [node for node, _ in event.world_ray.intersections(view.scene)]
+    if not (ray := view.to_ray(event.pos)):
+        return False
+    intersected_nodes = [node for node, _ in ray.intersections(view.scene)]
     if volume1 not in intersected_nodes:
         return False
     idx = blend_modes.index(volume1.blending)
