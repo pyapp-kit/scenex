@@ -203,6 +203,37 @@ class CameraController(EventedBase):
     """
 
     @abstractmethod
+    def zoom(
+        self,
+        camera: Camera,
+        factor: float,
+        center: Position3D | None = None,
+    ) -> None:
+        """Zoom the camera by a given factor.
+
+        "Zoom" is not a single well-defined camera operation — it could mean changing
+        the field of view (shrinking how many world units are visible, as in an
+        orthographic projection) or moving the camera physically in relation to a focal
+        point (as in perspective orbit). The correct behavior really depends on the
+        interactive paradigm in place, hence the placement of this method here.
+
+        Parameters
+        ----------
+        camera : Camera
+            The camera to manipulate.
+        factor : float
+            Zoom factor. Values greater than 1 zoom in (fewer world units visible,
+            objects appear larger). Values less than 1 zoom out. A value of
+            1.0 produces no change.
+        center : Position3D, optional
+            A 3D world-space anchor point that should remain fixed on screen
+            during the zoom. If None, zooms around the camera's current center.
+            Controllers that operate purely in 3D (e.g. Orbit) may ignore this
+            and use their own focal point instead.
+        """
+        ...
+
+    @abstractmethod
     def handle_event(self, event: Event, camera: Camera) -> bool:
         """
         Handle a user interaction event to control the camera.
@@ -330,40 +361,42 @@ class PanZoom(CameraController):
         # Note that while panning adjusts the camera's transform matrix, zooming
         # adjusts the projection matrix.
         elif isinstance(event, WheelEvent):
-            # Zoom while keeping the position under the cursor fixed.
             _dx, dy = event.angle_delta
             if dy:
-                # Step 1: Adjust the projection matrix to zoom in or out.
-                zoom = self._zoom_factor(dy)
-                camera.projection = camera.projection.scaled(
-                    (1 if self.lock_x else zoom, 1 if self.lock_y else zoom, 1.0)
-                )
-
-                # Step 2: Adjust the transform matrix to maintain the position
-                # under the cursor. The math is largely borrowed from
-                # https://github.com/pygfx/pygfx/blob/520af2d5bb2038ec309ef645e4a60d502f00d181/pygfx/controllers/_panzoom.py#L164
-
-                # Find the distance between the world ray and the camera
-                zoom_center = np.asarray(event.world_ray.origin)[:2]
-                camera_center = np.asarray(camera.transform.map((0, 0)))[:2]
-                # Compute the world distance before the zoom
-                delta_screen1 = zoom_center - camera_center
-                # Compute the world distance after the zoom
-                delta_screen2 = delta_screen1 * zoom
-                # The pan is the difference between the two
-                pan = (delta_screen2 - delta_screen1) / zoom
-                camera.transform = camera.transform.translated(
-                    (
-                        pan[0] if not self.lock_x else 0,
-                        pan[1] if not self.lock_y else 0,
-                    )
-                )
+                self.zoom(camera, self._zoom_factor(dy), center=event.world_ray.origin)
                 handled = True
 
         return handled
 
+    def zoom(
+        self,
+        camera: Camera,
+        factor: float,
+        center: Position3D | None = None,
+    ) -> None:
+        # Step 1: Scale the projection matrix to zoom in or out.
+        camera.projection = camera.projection.scaled(
+            (1 if self.lock_x else factor, 1 if self.lock_y else factor, 1.0)
+        )
+        if center is not None:
+            # Step 2: Translate the camera to keep `center` fixed on screen.
+            # Math borrowed from:
+            # https://github.com/pygfx/pygfx/blob/520af2d5bb2038ec309ef645e4a60d502f00d181/pygfx/controllers/_panzoom.py#L164
+            zoom_center = np.asarray(center)[:2]
+            camera_center = np.asarray(camera.transform.map((0, 0)))[:2]
+            # Compute the world distance before and after the zoom
+            delta_screen1 = zoom_center - camera_center
+            delta_screen2 = delta_screen1 * factor
+            # The pan is the difference between the two
+            pan = (delta_screen2 - delta_screen1) / factor
+            camera.transform = camera.transform.translated(
+                (pan[0] if not self.lock_x else 0, pan[1] if not self.lock_y else 0)
+            )
+
     def _zoom_factor(self, delta: float) -> float:
         # Magnifier stolen from pygfx
+        # (one wheel click is typically +/-120, so this results in a zoom factor
+        # of 0.9x or 1.1x per click. Growth is exponential for faster scrolling)
         return 2 ** (delta * 0.001)
 
 
@@ -562,15 +595,28 @@ class Orbit(CameraController):
         elif isinstance(event, WheelEvent):
             _dx, dy = event.angle_delta
             if dy:
-                dr = camera.transform.map((0, 0, 0))[:3] - center_array
-                zoom = self._zoom_factor(dy)
-                camera.transform = camera.transform.translated(dr * (zoom - 1))
-            handled = True
+                # Magnifier stolen from pygfx
+                # (one wheel click is typically +/-120, so this results in a zoom factor
+                # of 0.9x or 1.1x per click. Growth is exponential for faster scrolling)
+                self.zoom(camera, self._zoom_factor(dy))
+                handled = True
 
         if isinstance(event, MouseEvent):
             self._last_canvas_pos = event.canvas_pos
         return handled
 
+    def zoom(
+        self,
+        camera: Camera,
+        factor: float,
+        center: Position3D | None = None,
+    ) -> None:
+        center_array = np.asarray(self.center)
+        dr = camera.transform.map((0, 0, 0))[:3] - center_array
+        camera.transform = camera.transform.translated(-dr + dr / factor)
+
     def _zoom_factor(self, delta: float) -> float:
         # Magnifier stolen from pygfx
-        return 2 ** (-delta * 0.001)
+        # (one wheel click is typically +/-120, so this results in a zoom factor
+        # of 0.9x or 1.1x per click. Growth is exponential for faster scrolling)
+        return 2 ** (delta * 0.001)
