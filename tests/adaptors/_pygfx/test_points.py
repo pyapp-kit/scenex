@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import get_args
+
 import cmap
 import numpy as np
 import pygfx
@@ -8,6 +10,7 @@ import pytest
 import scenex as snx
 import scenex.adaptors._pygfx as adaptors
 from scenex.adaptors._auto import get_adaptor_registry
+from scenex.model import SymbolName
 
 
 @pytest.fixture
@@ -46,6 +49,43 @@ def test_points_data(points: snx.Points, adaptor: adaptors.Points) -> None:
     new_vertices = np.array([[5, 5, 0], [6, 6, 0]])
     points.vertices = new_vertices
     assert np.array_equal(geom.positions.data, new_vertices)
+
+
+_ALIASES: dict[SymbolName, str] = {
+    "disc": "circle",
+    "cross": "plus",
+    "x": "cross",
+}
+_UNSUPPORTED = {
+    "arrow",
+    "clobber",
+    "vbar",
+    "hbar",
+    "tailed_arrow",
+    "star",
+    "cross_lines",
+}
+
+
+@pytest.mark.parametrize("symbol", get_args(SymbolName))
+def test_points_symbol(
+    points: snx.Points,
+    adaptor: adaptors.Points,
+    caplog: pytest.LogCaptureFixture,
+    symbol: SymbolName,
+) -> None:
+    mat = adaptor._pygfx_node.material
+    assert isinstance(mat, pygfx.PointsMarkerMaterial)
+    assert mat.marker_mode == "uniform"
+
+    if symbol in _UNSUPPORTED:
+        with caplog.at_level("WARNING", logger="scenex.adaptors.pygfx"):
+            points.symbol = symbol
+        assert any(symbol in r.message for r in caplog.records)
+        return
+
+    points.symbol = symbol
+    assert mat.marker == _ALIASES.get(symbol, symbol)
 
 
 def test_points_size(points: snx.Points, adaptor: adaptors.Points) -> None:

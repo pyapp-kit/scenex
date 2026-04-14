@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
@@ -9,6 +10,8 @@ from scenex.adaptors._base import PointsAdaptor
 from scenex.model._color import ColorModel, UniformColor, VertexColors
 
 from ._node import Node
+
+logger = logging.getLogger("scenex.adaptors.pygfx")
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -97,7 +100,29 @@ class Points(Node, PointsAdaptor):
     def _snx_set_edge_width(self, edge_width: float) -> None:
         self._material.edge_width = edge_width
 
-    def _snx_set_symbol(self, symbol: str) -> None: ...
+    def _snx_set_symbol(self, symbol: str) -> None:
+        if symbol == "disc":
+            symbol = "circle"
+        elif symbol == "cross":
+            symbol = "plus"
+        elif symbol == "x":
+            symbol = "cross"
+
+        # TODO: Support these with custom marker textures (SDF).
+        # NOTE: vbar is kind of like pygfx's "tick", but tick just has an edge color.
+        if symbol in [
+            "arrow",
+            "clobber",
+            "vbar",
+            "hbar",
+            "tailed_arrow",
+            "star",
+            "cross_lines",
+        ]:
+            logger.warning("Unsupported symbol: %r", symbol)
+            return
+
+        self._material.marker = symbol
 
     def _snx_set_scaling(self, scaling: model.ScalingMode) -> None:
         self._material.size_space = SPACE_MAP[scaling]
