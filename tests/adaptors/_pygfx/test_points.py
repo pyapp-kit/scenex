@@ -10,6 +10,7 @@ import pytest
 import scenex as snx
 import scenex.adaptors._pygfx as adaptors
 from scenex.adaptors._auto import get_adaptor_registry
+from scenex.adaptors._pygfx._points import _SYMBOL_MAP, _UNSUPPORTED_SYMBOL
 from scenex.model import SymbolName
 
 
@@ -51,22 +52,6 @@ def test_points_data(points: snx.Points, adaptor: adaptors.Points) -> None:
     assert np.array_equal(geom.positions.data, new_vertices)
 
 
-_ALIASES: dict[SymbolName, str] = {
-    "disc": "circle",
-    "cross": "plus",
-    "x": "cross",
-}
-_UNSUPPORTED = {
-    "arrow",
-    "clobber",
-    "vbar",
-    "hbar",
-    "tailed_arrow",
-    "star",
-    "cross_lines",
-}
-
-
 @pytest.mark.parametrize("symbol", get_args(SymbolName))
 def test_points_symbol(
     points: snx.Points,
@@ -77,15 +62,15 @@ def test_points_symbol(
     mat = adaptor._pygfx_node.material
     assert isinstance(mat, pygfx.PointsMarkerMaterial)
     assert mat.marker_mode == "uniform"
-
-    if symbol in _UNSUPPORTED:
+    py_symbol = _SYMBOL_MAP.get(symbol, symbol)
+    if py_symbol == _UNSUPPORTED_SYMBOL:
         with caplog.at_level("WARNING", logger="scenex.adaptors.pygfx"):
             points.symbol = symbol
-        assert any(symbol in r.message for r in caplog.records)
+        assert any(symbol in m for m in caplog.messages)
         return
 
     points.symbol = symbol
-    assert mat.marker == _ALIASES.get(symbol, symbol)
+    assert mat.marker == py_symbol
 
 
 def test_points_size(points: snx.Points, adaptor: adaptors.Points) -> None:
