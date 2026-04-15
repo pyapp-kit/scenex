@@ -337,7 +337,7 @@ def test_orbit_zoom() -> None:
     desired_tform = snx.Transform().translated((0, 0, 20))
     np.testing.assert_allclose(cam.transform, desired_tform)
 
-    factor = 2  # zoom out slightly
+    factor = 2  # zoom in slightly
     interaction.zoom(cam, factor)
     desired_tform = snx.Transform().translated((0, 0, 10))
     np.testing.assert_allclose(cam.transform, desired_tform)
