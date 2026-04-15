@@ -68,7 +68,7 @@ class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj]):
                 # for opaque, we need to disable blending
                 self._vispy_node.set_gl_state(None, blend=False)  # pyright: ignore
             else:
-                self._vispy_node.set_gl_state(BLEND_MODES[arg])  # pyright: ignore
+                self._vispy_node.set_gl_state(BLEND_MODES[arg], depth_test=False)  # pyright: ignore
 
     def _snx_add_node(self, node: model.Node) -> None:
         # create if it doesn't exist
