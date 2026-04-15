@@ -26,6 +26,24 @@ SPACE_MAP: Mapping[model.ScalingMode, Literal["model", "screen", "world"]] = {
     "visual": "model",
 }
 
+_UNSUPPORTED_SYMBOL = "UNSUPPORTED"
+_SYMBOL_MAP: Mapping[str, str] = {
+    # These symbols go under a different name
+    "disc": "circle",
+    "cross": "plus",
+    "x": "cross",
+    # These symbols are not currently supported in pygfx
+    # could be added with custom SDF marker textures
+    "arrow": _UNSUPPORTED_SYMBOL,
+    "clobber": _UNSUPPORTED_SYMBOL,
+    # NOTE: vbar is kind of like pygfx's "tick", but tick just has an edge color.
+    "vbar": _UNSUPPORTED_SYMBOL,
+    "hbar": _UNSUPPORTED_SYMBOL,
+    "tailed_arrow": _UNSUPPORTED_SYMBOL,
+    "star": _UNSUPPORTED_SYMBOL,
+    "cross_lines": _UNSUPPORTED_SYMBOL,
+}
+
 
 class Points(Node, PointsAdaptor):
     """Vispy backend adaptor for an Points node."""
@@ -101,28 +119,12 @@ class Points(Node, PointsAdaptor):
         self._material.edge_width = edge_width
 
     def _snx_set_symbol(self, symbol: str) -> None:
-        if symbol == "disc":
-            symbol = "circle"
-        elif symbol == "cross":
-            symbol = "plus"
-        elif symbol == "x":
-            symbol = "cross"
-
-        # TODO: Support these with custom marker textures (SDF).
-        # NOTE: vbar is kind of like pygfx's "tick", but tick just has an edge color.
-        if symbol in [
-            "arrow",
-            "clobber",
-            "vbar",
-            "hbar",
-            "tailed_arrow",
-            "star",
-            "cross_lines",
-        ]:
+        py_symbol = _SYMBOL_MAP.get(symbol, symbol)
+        if py_symbol == _UNSUPPORTED_SYMBOL:
             logger.warning("Unsupported symbol: %r", symbol)
             return
 
-        self._material.marker = symbol
+        self._material.marker = py_symbol
 
     def _snx_set_scaling(self, scaling: model.ScalingMode) -> None:
         self._material.size_space = SPACE_MAP[scaling]
