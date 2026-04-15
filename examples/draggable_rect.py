@@ -24,8 +24,6 @@ from scenex.app.events import (
     MouseReleaseEvent,
 )
 
-snx.use("vispy")
-
 # ── Background image ──────────────────────────────────────────────────────────
 IMG_W, IMG_H = 100, 100
 rng = np.random.default_rng(0)
@@ -41,7 +39,7 @@ bg = snx.Image(
     data=img_data,
     cmap=cmap.Colormap("grays"),
     clims=(0, 255),
-    order=6,
+    order=0,
 )
 
 # ── Rectangle nodes (line and handles are children of mesh, sharing its transform) ──
@@ -54,7 +52,7 @@ rect_mesh = snx.Mesh(
     faces=np.array([[0, 1, 2], [0, 2, 3]]),
     color=snx.UniformColor(color=cmap.Color("royalblue")),
     opacity=0.25,
-    order=5,
+    order=1,
 )
 
 rect_line = snx.Line(
@@ -62,7 +60,7 @@ rect_line = snx.Line(
     vertices=RECT_VERTICES[[0, 1, 2, 3, 0]],
     color=snx.UniformColor(color=cmap.Color("white")),
     width=2.0,
-    order=4,
+    order=2,
 )
 
 handles = snx.Points(
@@ -72,13 +70,13 @@ handles = snx.Points(
     face_color=snx.UniformColor(color=cmap.Color("white")),
     edge_color=snx.UniformColor(color=cmap.Color("royalblue")),
     edge_width=3,
-    symbol="star",
+    symbol="disc",
     scaling="fixed",
     order=3,
 )
 
 # ── Scene / View ──────────────────────────────────────────────────────────────
-scene = snx.Scene(children=[bg, rect_mesh])
+scene = snx.Scene(children=[bg, rect_mesh, rect_line, handles])
 view = snx.View(
     scene=scene,
     camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
@@ -197,6 +195,24 @@ def _event_filter(event: Event) -> bool:
         app().set_cursor(canvas, CursorType.DEFAULT)
 
     return False
+
+
+def _on_vertices_changed(vertices: np.ndarray) -> None:
+    # Offset by 0.5 because pixels are at integers, not half-integers.
+    xs = vertices[:, 0] + 0.5
+    ys = vertices[:, 1] + 0.5
+    x0 = int(np.clip(xs.min(), 0, IMG_W))
+    x1 = int(np.clip(xs.max(), 0, IMG_W))
+    y0 = int(np.clip(ys.min(), 0, IMG_H))
+    y1 = int(np.clip(ys.max(), 0, IMG_H))
+
+    display = img_data.copy()
+    display[y0:y1, x0:x1] = 255 - img_data[y0:y1, x0:x1]
+    bg.data = display
+
+
+rect_mesh.events.vertices.connect(_on_vertices_changed)
+_on_vertices_changed(rect_mesh.vertices)  # initialize display
 
 
 view.set_event_filter(_event_filter)
