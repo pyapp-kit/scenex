@@ -3,26 +3,18 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import numpy as np
+import pytest
 
 import scenex as snx
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-def make_points() -> snx.Points:
-    return snx.Points(vertices=np.zeros((1, 3), dtype=np.float32))
-
-
-def make_scene() -> snx.Scene:
-    return snx.Scene()
+# Avoid making new vertices every time, save some space.
+_VERTICES = np.zeros((1, 3), dtype=np.float32)
 
 
 def test_add_child() -> None:
     """Adding a child should set the child's parent, add it to the parent's children."""
-    parent = make_scene()
-    child = make_points()
+    parent = snx.Scene()
+    child = snx.Points(vertices=_VERTICES)
     event_listener = MagicMock()
     parent.child_added.connect(event_listener)
 
@@ -46,8 +38,8 @@ def test_remove_child() -> None:
 
     Should be a no-op if the child is not present.
     """
-    parent = make_scene()
-    c1, c2 = make_points(), make_points()
+    parent = snx.Scene()
+    c1, c2 = snx.Points(vertices=_VERTICES), snx.Points(vertices=_VERTICES)
     parent.add_child(c1)
     parent.add_child(c2)
     mock = MagicMock()
@@ -68,7 +60,7 @@ def test_remove_child() -> None:
 
 def test_constructor_children_kwarg() -> None:
     """children= kwarg should populate children and set each child's parent."""
-    c1, c2 = make_points(), make_points()
+    c1, c2 = snx.Points(vertices=_VERTICES), snx.Points(vertices=_VERTICES)
 
     parent = snx.Scene(children=[c1, c2])
 
@@ -79,7 +71,7 @@ def test_constructor_children_kwarg() -> None:
 
 def test_constructor_parent_kwarg() -> None:
     """parent= kwarg should register the node as a child and emit child_added."""
-    parent = make_scene()
+    parent = snx.Scene()
     mock = MagicMock()
     parent.child_added.connect(mock)
 
@@ -90,14 +82,13 @@ def test_constructor_parent_kwarg() -> None:
     mock.assert_called_once_with(child)
 
     # default: no parent
-    assert make_scene().parent is None
+    assert snx.Scene().parent is None
 
 
 def test_reparent() -> None:
     """Moving a child from one parent to another should update both parents."""
-    p1 = make_scene()
-    p2 = make_scene()
-    child = make_points()
+    p1, p2 = snx.Scene(), snx.Scene()
+    child = snx.Points(vertices=_VERTICES)
     p1.add_child(child)
 
     # reparent via add_child
@@ -117,10 +108,10 @@ def test_reparent() -> None:
 
 def test_children() -> None:
     """children should be an empty tuple by default and reflect add/remove calls."""
-    parent = make_scene()
+    parent = snx.Scene()
     assert parent.children == ()
 
-    child = make_points()
+    child = snx.Points(vertices=_VERTICES)
     parent.add_child(child)
     assert parent.children == (child,)  # type: ignore
 
@@ -130,10 +121,9 @@ def test_children() -> None:
 
 def test_contains() -> None:
     """__contains__ checks direct children only, not deeper descendants."""
-    grandparent = make_scene()
-    parent = make_scene()
-    child = make_points()
-    other = make_points()
+    grandparent, parent = snx.Scene(), snx.Scene()
+    child = snx.Points(vertices=_VERTICES)
+    other = snx.Points(vertices=_VERTICES)
 
     grandparent.add_child(parent)
     parent.add_child(child)
@@ -141,3 +131,10 @@ def test_contains() -> None:
     assert parent in grandparent
     assert other not in grandparent
     assert child not in grandparent  # grandchild — not a direct child
+
+
+def test_node_cannot_be_instantiated_directly() -> None:
+    from scenex.model._nodes.node import Node
+
+    with pytest.raises(TypeError, match="Node cannot be instantiated directly"):
+        Node()
