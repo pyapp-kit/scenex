@@ -93,7 +93,7 @@ jobs:
         run: uv run --no-sync coverage run -p -m pytest -v --nbval examples/*.ipynb
 
       - name: Upload coverage
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: covreport-${{ matrix.os }}-py${{ matrix.python-version }}-${{ matrix.gfx }}-${{ matrix.canvas }}
           path: ./.coverage*
