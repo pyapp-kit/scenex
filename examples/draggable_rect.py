@@ -71,7 +71,7 @@ handles = snx.Points(
 )
 
 # ── Scene / View ──────────────────────────────────────────────────────────────
-scene = snx.Scene(children=[bg, rect_mesh, rect_line, handles])
+scene = snx.Scene(children=[bg, rect_mesh])
 view = snx.View(
     scene=scene,
     camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
