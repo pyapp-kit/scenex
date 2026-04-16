@@ -64,11 +64,14 @@ class Node(NodeAdaptor[TNode, TObj], Generic[TNode, TObj]):
 
     def _snx_set_blending(self, arg: model.BlendMode) -> None:
         if hasattr(self._vispy_node, "set_gl_state"):
-            if arg == model.BlendMode.OPAQUE:
-                # for opaque, we need to disable blending
-                self._vispy_node.set_gl_state(None, blend=False)  # pyright: ignore
-            else:
-                self._vispy_node.set_gl_state(BLEND_MODES[arg], depth_test=False)  # pyright: ignore
+            # set_gl_state takes a preset and optional additional modifiers.
+            # The presets can be found in vispy.gloo.wrappers.GL_PRESETS
+            preset = BLEND_MODES.get(arg, "opaque")
+            # We want blending for alpha and additive modes
+            blend = arg in [model.BlendMode.ADDITIVE, model.BlendMode.ALPHA]
+            # If we aren't blending, we need depth testing
+            depth_test = not blend
+            self._vispy_node.set_gl_state(preset, blend=blend, depth_test=depth_test)
 
     def _snx_add_node(self, node: model.Node) -> None:
         # create if it doesn't exist
