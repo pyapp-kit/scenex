@@ -3,11 +3,8 @@
 This example demonstrates:
 - Composing a rectangle from three nodes: a semi-transparent mesh (fill),
   a solid line (outline), and square point markers (handles).
-- Using an event filter to detect which handle is under the cursor and
-  changing the cursor shape to signal that the handle is draggable.
-- Keeping the dragged handle pinned to the cursor while the rest of the
-  rectangle updates to stay consistent.
-- Consuming mouse events during a drag so the camera does not also pan.
+- Using an event filter to implement click-and-drag interactions.
+- Changing cursor shapes to signal behaviors.
 """
 
 import cmap
@@ -24,7 +21,7 @@ from scenex.app.events import (
     MouseReleaseEvent,
 )
 
-# ── Background image ──────────────────────────────────────────────────────────
+# -- Background image -- #
 IMG_W, IMG_H = 100, 100
 rng = np.random.default_rng(0)
 
@@ -42,7 +39,7 @@ bg = snx.Image(
     order=0,
 )
 
-# ── Rectangle nodes (line and handles are children of mesh, sharing its transform) ──
+# -- Rectangle nodes -- #
 RECT_VERTICES = np.array(
     [[40, 40, 0], [60, 40, 0], [60, 60, 0], [40, 60, 0]], dtype=float
 )
@@ -58,7 +55,7 @@ rect_mesh = snx.Mesh(
 rect_line = snx.Line(
     parent=rect_mesh,
     vertices=RECT_VERTICES[[0, 1, 2, 3, 0]],
-    color=snx.UniformColor(color=cmap.Color("white")),
+    color=snx.UniformColor(color=cmap.Color("royalblue")),
     width=2.0,
     order=2,
 )
@@ -68,8 +65,6 @@ handles = snx.Points(
     vertices=RECT_VERTICES,
     size=14,
     face_color=snx.UniformColor(color=cmap.Color("white")),
-    edge_color=snx.UniformColor(color=cmap.Color("royalblue")),
-    edge_width=3,
     symbol="disc",
     scaling="fixed",
     order=3,
@@ -101,7 +96,11 @@ def _cursor_for_pos(wx: float, wy: float) -> CursorType:
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 
-def _new_vertices(x0: float, y0: float, x1: float, y1: float) -> np.ndarray:
+def _vertices_from_corners(x0: float, y0: float, x1: float, y1: float) -> np.ndarray:
+    """Takes any two opposite corners of a rectangle and returns all four vertices.
+
+    These vertices will start with the minimum corner and proceed clockwise.
+    """
     mi = (min(x0, x1), min(y0, y1))
     ma = (max(x0, x1), max(y0, y1))
     return np.asarray(
@@ -133,7 +132,7 @@ def _event_filter(event: Event) -> bool:
         if _anchor is not None:
             # Determine the new rectangle bounding box from the anchor point and the
             # mouse position
-            new_vertices = _new_vertices(pos[0], pos[1], *_anchor)
+            new_vertices = _vertices_from_corners(pos[0], pos[1], *_anchor)
             # Update the nodes
             rect_mesh.vertices = new_vertices
             rect_line.vertices = new_vertices[[0, 1, 2, 3, 0]]
@@ -151,7 +150,7 @@ def _event_filter(event: Event) -> bool:
             # NOTE we just need two opposite corners, doesn't matter which two.
             v0 = rect_mesh.vertices[0, :2] + delta
             v2 = rect_mesh.vertices[2, :2] + delta
-            new_vertices = _new_vertices(*v0, *v2)
+            new_vertices = _vertices_from_corners(*v0, *v2)
             # Update the nodes
             rect_mesh.vertices = new_vertices
             rect_line.vertices = new_vertices[[0, 1, 2, 3, 0]]
@@ -173,7 +172,9 @@ def _event_filter(event: Event) -> bool:
             pos = np.array(event.world_ray.origin[:2])
             # -- Start a handle drag -- #
             if event.world_ray.intersections(handles):
+                # Find the clicked point
                 clicked = _nearest_corner(*pos)
+                # And record the other point
                 opp = (clicked + 2) % 4
                 _anchor = rect_mesh.vertices[opp, :2]
                 return True
@@ -211,9 +212,12 @@ def _on_vertices_changed(vertices: np.ndarray) -> None:
     bg.data = display
 
 
-rect_mesh.events.vertices.connect(_on_vertices_changed)
-_on_vertices_changed(rect_mesh.vertices)  # initialize display
-
-
+# Connect the event filter to listen for user events
 view.set_event_filter(_event_filter)
+
+# Connect the vertex change callback
+_on_vertices_changed(rect_mesh.vertices)  # initialize display
+rect_mesh.events.vertices.connect(_on_vertices_changed)
+
+# Run!
 snx.run()
