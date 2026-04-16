@@ -75,13 +75,19 @@ def test_blending(volume: snx.Volume, adaptor: adaptors.Volume) -> None:
     adaptor._vispy_node.set_gl_state = MagicMock()
 
     volume.blending = BlendMode.ADDITIVE
-    adaptor._vispy_node.set_gl_state.assert_called_with("additive")
+    adaptor._vispy_node.set_gl_state.assert_called_with(
+        "additive", blend=True, depth_test=False
+    )
 
     volume.blending = BlendMode.ALPHA
-    adaptor._vispy_node.set_gl_state.assert_called_with("translucent")
+    adaptor._vispy_node.set_gl_state.assert_called_with(
+        "translucent", blend=True, depth_test=False
+    )
 
     volume.blending = BlendMode.OPAQUE
-    adaptor._vispy_node.set_gl_state.assert_called_with(None, blend=False)
+    adaptor._vispy_node.set_gl_state.assert_called_with(
+        "opaque", blend=False, depth_test=True
+    )
 
 
 @pytest.mark.parametrize(
