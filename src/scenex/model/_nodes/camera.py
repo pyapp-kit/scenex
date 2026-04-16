@@ -374,6 +374,9 @@ class PanZoom(CameraController):
         factor: float,
         center: Position3D | None = None,
     ) -> None:
+        if not math.isfinite(factor) or factor <= 0:
+            raise ValueError("factor must be a finite number greater than 0")
+
         # Step 1: Scale the projection matrix to zoom in or out.
         camera.projection = camera.projection.scaled(
             (1 if self.lock_x else factor, 1 if self.lock_y else factor, 1.0)
@@ -611,7 +614,10 @@ class Orbit(CameraController):
         factor: float,
         center: Position3D | None = None,
     ) -> None:
-        center_array = np.asarray(self.center)
+        if not math.isfinite(factor) or factor <= 0:
+            raise ValueError("factor must be a finite number greater than 0")
+
+        center_array = np.asarray(center or self.center)
         dr = camera.transform.map((0, 0, 0))[:3] - center_array
         camera.transform = camera.transform.translated(-dr + dr / factor)
 
