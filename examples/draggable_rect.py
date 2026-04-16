@@ -1,5 +1,8 @@
 """Draggable rectangle with corner handles overlaid on a grayscale image.
 
+Pixels contained within the rectangle are inverted in the background image. Note that,
+for a pixel to be considered "contained" its center must be contained.
+
 This example demonstrates:
 - Composing a rectangle from three nodes: a semi-transparent mesh (fill),
   a solid line (outline), and square point markers (handles).
@@ -23,14 +26,9 @@ from scenex.app.events import (
 
 # -- Background image -- #
 IMG_W, IMG_H = 100, 100
-rng = np.random.default_rng(0)
 
-xs = np.linspace(0, 3 * np.pi, IMG_W)
-ys = np.linspace(0, 3 * np.pi, IMG_H)
-xx, yy = np.meshgrid(xs, ys)
-base = ((np.sin(xx) * np.cos(yy) * 0.5 + 0.5) * 180 + 40).astype(np.float32)
-noise = rng.integers(-12, 12, base.shape, dtype=np.int16)
-img_data = np.clip(base + noise, 0, 255).astype(np.uint8)
+xx, yy = np.meshgrid(np.linspace(0, 6 * np.pi, IMG_W), np.linspace(0, 6 * np.pi, IMG_H))
+img_data = ((np.sin(xx + yy) * 0.5 + 0.5) * 255).astype(np.uint8)
 
 bg = snx.Image(
     data=img_data,
@@ -40,9 +38,7 @@ bg = snx.Image(
 )
 
 # -- Rectangle nodes -- #
-RECT_VERTICES = np.array(
-    [[40, 40, 0], [60, 40, 0], [60, 60, 0], [40, 60, 0]], dtype=float
-)
+RECT_VERTICES = np.array([[0, 0, 0], [20, 0, 0], [20, 20, 0], [0, 20, 0]], dtype=float)
 
 rect_mesh = snx.Mesh(
     vertices=RECT_VERTICES,
@@ -99,16 +95,17 @@ def _cursor_for_pos(wx: float, wy: float) -> CursorType:
 def _vertices_from_corners(x0: float, y0: float, x1: float, y1: float) -> np.ndarray:
     """Takes any two opposite corners of a rectangle and returns all four vertices.
 
-    These vertices will start with the minimum corner and proceed clockwise.
+    These vertices are returned in counter-clockwise order as
+    bottom-left, bottom-right, top-right, top-left.
     """
     mi = (min(x0, x1), min(y0, y1))
     ma = (max(x0, x1), max(y0, y1))
     return np.asarray(
         [
             (mi[0], mi[1], 0),
-            (mi[0], ma[1], 0),
-            (ma[0], ma[1], 0),
             (ma[0], mi[1], 0),
+            (ma[0], ma[1], 0),
+            (mi[0], ma[1], 0),
         ]
     )
 
@@ -200,12 +197,12 @@ def _event_filter(event: Event) -> bool:
 
 def _on_vertices_changed(vertices: np.ndarray) -> None:
     # Offset by 0.5 because pixels are at integers, not half-integers.
-    xs = vertices[:, 0] + 0.5
-    ys = vertices[:, 1] + 0.5
-    x0 = int(np.clip(xs.min(), 0, IMG_W))
-    x1 = int(np.clip(xs.max(), 0, IMG_W))
-    y0 = int(np.clip(ys.min(), 0, IMG_H))
-    y1 = int(np.clip(ys.max(), 0, IMG_H))
+    xs = vertices[:, 0]
+    ys = vertices[:, 1]
+    x0 = int(np.clip(np.ceil(xs.min()), 0, IMG_W))
+    x1 = int(np.clip(np.ceil(xs.max()), 0, IMG_W))
+    y0 = int(np.clip(np.ceil(ys.min()), 0, IMG_H))
+    y1 = int(np.clip(np.ceil(ys.max()), 0, IMG_H))
 
     display = img_data.copy()
     display[y0:y1, x0:x1] = 255 - img_data[y0:y1, x0:x1]
