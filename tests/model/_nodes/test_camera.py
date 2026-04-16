@@ -73,7 +73,7 @@ def _validate_ray(maybe_ray: Ray | None) -> Ray:
     return maybe_ray
 
 
-def test_panzoom_pan() -> None:
+def test_panzoom_mouse() -> None:
     """Tests panning behavior of PanZoom."""
     interaction = snx.PanZoom()
     cam = snx.Camera(interactive=True, controller=interaction)
@@ -96,7 +96,7 @@ def test_panzoom_pan() -> None:
     np.testing.assert_allclose(cam.transform.root, expected.root)
 
 
-def test_panzoom_zoom() -> None:
+def test_panzoom_scroll() -> None:
     """Tests zooming behavior of PanZoom."""
     interaction = snx.PanZoom()
     cam = snx.Camera(interactive=True, controller=interaction)
@@ -115,7 +115,70 @@ def test_panzoom_zoom() -> None:
     np.testing.assert_allclose(cam.projection.root, expected.root)
 
 
-def test_orbit_orbiting() -> None:
+def test_panzoom_zoom() -> None:
+    """Tests zooming via the public zoom() API without a center."""
+    interaction = snx.PanZoom()
+    cam = snx.Camera(interactive=True, controller=interaction)
+    factor = 0.5
+    before = cam.projection
+    interaction.zoom(cam, factor)
+    expected = before.scaled((factor, factor, 1))
+    np.testing.assert_allclose(cam.projection.root, expected.root)
+    # No center provided — transform should be unchanged
+    np.testing.assert_allclose(cam.transform.root, snx.Transform().root)
+
+
+def test_panzoom_zoom_with_center() -> None:
+    """Tests that zoom() applies a compensating translation to keep center fixed."""
+    interaction = snx.PanZoom()
+    cam = snx.Camera(interactive=True, controller=interaction)
+    factor = 0.5
+    center = (0.5, 0.3, 0.0)
+    interaction.zoom(cam, factor, center=center)
+    # Projection should be scaled
+    expected_proj = snx.Transform().scaled((factor, factor, -1))
+    np.testing.assert_allclose(cam.projection.root, expected_proj.root)
+    # Transform should have been panned by the compensating amount
+    zoom_center = np.array(center[:2])
+    camera_center = np.zeros(2)  # camera was at origin before zoom
+    delta_screen1 = zoom_center - camera_center
+    delta_screen2 = delta_screen1 * factor
+    pan = (delta_screen2 - delta_screen1) / factor
+    expected_transform = snx.Transform().translated((pan[0], pan[1]))
+    np.testing.assert_allclose(cam.transform.root, expected_transform.root)
+
+
+def test_panzoom_zoom_lock_x() -> None:
+    """Tests that lock_x prevents x-axis scaling and x-axis panning."""
+    interaction = snx.PanZoom(lock_x=True)
+    cam = snx.Camera(interactive=True, controller=interaction)
+    factor = 0.5
+    center = (0.5, 0.3, 0.0)
+    before_proj = cam.projection
+    interaction.zoom(cam, factor, center=center)
+    # X axis of projection should be unchanged, Y axis should be scaled
+    expected_proj = before_proj.scaled((1, factor, 1))
+    np.testing.assert_allclose(cam.projection.root, expected_proj.root)
+    # X component of the pan should be zero
+    np.testing.assert_allclose(cam.transform.root[3, 0], 0.0)
+
+
+def test_panzoom_zoom_lock_y() -> None:
+    """Tests that lock_y prevents y-axis scaling and y-axis panning."""
+    interaction = snx.PanZoom(lock_y=True)
+    cam = snx.Camera(interactive=True, controller=interaction)
+    factor = 0.5
+    center = (0.5, 0.3, 0.0)
+    before_proj = cam.projection
+    interaction.zoom(cam, factor, center=center)
+    # Y axis of projection should be unchanged, X axis should be scaled
+    expected_proj = before_proj.scaled((factor, 1, 1))
+    np.testing.assert_allclose(cam.projection.root, expected_proj.root)
+    # Y component of the pan should be zero
+    np.testing.assert_allclose(cam.transform.root[3, 1], 0.0)
+
+
+def test_orbit_mouse_left() -> None:
     """Tests orbiting behavior of Orbit."""
     # Camera is along the x axis, looking in the negative x direction at the center
     interaction = snx.Orbit(center=(0, 0, 0))
@@ -165,43 +228,8 @@ def test_orbit_orbiting() -> None:
     np.testing.assert_allclose(pos_after_act, pos_after_exp)
 
 
-def test_orbit_zoom() -> None:
-    center = (0.0, 0.0, 0.0)
-    interaction = snx.Orbit(center=center)
-    cam = snx.Camera(
-        interactive=True,
-        transform=snx.Transform().translated((0, 0, 10)),
-        controller=interaction,
-    )
-    tform_before = cam.transform
-    # Simulate wheel event
-    wheel_event = WheelEvent(
-        canvas_pos=(0, 0),
-        world_ray=Ray((0, 0, 10), (0, 0, -1), source=MagicMock(spec=snx.View)),
-        buttons=MouseButton.NONE,
-        angle_delta=(0, 120),
-    )
-    interaction.handle_event(wheel_event, cam)
-    # The camera should have moved closer to center
-    zoom = interaction._zoom_factor(120)
-    desired_tform = snx.Transform().translated((0, 0, 10 * zoom))
-    np.testing.assert_allclose(cam.transform, desired_tform)
-
-    # Simulate wheel event in other direction
-    wheel_event = WheelEvent(
-        canvas_pos=(0, 0),
-        world_ray=Ray((0, 0, 10), (0, 0, -1), source=MagicMock(spec=snx.View)),
-        buttons=MouseButton.NONE,
-        angle_delta=(0, -120),
-    )
-    interaction.handle_event(wheel_event, cam)
-    # The camera should have moved back to the starting point
-    zoom = interaction._zoom_factor(-120)
-    desired_tform = snx.Transform().translated((0, 0, 10))
-    np.testing.assert_allclose(cam.transform, tform_before)
-
-
-def test_orbit_pan() -> None:
+def test_orbit_mouse_right() -> None:
+    """Tests right-click panning"""
     # Camera is along the x axis, looking in the negative x direction at the center
     interaction = snx.Orbit(center=(0, 0, 0))
     cam = snx.Camera(interactive=True, controller=interaction)
@@ -250,6 +278,69 @@ def test_orbit_pan() -> None:
     # It should move the orbit center in a similar way
     desired_center = center_before + distance
     np.testing.assert_allclose(interaction.center, desired_center)
+
+
+def test_orbit_scroll() -> None:
+    """Tests zooming via mouse wheel events on Orbit."""
+    center = (0.0, 0.0, 0.0)
+    interaction = snx.Orbit(center=center)
+    starting_dist = 10
+    cam = snx.Camera(
+        interactive=True,
+        transform=snx.Transform().translated((0, 0, starting_dist)),
+        controller=interaction,
+    )
+    tform_before = cam.transform
+    # Simulate wheel event
+    delta = 120  # one wheel click
+    wheel_event = WheelEvent(
+        canvas_pos=(0, 0),
+        world_ray=Ray((0, 0, 0), (0, 0, -1), source=MagicMock(spec=snx.View)),
+        buttons=MouseButton.NONE,
+        angle_delta=(0, delta),
+    )
+    interaction.handle_event(wheel_event, cam)
+    # The camera should have moved closer to center
+    zoom = interaction._zoom_factor(delta)
+    desired_tform = snx.Transform().translated((0, 0, starting_dist / zoom))
+    np.testing.assert_allclose(cam.transform, desired_tform)
+
+    # Simulate wheel event in other direction
+    delta = -120  # one wheel click in the other direction
+    wheel_event = WheelEvent(
+        canvas_pos=(0, 0),
+        world_ray=Ray((0, 0, 0), (0, 0, -1), source=MagicMock(spec=snx.View)),
+        buttons=MouseButton.NONE,
+        angle_delta=(0, delta),
+    )
+    interaction.handle_event(wheel_event, cam)
+    # The camera should have moved back to the starting point
+    zoom = interaction._zoom_factor(delta)
+    desired_tform = snx.Transform().translated((0, 0, starting_dist))
+    np.testing.assert_allclose(cam.transform, tform_before)
+
+
+def test_orbit_zoom() -> None:
+    """Tests zooming via the public zoom() API on Orbit."""
+    center = (0.0, 0.0, 0.0)
+    interaction = snx.Orbit(center=center)
+    starting_dist = 10
+    cam = snx.Camera(
+        interactive=True,
+        transform=snx.Transform().translated((0, 0, starting_dist)),
+        controller=interaction,
+    )
+    factor = 0.5  # zoom out slightly
+    interaction.zoom(cam, factor)
+    # Camera should have moved along the camera-to-center axis by (1 - factor)
+    # So now it should be at `(1 + (1 - factor)) = 2 - factor` along the z axis
+    desired_tform = snx.Transform().translated((0, 0, 20))
+    np.testing.assert_allclose(cam.transform, desired_tform)
+
+    factor = 2  # zoom in slightly
+    interaction.zoom(cam, factor)
+    desired_tform = snx.Transform().translated((0, 0, 10))
+    np.testing.assert_allclose(cam.transform, desired_tform)
 
 
 def test_panzoom_serialization() -> None:

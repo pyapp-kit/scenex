@@ -48,6 +48,9 @@ def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Trans
     width = width if width else 1e-6
     height = height if height else 1e-6
     depth = depth if depth else 1e-6
+    # NOTE: In a right-handned coordinate system, the camera looks down -Z, so we need
+    # to flip the Z axis
+    # See https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/orthographic-projection-matrix.html
     return Transform().scaled((2 / width, 2 / height, -2 / depth))
 
 
