@@ -5,7 +5,7 @@ for a pixel to be considered "contained" its center must be contained.
 
 This example demonstrates:
 - Composing a rectangle from three nodes: a semi-transparent mesh (fill),
-  a solid line (outline), and square point markers (handles).
+  a solid line (outline), and disc point markers (handles).
 - Using an event filter to implement click-and-drag interactions.
 - Changing cursor shapes to signal behaviors.
 """
