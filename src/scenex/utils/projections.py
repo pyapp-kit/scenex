@@ -45,9 +45,11 @@ def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Trans
     projection: Transform
         A Transform matrix creating an orthographic camera view
     """
-    width = width if width else 1e-6
-    height = height if height else 1e-6
-    depth = depth if depth else 1e-6
+    if any(arg < 0 for arg in (width, height, depth)):
+        raise ValueError("Orthographic projection parameters must be positive.")
+    width = max(width, 1e-6)
+    height = max(height, 1e-6)
+    depth = max(depth, 1e-6)
     return Transform().scaled((2 / width, 2 / height, -2 / depth))
 
 
