@@ -62,17 +62,17 @@ def test_orthographic() -> None:
     # Testing inappropriate values for width, height, depth
     for i in range(3):
         args = [1.0, 1.0, 1.0]
-        args[i] = 1e-6
-        exp_mat = orthographic(*args)
         # Test negative values raise an error
         args[i] = -1
         with pytest.raises(ValueError):
             orthographic(*args)
-        # Test zero values are replaced with very small values
+        # Test zero values raise an error
         args[i] = 0
-        act_mat = orthographic(*args)
-        assert np.allclose(exp_mat, act_mat, rtol=1e-10)
+        with pytest.raises(ValueError):
+            orthographic(*args)
         # Test extremely small values are replaced with very small values
+        args[i] = 1e-6
+        exp_mat = orthographic(*args)
         args[i] = 1e-311
         act_mat = orthographic(*args)
         assert np.allclose(exp_mat, act_mat, rtol=1e-10)

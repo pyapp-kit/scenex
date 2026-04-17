@@ -26,16 +26,16 @@ def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Trans
     Parameters
     ----------
     width: float, optional
-        The width of the camera rectangular prism. Default 1 (mirroring the side length
-        of a unit cube).
+        The width of the camera rectangular prism. Must be positive. Default 1
+        (mirroring the side length of a unit cube).
     height: float, optional
-        The height of the camera rectangular prism. Default 1 (mirroring the side length
-        of a unit cube).
+        The height of the camera rectangular prism. Must be positive. Default 1
+        (mirroring the side length of a unit cube).
     depth: float, optional
-        The depth of the camera rectangular prism. The near and far clipping planes of
-        the resulting matrix become (-depth / 2) and (depth / 2) respectively. Default
-        1, increase (to render things farther away) or decrease (to increase
-        performance) as needed.
+        The depth of the camera rectangular prism. Must be positive. The near and far
+        clipping planes of the resulting matrix become (-depth / 2) and (depth / 2)
+        respectively. Default 1, increase (to render things farther away) or decrease
+        (to increase performance) as needed.
 
         TODO: Is this a good default? May want to consider some large number (1000?)
         instead
@@ -45,7 +45,7 @@ def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Trans
     projection: Transform
         A Transform matrix creating an orthographic camera view
     """
-    if any(arg < 0 for arg in (width, height, depth)):
+    if any(arg <= 0 for arg in (width, height, depth)):
         # Negative values would flip the view, an unlikely user intention.
         # But it could be allowed if there's a good reason...
         raise ValueError("Orthographic projection parameters must be positive.")
