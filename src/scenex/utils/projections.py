@@ -46,6 +46,8 @@ def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Trans
         A Transform matrix creating an orthographic camera view
     """
     if any(arg < 0 for arg in (width, height, depth)):
+        # Negative values would flip the view, an unlikely user intention.
+        # But it could be allowed if there's a good reason...
         raise ValueError("Orthographic projection parameters must be positive.")
     width = max(width, 1e-6)
     height = max(height, 1e-6)
