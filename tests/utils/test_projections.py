@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from pylinalg import vec_unproject
 
 import scenex as snx
@@ -58,6 +59,24 @@ def test_orthographic() -> None:
     )
     assert np.array_equal(exp_corners, vec_unproject(CORNERS, act_mat))
 
+    # Testing inappropriate values for width, height, depth
+    for i in range(3):
+        args = [1.0, 1.0, 1.0]
+        # Test negative values raise an error
+        args[i] = -1
+        with pytest.raises(ValueError):
+            orthographic(*args)
+        # Test zero values raise an error
+        args[i] = 0
+        with pytest.raises(ValueError):
+            orthographic(*args)
+        # Test extremely small values are replaced with very small values
+        args[i] = 1e-200
+        exp_mat = orthographic(*args)
+        args[i] = 1e-311
+        act_mat = orthographic(*args)
+        assert np.allclose(exp_mat, act_mat, rtol=1e-10)
+
 
 def test_perspective() -> None:
     """Basic testing of the perspective matrix"""
@@ -92,13 +111,13 @@ def test_perspective() -> None:
 def test_zoom_to_fit_orthographic() -> None:
     view = snx.View(
         scene=snx.Scene(
-            children=[snx.Points(vertices=np.asarray([[0, 100, 0], [100, 0, 1]]))]
+            children=[snx.Points(vertices=np.asarray([[0, 100, 0], [100, 0, 0]]))]
         )
     )
 
     zoom_to_fit(view, type="orthographic")
     # Assert the camera is moved to the center of the scene
-    assert view.camera.transform == snx.Transform().translated((50, 50, 0.5))
+    assert view.camera.transform == snx.Transform().translated((50, 50, 0))
     # Projection that maps world space to canvas coordinates
     tform = view.camera.transform.inv() @ view.camera.projection
     # Assert the camera projects [0, 0, 0] to NDC coordinates [-1, -1]
@@ -109,7 +128,7 @@ def test_zoom_to_fit_orthographic() -> None:
     zoom_factor = 0.9
     zoom_to_fit(view, type="orthographic", zoom_factor=zoom_factor)
     # Assert the camera is still at the center of the scene
-    assert view.camera.transform == snx.Transform().translated((50, 50, 0.5))
+    assert view.camera.transform == snx.Transform().translated((50, 50, 0))
     # Projection that maps world space to canvas coordinates
     tform = view.camera.transform.inv() @ view.camera.projection
     # Assert the camera projects [0, 0, 0] to NDC coordinates [-0.9, -0.9]
