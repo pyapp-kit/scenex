@@ -123,7 +123,9 @@ def _event_filter(event: Event) -> bool:
     global _anchor, _drag_start
 
     if isinstance(event, MouseMoveEvent):
-        pos = np.array(event.world_ray.origin[:2])
+        if not (ray := view.to_ray(event.pos)):
+            return False
+        pos = np.array(ray.origin[:2])
 
         # -- Dragging a handle -- #
         if _anchor is not None:
@@ -157,18 +159,20 @@ def _event_filter(event: Event) -> bool:
             return True
 
         # -- Hover -- #
-        if event.world_ray.intersections(handles):
+        if ray.intersections(handles):
             app().set_cursor(canvas, _cursor_for_pos(*pos))
-        elif event.world_ray.intersections(rect_mesh):
+        elif ray.intersections(rect_mesh):
             app().set_cursor(canvas, CursorType.ALL_ARROW)
         else:
             app().set_cursor(canvas, CursorType.DEFAULT)
 
     elif isinstance(event, MousePressEvent):
         if event.buttons & MouseButton.LEFT:
-            pos = np.array(event.world_ray.origin[:2])
+            if not (ray := view.to_ray(event.pos)):
+                return False
+            pos = np.array(ray.origin[:2])
             # -- Start a handle drag -- #
-            if event.world_ray.intersections(handles):
+            if ray.intersections(handles):
                 # Find the clicked point
                 clicked = _nearest_corner(*pos)
                 # And record the other point
@@ -176,7 +180,7 @@ def _event_filter(event: Event) -> bool:
                 _anchor = rect_mesh.vertices[opp, :2]
                 return True
             # -- Start a rectangle drag -- #
-            if event.world_ray.intersections(rect_mesh):
+            if ray.intersections(rect_mesh):
                 _drag_start = pos
                 return True
 
