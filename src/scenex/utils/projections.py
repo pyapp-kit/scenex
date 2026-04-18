@@ -26,16 +26,16 @@ def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Trans
     Parameters
     ----------
     width: float, optional
-        The width of the camera rectangular prism. Default 1 (mirroring the side length
-        of a unit cube).
+        The width of the camera rectangular prism. Must be positive. Default 1
+        (mirroring the side length of a unit cube).
     height: float, optional
-        The height of the camera rectangular prism. Default 1 (mirroring the side length
-        of a unit cube).
+        The height of the camera rectangular prism. Must be positive. Default 1
+        (mirroring the side length of a unit cube).
     depth: float, optional
-        The depth of the camera rectangular prism. The near and far clipping planes of
-        the resulting matrix become (-depth / 2) and (depth / 2) respectively. Default
-        1, increase (to render things farther away) or decrease (to increase
-        performance) as needed.
+        The depth of the camera rectangular prism. Must be positive. The near and far
+        clipping planes of the resulting matrix become (-depth / 2) and (depth / 2)
+        respectively. Default 1, increase (to render things farther away) or decrease
+        (to increase performance) as needed.
 
         TODO: Is this a good default? May want to consider some large number (1000?)
         instead
@@ -45,9 +45,14 @@ def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Trans
     projection: Transform
         A Transform matrix creating an orthographic camera view
     """
-    width = width if width else 1e-6
-    height = height if height else 1e-6
-    depth = depth if depth else 1e-6
+    if any(arg <= 0 for arg in (width, height, depth)):
+        # Negative values would flip the view, an unlikely user intention.
+        # But it could be allowed if there's a good reason...
+        raise ValueError("Orthographic projection parameters must be positive.")
+    # REALLY small values could cause overflow in division, so we clamp to a min value.
+    width = max(width, 1e-200)
+    height = max(height, 1e-200)
+    depth = max(depth, 1e-200)
     return Transform().scaled((2 / width, 2 / height, -2 / depth))
 
 
@@ -123,7 +128,10 @@ def zoom_to_fit(
     """
     bb = view.scene.bounding_box
     center = np.mean(bb, axis=0) if bb else (0, 0, 0)
-    w, h, d = np.ptp(bb, axis=0) if bb else (1, 1, 1)
+    # Note that the np.maximum avoids bounding boxes with zero width, height, or depth.
+    # These wouldn't really be boxes, and would cause division by zero errors in
+    # projection matrix calculations
+    w, h, d = np.maximum(np.ptp(bb, axis=0) if bb else (1, 1, 1), 1e-6)
 
     # Apply aspect ratio correction only if requested
     if preserve_aspect_ratio:
