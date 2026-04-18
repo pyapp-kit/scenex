@@ -111,13 +111,13 @@ def test_perspective() -> None:
 def test_zoom_to_fit_orthographic() -> None:
     view = snx.View(
         scene=snx.Scene(
-            children=[snx.Points(vertices=np.asarray([[0, 100, 0], [100, 0, 1]]))]
+            children=[snx.Points(vertices=np.asarray([[0, 100, 0], [100, 0, 0]]))]
         )
     )
 
     zoom_to_fit(view, type="orthographic")
     # Assert the camera is moved to the center of the scene
-    assert view.camera.transform == snx.Transform().translated((50, 50, 0.5))
+    assert view.camera.transform == snx.Transform().translated((50, 50, 0))
     # Projection that maps world space to canvas coordinates
     tform = view.camera.transform.inv() @ view.camera.projection
     # Assert the camera projects [0, 0, 0] to NDC coordinates [-1, -1]
@@ -128,7 +128,7 @@ def test_zoom_to_fit_orthographic() -> None:
     zoom_factor = 0.9
     zoom_to_fit(view, type="orthographic", zoom_factor=zoom_factor)
     # Assert the camera is still at the center of the scene
-    assert view.camera.transform == snx.Transform().translated((50, 50, 0.5))
+    assert view.camera.transform == snx.Transform().translated((50, 50, 0))
     # Projection that maps world space to canvas coordinates
     tform = view.camera.transform.inv() @ view.camera.projection
     # Assert the camera projects [0, 0, 0] to NDC coordinates [-0.9, -0.9]

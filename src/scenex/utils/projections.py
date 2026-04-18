@@ -127,7 +127,10 @@ def zoom_to_fit(
     """
     bb = view.scene.bounding_box
     center = np.mean(bb, axis=0) if bb else (0, 0, 0)
-    w, h, d = np.ptp(bb, axis=0) if bb else (1, 1, 1)
+    # Note that the np.maximum avoids bounding boxes with zero width, height, or depth.
+    # These wouldn't really be boxes, and would cause division by zero errors in
+    # projection matrix calculations
+    w, h, d = np.maximum(np.ptp(bb, axis=0) if bb else (1, 1, 1), 1e-6)
 
     # Apply aspect ratio correction only if requested
     if preserve_aspect_ratio:
