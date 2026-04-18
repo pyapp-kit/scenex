@@ -49,9 +49,10 @@ def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Trans
         # Negative values would flip the view, an unlikely user intention.
         # But it could be allowed if there's a good reason...
         raise ValueError("Orthographic projection parameters must be positive.")
-    width = max(width, 1e-6)
-    height = max(height, 1e-6)
-    depth = max(depth, 1e-6)
+    # REALLY small values could cause overflow in division, so we clamp to a min value.
+    width = max(width, 1e-200)
+    height = max(height, 1e-200)
+    depth = max(depth, 1e-200)
     return Transform().scaled((2 / width, 2 / height, -2 / depth))
 
 

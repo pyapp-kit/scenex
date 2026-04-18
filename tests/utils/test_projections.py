@@ -71,7 +71,7 @@ def test_orthographic() -> None:
         with pytest.raises(ValueError):
             orthographic(*args)
         # Test extremely small values are replaced with very small values
-        args[i] = 1e-6
+        args[i] = 1e-200
         exp_mat = orthographic(*args)
         args[i] = 1e-311
         act_mat = orthographic(*args)
