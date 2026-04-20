@@ -27,26 +27,22 @@ def _view_filter(event: Event) -> bool:
     if isinstance(event, MouseMoveEvent):
         if not (ray := view.to_ray(event.pos)):
             return False
-        intersections = ray.intersections(view.scene)
-        if not intersections:
-            # Clear the image if the mouse is not over it
-            img.data = np.zeros((200, 200), dtype=np.uint8)
-            return True
-        for node, distance in intersections:
-            if not isinstance(node, snx.Image):
-                continue
-            intersection = ray.point_at_distance(distance)
+        if ray.intersections(img):
             data = np.zeros((200, 200), dtype=np.uint8)
-            x = int(intersection[0])
+            x = int(ray.origin[0])
             min_x = max(0, x - 5)
             max_x = min(data.shape[0], x + 5)
 
-            y = int(intersection[1])
+            y = int(ray.origin[1])
             min_y = max(0, y - 5)
             max_y = min(data.shape[1], y + 5)
 
             data[min_y:max_y, min_x:max_x] = 255
-            node.data = data
+            img.data = data
+        else:
+            # Clear the image if the mouse is not over it
+            img.data = np.zeros((200, 200), dtype=np.uint8)
+            return True
     if isinstance(event, MouseEnterEvent):
         # Restore original colormap and clear the image when mouse enters
         img.data = np.zeros((200, 200), dtype=np.uint8)

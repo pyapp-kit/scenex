@@ -236,12 +236,7 @@ class Histogram:
                 self._grabbed = intersections[0]
                 self.view.camera.interactive = False
         elif isinstance(event, events.MouseDoublePressEvent):
-            intersections = [
-                node
-                for node, _dist in ray.intersections(self.controls)
-                if node.interactive
-            ]
-            if self.gamma_handle in intersections:
+            if ray.intersections(self.gamma_handle) and self.gamma_handle.interactive:
                 self.set_gamma(1.0)
         if isinstance(event, events.MouseMoveEvent):
             if self._grabbed is self.left_clim:

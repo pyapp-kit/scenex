@@ -63,8 +63,7 @@ def change_blend_mode(event: Event) -> bool:
         return False
     if not (ray := view.to_ray(event.pos)):
         return False
-    intersected_nodes = [node for node, _ in ray.intersections(view.scene)]
-    if volume1 not in intersected_nodes:
+    if not ray.intersections(volume1):
         return False
     idx = blend_modes.index(volume1.blending)
     next_idx = (idx + 1) % len(blend_modes)

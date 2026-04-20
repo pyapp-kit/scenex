@@ -33,8 +33,7 @@ def _cursor_filter(event: Event) -> bool:
     if isinstance(event, MouseMoveEvent):
         if not (ray := view.to_ray(event.pos)):
             return False
-        intersections = ray.intersections(view.scene)
-        if points in [n for n, _ in intersections]:
+        if ray.intersections(points):
             app().set_cursor(canvas, CursorType.CROSS)
         else:
             app().set_cursor(canvas, CursorType.DEFAULT)

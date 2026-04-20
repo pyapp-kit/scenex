@@ -45,16 +45,15 @@ def _event_filter(event: events.Event) -> bool:
     if isinstance(event, events.MousePressEvent):
         if not (ray := view.to_ray(event.pos)):
             return False
-        for node, _distance in ray.intersections(view.scene):
-            if node == img:
-                global idx
-                img.data = data[:, :, idx % 3]
-                img.cmap = cmap.Colormap(cmaps[idx % 3])
-                idx += 1
+        if ray.intersections(img):
+            global idx
+            img.data = data[:, :, idx % 3]
+            img.cmap = cmap.Colormap(cmaps[idx % 3])
+            idx += 1
     elif isinstance(event, events.MouseReleaseEvent):
         img.data = data
         img.cmap = cmap.Colormap("red")
-    return True  # Don't block the event
+    return False
 
 
 view.set_event_filter(_event_filter)
