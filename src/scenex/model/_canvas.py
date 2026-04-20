@@ -12,8 +12,6 @@ from typing_extensions import Unpack
 
 from scenex.app.events import (
     Event,
-    KeyPressEvent,
-    KeyReleaseEvent,
     MouseEnterEvent,
     MouseEvent,
     MouseLeaveEvent,
@@ -215,44 +213,50 @@ class Canvas(EventedBase):
 
     def handle(self, event: Event) -> bool:
         """Handle the passed event."""
+        # 0. Handle events pertaining to the canvas model
+        if isinstance(event, ResizeEvent):
+            self.size = (event.width, event.height)
+
         # 1. Canvas-level filter sees all events first.
         if self.filter_event(event):
             return True
 
+        # 2. Pass the event to the view under the mouse.
+        # NOTE: Currently, only mouse events have a position. Maybe other events should
+        # have them too?
         if isinstance(event, MouseEvent):
+            # Find the view under the mouse, if any.
             current_view = self._containing_view(event.pos)
 
-            # Handle view-transition enter/leave events.
+            # If that view is different from the last view...
             # TODO: Add a test for this once multiple views are better supported
             if self._last_mouse_view != current_view:
+                # ...send a MouseLeaveEvent to the last view...
                 if self._last_mouse_view is not None:
                     self._last_mouse_view.filter_event(MouseLeaveEvent())
+                # ...and a MouseEnterEvent to the new view.
                 if current_view is not None:
-                    enter = MouseEnterEvent(
-                        pos=event.pos,
-                        buttons=event.buttons,
+                    current_view.filter_event(
+                        MouseEnterEvent(pos=event.pos, buttons=event.buttons)
                     )
-                    current_view.filter_event(enter)
             self._last_mouse_view = current_view
 
             if current_view is not None:
+                # 2a. Give the view under the mouse the chance to handle the event.
                 if current_view.filter_event(event):
                     return True
+                # 2b. If the view didn't handle the event, give any camera controller
+                #    on the view the chance to handle it.
                 if current_view.camera.interactive:
                     if ctrl := current_view.camera.controller:
                         return ctrl.handle_event(event, current_view)
 
+        # 3. MouseLeave events won't be on any view (because they have no position),
+        #    so we need to handle them at the canvas level to clear the last_mouse_view.
         elif isinstance(event, MouseLeaveEvent):
             if self._last_mouse_view is not None:
                 self._last_mouse_view.filter_event(event)
                 self._last_mouse_view = None
-
-        elif isinstance(event, ResizeEvent):
-            self.size = (event.width, event.height)
-
-        elif isinstance(event, KeyPressEvent | KeyReleaseEvent):
-            if self._last_mouse_view is not None:
-                return self._last_mouse_view.filter_event(event)
 
         return False
 
