@@ -12,6 +12,7 @@ from scenex.utils import projections
 
 def test_to_ray() -> None:
     """Tests View.to_ray"""
+    # Create a single view covering the whole canvas.
     camera = snx.Camera(
         transform=snx.Transform(),
         projection=projections.orthographic(2, 2, 2),
@@ -21,23 +22,35 @@ def test_to_ray() -> None:
     canvas = snx.Canvas(views=[view])
     w, h = canvas.rect_for(view)[2:]
 
+    # Test center of view/canvas
     canvas_pos = (w // 2, h // 2)
     ray = view.to_ray(canvas_pos)
     assert ray == Ray(origin=(0, 0, 0), direction=(0, 0, -1), source=view)
 
+    # Test top-left corner of view/canvas
     canvas_pos = (0, 0)
     ray = view.to_ray(canvas_pos)
     assert ray == Ray(origin=(-1, 1, 0), direction=(0, 0, -1), source=view)
 
+    # Test past the top-left corner of view/canvas
+    # NOTE that view.to_ray still returns a ray even if the canvas position is outside
+    # the view's rect - users could check for containment within the view using
+    # canvas.content_rect_for(view) if they want.
+    canvas_pos = (-w // 2, -h // 2)
+    ray = view.to_ray(canvas_pos)
+    assert ray == Ray(origin=(-2, 2, 0), direction=(0, 0, -1), source=view)
+
 
 def test_to_ray_translated() -> None:
     """Tests View.to_ray with a translated camera"""
+    # Identity projection, small transformation
     camera = snx.Camera(
         transform=snx.Transform().translated((1, 1, 1)),
         projection=projections.orthographic(2, 2, 2),
         interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
+    # NOTE: we need a canvas to convert to a ray.
     canvas = snx.Canvas(views=[view])  # noqa: F841
 
     ray = view.to_ray((0, 0))
@@ -57,12 +70,14 @@ def test_to_ray_translated() -> None:
 
 def test_to_ray_projection() -> None:
     """Tests View.to_ray with a non-identity camera projection"""
+    # Narrowed projection, identity transformation
     camera = snx.Camera(
         transform=snx.Transform(),
         projection=projections.orthographic(1, 1, 1),
         interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
+    # NOTE: we need a canvas to convert to a ray.
     canvas = snx.Canvas(views=[view])  # noqa: F841
 
     ray = view.to_ray((0, 0))
