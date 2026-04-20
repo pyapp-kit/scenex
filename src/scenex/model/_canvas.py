@@ -174,13 +174,13 @@ class Canvas(EventedBase):
         raise RuntimeError("No adaptor found for Canvas.")
 
     def set_event_filter(
-        self, callable: Callable[[Event], bool] | None
+        self, event_filter: Callable[[Event], bool] | None
     ) -> Callable[[Event], bool] | None:
         """Register a callable to filter all canvas events before view dispatch.
 
         Parameters
         ----------
-        callable : Callable[[Event], bool] | None
+        event_filter : Callable[[Event], bool] | None
             A callable that takes an Event and returns True if the event was handled
             and should not be propagated further, False otherwise. Pass None to remove
             any existing filter.
@@ -190,7 +190,7 @@ class Canvas(EventedBase):
         Callable[[Event], bool] | None
             The previous event filter, or None if there was no filter.
         """
-        old, self._filter = self._filter, callable
+        old, self._filter = self._filter, event_filter
         return old
 
     def filter_event(self, event: Event) -> bool:
