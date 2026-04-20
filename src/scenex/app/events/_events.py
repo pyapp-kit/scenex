@@ -206,7 +206,7 @@ class MouseEvent(Event):
     2D position and the state of mouse buttons. Specific mouse event types
     (move, press, release, etc.) inherit from this base.
 
-    To obtain the 3D world ray for a mouse event, use ``ViewMouseEvent.view.to_ray()``.
+    To obtain the 3D world ray for a mouse event, use ``View.to_ray()``.
 
     Attributes
     ----------
@@ -223,7 +223,6 @@ class MouseEvent(Event):
     MousePressEvent : Mouse button press
     MouseReleaseEvent : Mouse button release
     WheelEvent : Mouse wheel scroll
-    ViewMouseEvent : Mouse event enriched with view and ray access
     """
 
     pos: tuple[float, float]
