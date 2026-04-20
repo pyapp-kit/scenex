@@ -86,13 +86,10 @@ def event_filter(event: Event) -> bool:
     if isinstance(event, MouseMoveEvent):
         if not (ray := view.to_ray(event.pos)):
             return False
-        if intersections := ray.intersections(view.scene):
-            # Find mesh intersection
-            for node, _distance in intersections:
-                if isinstance(node, snx.Mesh):
-                    # Remove the intersected face
-                    indices = [i for i, _d in node.intersecting_faces(ray)]
-                    node.faces = np.delete(node.faces, indices, axis=0)
+        if ray.intersections(mesh):
+            # Remove the intersected face
+            indices = [i for i, _d in mesh.intersecting_faces(ray)]
+            mesh.faces = np.delete(mesh.faces, indices, axis=0)
             return True
     elif isinstance(event, MousePressEvent):
         if event.buttons & MouseButton.LEFT:

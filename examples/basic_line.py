@@ -56,20 +56,14 @@ def _view_event_filter(event: Event) -> bool:
             y = max(-1, min(1, y))
             line.vertices = _create_line_data(angle=np.asin(y) - x)
             return True
-        if intersections := ray.intersections(view.scene):
-            # Find mesh intersection
-            for node, _distance in intersections:
-                if isinstance(node, snx.Line):
-                    line.color = pressed_color_model
-                    return True
+        if ray.intersections(line):
+            line.color = pressed_color_model
+            return True
         line.color = line_color_model
     elif isinstance(event, MousePressEvent):
         if event.buttons & MouseButton.LEFT:
-            if intersections := ray.intersections(view.scene):
-                # Find line intersection
-                for node, _distance in intersections:
-                    if isinstance(node, snx.Line):
-                        pressed = True
+            if ray.intersections(line):
+                pressed = True
             return True
     elif isinstance(event, MouseReleaseEvent):
         pressed = False

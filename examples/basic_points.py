@@ -73,8 +73,7 @@ def _on_view_event(event: Event) -> bool:
     if isinstance(event, MouseMoveEvent):
         if (ray := view.to_ray(event.pos)) is None:
             return False
-        intersections = ray.intersections(view.scene)
-        if points in [n for n, _ in intersections]:
+        if ray.intersections(points):
             points.face_color = snx.UniformColor(color=cmap.Color("white"))
             points.edge_color = snx.VertexColors(color=colors)
         else:
