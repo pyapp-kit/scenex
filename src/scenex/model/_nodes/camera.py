@@ -224,6 +224,12 @@ class CameraController(EventedBase):
         bool
             True if the event was fully handled and should not propagate to other
             handlers, False if not handled or other handlers should process it.
+
+        Notes
+        -----
+        A ``View`` is passed rather than a ``Camera`` directly because controllers
+        need ``view.to_ray()`` to unproject screen-space event positions into world
+        space, which requires both the camera matrices and the viewport dimensions.
         """
         raise NotImplementedError
 
