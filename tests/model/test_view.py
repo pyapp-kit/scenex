@@ -10,7 +10,7 @@ from scenex.app.events import Event, MouseButton, MouseEnterEvent, MouseMoveEven
 from scenex.utils import projections
 
 
-def test_to_world() -> None:
+def test_to_ray() -> None:
     """Tests View.to_ray"""
     camera = snx.Camera(
         transform=snx.Transform(),
@@ -30,7 +30,7 @@ def test_to_world() -> None:
     assert ray == Ray(origin=(-1, 1, 0), direction=(0, 0, -1), source=view)
 
 
-def test_to_world_translated() -> None:
+def test_to_ray_translated() -> None:
     """Tests View.to_ray with a translated camera"""
     camera = snx.Camera(
         transform=snx.Transform().translated((1, 1, 1)),
@@ -55,7 +55,7 @@ def test_to_world_translated() -> None:
     camera.transform = snx.Transform()
 
 
-def test_to_world_projection() -> None:
+def test_to_ray_projection() -> None:
     """Tests View.to_ray with a non-identity camera projection"""
     camera = snx.Camera(
         transform=snx.Transform(),
