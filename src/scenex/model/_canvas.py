@@ -253,8 +253,9 @@ class Canvas(EventedBase):
         #    so we need to handle them at the canvas level to clear the last_mouse_view.
         elif isinstance(event, MouseLeaveEvent):
             if self._last_mouse_view is not None:
-                self._last_mouse_view.filter_event(event)
+                handled = self._last_mouse_view.filter_event(event)
                 self._last_mouse_view = None
+                return handled
 
         return False
 
