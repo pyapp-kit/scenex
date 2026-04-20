@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 
 import numpy as np
 import pytest
 
 import scenex as snx
-from scenex.app.events import Event, MouseButton, MouseMoveEvent, Ray
+from scenex.app.events import Event, MouseButton, MouseEnterEvent, MouseMoveEvent, Ray
 from scenex.utils import projections
 
 
@@ -94,8 +94,12 @@ def test_events() -> None:
 
     # And show the view saw the event
     canvas.handle(event)
-    # NOTE: There will also be a MouseEnterEvent when the mouse enters the view
-    view_filter.assert_called_with(event)
+    # NOTE that there will also be a MouseEnterEvent
+    assert view_filter.call_count == 2
+    enter_event = MouseEnterEvent(pos=canvas_pos, buttons=MouseButton.NONE)
+    assert view_filter.call_args_list[0] == call(enter_event)
+    # And then the MouseMoveEvent we wanted to test
+    assert view_filter.call_args_list[1] == call(event)
 
 
 def test_filter_returning_None() -> None:
