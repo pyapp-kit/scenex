@@ -4,8 +4,6 @@ import logging
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, cast
 
-import numpy as np
-import pylinalg as la
 from cmap import Color
 from pydantic import ConfigDict, Field, PrivateAttr
 from typing_extensions import Unpack
@@ -15,7 +13,6 @@ from scenex.app.events import (
     MouseEnterEvent,
     MouseEvent,
     MouseLeaveEvent,
-    Ray,
     ResizeEvent,
 )
 from scenex.model._evented_list import EventedList
@@ -26,6 +23,7 @@ from ._view import View  # noqa: TC001
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
 
+    import numpy as np
     from typing_extensions import TypedDict
 
     from scenex.adaptors._base import CanvasAdaptor
@@ -259,55 +257,6 @@ class Canvas(EventedBase):
                 self._last_mouse_view = None
 
         return False
-
-    def to_ndc(self, canvas_pos: tuple[float, float]) -> tuple[float, float] | None:
-        """Map XY canvas position (pixels) to normalized device coordinates (NDC)."""
-        view = self._containing_view(canvas_pos)
-        if view is None:
-            return None
-
-        x, y, width, height = self.rect_for(view)
-
-        # Get position relative to viewport
-        pos_rel = (canvas_pos[0] - x, canvas_pos[1] - y)
-
-        # Convert position to Normalized Device Coordinates (NDC) - i.e., within [-1, 1]
-        ndc_x = pos_rel[0] / width * 2 - 1
-        ndc_y = -(pos_rel[1] / height * 2 - 1)
-        return (ndc_x, ndc_y)
-
-    def to_world(self, canvas_pos: tuple[float, float]) -> Ray | None:
-        """Map XY canvas position (pixels) to a Ray traveling through world space."""
-        # Code adapted from:
-        # https://github.com/pygfx/pygfx/pull/753/files#diff-173d643434d575e67f8c0a5bf2d7ea9791e6e03a4e7a64aa5fa2cf4172af05cdR395
-        view = self._containing_view(canvas_pos)
-        if view is None:
-            return None
-
-        # Convert position to Normalized Device Coordinates (NDC) - i.e., within [-1, 1]
-        pos_ndc = self.to_ndc(canvas_pos)
-
-        # Note that the camera matrix is the matrix multiplication of:
-        # * The projection matrix, which projects local space (the rectangular
-        #   bounds of the perspective camera) into NDC.
-        # * The view matrix, i.e. the transform positioning the camera in the world.
-        # The result is a matrix mapping world coordinates
-        camera_matrix = view.camera.projection @ view.camera.transform.inv().T
-        # Unproject the canvas NDC coordinates into world space.
-        pos_world = la.vec_unproject(pos_ndc, camera_matrix)
-
-        # To find the direction of the ray, we find a unprojected point farther away
-        # and subtract the closer point.
-        pos_world_farther = la.vec_unproject(pos_ndc, camera_matrix, depth=1)
-        direction = pos_world_farther - pos_world
-        direction = direction / np.linalg.norm(direction)
-
-        ray = Ray(
-            origin=tuple(pos_world),
-            direction=tuple(direction),
-            source=view,
-        )
-        return ray
 
     def _containing_view(self, pos: tuple[float, float]) -> View | None:
         for view in self.views:
