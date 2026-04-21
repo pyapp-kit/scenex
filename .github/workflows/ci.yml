@@ -30,7 +30,7 @@ jobs:
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
-          python-version: "3.13"
+          python-version: "3.14"
       - run: uvx prek run --all-files
 
   test:
@@ -40,7 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.10", "3.13"]
+        python-version: ["3.10", "3.14"]
         gfx: [pygfx, vispy]
         canvas: [pyqt6, jupyter, wx]
         exclude:
@@ -61,6 +61,10 @@ jobs:
             canvas: pyqt6
             os: ubuntu-latest
           - python-version: "3.12"
+            gfx: pygfx
+            canvas: pyqt6
+            os: ubuntu-latest
+          - python-version: "3.13"
             gfx: pygfx
             canvas: pyqt6
             os: ubuntu-latest
