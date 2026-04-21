@@ -232,8 +232,9 @@ class Canvas(EventedBase):
                 # ...send a MouseLeaveEvent to the last view...
                 if self._last_mouse_view is not None:
                     self._last_mouse_view.filter_event(MouseLeaveEvent())
-                # ...and a MouseEnterEvent to the new view.
-                if current_view is not None:
+                # ...and a MouseEnterEvent to the new view (if the incoming event isn't
+                # one already).
+                if current_view is not None and not isinstance(event, MouseEnterEvent):
                     current_view.filter_event(
                         MouseEnterEvent(pos=event.pos, buttons=event.buttons)
                     )
