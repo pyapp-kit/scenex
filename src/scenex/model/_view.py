@@ -148,7 +148,7 @@ class View(EventedBase):
 
     def _to_ndc(self, view_pos: tuple[float, float]) -> tuple[float, float] | None:
         """Map a view-relative pixel position to normalized device coordinates (NDC)."""
-        if (rect := self.rect) is None:
+        if (rect := self.content_rect) is None:
             return None
         _, _, width, height = rect
         ndc_x = view_pos[0] / width * 2 - 1
@@ -166,7 +166,14 @@ class View(EventedBase):
         Returns
         -------
         Ray | None
-            The world-space Ray, if the canvas position is on this View.
+            The world-space Ray, or None if this view has no canvas.
+
+        Notes
+        -----
+        If ``canvas_pos`` falls outside this view's rectangle, a Ray is still
+        returned — it simply points outside the visible frustum. Callers that
+        need to restrict to within-bounds positions should check
+        ``view.content_rect`` before calling this method.
         """
         # We need this view to be on a canvas to make sense of the canvas position.
         if self._canvas is None:
@@ -176,7 +183,7 @@ class View(EventedBase):
             )
             return None
         # Convert canvas position to view position
-        x, y = self._canvas.rect_for(self)[:2]
+        x, y = self._canvas.content_rect_for(self)[:2]
         view_pos = (canvas_pos[0] - x, canvas_pos[1] - y)
         # Convert view position to NDC
         ndc = self._to_ndc(view_pos)

@@ -41,6 +41,22 @@ def test_to_ray() -> None:
     assert ray == Ray(origin=(-2, 2, 0), direction=(0, 0, -1), source=view)
 
 
+def test_to_ray_layout() -> None:
+    """Tests View.to_ray with a layout"""
+    # Create a view with a layout that offsets the content rect by (10, 20)
+    camera = snx.Camera(
+        transform=snx.Transform(),
+        projection=projections.orthographic(2, 2, 2),
+        interactive=True,
+    )
+    layout = snx.Layout(margin=10)
+    view = snx.View(scene=snx.Scene(children=[]), camera=camera, layout=layout)
+    canvas = snx.Canvas(views=[view])  # noqa: F841
+
+    ray = view.to_ray((10, 10))
+    assert ray == Ray(origin=(-1, 1, 0), direction=(0, 0, -1), source=view)
+
+
 def test_to_ray_translated() -> None:
     """Tests View.to_ray with a translated camera"""
     # Identity projection, small transformation
