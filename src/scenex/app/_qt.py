@@ -87,7 +87,7 @@ class QtEventFilter(QObject, EventFilter):
 
     def _convert_event(self, qevent: QEvent) -> Event | None:
         """Convert a QEvent to a SceneX Event."""
-        if isinstance(qevent, QMouseEvent | QEnterEvent):
+        if isinstance(qevent, (QMouseEvent, QEnterEvent)):
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
 
