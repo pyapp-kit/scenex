@@ -38,7 +38,33 @@ def test_multiple_views() -> None:
     assert y1 == y2
 
 
-def test_handle_enter_events() -> None:
+def test_event_filter() -> None:
+    """Tests the ability to set a canvas-level event filter."""
+    view = snx.View()
+    view_filter = Mock()
+    view.set_event_filter(view_filter)
+
+    canvas = snx.Canvas(views=[view])
+    canvas_filter = Mock()
+    canvas_filter.return_value = False
+    canvas.set_event_filter(canvas_filter)
+    # Ensure that the canvas can receive events
+    evt = MouseMoveEvent(pos=(0, 0), buttons=MouseButton.NONE)
+    canvas.handle(evt)
+    canvas_filter.assert_called_with(evt)
+    view_filter.assert_called_with(evt)
+
+    # Ensure that the canvas can block events if the filter returns True
+    view_filter.reset_mock()
+    canvas_filter.reset_mock()
+    canvas_filter.return_value = True
+
+    canvas.handle(evt)
+    canvas_filter.assert_called_with(evt)
+    view_filter.assert_not_called()
+
+
+def test_handle_view_events() -> None:
     """Tests inter-view mouse event handling.
 
     Note that this is different from testing that events are passed to the handler,
