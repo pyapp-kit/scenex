@@ -39,7 +39,7 @@ def _key_filter(event: Event) -> bool:
     if not isinstance(event, KeyPressEvent):
         return False
 
-    key = event.key  # KeyCode (or KeyCombo for modified keys)
+    key = event.key
     print(f"key_down: {key}")
     cam = view.camera
 

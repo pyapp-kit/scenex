@@ -78,8 +78,8 @@ class Ray(NamedTuple):
     allowing determination of which scene objects are under the mouse cursor.
 
     The ray is defined by an origin point (typically the camera position) and a
-    normalized direction vector. All MouseEvent instances include a world_ray that
-    can be used to test intersections with scene geometry.
+    normalized direction vector, and can be used to test intersections with scene
+    geometry.
 
     Attributes
     ----------
@@ -118,7 +118,7 @@ class Ray(NamedTuple):
 
     See Also
     --------
-    MouseEvent : Events that include world_ray
+    View.to_ray : Method to compute a Ray from a canvas position
     Node.passes_through : Node method for computing ray intersections
     """
 

@@ -289,7 +289,7 @@ def set_cursor(canvas: model.Canvas, cursor: CursorType) -> None:
     Unfortunately, setting the cursor often requires access to a native widget, meaning
     any scenex abstractions for setting the cursor will need as input the canvas model
     or a derivative adaptor. Proper separation of concerns suggests that the app-level
-    API should just take the native widget. This function is a conveniece that performs
+    API should just take the native widget. This function is a convenience that performs
     the intermediate steps to get the native widget from a canvas model.
     """
     for adaptor in canvas._get_adaptors(create=True):
