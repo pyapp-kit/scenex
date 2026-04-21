@@ -15,8 +15,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import ParamSpec, TypeVar
 
-    from scenex.app.events._events import EventFilter
-    from scenex.model import Canvas
+    from scenex.app.events._events import Event, EventFilter
 
     T = TypeVar("T")
     P = ParamSpec("P")
@@ -90,14 +89,14 @@ class CursorType(Enum):
     Set a crosshair cursor during drawing mode:
         >>> import scenex as snx
         >>> canvas = snx.Canvas()
-        >>> app().set_cursor(canvas, CursorType.CROSS)
+        >>> snx.set_cursor(canvas, CursorType.CROSS)
 
     Restore default cursor after operation:
-        >>> app().set_cursor(canvas, CursorType.DEFAULT)
+        >>> snx.set_cursor(canvas, CursorType.DEFAULT)
 
     See Also
     --------
-    App.set_cursor : Method to set cursor on a canvas
+    snx.set_cursor : Function to set cursor on a canvas
     """
 
     DEFAULT = auto()
@@ -164,13 +163,13 @@ class App:
         """
         raise NotImplementedError("Must be implemented by subclasses.")
 
-    def show(self, canvas: Canvas, visible: bool) -> None:
-        """Show or hide a canvas window.
+    def show(self, native_widget: Any, visible: bool) -> None:
+        """Show or hide a native canvas widget.
 
         Parameters
         ----------
-        canvas : Canvas
-            The canvas to show or hide
+        native_widget : Any
+            The backend-specific native canvas widget to show or hide.
         visible : bool
             True to show the canvas window, False to hide it.
 
@@ -180,18 +179,22 @@ class App:
         """
         raise NotImplementedError("Must be implemented by subclasses.")
 
-    def install_event_filter(self, canvas: Any, model_canvas: Canvas) -> EventFilter:
-        """Install an event filter on a canvas to forward events to the model.
+    def install_event_filter(
+        self, widget: Any, handler: Callable[[Event], bool]
+    ) -> EventFilter:
+        """Install an event filter on a native widget to forward events to a handler.
 
         Implementations of this method will capture all events given to the native
-        widget, translated them into scenex events, and route them to `model_canvas`.
+        widget, translate them into scenex events, and call ``handler`` with each one.
 
         Parameters
         ----------
-        canvas : Any
+        widget : Any
             The backend-specific native canvas widget.
-        model_canvas : Canvas
-            The scenex Canvas model that should receive events.
+        handler : Callable[[Event], bool]
+            A callable that receives each translated scenex event and returns True if
+            the event was handled (stopping further propagation), False otherwise.
+            Typically ``model_canvas.handle``.
 
         Returns
         -------
@@ -281,15 +284,15 @@ class App:
         return _thread_pool_executor()
 
     # ------------------------------ cursor API -------------------------------
-    def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
-        """Set the cursor for the given canvas.
+    def set_cursor(self, native_widget: Any, cursor: CursorType) -> None:
+        """Set the cursor on a native canvas widget.
 
         Backends override this to translate the abstract cursor into native form.
 
         Parameters
         ----------
-        canvas : Canvas
-            The canvas on which to set the cursor.
+        native_widget : Any
+            The backend-specific native canvas widget.
         cursor : CursorType
             The type of cursor to set.
         """

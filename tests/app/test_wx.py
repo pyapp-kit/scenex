@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
-from unittest.mock import patch
+from unittest.mock import MagicMock
 
 import pytest
 from app_model.types import KeyBinding
 
 import scenex as snx
-from scenex.app import CursorType, GuiFrontend, app, determine_app
+from scenex.app import CursorType, GuiFrontend, determine_app
 from scenex.app.events import (
     KeyPressEvent,
     KeyReleaseEvent,
@@ -73,89 +73,66 @@ def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None
 
 
 def test_mouse_press(evented_canvas: snx.Canvas) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
+    adaptor = evented_canvas._get_adaptors(create=True)[0]
+    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    mock_filter = MagicMock()
+    evented_canvas.set_event_filter(mock_filter)
 
     press_point = (5, 10)
-    with patch.object(snx.Canvas, "handle") as mock_handle:
-        # Press the left button
-        _processEvent(wx.EVT_LEFT_DOWN, native, pos=wx.Point(*press_point))
-
-    mock_handle.assert_called_once_with(
-        MousePressEvent(
-            pos=press_point,
-            buttons=MouseButton.LEFT,
-        ),
+    # Press the left button
+    _processEvent(wx.EVT_LEFT_DOWN, native, pos=wx.Point(*press_point))
+    mock_filter.assert_called_once_with(
+        MousePressEvent(pos=press_point, buttons=MouseButton.LEFT)
     )
 
-    with patch.object(snx.Canvas, "handle") as mock_handle:
-        # Now press the right button
-        _processEvent(wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point))
-
-    mock_handle.assert_called_once_with(
-        MousePressEvent(
-            pos=press_point,
-            buttons=MouseButton.RIGHT,
-        ),
+    mock_filter.reset_mock()
+    # Now press the right button
+    _processEvent(wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point))
+    mock_filter.assert_called_once_with(
+        MousePressEvent(pos=press_point, buttons=MouseButton.RIGHT)
     )
 
 
 def test_mouse_release(evented_canvas: snx.Canvas) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
+    adaptor = evented_canvas._get_adaptors(create=True)[0]
+    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    mock_filter = MagicMock()
+    evented_canvas.set_event_filter(mock_filter)
 
     press_point = (5, 10)
-    with patch.object(snx.Canvas, "handle") as mock_handle:
-        _processEvent(wx.EVT_LEFT_UP, native, pos=wx.Point(*press_point))
-
-    mock_handle.assert_called_once_with(
-        MouseReleaseEvent(
-            pos=press_point,
-            buttons=MouseButton.LEFT,
-        ),
+    _processEvent(wx.EVT_LEFT_UP, native, pos=wx.Point(*press_point))
+    mock_filter.assert_called_once_with(
+        MouseReleaseEvent(pos=press_point, buttons=MouseButton.LEFT)
     )
 
 
 def test_mouse_move(evented_canvas: snx.Canvas) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
+    adaptor = evented_canvas._get_adaptors(create=True)[0]
+    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    mock_filter = MagicMock()
+    evented_canvas.set_event_filter(mock_filter)
 
-    with patch.object(snx.Canvas, "handle") as mock_handle:
-        press_point = (5, 10)
-        # FIXME: For some reason the mouse press is necessary for processing events?
-        _processEvent(wx.EVT_LEFT_DOWN, native, pos=wx.Point(*press_point))
-        _processEvent(wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point))
-        mock_handle.reset_mock()
-        _processEvent(wx.EVT_MOTION, native, pos=wx.Point(*press_point))
-
-        mock_handle.assert_called_once_with(
-            MouseMoveEvent(
-                pos=press_point,
-                buttons=MouseButton.LEFT | MouseButton.RIGHT,
-            ),
-        )
+    press_point = (5, 10)
+    # FIXME: For some reason the mouse press is necessary for processing events?
+    _processEvent(wx.EVT_LEFT_DOWN, native, pos=wx.Point(*press_point))
+    _processEvent(wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point))
+    mock_filter.reset_mock()
+    _processEvent(wx.EVT_MOTION, native, pos=wx.Point(*press_point))
+    mock_filter.assert_called_once_with(
+        MouseMoveEvent(pos=press_point, buttons=MouseButton.LEFT | MouseButton.RIGHT)
+    )
 
 
 def test_mouse_wheel(evented_canvas: snx.Canvas) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
+    adaptor = evented_canvas._get_adaptors(create=True)[0]
+    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    mock_filter = MagicMock()
+    evented_canvas.set_event_filter(mock_filter)
 
     press_point = (5, 10)
-    with patch.object(snx.Canvas, "handle") as mock_handle:
-        _processEvent(
-            wx.EVT_MOUSEWHEEL, native, pos=wx.Point(*press_point), rot=(0, 120)
-        )
-
-    mock_handle.assert_called_once_with(
-        WheelEvent(
-            pos=press_point,
-            buttons=MouseButton.NONE,
-            angle_delta=(0, 120),
-        ),
+    _processEvent(wx.EVT_MOUSEWHEEL, native, pos=wx.Point(*press_point), rot=(0, 120))
+    mock_filter.assert_called_once_with(
+        WheelEvent(pos=press_point, buttons=MouseButton.NONE, angle_delta=(0, 120))
     )
 
 
@@ -172,39 +149,36 @@ def test_resize(evented_canvas: snx.Canvas) -> None:
 
 
 def test_mouse_enter(evented_canvas: snx.Canvas) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
+    adaptor = evented_canvas._get_adaptors(create=True)[0]
+    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    mock_filter = MagicMock()
+    evented_canvas.set_event_filter(mock_filter)
 
     enter_point = (0, 15)
-    with patch.object(snx.Canvas, "handle") as mock_handle:
-        _processEvent(wx.EVT_ENTER_WINDOW, native, pos=wx.Point(*enter_point))
+    _processEvent(wx.EVT_ENTER_WINDOW, native, pos=wx.Point(*enter_point))
 
     # Verify MouseEnterEvent was passed to Canvas.handle
-    mock_handle.assert_called_once_with(
-        MouseEnterEvent(
-            pos=enter_point,
-            buttons=MouseButton.NONE,
-        )
+    mock_filter.assert_called_once_with(
+        MouseEnterEvent(pos=enter_point, buttons=MouseButton.NONE)
     )
 
 
 def test_mouse_leave(evented_canvas: snx.Canvas) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
+    adaptor = evented_canvas._get_adaptors(create=True)[0]
+    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    mock_filter = MagicMock()
+    evented_canvas.set_event_filter(mock_filter)
 
-    with patch.object(snx.Canvas, "handle") as mock_handle:
-        # NOTE: We need to first enter to establish the view as active
-        enter_point = (0, 15)
-        _processEvent(wx.EVT_ENTER_WINDOW, native, pos=wx.Point(*enter_point))
-        mock_handle.reset_mock()
+    # NOTE: We need to first enter to establish the view as active
+    enter_point = (0, 15)
+    _processEvent(wx.EVT_ENTER_WINDOW, native, pos=wx.Point(*enter_point))
+    mock_filter.reset_mock()
 
-        # Now leave
-        _processEvent(wx.EVT_LEAVE_WINDOW, native, pos=wx.Point(0, 0))
+    # Now leave
+    _processEvent(wx.EVT_LEAVE_WINDOW, native, pos=wx.Point(0, 0))
 
     # Verify MouseLeaveEvent was passed to Canvas.handle
-    mock_handle.assert_called_once_with(MouseLeaveEvent())
+    mock_filter.assert_called_once_with(MouseLeaveEvent())
 
 
 def test_set_cursor(evented_canvas: snx.Canvas) -> None:
@@ -213,22 +187,22 @@ def test_set_cursor(evented_canvas: snx.Canvas) -> None:
     # Wx doesn't really give us a way to assert the right thing happened...
     # ...the best we can do is assert a change.
     old = native.GetCursor()
-    app().set_cursor(evented_canvas, CursorType.CROSS)
+    snx.set_cursor(evented_canvas, CursorType.CROSS)
     assert not native.GetCursor().IsSameAs(old)
 
 
 def test_key_event(evented_canvas: snx.Canvas) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
+    adaptor = evented_canvas._get_adaptors(create=True)[0]
+    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    mock_filter = MagicMock()
+    evented_canvas.set_event_filter(mock_filter)
 
-    with patch.object(snx.Canvas, "handle") as mock_handle:
-        _processEvent(wx.EVT_KEY_DOWN, native, keyCode=ord("A"))
-        _processEvent(wx.EVT_KEY_UP, native, keyCode=ord("A"))
+    _processEvent(wx.EVT_KEY_DOWN, native, keyCode=ord("A"))
+    _processEvent(wx.EVT_KEY_UP, native, keyCode=ord("A"))
 
-    assert mock_handle.call_args_list[0].args == (
+    assert mock_filter.call_args_list[0].args == (
         KeyPressEvent(key=KeyBinding.from_str("A")),
     )
-    assert mock_handle.call_args_list[1].args == (
+    assert mock_filter.call_args_list[1].args == (
         KeyReleaseEvent(key=KeyBinding.from_str("A")),
     )

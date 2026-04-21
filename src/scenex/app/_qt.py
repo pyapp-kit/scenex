@@ -55,27 +55,25 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from typing import Any
 
-    from scenex import Canvas
-    from scenex.adaptors._base import CanvasAdaptor
     from scenex.app._auto import P, T
     from scenex.app.events import Event
 
 
 class QtEventFilter(QObject, EventFilter):
-    def __init__(self, canvas: Any, model_canvas: Canvas) -> None:
+    def __init__(self, widget: QWidget, handler: Callable[[Event], bool]) -> None:
         super().__init__()
-        self._canvas = canvas
-        self._model_canvas = model_canvas
+        self._widget = widget
+        self._handler = handler
         self._active_buttons: MouseButton = MouseButton.NONE
 
     def eventFilter(self, a0: QObject | None = None, a1: QEvent | None = None) -> bool:
         if isinstance(a0, QWidget) and not a0.signalsBlocked():
             if isinstance(a1, QEvent) and (evt := self._convert_event(a1)):
-                return self._model_canvas.handle(evt)
+                return self._handler(evt)
         return False
 
     def uninstall(self) -> None:
-        self._canvas.removeEventFilter(self)
+        self._widget.removeEventFilter(self)
 
     def mouse_btn(self, btn: Any) -> MouseButton:
         if btn == Qt.MouseButton.LeftButton:
@@ -184,14 +182,15 @@ class QtAppWrap(App):
 
         app.exec()
 
-    def install_event_filter(self, canvas: Any, model_canvas: Canvas) -> EventFilter:
-        f = QtEventFilter(canvas, model_canvas)
-        cast("QWidget", canvas).installEventFilter(f)
+    def install_event_filter(
+        self, widget: Any, handler: Callable[[Event], bool]
+    ) -> EventFilter:
+        f = QtEventFilter(cast("QWidget", widget), handler)
+        cast("QWidget", widget).installEventFilter(f)
         return f
 
-    def show(self, canvas: Canvas, visible: bool) -> None:
-        adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
-        cast("QWidget", adaptor._snx_get_native()).setVisible(visible)
+    def show(self, native_widget: Any, visible: bool) -> None:
+        cast("QWidget", native_widget).setVisible(visible)
 
     def process_events(self) -> None:
         """Process events for the application."""
@@ -206,9 +205,8 @@ class QtAppWrap(App):
     ) -> Future[T]:
         return _call_in_main_thread(func, *args, **kwargs)
 
-    def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
-        adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
-        cast("QWidget", adaptor._snx_get_native()).setCursor(self._cursor_to_qt(cursor))
+    def set_cursor(self, native_widget: Any, cursor: CursorType) -> None:
+        cast("QWidget", native_widget).setCursor(self._cursor_to_qt(cursor))
 
     def _cursor_to_qt(self, cursor: CursorType) -> Qt.CursorShape:
         """Convert abstract CursorType to Qt CursorShape."""

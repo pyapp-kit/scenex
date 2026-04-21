@@ -10,6 +10,7 @@ from jupyter_rfb import RemoteFrameBuffer
 from scenex.app._auto import App, CursorType
 from scenex.app._jupyter_keymap import jupyterkey2modelkey
 from scenex.app.events._events import (
+    Event,
     EventFilter,
     KeyPressEvent,
     KeyReleaseEvent,
@@ -27,21 +28,20 @@ from scenex.app.events._events import (
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from scenex import Canvas
-    from scenex.adaptors._base import CanvasAdaptor
-
 
 class JupyterEventFilter(EventFilter):
-    def __init__(self, canvas: Any, model_canvas: Canvas) -> None:
-        if not isinstance(canvas, RemoteFrameBuffer):
+    def __init__(
+        self, widget: RemoteFrameBuffer, handler: Callable[[Event], bool]
+    ) -> None:
+        if not isinstance(widget, RemoteFrameBuffer):
             raise TypeError(
-                f"Expected canvas to be RemoteFrameBuffer, got {type(canvas)}"
+                f"Expected widget to be RemoteFrameBuffer, got {type(widget)}"
             )
-        self._canvas = canvas
-        self._model_canvas = model_canvas
+        self._widget = widget
+        self._handler = handler
         self._active_button: MouseButton = MouseButton.NONE
 
-        self._old_event = self._canvas.handle_event
+        self._old_event = self._widget.handle_event
 
         def _create_handler(
             filter: JupyterEventFilter,
@@ -56,7 +56,7 @@ class JupyterEventFilter(EventFilter):
                         for b in btns:
                             filter._active_button |= JupyterEventFilter.mouse_btn(b)
                     canvas_pos = (ev["x"], ev["y"])
-                    filter._model_canvas.handle(
+                    filter._handler(
                         MouseMoveEvent(
                             pos=canvas_pos,
                             buttons=filter._active_button,
@@ -66,7 +66,7 @@ class JupyterEventFilter(EventFilter):
                     canvas_pos = (ev["x"], ev["y"])
                     btn = JupyterEventFilter.mouse_btn(ev["button"])
                     filter._active_button |= btn
-                    filter._model_canvas.handle(
+                    filter._handler(
                         MousePressEvent(
                             pos=canvas_pos,
                             buttons=btn,
@@ -79,7 +79,7 @@ class JupyterEventFilter(EventFilter):
                     # event. In other words, there will be no release following.
                     # This could cause unintended behavior. See
                     # https://github.com/vispy/jupyter_rfb/blob/62831dd5a87bc19b4fd5f921d802ed21141e61ec/js/lib/widget.js#L270
-                    filter._model_canvas.handle(
+                    filter._handler(
                         MouseDoublePressEvent(
                             pos=canvas_pos,
                             buttons=btn,
@@ -89,7 +89,7 @@ class JupyterEventFilter(EventFilter):
                     canvas_pos = (ev["x"], ev["y"])
                     btn = JupyterEventFilter.mouse_btn(ev["button"])
                     filter._active_button &= ~btn
-                    filter._model_canvas.handle(
+                    filter._handler(
                         MouseReleaseEvent(
                             pos=canvas_pos,
                             buttons=btn,
@@ -103,17 +103,17 @@ class JupyterEventFilter(EventFilter):
                     elif btns := ev.get("buttons", None):
                         for b in btns:
                             filter._active_button |= JupyterEventFilter.mouse_btn(b)
-                    filter._model_canvas.handle(
+                    filter._handler(
                         MouseEnterEvent(
                             pos=canvas_pos,
                             buttons=filter._active_button,
                         )
                     )
                 elif etype == "pointer_leave":
-                    filter._model_canvas.handle(MouseLeaveEvent())
+                    filter._handler(MouseLeaveEvent())
                 elif etype == "wheel":
                     canvas_pos = (ev["x"], ev["y"])
-                    filter._model_canvas.handle(
+                    filter._handler(
                         WheelEvent(
                             pos=canvas_pos,
                             buttons=filter._active_button,
@@ -124,17 +124,13 @@ class JupyterEventFilter(EventFilter):
                 elif etype == "key_down":
                     model_key = jupyterkey2modelkey(ev)
                     part = SimpleKeyBinding.from_int(model_key)
-                    filter._model_canvas.handle(
-                        KeyPressEvent(key=KeyBinding(parts=[part]))
-                    )
+                    filter._handler(KeyPressEvent(key=KeyBinding(parts=[part])))
                 elif etype == "key_up":
                     model_key = jupyterkey2modelkey(ev)
                     part = SimpleKeyBinding.from_int(model_key)
-                    filter._model_canvas.handle(
-                        KeyReleaseEvent(key=KeyBinding(parts=[part]))
-                    )
+                    filter._handler(KeyReleaseEvent(key=KeyBinding(parts=[part])))
                 elif etype == "resize":
-                    filter._model_canvas.handle(
+                    filter._handler(
                         ResizeEvent(
                             width=ev["width"],
                             height=ev["height"],
@@ -146,7 +142,7 @@ class JupyterEventFilter(EventFilter):
 
             return _handle_event
 
-        self._canvas.handle_event = MethodType(_create_handler(self), self._canvas)
+        self._widget.handle_event = MethodType(_create_handler(self), self._widget)
 
     @classmethod
     def mouse_btn(cls, btn: Any) -> MouseButton:
@@ -162,14 +158,14 @@ class JupyterEventFilter(EventFilter):
         raise Exception(f"Jupyter mouse button {btn} is unknown")
 
     def uninstall(self) -> None:
-        self._canvas.handle_event = self._old_event
+        self._widget.handle_event = self._old_event
 
 
 class JupyterAppWrap(App):
     """Provider for Jupyter notebook."""
 
     def __init__(self) -> None:
-        self._visible_canvases: set[CanvasAdaptor] = set()
+        self._visible_canvases: set[Any] = set()
 
     # def is_running(self) -> bool:
     #     if ipy_shell := self._ipython_shell():
@@ -195,16 +191,15 @@ class JupyterAppWrap(App):
         # No explicit run method needed for Jupyter
         pass
 
-    def install_event_filter(self, canvas: Any, model_canvas: Canvas) -> EventFilter:
-        return JupyterEventFilter(canvas, model_canvas)
+    def install_event_filter(
+        self, widget: Any, handler: Callable[[Event], bool]
+    ) -> EventFilter:
+        return JupyterEventFilter(widget, handler)
 
-    def show(self, canvas: Canvas, visible: bool) -> None:
-        adaptor = cast(
-            "CanvasAdaptor", canvas._get_adaptors(create=True)[0]
-        )._snx_get_native()
-        native_canvas = cast("RemoteFrameBuffer", adaptor)
-        if adaptor not in self._visible_canvases:
-            self._visible_canvases.add(adaptor)
+    def show(self, native_widget: Any, visible: bool) -> None:
+        native_canvas = cast("RemoteFrameBuffer", native_widget)
+        if native_widget not in self._visible_canvases:
+            self._visible_canvases.add(native_widget)
             display.display(native_canvas)
         native_canvas.layout.display = "flex" if visible else "none"
 
@@ -220,11 +215,11 @@ class JupyterAppWrap(App):
 
         Timer(msec / 1000, func).start()
 
-    def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
-        adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
-        native = cast("RemoteFrameBuffer", adaptor._snx_get_native())
+    def set_cursor(self, native_widget: Any, cursor: CursorType) -> None:
         # remote frame buffer exposes style via layout
-        native.cursor = self._cursor_to_jupyter(cursor)
+        cast("RemoteFrameBuffer", native_widget).cursor = self._cursor_to_jupyter(
+            cursor
+        )
 
     def _cursor_to_jupyter(self, cursor: CursorType) -> str:
         """Convert abstract CursorType to Jupyter cursor string."""

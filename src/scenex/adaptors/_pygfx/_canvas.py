@@ -90,7 +90,7 @@ class Canvas(CanvasAdaptor):
         self._views: list[model.View] = []
         for view in canvas.views:
             self._snx_add_view(view)
-        self._filter = app().install_event_filter(self._snx_get_native(), canvas)
+        self._filter = app().install_event_filter(self._snx_get_native(), canvas.handle)
         self._renderer = pygfx.renderers.WgpuRenderer(self._wgpu_canvas)
         self._renderer.request_draw(self._draw)
 
@@ -101,7 +101,7 @@ class Canvas(CanvasAdaptor):
         return self._wgpu_canvas
 
     def _snx_set_visible(self, arg: bool) -> None:
-        app().show(self._canvas, arg)
+        app().show(self._snx_get_native(), arg)
         self._wgpu_canvas.request_draw()
 
     def _draw(self) -> None:

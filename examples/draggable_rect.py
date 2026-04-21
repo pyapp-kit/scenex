@@ -14,7 +14,7 @@ import cmap
 import numpy as np
 
 import scenex as snx
-from scenex.app import CursorType, app
+from scenex.app import CursorType
 from scenex.app.events import (
     Event,
     MouseButton,
@@ -138,7 +138,7 @@ def _event_filter(event: Event) -> bool:
             handles.vertices = new_vertices
             # Reset the cursor in case we are "flipping" the rectangle
             # by dragging a corner past an edge it is not connected to.
-            app().set_cursor(canvas, _cursor_for_pos(*pos))
+            snx.set_cursor(canvas, _cursor_for_pos(*pos))
             return True
 
         # -- Dragging the whole rectangle -- #
@@ -160,11 +160,11 @@ def _event_filter(event: Event) -> bool:
 
         # -- Hover -- #
         if ray.intersections(handles):
-            app().set_cursor(canvas, _cursor_for_pos(*pos))
+            snx.set_cursor(canvas, _cursor_for_pos(*pos))
         elif ray.intersections(rect_mesh):
-            app().set_cursor(canvas, CursorType.ALL_ARROW)
+            snx.set_cursor(canvas, CursorType.ALL_ARROW)
         else:
-            app().set_cursor(canvas, CursorType.DEFAULT)
+            snx.set_cursor(canvas, CursorType.DEFAULT)
 
     elif isinstance(event, MousePressEvent):
         if event.buttons & MouseButton.LEFT:
@@ -194,7 +194,7 @@ def _event_filter(event: Event) -> bool:
         # -- End a drag -- #
         _anchor = None
         _drag_start = None
-        app().set_cursor(canvas, CursorType.DEFAULT)
+        snx.set_cursor(canvas, CursorType.DEFAULT)
 
     return False
 

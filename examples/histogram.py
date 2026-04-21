@@ -10,7 +10,7 @@ import numpy as np
 import numpy.typing as npt
 
 import scenex as snx
-from scenex.app import CursorType, app, events
+from scenex.app import CursorType, events
 from scenex.utils import projections
 
 if TYPE_CHECKING:
@@ -262,11 +262,11 @@ class Histogram:
                     if node.interactive
                 ]
                 if self.right_clim in intersections or self.left_clim in intersections:
-                    app().set_cursor(self.canvas, CursorType.H_ARROW)
+                    snx.set_cursor(self.canvas, CursorType.H_ARROW)
                 elif self.gamma_handle in intersections:
-                    app().set_cursor(self.canvas, CursorType.V_ARROW)
+                    snx.set_cursor(self.canvas, CursorType.V_ARROW)
                 else:
-                    app().set_cursor(self.canvas, CursorType.DEFAULT)
+                    snx.set_cursor(self.canvas, CursorType.DEFAULT)
 
         if isinstance(event, events.MouseReleaseEvent | events.MouseLeaveEvent):
             self._grabbed = None
