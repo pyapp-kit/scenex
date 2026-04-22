@@ -75,7 +75,7 @@ def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None
 def test_mouse_press(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (5, 10)
@@ -96,7 +96,7 @@ def test_mouse_press(evented_canvas: snx.Canvas) -> None:
 def test_mouse_release(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (5, 10)
@@ -109,7 +109,7 @@ def test_mouse_release(evented_canvas: snx.Canvas) -> None:
 def test_mouse_move(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (5, 10)
@@ -126,7 +126,7 @@ def test_mouse_move(evented_canvas: snx.Canvas) -> None:
 def test_mouse_wheel(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (5, 10)
@@ -151,7 +151,7 @@ def test_resize(evented_canvas: snx.Canvas) -> None:
 def test_mouse_enter(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     enter_point = (0, 15)
@@ -166,7 +166,7 @@ def test_mouse_enter(evented_canvas: snx.Canvas) -> None:
 def test_mouse_leave(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     # NOTE: We need to first enter to establish the view as active
@@ -194,7 +194,7 @@ def test_set_cursor(evented_canvas: snx.Canvas) -> None:
 def test_key_event(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     _processEvent(wx.EVT_KEY_DOWN, native, keyCode=ord("A"))

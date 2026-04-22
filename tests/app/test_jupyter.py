@@ -65,7 +65,7 @@ def test_pointer_down(evented_canvas: snx.Canvas) -> None:
     snx.show(evented_canvas)
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (0, 0)
@@ -100,7 +100,7 @@ def test_pointer_down(evented_canvas: snx.Canvas) -> None:
 def test_pointer_up(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (0, 0)
@@ -120,7 +120,7 @@ def test_pointer_up(evented_canvas: snx.Canvas) -> None:
 def test_pointer_move(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (0, 0)
@@ -153,7 +153,7 @@ def test_pointer_move(evented_canvas: snx.Canvas) -> None:
 def test_mouse_double_click(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (0, 0)
@@ -173,7 +173,7 @@ def test_mouse_double_click(evented_canvas: snx.Canvas) -> None:
 def test_wheel(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (0, 0)
@@ -214,7 +214,7 @@ def test_resize(evented_canvas: snx.Canvas) -> None:
 def test_pointer_enter(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     enter_point = (0, 0)
@@ -236,7 +236,7 @@ def test_pointer_enter(evented_canvas: snx.Canvas) -> None:
 def test_pointer_leave(evented_canvas: snx.Canvas) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     enter_point = (0, 0)
@@ -268,7 +268,7 @@ def test_key_event(evented_canvas: snx.Canvas) -> None:
     snx.show(evented_canvas)
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-    mock_filter = MagicMock()
+    mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     native.handle_event({"event_type": "key_down", "key": "a", "modifiers": []})
