@@ -83,15 +83,13 @@ view = snx.View(
 
 def event_filter(event: Event) -> bool:
     """Interactive mesh manipulation based on mouse events."""
-    global per_face_model
     if isinstance(event, MouseMoveEvent):
-        if intersections := event.world_ray.intersections(view.scene):
-            # Find mesh intersection
-            for node, _distance in intersections:
-                if isinstance(node, snx.Mesh):
-                    # Remove the intersected face
-                    indices = [i for i, _d in node.intersecting_faces(event.world_ray)]
-                    node.faces = np.delete(node.faces, indices, axis=0)
+        if not (ray := view.to_ray(event.pos)):
+            return False
+        if ray.intersections(mesh):
+            # Remove the intersected face
+            indices = [i for i, _d in mesh.intersecting_faces(ray)]
+            mesh.faces = np.delete(mesh.faces, indices, axis=0)
             return True
     elif isinstance(event, MousePressEvent):
         if event.buttons & MouseButton.LEFT:

@@ -4,6 +4,8 @@ import sys
 from concurrent.futures import Future
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
+from app_model.backends.qt import qkeycombo2modelkey
+from app_model.types import KeyBinding, SimpleKeyBinding
 from qtpy.QtCore import (
     QCoreApplication,
     QEvent,
@@ -13,12 +15,20 @@ from qtpy.QtCore import (
     QThread,
     QTimer,
 )
-from qtpy.QtGui import QEnterEvent, QMouseEvent, QResizeEvent, QWheelEvent
+from qtpy.QtGui import (
+    QEnterEvent,
+    QKeyEvent,
+    QMouseEvent,
+    QResizeEvent,
+    QWheelEvent,
+)
 from qtpy.QtWidgets import QApplication, QWidget
 
 from scenex.app._auto import App, CursorType
 from scenex.app.events import (
     EventFilter,
+    KeyPressEvent,
+    KeyReleaseEvent,
     MouseButton,
     MouseDoublePressEvent,
     MouseEnterEvent,
@@ -45,27 +55,25 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from typing import Any
 
-    from scenex import Canvas
-    from scenex.adaptors._base import CanvasAdaptor
     from scenex.app._auto import P, T
     from scenex.app.events import Event
 
 
 class QtEventFilter(QObject, EventFilter):
-    def __init__(self, canvas: Any, model_canvas: Canvas) -> None:
+    def __init__(self, widget: QWidget, handler: Callable[[Event], bool]) -> None:
         super().__init__()
-        self._canvas = canvas
-        self._model_canvas = model_canvas
+        self._widget = widget
+        self._handler = handler
         self._active_buttons: MouseButton = MouseButton.NONE
 
     def eventFilter(self, a0: QObject | None = None, a1: QEvent | None = None) -> bool:
         if isinstance(a0, QWidget) and not a0.signalsBlocked():
             if isinstance(a1, QEvent) and (evt := self._convert_event(a1)):
-                return self._model_canvas.handle(evt)
+                return self._handler(evt)
         return False
 
     def uninstall(self) -> None:
-        self._canvas.removeEventFilter(self)
+        self._widget.removeEventFilter(self)
 
     def mouse_btn(self, btn: Any) -> MouseButton:
         if btn == Qt.MouseButton.LeftButton:
@@ -82,42 +90,35 @@ class QtEventFilter(QObject, EventFilter):
         if isinstance(qevent, QMouseEvent | QEnterEvent):
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
-            if not (ray := self._model_canvas.to_world(canvas_pos)):
-                return None
 
             etype = qevent.type()
             btn = self.mouse_btn(qevent.button())
             if etype == QEvent.Type.MouseMove:
                 return MouseMoveEvent(
-                    canvas_pos=canvas_pos,
-                    world_ray=ray,
+                    pos=canvas_pos,
                     buttons=self._active_buttons,
                 )
             elif etype == QEvent.Type.MouseButtonDblClick:
                 self._active_buttons |= btn
                 return MouseDoublePressEvent(
-                    canvas_pos=canvas_pos,
-                    world_ray=ray,
+                    pos=canvas_pos,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonPress:
                 self._active_buttons |= btn
                 return MousePressEvent(
-                    canvas_pos=canvas_pos,
-                    world_ray=ray,
+                    pos=canvas_pos,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonRelease:
                 self._active_buttons &= ~btn
                 return MouseReleaseEvent(
-                    canvas_pos=canvas_pos,
-                    world_ray=ray,
+                    pos=canvas_pos,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.Enter:
                 return MouseEnterEvent(
-                    canvas_pos=canvas_pos,
-                    world_ray=ray,
+                    pos=canvas_pos,
                     buttons=self._active_buttons,
                 )
 
@@ -128,11 +129,8 @@ class QtEventFilter(QObject, EventFilter):
             # TODO: Figure out the buttons
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
-            if not (ray := self._model_canvas.to_world(canvas_pos)):
-                return None
             return WheelEvent(
-                canvas_pos=canvas_pos,
-                world_ray=ray,
+                pos=canvas_pos,
                 buttons=self._active_buttons,
                 angle_delta=(qevent.angleDelta().x(), qevent.angleDelta().y()),
             )
@@ -143,6 +141,15 @@ class QtEventFilter(QObject, EventFilter):
                 width=size.width(),
                 height=size.height(),
             )
+
+        elif isinstance(qevent, QKeyEvent):
+            model_key = qkeycombo2modelkey(qevent.keyCombination())
+            part = SimpleKeyBinding.from_int(model_key)
+            keys = KeyBinding(parts=[part])
+            if qevent.type() == QEvent.Type.KeyPress:
+                return KeyPressEvent(key=keys)
+            elif qevent.type() == QEvent.Type.KeyRelease:
+                return KeyReleaseEvent(key=keys)
 
         return None
 
@@ -175,14 +182,15 @@ class QtAppWrap(App):
 
         app.exec()
 
-    def install_event_filter(self, canvas: Any, model_canvas: Canvas) -> EventFilter:
-        f = QtEventFilter(canvas, model_canvas)
-        cast("QWidget", canvas).installEventFilter(f)
+    def install_event_filter(
+        self, widget: Any, handler: Callable[[Event], bool]
+    ) -> EventFilter:
+        f = QtEventFilter(cast("QWidget", widget), handler)
+        cast("QWidget", widget).installEventFilter(f)
         return f
 
-    def show(self, canvas: Canvas, visible: bool) -> None:
-        adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
-        cast("QWidget", adaptor._snx_get_native()).setVisible(visible)
+    def show(self, native_widget: Any, visible: bool) -> None:
+        cast("QWidget", native_widget).setVisible(visible)
 
     def process_events(self) -> None:
         """Process events for the application."""
@@ -197,9 +205,8 @@ class QtAppWrap(App):
     ) -> Future[T]:
         return _call_in_main_thread(func, *args, **kwargs)
 
-    def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
-        adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
-        cast("QWidget", adaptor._snx_get_native()).setCursor(self._cursor_to_qt(cursor))
+    def set_cursor(self, native_widget: Any, cursor: CursorType) -> None:
+        cast("QWidget", native_widget).setCursor(self._cursor_to_qt(cursor))
 
     def _cursor_to_qt(self, cursor: CursorType) -> Qt.CursorShape:
         """Convert abstract CursorType to Qt CursorShape."""

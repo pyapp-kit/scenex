@@ -1,78 +1,12 @@
-import numpy as np
+from unittest.mock import Mock, call
 
 import scenex as snx
-from scenex.app.events import Ray
-from scenex.utils import projections
-
-
-def test_to_world() -> None:
-    """Tests Canvas.to_world"""
-    # Identity projection, identity transformation
-    camera = snx.Camera(
-        transform=snx.Transform(),
-        projection=projections.orthographic(2, 2, 2),
-        interactive=True,
-    )
-    view = snx.View(scene=snx.Scene(children=[]), camera=camera)
-    canvas = snx.Canvas(views=[view])
-    w, h = canvas.rect_for(view)[2:]
-
-    # Test center of canvas
-    canvas_pos = (w // 2, h // 2)
-    ray = canvas.to_world(canvas_pos)
-    assert ray == Ray(origin=(0, 0, 0), direction=(0, 0, -1), source=view)
-
-    # Test top-left corner
-    canvas_pos = (0, 0)
-    ray = canvas.to_world(canvas_pos)
-    assert ray == Ray(origin=(-1, 1, 0), direction=(0, 0, -1), source=view)
-
-    # Test outside the view
-    canvas_pos = (w * 2, h * 2)
-    ray = canvas.to_world(canvas_pos)
-    assert ray is None
-
-
-def test_to_world_translated() -> None:
-    """Tests Canvas.to_world with a translated camera"""
-    # Identity projection, small transformation
-    camera = snx.Camera(
-        transform=snx.Transform().translated((1, 1, 1)),
-        projection=projections.orthographic(2, 2, 2),
-        interactive=True,
-    )
-    view = snx.View(scene=snx.Scene(children=[]), camera=camera)
-    canvas = snx.Canvas(views=[view])
-
-    ray = canvas.to_world((0, 0))
-    assert ray == Ray(origin=(0, 2, 1), direction=(0, 0, -1), source=view)
-    # Rotate counter-clockwise around +Z - we see a clockwise rotation
-    # i.e. (-1, 1, 0) moves to the top right corner and (-1, -1, 0) moves to the
-    # top left corner
-    camera.transform = snx.Transform().rotated(90, (0, 0, 1))
-    ray = canvas.to_world((0, 0))
-    # Rounding errors :(
-    assert ray is not None
-    assert np.allclose(ray.origin, (-1, -1, 0), atol=1e-7)
-    assert np.array_equal(ray.direction, (0, 0, -1))
-    assert ray.source == view
-    camera.transform = snx.Transform()
-
-
-def test_to_world_projection() -> None:
-    """Tests Canvas.to_world with a non-identity camera projection"""
-    # Narrowed projection, identity transformation
-    camera = snx.Camera(
-        transform=snx.Transform(),
-        projection=projections.orthographic(1, 1, 1),
-        interactive=True,
-    )
-    view = snx.View(scene=snx.Scene(children=[]), camera=camera)
-    canvas = snx.Canvas(views=[view])
-
-    ray = canvas.to_world((0, 0))
-    assert ray == Ray(origin=(-0.5, 0.5, 0), direction=(0, 0, -1), source=view)
-    camera.projection = snx.Transform()
+from scenex.app.events import (
+    MouseButton,
+    MouseEnterEvent,
+    MouseLeaveEvent,
+    MouseMoveEvent,
+)
 
 
 def test_multiple_views() -> None:
@@ -102,3 +36,79 @@ def test_multiple_views() -> None:
     assert h1 == h2
     assert x1 + w1 == x2
     assert y1 == y2
+
+
+def test_event_filter() -> None:
+    """Tests the ability to set a canvas-level event filter."""
+    view = snx.View()
+    view_filter = Mock()
+    view.set_event_filter(view_filter)
+
+    canvas = snx.Canvas(views=[view])
+    canvas_filter = Mock()
+    canvas_filter.return_value = False
+    canvas.set_event_filter(canvas_filter)
+    # Ensure that the canvas can receive events
+    evt = MouseMoveEvent(pos=(0, 0), buttons=MouseButton.NONE)
+    canvas.handle(evt)
+    canvas_filter.assert_called_with(evt)
+    view_filter.assert_called_with(evt)
+
+    # Ensure that the canvas can block events if the filter returns True
+    view_filter.reset_mock()
+    canvas_filter.reset_mock()
+    canvas_filter.return_value = True
+
+    canvas.handle(evt)
+    canvas_filter.assert_called_with(evt)
+    view_filter.assert_not_called()
+
+
+def test_handle_view_events() -> None:
+    """Tests inter-view mouse event handling.
+
+    Note that this is different from testing that events are passed to the handler,
+    which is done in the app package.
+    """
+    # Create a canvas with two views
+    view1 = snx.View()  # Left half
+    view1.layout.x = "0%", "50%"
+    view2 = snx.View()  # Right half
+    view2.layout.x = "50%", "100%"
+    canvas = snx.Canvas(views=[view1, view2])
+    mock_filter = Mock()
+    view1.set_event_filter(mock_filter)
+
+    # Assert MouseEnterEvents are directed to the correct view
+    evt = MouseEnterEvent(pos=(0, 0), buttons=MouseButton.NONE)
+    canvas.handle(evt)
+    mock_filter.assert_called_once_with(evt)
+    mock_filter.reset_mock()
+
+    # Assert MouseLeaveEvents are directed to the correct view
+    evt = MouseLeaveEvent()
+    canvas.handle(evt)
+    mock_filter.assert_called_once_with(evt)
+    mock_filter.reset_mock()
+
+    # Assert MouseEnterEvents are generated if another event type is sent to a new view
+    evt = MouseMoveEvent(pos=(2, 0), buttons=MouseButton.NONE)
+    canvas.handle(evt)
+    assert mock_filter.call_count == 2
+    assert mock_filter.call_args_list[0] == call(
+        MouseEnterEvent(pos=evt.pos, buttons=MouseButton.NONE)
+    )
+    assert mock_filter.call_args_list[1] == call(evt)
+    mock_filter.reset_mock()
+
+    # Assert MouseEnterEvents are generated when moving between views
+    mock_filter2 = Mock()
+    view2.set_event_filter(mock_filter2)
+    evt = MouseMoveEvent(pos=(canvas.width - 1, 0), buttons=MouseButton.NONE)
+    canvas.handle(evt)
+    mock_filter.assert_called_once_with(MouseLeaveEvent())
+    assert mock_filter2.call_count == 2
+    assert mock_filter2.call_args_list[0] == call(
+        MouseEnterEvent(pos=evt.pos, buttons=MouseButton.NONE)
+    )
+    assert mock_filter2.call_args_list[1] == call(evt)

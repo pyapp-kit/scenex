@@ -41,7 +41,7 @@ class Canvas(CanvasAdaptor):
         self._views: list[model.View] = []
         for view in canvas.views:
             self._snx_add_view(view)
-        self._filter = app().install_event_filter(self._canvas.native, canvas)
+        self._filter = app().install_event_filter(self._canvas.native, canvas.handle)
 
         self._visual_to_node: dict[VisualNode, model.Node | None] = {}
         self._last_canvas_pos: tuple[float, float] | None = None
@@ -51,8 +51,7 @@ class Canvas(CanvasAdaptor):
         return self._canvas.native
 
     def _snx_set_visible(self, arg: bool) -> None:
-        # show the qt canvas we patched earlier in __init__
-        app().show(self._model, arg)
+        app().show(self._snx_get_native(), arg)
 
     def _draw(self) -> None:
         self._canvas.update()

@@ -1,13 +1,104 @@
 from __future__ import annotations
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 
 import numpy as np
 import pytest
 
 import scenex as snx
-from scenex.app.events import Event, MouseButton, MouseMoveEvent
+from scenex.app.events import Event, MouseButton, MouseEnterEvent, MouseMoveEvent, Ray
 from scenex.utils import projections
+
+
+def test_to_ray() -> None:
+    """Tests View.to_ray"""
+    # Create a single view covering the whole canvas.
+    camera = snx.Camera(
+        transform=snx.Transform(),
+        projection=projections.orthographic(2, 2, 2),
+        interactive=True,
+    )
+    view = snx.View(scene=snx.Scene(children=[]), camera=camera)
+    canvas = snx.Canvas(views=[view])
+    w, h = canvas.rect_for(view)[2:]
+
+    # Test center of view/canvas
+    canvas_pos = (w // 2, h // 2)
+    ray = view.to_ray(canvas_pos)
+    assert ray == Ray(origin=(0, 0, 0), direction=(0, 0, -1), source=view)
+
+    # Test top-left corner of view/canvas
+    canvas_pos = (0, 0)
+    ray = view.to_ray(canvas_pos)
+    assert ray == Ray(origin=(-1, 1, 0), direction=(0, 0, -1), source=view)
+
+    # Test past the top-left corner of view/canvas
+    # NOTE that view.to_ray still returns a ray even if the canvas position is outside
+    # the view's rect - users could check for containment within the view using
+    # canvas.content_rect_for(view) if they want.
+    canvas_pos = (-w // 2, -h // 2)
+    ray = view.to_ray(canvas_pos)
+    assert ray == Ray(origin=(-2, 2, 0), direction=(0, 0, -1), source=view)
+
+
+def test_to_ray_layout() -> None:
+    """Tests View.to_ray with a layout"""
+    # Create a view with a layout that offsets the content rect by (10, 20)
+    camera = snx.Camera(
+        transform=snx.Transform(),
+        projection=projections.orthographic(2, 2, 2),
+        interactive=True,
+    )
+    layout = snx.Layout(margin=10)
+    view = snx.View(scene=snx.Scene(children=[]), camera=camera, layout=layout)
+    canvas = snx.Canvas(views=[view])  # noqa: F841
+
+    ray = view.to_ray((10, 10))
+    assert ray == Ray(origin=(-1, 1, 0), direction=(0, 0, -1), source=view)
+
+
+def test_to_ray_translated() -> None:
+    """Tests View.to_ray with a translated camera"""
+    # Identity projection, small transformation
+    camera = snx.Camera(
+        transform=snx.Transform().translated((1, 1, 1)),
+        projection=projections.orthographic(2, 2, 2),
+        interactive=True,
+    )
+    view = snx.View(scene=snx.Scene(children=[]), camera=camera)
+    # NOTE: we need a canvas to convert to a ray.
+    canvas = snx.Canvas(views=[view])  # noqa: F841
+
+    ray = view.to_ray((0, 0))
+    assert ray == Ray(origin=(0, 2, 1), direction=(0, 0, -1), source=view)
+    # Rotate counter-clockwise around +Z - we see a clockwise rotation
+    # i.e. (-1, 1, 0) moves to the top right corner and (-1, -1, 0) moves to the
+    # top left corner
+    camera.transform = snx.Transform().rotated(90, (0, 0, 1))
+    ray = view.to_ray((0, 0))
+    # Rounding errors :(
+    assert ray is not None
+    assert np.allclose(ray.origin, (-1, -1, 0), atol=1e-7)
+    assert np.array_equal(ray.direction, (0, 0, -1))
+    assert ray.source == view
+    camera.transform = snx.Transform()
+
+
+def test_to_ray_projection() -> None:
+    """Tests View.to_ray with a non-identity camera projection"""
+    # Narrowed projection, identity transformation
+    camera = snx.Camera(
+        transform=snx.Transform(),
+        projection=projections.orthographic(1, 1, 1),
+        interactive=True,
+    )
+    view = snx.View(scene=snx.Scene(children=[]), camera=camera)
+    # NOTE: we need a canvas to convert to a ray.
+    canvas = snx.Canvas(views=[view])  # noqa: F841
+
+    ray = view.to_ray((0, 0))
+    assert ray == Ray(origin=(-0.5, 0.5, 0), direction=(0, 0, -1), source=view)
+    camera.projection = snx.Transform()
 
 
 def test_events() -> None:
@@ -28,15 +119,18 @@ def test_events() -> None:
 
     # Mouse over that image in the top right corner
     canvas_pos = (w, 0)
-    world_ray = canvas.to_world(canvas_pos)
+    world_ray = view.to_ray(canvas_pos)
     assert world_ray is not None
-    event = MouseMoveEvent(
-        canvas_pos=canvas_pos, world_ray=world_ray, buttons=MouseButton.NONE
-    )
+    event = MouseMoveEvent(pos=canvas_pos, buttons=MouseButton.NONE)
 
     # And show the view saw the event
     canvas.handle(event)
-    view_filter.assert_called_once_with(event)
+    # NOTE that there will also be a MouseEnterEvent
+    assert view_filter.call_count == 2
+    enter_event = MouseEnterEvent(pos=canvas_pos, buttons=MouseButton.NONE)
+    assert view_filter.call_args_list[0] == call(enter_event)
+    # And then the MouseMoveEvent we wanted to test
+    assert view_filter.call_args_list[1] == call(event)
 
 
 def test_filter_returning_None() -> None:
@@ -53,12 +147,10 @@ def test_filter_returning_None() -> None:
     view.set_event_filter(faulty_filter)
     canvas = snx.Canvas(views=[view])
 
-    canvas_pos = (0, 0)
-    world_ray = canvas.to_world(canvas_pos)
+    canvas_pos = (canvas.width // 2, canvas.height // 2)
+    world_ray = view.to_ray(canvas_pos)
     assert world_ray is not None
-    event = MouseMoveEvent(
-        canvas_pos=canvas_pos, world_ray=world_ray, buttons=MouseButton.NONE
-    )
+    event = MouseMoveEvent(pos=canvas_pos, buttons=MouseButton.NONE)
 
     handled = view.filter_event(event)
     assert isinstance(handled, bool)

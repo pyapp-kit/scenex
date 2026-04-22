@@ -6,7 +6,11 @@ import logging
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Annotated, Any, Literal, Union, cast
 
+import numpy as np
+import pylinalg as la
 from pydantic import Field, PrivateAttr
+
+from scenex.app.events import Ray
 
 from ._base import EventedBase
 from ._layout import Layout
@@ -15,8 +19,6 @@ from ._nodes.scene import Scene
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-
-    import numpy as np
 
     from scenex import Transform
     from scenex.adaptors._base import ViewAdaptor
@@ -143,6 +145,60 @@ class View(EventedBase):
         if self._canvas is not None:
             return self._canvas.content_rect_for(self)
         return None
+
+    def _to_ndc(self, view_pos: tuple[float, float]) -> tuple[float, float] | None:
+        """Map a view-relative pixel position to normalized device coordinates (NDC)."""
+        if (rect := self.content_rect) is None:
+            return None
+        _, _, width, height = rect
+        ndc_x = view_pos[0] / width * 2 - 1
+        ndc_y = -(view_pos[1] / height * 2 - 1)
+        return (ndc_x, ndc_y)
+
+    def to_ray(self, canvas_pos: tuple[float, float]) -> Ray | None:
+        """Compute the world-space ray for a canvas position within this view.
+
+        Parameters
+        ----------
+        canvas_pos : tuple[float, float]
+            The (x, y) position in canvas pixel coordinates.
+
+        Returns
+        -------
+        Ray | None
+            The world-space Ray, or None if this view has no canvas.
+
+        Notes
+        -----
+        If ``canvas_pos`` falls outside this view's rectangle, a Ray is still
+        returned — it simply points outside the visible frustum. Callers that
+        need to restrict to within-bounds positions should check
+        ``view.content_rect`` before calling this method.
+        """
+        # We need this view to be on a canvas to make sense of the canvas position.
+        if self._canvas is None:
+            logger.warning(
+                "to_ray() called on a View not attached to a Canvas. "
+                "Canvas coordinates have no meaning without a canvas."
+            )
+            return None
+        # Convert canvas position to view position
+        x, y = self._canvas.content_rect_for(self)[:2]
+        view_pos = (canvas_pos[0] - x, canvas_pos[1] - y)
+        # Convert view position to NDC
+        ndc = self._to_ndc(view_pos)
+        if ndc is None:
+            return None
+        return self._ndc_to_ray(ndc)
+
+    def _ndc_to_ray(self, ndc: tuple[float, float]) -> Ray:
+        """Unproject an NDC position to a world-space Ray through this view."""
+        camera_matrix = self.camera.projection @ self.camera.transform.inv().T
+        pos = la.vec_unproject(ndc, camera_matrix)
+        pos_far = la.vec_unproject(ndc, camera_matrix, depth=1)
+        direction = pos_far - pos
+        direction = direction / np.linalg.norm(direction)
+        return Ray(origin=tuple(pos), direction=tuple(direction), source=self)
 
     def render(self) -> np.ndarray:
         """Render the view to an array."""

@@ -5,6 +5,8 @@ from enum import IntFlag, auto
 from typing import TYPE_CHECKING, NamedTuple, TypeAlias
 
 if TYPE_CHECKING:
+    from app_model.types import KeyBinding
+
     from scenex import Node, View
 
 
@@ -40,8 +42,7 @@ class MouseButton(IntFlag):
     --------
     Check if left button is pressed:
         >>> event = MousePressEvent(
-        ...     canvas_pos=(100, 150),
-        ...     world_ray=Ray(origin=(0, 0, 0), direction=(0, 0, -1), source=None),
+        ...     pos=(100, 150),
         ...     buttons=MouseButton.LEFT | MouseButton.RIGHT,
         ... )
         >>> if event.buttons & MouseButton.LEFT:
@@ -77,8 +78,8 @@ class Ray(NamedTuple):
     allowing determination of which scene objects are under the mouse cursor.
 
     The ray is defined by an origin point (typically the camera position) and a
-    normalized direction vector. All MouseEvent instances include a world_ray that
-    can be used to test intersections with scene geometry.
+    normalized direction vector, and can be used to test intersections with scene
+    geometry.
 
     Attributes
     ----------
@@ -117,7 +118,7 @@ class Ray(NamedTuple):
 
     See Also
     --------
-    MouseEvent : Events that include world_ray
+    View.to_ray : Method to compute a Ray from a canvas position
     Node.passes_through : Node method for computing ray intersections
     """
 
@@ -179,18 +180,18 @@ class Ray(NamedTuple):
 
 @dataclass
 class ResizeEvent(Event):
-    """Canvas window resize event.
+    """Window resize event.
 
-    Fired when the canvas window changes dimensions, whether from user interaction
+    Fired when a window changes dimensions, whether from user interaction
     (dragging window edges), programmatic resizing, or window manager actions. This
-    event allows views and other components to adapt to new canvas dimensions.
+    event allows views and other components to adapt to new window dimensions.
 
     Attributes
     ----------
     width : int
-        The new width of the canvas in pixels.
+        The new width of the window in pixels.
     height : int
-        The new height of the canvas in pixels.
+        The new height of the window in pixels.
     """
 
     width: int  # in pixels
@@ -202,18 +203,16 @@ class MouseEvent(Event):
     """Base class for all mouse-related interaction events.
 
     MouseEvent provides common fields for all mouse interactions, including the
-    2D canvas position, the 3D world ray for picking, and the state of mouse buttons.
-    Specific mouse event types (move, press, release, etc.) inherit from this base.
+    2D position and the state of mouse buttons. Specific mouse event types
+    (move, press, release, etc.) inherit from this base.
+
+    To obtain the 3D world ray for a mouse event, use ``View.to_ray()``.
 
     Attributes
     ----------
-    canvas_pos : tuple[float, float]
-        The (x, y) position of the mouse cursor in canvas pixel coordinates, with
+    pos : tuple[float, float]
+        The (x, y) position of the mouse cursor in pixel coordinates, with
         origin at the top-left corner.
-    world_ray : Ray
-        The 3D ray in world space corresponding to this mouse position, used for
-        3D picking and intersection testing. The ray passes from the camera through
-        the cursor position.
     buttons : MouseButton
         Bit flags indicating which mouse buttons are currently pressed. Use bitwise
         operations to test button states (e.g., buttons & MouseButton.LEFT).
@@ -224,11 +223,9 @@ class MouseEvent(Event):
     MousePressEvent : Mouse button press
     MouseReleaseEvent : Mouse button release
     WheelEvent : Mouse wheel scroll
-    Ray : 3D ray for picking
     """
 
-    canvas_pos: tuple[float, float]
-    world_ray: Ray
+    pos: tuple[float, float]
     buttons: MouseButton
 
 
@@ -344,6 +341,51 @@ class WheelEvent(MouseEvent):
     angle_delta: tuple[float, float]
 
 
+@dataclass
+class KeyEvent(Event):
+    """Base class for keyboard events.
+
+    Attributes
+    ----------
+    key : KeyBinding
+        The key (or chord) that was pressed or released.
+        Use ``KeyBinding.from_str("Ctrl+A")`` to construct from a string,
+        or access ``key.part0`` for the first (usually only) key and its
+        modifier state (``ctrl``, ``shift``, ``alt``, ``meta``).
+
+    See Also
+    --------
+    KeyPressEvent : Key press
+    KeyReleaseEvent : Key release
+    """
+
+    key: KeyBinding
+
+
+@dataclass
+class KeyPressEvent(KeyEvent):
+    """Keyboard key press.
+
+    See Also
+    --------
+    KeyReleaseEvent : Key release
+    """
+
+    pass
+
+
+@dataclass
+class KeyReleaseEvent(KeyEvent):
+    """Keyboard key release.
+
+    See Also
+    --------
+    KeyPressEvent : Key press
+    """
+
+    pass
+
+
 class EventFilter:
     """Base class for event filter handles.
 
@@ -360,5 +402,3 @@ class EventFilter:
         EventFilter instance should not be used further.
         """
         raise NotImplementedError("This method should be implemented by subclasses.")
-
-    pass

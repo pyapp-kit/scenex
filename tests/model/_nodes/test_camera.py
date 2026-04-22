@@ -1,8 +1,9 @@
 import math
-from unittest.mock import MagicMock
+from collections.abc import Generator
 
 import numpy as np
 import pylinalg as la
+import pytest
 
 import scenex as snx
 from scenex.app.events import (
@@ -12,6 +13,7 @@ from scenex.app.events import (
     Ray,
     WheelEvent,
 )
+from scenex.utils import projections
 
 
 def test_camera_forward_property() -> None:
@@ -73,46 +75,54 @@ def _validate_ray(maybe_ray: Ray | None) -> Ray:
     return maybe_ray
 
 
-def test_panzoom_pan() -> None:
+@pytest.fixture
+def ortho_view() -> Generator[snx.View, None, None]:
+    # Create a camera showing min=(-50, 50), max=(50, -50)
+    cam = snx.Camera(projection=projections.orthographic(width=100, height=100))
+    # Put it in a view...
+    view = snx.View(camera=cam)
+    # ...on a canvas, so that it has a size and can convert to world coordinates
+    canvas = snx.Canvas(views=[view], width=100, height=100)  # noqa: F841
+    # Note that we yield to hold onto the canvas ref
+    yield view
+
+
+def test_panzoom_pan(ortho_view: snx.View) -> None:
     """Tests panning behavior of PanZoom."""
-    interaction = snx.PanZoom()
-    cam = snx.Camera(interactive=True, controller=interaction)
-    # Simulate mouse press
+    interaction = ortho_view.camera.controller = snx.PanZoom()
+    # Simulate mouse press at canvas (0, 0), world (-50, 50)
     press_event = MousePressEvent(
-        canvas_pos=(0, 0),
-        world_ray=Ray((10, 10, 0), (0, 0, -1), source=MagicMock(spec=snx.View)),
+        pos=(0, 0),
         buttons=MouseButton.LEFT,
     )
-    interaction.handle_event(press_event, cam)
-    # Simulate mouse move
+    interaction.handle_event(press_event, ortho_view)
+    # Simulate mouse move to canvas (5, 10)
     move_event = MouseMoveEvent(
-        canvas_pos=(0, 0),
-        world_ray=Ray((15, 20, 0), (0, 0, -1), source=MagicMock(spec=snx.View)),
+        pos=(5, 10),
         buttons=MouseButton.LEFT,
     )
-    interaction.handle_event(move_event, cam)
-    # The camera should have moved by (-5, -10)
-    expected = snx.Transform().translated((-5, -10))
-    np.testing.assert_allclose(cam.transform.root, expected.root)
+    interaction.handle_event(move_event, ortho_view)
+    # The camera should have moved by (-5, 10) to keep (-50, 50) under the cursor
+    # (under canvas (0, 0) should now be world (-45, 60))
+    expected = snx.Transform().translated((-5, 10))
+    np.testing.assert_allclose(ortho_view.camera.transform.root, expected.root)
 
 
-def test_panzoom_zoom() -> None:
+def test_panzoom_zoom(ortho_view: snx.View) -> None:
     """Tests zooming behavior of PanZoom."""
-    interaction = snx.PanZoom()
-    cam = snx.Camera(interactive=True, controller=interaction)
+    interaction = ortho_view.camera.controller = snx.PanZoom()
     # Simulate wheel event
     wheel_event = WheelEvent(
-        canvas_pos=(0, 0),
-        world_ray=Ray((0, 0, 0), (0, 0, -1), source=MagicMock(spec=snx.View)),
+        pos=(0, 0),
         buttons=MouseButton.NONE,
         angle_delta=(0, 120),
     )
-    before = cam.projection
-    interaction.handle_event(wheel_event, cam)
+    before = ortho_view.camera.projection
+    interaction.handle_event(wheel_event, ortho_view)
     # The projection should be scaled
     zoom = interaction._zoom_factor(wheel_event.angle_delta[1])
     expected = before.scaled((zoom, zoom, 1))
-    np.testing.assert_allclose(cam.projection.root, expected.root)
+    np.testing.assert_allclose(ortho_view.camera.projection.root, expected.root)
 
 
 def test_orbit_orbiting() -> None:
@@ -128,7 +138,7 @@ def test_orbit_orbiting() -> None:
     cam.transform = snx.Transform().translated((10, 0, 0))
     cam.look_at((0, 0, 0), up=(0, 0, 1))
     _, _, w, h = canvas.rect_for(view)
-    ray = canvas.to_world((w / 2, h / 2))
+    ray = view.to_ray((w / 2, h / 2))
     assert ray is not None
     np.testing.assert_allclose(ray.origin, (10, 0, 0), atol=1e-7)
     np.testing.assert_allclose(ray.direction, (-1, 0, 0), atol=1e-7)
@@ -137,19 +147,17 @@ def test_orbit_orbiting() -> None:
     # Simulate mouse press
     click_pos = (w / 2, h / 2)
     press_event = MousePressEvent(
-        canvas_pos=click_pos,
-        world_ray=_validate_ray(canvas.to_world(click_pos)),
+        pos=click_pos,
         buttons=MouseButton.LEFT,
     )
-    interaction.handle_event(press_event, cam)
+    interaction.handle_event(press_event, view)
     # Simulate mouse move (orbit) of one horizontal pixel and one vertical pixel
     move_pos = (click_pos[0] + 1, click_pos[1] + 1)
     move_event = MouseMoveEvent(
-        canvas_pos=move_pos,
-        world_ray=_validate_ray(canvas.to_world(move_pos)),
+        pos=move_pos,
         buttons=MouseButton.LEFT,
     )
-    interaction.handle_event(move_event, cam)
+    interaction.handle_event(move_event, view)
     # Assert camera position conforms to expectation
     # (one degree around y axis and one degree around z axis)
     pos_after_exp = la.vec_transform_quat(
@@ -173,15 +181,17 @@ def test_orbit_zoom() -> None:
         transform=snx.Transform().translated((0, 0, 10)),
         controller=interaction,
     )
+    # Add cam to the canvas
+    view = snx.View(camera=cam)
+    canvas = snx.Canvas(views=[view])  # noqa: F841
     tform_before = cam.transform
     # Simulate wheel event
     wheel_event = WheelEvent(
-        canvas_pos=(0, 0),
-        world_ray=Ray((0, 0, 10), (0, 0, -1), source=MagicMock(spec=snx.View)),
+        pos=(0, 0),
         buttons=MouseButton.NONE,
         angle_delta=(0, 120),
     )
-    interaction.handle_event(wheel_event, cam)
+    interaction.handle_event(wheel_event, view)
     # The camera should have moved closer to center
     zoom = interaction._zoom_factor(120)
     desired_tform = snx.Transform().translated((0, 0, 10 * zoom))
@@ -189,12 +199,11 @@ def test_orbit_zoom() -> None:
 
     # Simulate wheel event in other direction
     wheel_event = WheelEvent(
-        canvas_pos=(0, 0),
-        world_ray=Ray((0, 0, 10), (0, 0, -1), source=MagicMock(spec=snx.View)),
+        pos=(0, 0),
         buttons=MouseButton.NONE,
         angle_delta=(0, -120),
     )
-    interaction.handle_event(wheel_event, cam)
+    interaction.handle_event(wheel_event, view)
     # The camera should have moved back to the starting point
     zoom = interaction._zoom_factor(-120)
     desired_tform = snx.Transform().translated((0, 0, 10))
@@ -212,7 +221,7 @@ def test_orbit_pan() -> None:
     # center
     cam.transform = snx.Transform().rotated(90, (0, 1, 0)).translated((10, 0, 0))
     _, _, w, h = canvas.rect_for(view)
-    ray = canvas.to_world((w / 2, h / 2))
+    ray = view.to_ray((w / 2, h / 2))
     assert ray is not None
     np.testing.assert_allclose(ray.origin, (10, 0, 0), atol=1e-7)
     np.testing.assert_allclose(ray.direction, (-1, 0, 0), atol=1e-7)
@@ -221,24 +230,22 @@ def test_orbit_pan() -> None:
 
     # Simulate right mouse press
     click_pos = (w / 2, h / 2)
-    world_ray_before = canvas.to_world(click_pos)
+    world_ray_before = view.to_ray(click_pos)
     assert world_ray_before is not None
     press_event = MousePressEvent(
-        canvas_pos=click_pos,
-        world_ray=world_ray_before,
+        pos=click_pos,
         buttons=MouseButton.RIGHT,
     )
-    interaction.handle_event(press_event, cam)
+    interaction.handle_event(press_event, view)
     # Simulate right mouse move (pan)
     click_pos = (click_pos[0], click_pos[1] + int(h) // 2)
-    world_ray_after = canvas.to_world(click_pos)
+    world_ray_after = view.to_ray(click_pos)
     assert world_ray_after is not None
     move_event = MouseMoveEvent(
-        canvas_pos=click_pos,
-        world_ray=world_ray_after,
+        pos=click_pos,
         buttons=MouseButton.RIGHT,
     )
-    interaction.handle_event(move_event, cam)
+    interaction.handle_event(move_event, view)
     # This should move the camera (world_ray_before - world_ray_after), so that the
     # center stays at the same point on the camera plane.
     distance = [

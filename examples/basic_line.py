@@ -7,6 +7,7 @@ import scenex as snx
 from scenex.app.events import (
     Event,
     MouseButton,
+    MouseEvent,
     MouseMoveEvent,
     MousePressEvent,
     MouseReleaseEvent,
@@ -42,28 +43,27 @@ pressed = False
 
 
 def _view_event_filter(event: Event) -> bool:
-    global pressed
     """Interactive mesh manipulation based on mouse events."""
+    global pressed
+
+    if not isinstance(event, MouseEvent):
+        return False
+    if not (ray := view.to_ray(event.pos)):
+        return False
     if isinstance(event, MouseMoveEvent):
         if pressed and event.buttons & MouseButton.LEFT:
-            x, y, _z = event.world_ray.origin
+            x, y, _z = ray.origin
             y = max(-1, min(1, y))
             line.vertices = _create_line_data(angle=np.asin(y) - x)
             return True
-        if intersections := event.world_ray.intersections(view.scene):
-            # Find mesh intersection
-            for node, _distance in intersections:
-                if isinstance(node, snx.Line):
-                    line.color = pressed_color_model
-                    return True
+        if ray.intersections(line):
+            line.color = pressed_color_model
+            return True
         line.color = line_color_model
     elif isinstance(event, MousePressEvent):
         if event.buttons & MouseButton.LEFT:
-            if intersections := event.world_ray.intersections(view.scene):
-                # Find line intersection
-                for node, _distance in intersections:
-                    if isinstance(node, snx.Line):
-                        pressed = True
+            if ray.intersections(line):
+                pressed = True
             return True
     elif isinstance(event, MouseReleaseEvent):
         pressed = False

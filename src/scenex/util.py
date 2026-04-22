@@ -14,7 +14,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable, Iterable
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol, cast
 
 from scenex import model
 from scenex.app import app
@@ -22,6 +22,9 @@ from scenex.utils import projections
 
 if TYPE_CHECKING:
     from typing import TypeAlias
+
+    from scenex.adaptors._base import CanvasAdaptor
+    from scenex.app._auto import CursorType
 
     Tree: TypeAlias = str | dict[str, list["Tree"]]
 
@@ -268,3 +271,27 @@ def _get_children(obj: Any) -> Iterable[Any]:
     if (children := getattr(obj, "children", None)) is None:
         return ()
     return _ensure_iterable(children)
+
+
+def set_cursor(canvas: model.Canvas, cursor: CursorType) -> None:
+    """Set the cursor for the given canvas.
+
+    Parameters
+    ----------
+    canvas : model.Canvas
+        The canvas on which to set the cursor.
+    cursor : CursorType
+        The type of cursor to set.
+
+    Notes
+    -----
+    Practically and generally speaking, setting the cursor is an app-level concern.
+    Unfortunately, setting the cursor often requires access to a native widget, meaning
+    any scenex abstractions for setting the cursor will need as input the canvas model
+    or a derivative adaptor. Proper separation of concerns suggests that the app-level
+    API should just take the native widget. This function is a convenience that performs
+    the intermediate steps to get the native widget from a canvas model.
+    """
+    for adaptor in canvas._get_adaptors(create=True):
+        widget = cast("CanvasAdaptor", adaptor)._snx_get_native()
+        app().set_cursor(widget, cursor)
