@@ -25,8 +25,6 @@ from scenex.app.events import (
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
-
     from scenex.adaptors._base import CanvasAdaptor
 
 if determine_app() == GuiFrontend.QT:
@@ -45,7 +43,7 @@ else:
 
 
 @pytest.fixture
-def evented_canvas(qtbot: QtBot) -> Generator[snx.Canvas, None, None]:
+def evented_canvas(qtbot: QtBot) -> snx.Canvas:
     camera = snx.Camera(transform=Transform(), interactive=True)
     scene = snx.Scene(children=[])
     view = snx.View(scene=scene, camera=camera)
@@ -54,8 +52,7 @@ def evented_canvas(qtbot: QtBot) -> Generator[snx.Canvas, None, None]:
         "CanvasAdaptor", canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
     qtbot.addWidget(native)
-    yield canvas
-    app().process_events()
+    return canvas
 
 
 def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
@@ -156,9 +153,6 @@ def test_resize(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     assert evented_canvas.height == new_size[1]
 
 
-# FIXME: This test is vulnerable to segfaults on CI
-# (when the QEnterEvent's position field is accessed in the Qt Event Filter)
-@pytest.mark.skipif(os.getenv("CI") == "true", reason="Skipped on CI")
 def test_mouse_enter(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
@@ -185,9 +179,6 @@ def test_mouse_enter(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     )
 
 
-# FIXME: This test is vulnerable to segfaults on CI
-# (when the QEnterEvent's position field is accessed in the Qt Event Filter)
-@pytest.mark.skipif(os.getenv("CI") == "true", reason="Skipped on CI")
 def test_mouse_leave(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
@@ -216,6 +207,9 @@ def test_mouse_leave(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     mock_filter.assert_called_once_with(MouseLeaveEvent())
 
 
+# FIXME: This test is vulnerable to segfaults on CI
+# (somehow a partially deleted QMouseEvent is being processed during qtbot.keyPress)
+@pytest.mark.skipif(os.getenv("CI") == "true", reason="Skipped on CI")
 def test_key_event(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()

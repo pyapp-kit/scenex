@@ -67,15 +67,12 @@ class QtEventFilter(QObject, EventFilter):
         self._active_buttons: MouseButton = MouseButton.NONE
 
     def eventFilter(self, a0: QObject | None = None, a1: QEvent | None = None) -> bool:
-        if not isinstance(a0, QWidget):
-            return False
-        if a0 is self._widget and not a0.signalsBlocked():
+        if isinstance(a0, QWidget) and not a0.signalsBlocked():
             if isinstance(a1, QEvent) and (evt := self._convert_event(a1)):
                 return self._handler(evt)
         return False
 
     def uninstall(self) -> None:
-        QApplication.removePostedEvents(self._widget)
         self._widget.removeEventFilter(self)
 
     def mouse_btn(self, btn: Any) -> MouseButton:
