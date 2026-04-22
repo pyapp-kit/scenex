@@ -67,12 +67,15 @@ class QtEventFilter(QObject, EventFilter):
         self._active_buttons: MouseButton = MouseButton.NONE
 
     def eventFilter(self, a0: QObject | None = None, a1: QEvent | None = None) -> bool:
-        if isinstance(a0, QWidget) and not a0.signalsBlocked():
+        if not isinstance(a0, QWidget):
+            return False
+        if a0 is self._widget and not a0.signalsBlocked():
             if isinstance(a1, QEvent) and (evt := self._convert_event(a1)):
                 return self._handler(evt)
         return False
 
     def uninstall(self) -> None:
+        QApplication.removePostedEvents(self._widget)
         self._widget.removeEventFilter(self)
 
     def mouse_btn(self, btn: Any) -> MouseButton:
@@ -87,13 +90,6 @@ class QtEventFilter(QObject, EventFilter):
 
     def _convert_event(self, qevent: QEvent) -> Event | None:
         """Convert a QEvent to a SceneX Event."""
-        if isinstance(qevent, QEnterEvent):
-            pos = qevent.position()
-            canvas_pos = (pos.x(), pos.y())
-            return MouseEnterEvent(
-                pos=canvas_pos,
-                buttons=self._active_buttons,
-            )
         if isinstance(qevent, QMouseEvent | QEnterEvent):
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
@@ -122,6 +118,11 @@ class QtEventFilter(QObject, EventFilter):
                 return MouseReleaseEvent(
                     pos=canvas_pos,
                     buttons=btn,
+                )
+            elif etype == QEvent.Type.Enter:
+                return MouseEnterEvent(
+                    pos=canvas_pos,
+                    buttons=self._active_buttons,
                 )
 
         elif qevent.type() == QEvent.Type.Leave:
