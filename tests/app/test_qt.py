@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
 if determine_app() == GuiFrontend.QT:
     from qtpy.QtCore import QEvent, QPoint, QPointF, Qt
-    from qtpy.QtGui import QEnterEvent, QKeyEvent
+    from qtpy.QtGui import QEnterEvent, QKeyEvent, QPointingDevice
     from qtpy.QtWidgets import QApplication
 
     if TYPE_CHECKING:
@@ -170,6 +170,7 @@ def test_mouse_enter(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
         QPointF(*enter_point),  # localPos
         QPointF(*enter_point),  # windowPos
         QPointF(*enter_point),  # screenPos
+        QPointingDevice.primaryPointingDevice(),
     )
     qapp = QApplication.instance()
     assert qapp is not None
@@ -191,7 +192,10 @@ def test_mouse_leave(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
     enter_point = (10, 15)
     enter_event = QEnterEvent(
-        QPointF(*enter_point), QPointF(*enter_point), QPointF(*enter_point)
+        QPointF(*enter_point),
+        QPointF(*enter_point),
+        QPointF(*enter_point),
+        QPointingDevice.primaryPointingDevice(),
     )
     qapp = QApplication.instance()
     assert qapp is not None
