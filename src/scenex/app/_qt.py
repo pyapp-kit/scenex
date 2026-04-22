@@ -97,6 +97,7 @@ class QtEventFilter(QObject, EventFilter):
                 return KeyReleaseEvent(key=keys)
 
         elif isinstance(qevent, QMouseEvent | QEnterEvent):
+            print(f"Captured MOUSE event: {type(qevent)}")
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
 
