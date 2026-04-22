@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
 if determine_app() == GuiFrontend.QT:
     from qtpy.QtCore import QEvent, QPoint, QPointF, Qt
-    from qtpy.QtGui import QEnterEvent
+    from qtpy.QtGui import QEnterEvent, QKeyEvent
     from qtpy.QtWidgets import QApplication
 
     if TYPE_CHECKING:
@@ -210,22 +210,29 @@ def test_mouse_leave(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     mock_filter.assert_called_once_with(MouseLeaveEvent())
 
 
-# def test_key_event(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-#     adaptor = evented_canvas._get_adaptors(create=True)[0]
-#     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
-#     qtbot.add_widget(native)
-#     mock_filter = MagicMock()
-#     evented_canvas.set_event_filter(mock_filter)
+def test_key_event(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
+    adaptor = evented_canvas._get_adaptors(create=True)[0]
+    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    qtbot.add_widget(native)
+    mock_filter = MagicMock()
+    evented_canvas.set_event_filter(mock_filter)
 
-#     qtbot.keyPress(native, Qt.Key.Key_A)
-#     qtbot.keyRelease(native, Qt.Key.Key_A)
+    qapp = QApplication.instance()
+    assert qapp is not None
+    no_mod = Qt.KeyboardModifier.NoModifier
+    qapp.postEvent(native, QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_A, no_mod))
+    qapp.processEvents()
 
-#     assert mock_filter.call_args_list[0].args == (
-#         KeyPressEvent(key=KeyBinding.from_str("A")),
-#     )
-#     assert mock_filter.call_args_list[1].args == (
-#         KeyReleaseEvent(key=KeyBinding.from_str("A")),
-#     )
+    mock_filter.assert_called_once_with(
+        KeyPressEvent(key=KeyBinding.from_str("A")),
+    )
+    mock_filter.reset_mock()
+
+    qapp.postEvent(native, QKeyEvent(QEvent.Type.KeyRelease, Qt.Key.Key_A, no_mod))
+    qapp.processEvents()
+    mock_filter.assert_called_once_with(
+        KeyReleaseEvent(key=KeyBinding.from_str("A")),
+    )
 
 
 def test_set_cursor(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
