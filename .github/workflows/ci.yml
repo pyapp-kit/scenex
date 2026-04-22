@@ -89,7 +89,7 @@ jobs:
 
       - name: Test
         shell: bash
-        run: uv run --no-sync coverage run -p -m pytest -v
+        run: uv run --no-sync coverage run -p -m pytest -v -s
 
       - name: Test notebooks
         if: matrix.canvas == 'jupyter'

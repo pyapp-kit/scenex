@@ -25,6 +25,8 @@ from scenex.app.events import (
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
+
     from scenex.adaptors._base import CanvasAdaptor
 
 if determine_app() == GuiFrontend.QT:
@@ -43,7 +45,7 @@ else:
 
 
 @pytest.fixture
-def evented_canvas(qtbot: QtBot) -> snx.Canvas:
+def evented_canvas(qtbot: QtBot) -> Generator[snx.Canvas, None, None]:
     camera = snx.Camera(transform=Transform(), interactive=True)
     scene = snx.Scene(children=[])
     view = snx.View(scene=scene, camera=camera)
@@ -52,7 +54,8 @@ def evented_canvas(qtbot: QtBot) -> snx.Canvas:
         "CanvasAdaptor", canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
     qtbot.addWidget(native)
-    return canvas
+    yield canvas
+    app().process_events()
 
 
 def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
