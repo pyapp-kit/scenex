@@ -87,16 +87,7 @@ class QtEventFilter(QObject, EventFilter):
 
     def _convert_event(self, qevent: QEvent) -> Event | None:
         """Convert a QEvent to a SceneX Event."""
-        if isinstance(qevent, QKeyEvent):
-            model_key = qkeycombo2modelkey(qevent.keyCombination())
-            part = SimpleKeyBinding.from_int(model_key)
-            keys = KeyBinding(parts=[part])
-            if qevent.type() == QEvent.Type.KeyPress:
-                return KeyPressEvent(key=keys)
-            elif qevent.type() == QEvent.Type.KeyRelease:
-                return KeyReleaseEvent(key=keys)
-
-        elif isinstance(qevent, QMouseEvent | QEnterEvent):
+        if isinstance(qevent, (QMouseEvent, QEnterEvent)):
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
 
@@ -150,6 +141,15 @@ class QtEventFilter(QObject, EventFilter):
                 width=size.width(),
                 height=size.height(),
             )
+
+        elif isinstance(qevent, QKeyEvent):
+            model_key = qkeycombo2modelkey(qevent.keyCombination())
+            part = SimpleKeyBinding.from_int(model_key)
+            keys = KeyBinding(parts=[part])
+            if qevent.type() == QEvent.Type.KeyPress:
+                return KeyPressEvent(key=keys)
+            elif qevent.type() == QEvent.Type.KeyRelease:
+                return KeyReleaseEvent(key=keys)
 
         return None
 

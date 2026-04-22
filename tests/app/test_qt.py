@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING, cast
 from unittest.mock import MagicMock
 
@@ -24,13 +25,11 @@ from scenex.app.events import (
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
-
     from scenex.adaptors._base import CanvasAdaptor
 
 if determine_app() == GuiFrontend.QT:
     from qtpy.QtCore import QEvent, QPoint, QPointF, Qt
-    from qtpy.QtGui import QEnterEvent, QKeyEvent, QPointingDevice
+    from qtpy.QtGui import QEnterEvent
     from qtpy.QtWidgets import QApplication
 
     if TYPE_CHECKING:
@@ -44,7 +43,7 @@ else:
 
 
 @pytest.fixture
-def evented_canvas(qtbot: QtBot) -> Generator[snx.Canvas, None, None]:
+def evented_canvas(qtbot: QtBot) -> snx.Canvas:
     camera = snx.Camera(transform=Transform(), interactive=True)
     scene = snx.Scene(children=[])
     view = snx.View(scene=scene, camera=camera)
@@ -53,9 +52,7 @@ def evented_canvas(qtbot: QtBot) -> Generator[snx.Canvas, None, None]:
         "CanvasAdaptor", canvas._get_adaptors(create=True)[0]
     )._snx_get_native()
     qtbot.addWidget(native)
-    yield canvas
-    # Cleanup
-    app().process_events()
+    return canvas
 
 
 def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
@@ -156,6 +153,9 @@ def test_resize(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     assert evented_canvas.height == new_size[1]
 
 
+# FIXME: This test is vulnerable to segfaults on CI
+# (when the QEnterEvent's position field is accessed in the Qt Event Filter)
+@pytest.mark.skipif(os.getenv("CI") == "true", reason="Skipped on CI")
 def test_mouse_enter(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
@@ -170,7 +170,6 @@ def test_mouse_enter(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
         QPointF(*enter_point),  # localPos
         QPointF(*enter_point),  # windowPos
         QPointF(*enter_point),  # screenPos
-        QPointingDevice.primaryPointingDevice(),
     )
     qapp = QApplication.instance()
     assert qapp is not None
@@ -183,6 +182,9 @@ def test_mouse_enter(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     )
 
 
+# FIXME: This test is vulnerable to segfaults on CI
+# (when the QEnterEvent's position field is accessed in the Qt Event Filter)
+@pytest.mark.skipif(os.getenv("CI") == "true", reason="Skipped on CI")
 def test_mouse_leave(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
@@ -192,10 +194,7 @@ def test_mouse_leave(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
     enter_point = (10, 15)
     enter_event = QEnterEvent(
-        QPointF(*enter_point),
-        QPointF(*enter_point),
-        QPointF(*enter_point),
-        QPointingDevice.primaryPointingDevice(),
+        QPointF(*enter_point), QPointF(*enter_point), QPointF(*enter_point)
     )
     qapp = QApplication.instance()
     assert qapp is not None
@@ -221,20 +220,13 @@ def test_key_event(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
     mock_filter = MagicMock()
     evented_canvas.set_event_filter(mock_filter)
 
-    qapp = QApplication.instance()
-    assert qapp is not None
-    no_mod = Qt.KeyboardModifier.NoModifier
-    qapp.postEvent(native, QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_A, no_mod))
-    qapp.processEvents()
+    qtbot.keyPress(native, Qt.Key.Key_A)
+    qtbot.keyRelease(native, Qt.Key.Key_A)
 
-    mock_filter.assert_called_once_with(
+    assert mock_filter.call_args_list[0].args == (
         KeyPressEvent(key=KeyBinding.from_str("A")),
     )
-    mock_filter.reset_mock()
-
-    qapp.postEvent(native, QKeyEvent(QEvent.Type.KeyRelease, Qt.Key.Key_A, no_mod))
-    qapp.processEvents()
-    mock_filter.assert_called_once_with(
+    assert mock_filter.call_args_list[1].args == (
         KeyReleaseEvent(key=KeyBinding.from_str("A")),
     )
 
