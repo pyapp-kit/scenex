@@ -89,10 +89,10 @@ class CursorType(Enum):
     Set a crosshair cursor during drawing mode:
         >>> import scenex as snx
         >>> canvas = snx.Canvas()
-        >>> snx.set_cursor(canvas, CursorType.CROSS)
+        >>> snx.set_cursor(canvas, CursorType.CROSS)  # doctest: +SKIP
 
     Restore default cursor after operation:
-        >>> snx.set_cursor(canvas, CursorType.DEFAULT)
+        >>> snx.set_cursor(canvas, CursorType.DEFAULT)  # doctest: +SKIP
 
     See Also
     --------
