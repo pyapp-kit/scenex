@@ -222,52 +222,63 @@ class Histogram:
         self.view.set_event_filter(self._on_main_view)
 
     def _on_main_view(self, event: events.Event) -> bool:
-        if not isinstance(event, events.MouseEvent):
-            return False
-        if not (ray := self.view.to_ray(event.pos)):
-            return False
-        if isinstance(event, events.MousePressEvent):
-            intersections = [
-                node
-                for node, _dist in ray.intersections(self.controls)
-                if node.interactive
-            ]
-            if len(intersections):
-                self._grabbed = intersections[0]
-                self.view.camera.interactive = False
-        elif isinstance(event, events.MouseDoublePressEvent):
-            if ray.intersections(self.gamma_handle) and self.gamma_handle.interactive:
-                self.set_gamma(1.0)
-        if isinstance(event, events.MouseMoveEvent):
-            if self._grabbed is self.left_clim:
-                # The left clim must stay to the left of the right clim
-                new_left = min(ray.origin[0], self._clims[1])
-                # ...and no less than the minimum value
-                if self._bins is not None:
-                    new_left = max(new_left, self._bins[0])
-                self.set_clims((new_left, self._clims[1]))
-            elif self._grabbed is self.right_clim:
-                # The right clim must stay to the right of the left clim
-                new_right = max(self._clims[0], ray.origin[0])
-                # ...and no more than the maximum value
-                if self._bins is not None:
-                    new_right = min(new_right, self._bins[-1])
-                self.set_clims((self._clims[0], new_right))
-            elif self._grabbed is self.gamma_handle:
-                self.set_gamma(-np.log2(ray.origin[1]))
-            elif self._grabbed is None:
+        # If we have a mouse event...
+        if isinstance(event, events.MouseEvent):
+            # ... on a view ...
+            if not (ray := self.view.to_ray(event.pos)):
+                return False
+            # ... and are pressing a control, start a drag
+            if isinstance(event, events.MousePressEvent):
                 intersections = [
                     node
                     for node, _dist in ray.intersections(self.controls)
                     if node.interactive
                 ]
-                if self.right_clim in intersections or self.left_clim in intersections:
-                    snx.set_cursor(self.canvas, CursorType.H_ARROW)
-                elif self.gamma_handle in intersections:
-                    snx.set_cursor(self.canvas, CursorType.V_ARROW)
-                else:
-                    snx.set_cursor(self.canvas, CursorType.DEFAULT)
+                if len(intersections):
+                    self._grabbed = intersections[0]
+                    self.view.camera.interactive = False
+            # ... and are double-pressing the gamma handle, reset the gamma
+            elif isinstance(event, events.MouseDoublePressEvent):
+                if (
+                    ray.intersections(self.gamma_handle)
+                    and self.gamma_handle.interactive
+                ):
+                    self.set_gamma(1.0)
+            # ... and are moving, continue a drag ...
+            if isinstance(event, events.MouseMoveEvent):
+                if self._grabbed is self.left_clim:
+                    # The left clim must stay to the left of the right clim
+                    new_left = min(ray.origin[0], self._clims[1])
+                    # ...and no less than the minimum value
+                    if self._bins is not None:
+                        new_left = max(new_left, self._bins[0])
+                    self.set_clims((new_left, self._clims[1]))
+                elif self._grabbed is self.right_clim:
+                    # The right clim must stay to the right of the left clim
+                    new_right = max(self._clims[0], ray.origin[0])
+                    # ...and no more than the maximum value
+                    if self._bins is not None:
+                        new_right = min(new_right, self._bins[-1])
+                    self.set_clims((self._clims[0], new_right))
+                elif self._grabbed is self.gamma_handle:
+                    self.set_gamma(-np.log2(ray.origin[1]))
+                elif self._grabbed is None:
+                    intersections = [
+                        node
+                        for node, _dist in ray.intersections(self.controls)
+                        if node.interactive
+                    ]
+                    if (
+                        self.right_clim in intersections
+                        or self.left_clim in intersections
+                    ):
+                        snx.set_cursor(self.canvas, CursorType.H_ARROW)
+                    elif self.gamma_handle in intersections:
+                        snx.set_cursor(self.canvas, CursorType.V_ARROW)
+                    else:
+                        snx.set_cursor(self.canvas, CursorType.DEFAULT)
 
+        # If we have a mouse release or leave event, end any drag
         if isinstance(event, events.MouseReleaseEvent | events.MouseLeaveEvent):
             self._grabbed = None
             self.view.camera.interactive = True
