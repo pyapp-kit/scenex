@@ -133,32 +133,56 @@ def zoom_to_fit(
     # projection matrix calculations
     w, h, d = np.maximum(np.ptp(bb, axis=0) if bb else (1, 1, 1), 1e-6)
 
-    # Apply aspect ratio correction only if requested
-    if preserve_aspect_ratio:
-        if not (canvas := view._canvas):
-            raise Exception("Cannot preserve aspect ratio without a canvas.")
-        _, _, pw, ph = canvas.rect_for(view)
-        aspect_ratio = pw / ph if ph else None
-        if aspect_ratio is not None and h > 0:
-            if w / h > aspect_ratio:
-                h = w / aspect_ratio
-            else:
-                w = h * aspect_ratio
     if type == "orthographic":
+        if preserve_aspect_ratio:
+            # The scene has aspect w:h. If that doesn't match the viewport's aspect
+            # ratio ar, setting the orthographic frustum to those values will distort
+            # world-space squares. We can correct this distortion by expanding whichever
+            # dimension is too small to make w:h == ar. This is kinda like letterboxing,
+            # except you'll see extra scene background instead of black bars.
+            if (ar := _aspect_ratio(view)) is not None:
+                if w / h > ar:  # scene wider than view - expand height
+                    h = w / ar
+                else:  # scene taller than view - expand width
+                    w = h * ar
         view.camera.transform = Transform().translated(center)
         view.camera.projection = orthographic(w, h, d).scaled([zoom_factor] * 3)
     elif type == "perspective":
-        # Compute the distance a to the near plane of the frustum using a default fov
-        o = max(w, h) / 2
         fov = 70
+        # First, we need to figure out how far away to place the camera so that the
+        # entire scene fits within the frustum defined by the FOV. Calculation borrowed
+        # from
+        # https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
+        if preserve_aspect_ratio and (ar := _aspect_ratio(view)) is not None:
+            # perspective() produces a square frustum (equal x/y FOV). If the viewport
+            # isn't square, world-space squares will appear distorted. We correct this
+            # by adjusting two different camera parameters. First, if the scene is wider
+            # than the viewport, our distance will actually have to increased based on
+            # that view aspect ratio.
+            o = max(h, w / ar) / 2
+        else:
+            o = max(w, h) / 2
         a = o / tan(fov * pi / 360) / zoom_factor
 
-        # So that the bounding cube's front plane is mapped to the canvas,
-        # the camera must be a units away from the front plane (at z=(center[2] + d/2))
+        # Place the camera so the bounding box's front face (z = center[2] + d/2)
+        # maps to the near plane of the frustum.
         z_bound = center[2] + (d / 2) + a
         view.camera.transform = Transform().translated((center[0], center[1], z_bound))
-        # Note that the near and far planes are set to reasonable defaults.
-        # TODO: Consider making these parameters
-        view.camera.projection = perspective(fov, near=1, far=1_000_000)
+        # TODO: Consider making near/far parameters
+        proj = perspective(fov, near=1, far=1_000_000)
+        if preserve_aspect_ratio and (ar := _aspect_ratio(view)) is not None:
+            # Second, if the viewport is non-square, we'll have to adjust our (square)
+            # projection matrix to reflect the non-square viewport. The result is kinda
+            # like letterboxing, except you'll see extra scene background instead of
+            # black bars.
+            proj = proj.scaled((1.0 / ar, 1.0, 1.0))
+        view.camera.projection = proj
     else:
         raise TypeError(f"Unrecognized projection type: {type}")
+
+
+def _aspect_ratio(view: View) -> float:
+    if not (canvas := view._canvas):
+        raise Exception("Cannot preserve aspect ratio without a canvas.")
+    _, _, pw, ph = canvas.rect_for(view)
+    return pw / ph
