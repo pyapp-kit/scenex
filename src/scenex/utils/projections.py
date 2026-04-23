@@ -102,7 +102,7 @@ def zoom_to_fit(
     view: View,
     type: Literal["perspective", "orthographic"] = "orthographic",
     zoom_factor: float = 1.0,
-    preserve_aspect_ratio: bool = False,
+    letterbox: bool = False,
 ) -> None:
     """Adjusts the Camera to fit the entire scene.
 
@@ -119,12 +119,10 @@ def zoom_to_fit(
         approaches 0, the scene will linearly decrease in size. As the zoom factor
         increases beyond 1.0, the bounds of the scene will expand linearly beyond the
         view.
-    preserve_aspect_ratio: bool
-        Whether to apply aspect ratio correction to prevent distortion. When True,
+    letterbox: bool
+        Whether to lettterbox/pillarbox to prevent anisotropic distortion. When True,
         squares will appear as squares regardless of view dimensions. When False,
         content may be stretched to fill the view. Default False.
-
-        FIXME: Is this the correct name for this behavior?
     """
     bb = view.scene.bounding_box
     center = np.mean(bb, axis=0) if bb else (0, 0, 0)
@@ -134,7 +132,7 @@ def zoom_to_fit(
     w, h, d = np.maximum(np.ptp(bb, axis=0) if bb else (1, 1, 1), 1e-6)
 
     if type == "orthographic":
-        if preserve_aspect_ratio:
+        if letterbox:
             # The scene has aspect w:h. If that doesn't match the viewport's aspect
             # ratio ar, setting the orthographic frustum to those values will distort
             # world-space squares. We can correct this distortion by expanding whichever
@@ -153,7 +151,7 @@ def zoom_to_fit(
         # entire scene fits within the frustum defined by the FOV. Calculation borrowed
         # from
         # https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
-        if preserve_aspect_ratio and (ar := _aspect_ratio(view)) is not None:
+        if letterbox and (ar := _aspect_ratio(view)) is not None:
             # perspective() produces a square frustum (equal x/y FOV). If the viewport
             # isn't square, world-space squares will appear distorted. We correct this
             # by adjusting two different camera parameters. First, if the scene is wider
@@ -170,7 +168,7 @@ def zoom_to_fit(
         view.camera.transform = Transform().translated((center[0], center[1], z_bound))
         # TODO: Consider making near/far parameters
         proj = perspective(fov, near=1, far=1_000_000)
-        if preserve_aspect_ratio and (ar := _aspect_ratio(view)) is not None:
+        if letterbox and (ar := _aspect_ratio(view)) is not None:
             # Second, if the viewport is non-square, we'll have to adjust our (square)
             # projection matrix to reflect the non-square viewport. The result is kinda
             # like letterboxing, except you'll see extra scene background instead of

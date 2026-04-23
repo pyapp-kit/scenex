@@ -141,7 +141,7 @@ def test_zoom_to_fit_orthographic() -> None:
     )
 
 
-def test_zoom_to_fit_orthographic_preserving_aspect_ratio() -> None:
+def test_zoom_to_fit_orthographic_letterbox() -> None:
     # Put a view on a (square) canvas
     canvas = snx.Canvas(width=400, height=400)
     view = snx.View(
@@ -163,7 +163,7 @@ def test_zoom_to_fit_orthographic_preserving_aspect_ratio() -> None:
 
     # Now with aspect preservation the longer axis (y) should fit exactly, and the
     # shorter axis (x) should have some padding to maintain aspect ratio
-    zoom_to_fit(view, type="orthographic", preserve_aspect_ratio=True)
+    zoom_to_fit(view, type="orthographic", letterbox=True)
     # Assert the camera is moved to the center of the scene
     assert view.camera.transform == snx.Transform().translated((50, 100, 0.5))
     # Projection that maps world space to canvas coordinates
@@ -220,7 +220,7 @@ def test_zoom_to_fit_perspective() -> None:
     assert np.all(_project(tform, (100, 100, 0)) < _project(tform, (100, 100, 1)))
 
 
-def test_zoom_to_fit_perspective_preserving_aspect_ratio() -> None:
+def test_zoom_to_fit_perspective_letterbox() -> None:
     view = snx.View(
         scene=snx.Scene(
             children=[snx.Points(vertices=np.asarray([[0, 100, 1], [100, 0, 0]]))]
@@ -228,7 +228,7 @@ def test_zoom_to_fit_perspective_preserving_aspect_ratio() -> None:
     )
     # Put the view on a non-square canvas
     canvas = snx.Canvas(width=800, height=400, views=[view])
-    zoom_to_fit(view, type="perspective", preserve_aspect_ratio=True)
+    zoom_to_fit(view, type="perspective", letterbox=True)
 
     # Assert the camera is moved to the center of the scene
     # Depth isn't particularly important to test here.
@@ -245,7 +245,7 @@ def test_zoom_to_fit_perspective_preserving_aspect_ratio() -> None:
 
     # Now, do the same thing but with height > width
     canvas.size = (400, 800)
-    zoom_to_fit(view, type="perspective", preserve_aspect_ratio=True)
+    zoom_to_fit(view, type="perspective", letterbox=True)
     # Assert the camera is moved to the center of the scene
     # Depth isn't particularly important to test here.
     assert np.array_equal(
