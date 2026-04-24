@@ -17,11 +17,10 @@ coords = rng.integers(8, 504, size=(200, 2))
 for y, x in coords:
     data[y - 3 : y + 3, x - 3 : x + 3] = 255
 
-view = snx.View(
-    scene=snx.Scene(children=[snx.Image(data=data)]),
-    camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
-)
+view = snx.View(scene=snx.Scene(children=[snx.Image(data=data)]))
 canvas = snx.Canvas(views=[view])
+ci = snx.CanvasInteractor(canvas)
+ci.set_controller(view, snx.PanZoom())
 
 _PAN_STEP = 20.0  # world units per arrow-key press
 _ZOOM_STEP = 1.25  # multiplicative factor per +/- press
@@ -61,7 +60,7 @@ def _key_filter(event: Event) -> bool:
     return True
 
 
-canvas.set_event_filter(_key_filter)
+ci.set_event_filter(_key_filter)
 
 snx.show(canvas)
 snx.run()

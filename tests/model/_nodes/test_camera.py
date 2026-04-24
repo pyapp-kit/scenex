@@ -89,7 +89,7 @@ def ortho_view() -> Generator[snx.View, None, None]:
 
 def test_panzoom_pan(ortho_view: snx.View) -> None:
     """Tests panning behavior of PanZoom."""
-    interaction = ortho_view.camera.controller = snx.PanZoom()
+    interaction = snx.PanZoom()
     # Simulate mouse press at canvas (0, 0), world (-50, 50)
     press_event = MousePressEvent(
         pos=(0, 0),
@@ -110,7 +110,7 @@ def test_panzoom_pan(ortho_view: snx.View) -> None:
 
 def test_panzoom_zoom(ortho_view: snx.View) -> None:
     """Tests zooming behavior of PanZoom."""
-    interaction = ortho_view.camera.controller = snx.PanZoom()
+    interaction = snx.PanZoom()
     # Simulate wheel event
     wheel_event = WheelEvent(
         pos=(0, 0),
@@ -129,7 +129,7 @@ def test_orbit_orbiting() -> None:
     """Tests orbiting behavior of Orbit."""
     # Camera is along the x axis, looking in the negative x direction at the center
     interaction = snx.Orbit(center=(0, 0, 0))
-    cam = snx.Camera(interactive=True, controller=interaction)
+    cam = snx.Camera()
     # Add cam to the canvas
     view = snx.View(camera=cam)
     canvas = snx.Canvas(views=[view])
@@ -176,11 +176,7 @@ def test_orbit_orbiting() -> None:
 def test_orbit_zoom() -> None:
     center = (0.0, 0.0, 0.0)
     interaction = snx.Orbit(center=center)
-    cam = snx.Camera(
-        interactive=True,
-        transform=snx.Transform().translated((0, 0, 10)),
-        controller=interaction,
-    )
+    cam = snx.Camera(transform=snx.Transform().translated((0, 0, 10)))
     # Add cam to the canvas
     view = snx.View(camera=cam)
     canvas = snx.Canvas(views=[view])  # noqa: F841
@@ -205,15 +201,13 @@ def test_orbit_zoom() -> None:
     )
     interaction.handle_event(wheel_event, view)
     # The camera should have moved back to the starting point
-    zoom = interaction._zoom_factor(-120)
-    desired_tform = snx.Transform().translated((0, 0, 10))
     np.testing.assert_allclose(cam.transform, tform_before)
 
 
 def test_orbit_pan() -> None:
     # Camera is along the x axis, looking in the negative x direction at the center
     interaction = snx.Orbit(center=(0, 0, 0))
-    cam = snx.Camera(interactive=True, controller=interaction)
+    cam = snx.Camera()
     # Add cam to the canvas
     view = snx.View(camera=cam)
     canvas = snx.Canvas(views=[view])
@@ -260,26 +254,18 @@ def test_orbit_pan() -> None:
 
 
 def test_panzoom_serialization() -> None:
-    cam = snx.Camera(
-        controller=snx.PanZoom(),
-        interactive=True,
-        transform=snx.Transform().translated((10, 20, 30)).scaled((2, 2, 2)),
-    )
-    json = cam.model_dump_json()
-    cam2 = snx.Camera.model_validate_json(json)
-    assert isinstance(cam2.controller, snx.PanZoom)
+    pz = snx.PanZoom()
+    json = pz.model_dump_json()
+    pz2 = snx.PanZoom.model_validate_json(json)
+    assert isinstance(pz2, snx.PanZoom)
 
 
 def test_orbit_serialization() -> None:
     center = (5, 5, 10)
     polar_axis = (1, 0, 0)
-    cam = snx.Camera(
-        controller=snx.Orbit(center=center, polar_axis=polar_axis),
-        interactive=True,
-        transform=snx.Transform().translated((10, 20, 30)).scaled((2, 2, 2)),
-    )
-    json = cam.model_dump_json()
-    cam2 = snx.Camera.model_validate_json(json)
-    assert isinstance(cam2.controller, snx.Orbit)
-    assert cam2.controller.center == center
-    assert cam2.controller.polar_axis == polar_axis
+    orbit = snx.Orbit(center=center, polar_axis=polar_axis)
+    json = orbit.model_dump_json()
+    orbit2 = snx.Orbit.model_validate_json(json)
+    assert isinstance(orbit2, snx.Orbit)
+    assert orbit2.center == center
+    assert orbit2.polar_axis == polar_axis

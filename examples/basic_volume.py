@@ -23,11 +23,12 @@ view = snx.View(
             )
         ]
     ),
-    camera=snx.Camera(interactive=True),
-    on_resize=snx.Letterbox(),
+    camera=snx.Camera(),
 )
 
-snx.show(view)
+canvas = snx.show(view)
+ci = snx.CanvasInteractor(canvas)
+ci.set_resize_policy(view, snx.Letterbox())
 
 # Orbit around the center of the volume
 orbit_center = np.mean(np.asarray(view.scene.bounding_box), axis=0)
@@ -41,7 +42,7 @@ view.camera.projection = projections.perspective(
     near=1,
     far=1_000_000,  # Just need something big
 )
-view.camera.controller = snx.Orbit(center=orbit_center)
+ci.set_controller(view, snx.Orbit(center=orbit_center))
 
 
 snx.run()

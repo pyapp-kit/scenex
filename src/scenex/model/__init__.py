@@ -61,11 +61,15 @@ Build a simple scene::
     ...     ]
     ... )
 
-Create a view with interactive camera::
+Create a view with an interactive camera using CanvasInteractor::
 
-    >>> from scenex.model import View, Camera, PanZoom
+    from scenex.model import View, Camera
+    from scenex.interaction import CanvasInteractor, PanZoom
 
-    >>> view = View(scene=scene, camera=Camera(controller=PanZoom(), interactive=True))
+    view = View(scene=scene, camera=Camera())
+    canvas = snx.show(view)
+    ci = CanvasInteractor(canvas)
+    ci.set_controller(view, PanZoom())
 
 Notes
 -----
@@ -93,13 +97,7 @@ from ._layout import (
     Coord,
     Layout,
 )
-from ._nodes.camera import (
-    AnyController,
-    Camera,
-    CameraController,
-    Orbit,
-    PanZoom,
-)
+from ._nodes.camera import Camera
 from ._nodes.image import Image, InterpolationMode
 from ._nodes.line import Line
 from ._nodes.mesh import Mesh
@@ -109,15 +107,12 @@ from ._nodes.scene import Scene
 from ._nodes.text import Text
 from ._nodes.volume import RenderMode, Volume
 from ._transform import Transform
-from ._view import AnyResizePolicy, Letterbox, ResizePolicy, View
+from ._view import View
 
 __all__ = [
-    "AnyController",
     "AnyNode",
-    "AnyResizePolicy",
     "BlendMode",
     "Camera",
-    "CameraController",
     "Canvas",
     "Color",
     "ColorModel",
@@ -128,15 +123,11 @@ __all__ = [
     "Image",
     "InterpolationMode",
     "Layout",
-    "Letterbox",
     "Line",
     "Mesh",
     "Node",
-    "Orbit",
-    "PanZoom",
     "Points",
     "RenderMode",
-    "ResizePolicy",
     "ScalingMode",
     "Scene",
     "SymbolName",

@@ -199,7 +199,14 @@ def add_imgui_controls(view: View) -> None:
             return 0
 
     imgui_filter = ImguiEventFilter()
-    imgui_filter.internal_filter = view.set_event_filter(imgui_filter)
+    from scenex.interaction._coordinator import _interactor_by_canvas_id
+
+    ci = _interactor_by_canvas_id.get(snx_canvas_model._model_id.hex)
+    if ci is None:
+        from scenex.interaction import CanvasInteractor
+
+        ci = CanvasInteractor(snx_canvas_model)
+    imgui_filter.internal_filter = ci.set_view_filter(view, imgui_filter)
 
 
 def _min_max(meta: list[Any], eps: float = 0) -> tuple[float | None, float | None]:

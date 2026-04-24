@@ -42,15 +42,17 @@ def test_event_filter() -> None:
     """Tests the ability to set a canvas-level event filter."""
     view = snx.View()
     view_filter = Mock()
-    view.set_event_filter(view_filter)
-
     canvas = snx.Canvas(views=[view])
+    ci = snx.CanvasInteractor(canvas)
+    ci.set_view_filter(view, view_filter)
+
     canvas_filter = Mock()
     canvas_filter.return_value = False
-    canvas.set_event_filter(canvas_filter)
+    ci.set_event_filter(canvas_filter)
+
     # Ensure that the canvas can receive events
     evt = MouseMoveEvent(pos=(0, 0), buttons=MouseButton.NONE)
-    canvas.handle(evt)
+    ci.handle(evt)
     canvas_filter.assert_called_with(evt)
     view_filter.assert_called_with(evt)
 
@@ -59,7 +61,7 @@ def test_event_filter() -> None:
     canvas_filter.reset_mock()
     canvas_filter.return_value = True
 
-    canvas.handle(evt)
+    ci.handle(evt)
     canvas_filter.assert_called_with(evt)
     view_filter.assert_not_called()
 
@@ -76,24 +78,25 @@ def test_handle_view_events() -> None:
     view2 = snx.View()  # Right half
     view2.layout.x = "50%", "100%"
     canvas = snx.Canvas(views=[view1, view2])
+    ci = snx.CanvasInteractor(canvas)
     mock_filter = Mock()
-    view1.set_event_filter(mock_filter)
+    ci.set_view_filter(view1, mock_filter)
 
     # Assert MouseEnterEvents are directed to the correct view
     evt = MouseEnterEvent(pos=(0, 0), buttons=MouseButton.NONE)
-    canvas.handle(evt)
+    ci.handle(evt)
     mock_filter.assert_called_once_with(evt)
     mock_filter.reset_mock()
 
     # Assert MouseLeaveEvents are directed to the correct view
     evt = MouseLeaveEvent()
-    canvas.handle(evt)
+    ci.handle(evt)
     mock_filter.assert_called_once_with(evt)
     mock_filter.reset_mock()
 
     # Assert MouseEnterEvents are generated if another event type is sent to a new view
     evt = MouseMoveEvent(pos=(2, 0), buttons=MouseButton.NONE)
-    canvas.handle(evt)
+    ci.handle(evt)
     assert mock_filter.call_count == 2
     assert mock_filter.call_args_list[0] == call(
         MouseEnterEvent(pos=evt.pos, buttons=MouseButton.NONE)
@@ -103,9 +106,9 @@ def test_handle_view_events() -> None:
 
     # Assert MouseEnterEvents are generated when moving between views
     mock_filter2 = Mock()
-    view2.set_event_filter(mock_filter2)
+    ci.set_view_filter(view2, mock_filter2)
     evt = MouseMoveEvent(pos=(canvas.width - 1, 0), buttons=MouseButton.NONE)
-    canvas.handle(evt)
+    ci.handle(evt)
     mock_filter.assert_called_once_with(MouseLeaveEvent())
     assert mock_filter2.call_count == 2
     assert mock_filter2.call_args_list[0] == call(

@@ -25,8 +25,9 @@ points = snx.Points(
 )
 
 view = snx.View(scene=snx.Scene(children=[points]))
-view.camera.controller = snx.PanZoom()
 canvas = snx.show(view)
+ci = snx.CanvasInteractor(canvas)
+ci.set_controller(view, snx.PanZoom())
 
 
 def _cursor_filter(event: Event) -> bool:
@@ -40,6 +41,6 @@ def _cursor_filter(event: Event) -> bool:
     return False
 
 
-view.set_event_filter(_cursor_filter)
+ci.set_view_filter(view, _cursor_filter)
 
 snx.run()

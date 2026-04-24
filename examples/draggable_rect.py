@@ -68,11 +68,10 @@ handles = snx.Points(
 
 # ── Scene / View ──────────────────────────────────────────────────────────────
 scene = snx.Scene(children=[bg, rect_mesh])
-view = snx.View(
-    scene=scene,
-    camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
-)
+view = snx.View(scene=scene, camera=snx.Camera())
 canvas = snx.show(view)
+ci = snx.CanvasInteractor(canvas)
+ci.set_controller(view, snx.PanZoom())
 
 # ── Drag state ────────────────────────────────────────────────────────────────
 _anchor: tuple[float, float] | None = None  # resize: fixed opposite corner
@@ -214,7 +213,7 @@ def _on_vertices_changed(vertices: np.ndarray) -> None:
 
 
 # Connect the event filter to listen for user events
-view.set_event_filter(_event_filter)
+ci.set_view_filter(view, _event_filter)
 
 # Connect the vertex change callback
 _on_vertices_changed(rect_mesh.vertices)  # initialize display

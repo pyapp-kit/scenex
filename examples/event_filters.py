@@ -57,7 +57,7 @@ def _view_filter(event: Event) -> bool:
     return True
 
 
-view.set_event_filter(_view_filter)
-
-snx.show(view)
+canvas = snx.show(view)
+ci = snx.CanvasInteractor(canvas)
+ci.set_view_filter(view, _view_filter)
 snx.run()

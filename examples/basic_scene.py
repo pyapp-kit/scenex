@@ -32,8 +32,7 @@ view = snx.View(
             ),
         ]
     ),
-    camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
-    on_resize=snx.Letterbox(),
+    camera=snx.Camera(),
 )
 
 # example of adding an object to a scene
@@ -46,7 +45,10 @@ view.scene.add_child(image)
 # snx.use("pygfx")
 # snx.use("vispy")
 
-snx.show(view)
+canvas = snx.show(view)
+ci = snx.CanvasInteractor(canvas)
+ci.set_controller(view, snx.PanZoom())
+ci.set_resize_policy(view, snx.Letterbox())
 
 if add_imgui_controls is not None:
     add_imgui_controls(view)

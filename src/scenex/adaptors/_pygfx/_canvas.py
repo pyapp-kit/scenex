@@ -90,9 +90,22 @@ class Canvas(CanvasAdaptor):
         self._views: list[model.View] = []
         for view in canvas.views:
             self._snx_add_view(view)
-        self._filter = app().install_event_filter(self._snx_get_native(), canvas.handle)
+        self._filter = app().install_event_filter(
+            self._snx_get_native(), self._dispatch_event
+        )
         self._renderer = pygfx.renderers.WgpuRenderer(self._wgpu_canvas)
         self._renderer.request_draw(self._draw)
+
+    def _dispatch_event(self, event: Any) -> bool:
+        from scenex.app.events import ResizeEvent
+
+        if isinstance(event, ResizeEvent):
+            self._canvas.size = (event.width, event.height)
+        from scenex.interaction._coordinator import _interactor_by_canvas_id
+
+        if ci := _interactor_by_canvas_id.get(self._canvas._model_id.hex):
+            return ci.handle(event)
+        return False
 
     def _snx_get_native(self) -> Any:
         if subwdg := getattr(self._wgpu_canvas, "_subwidget", None):

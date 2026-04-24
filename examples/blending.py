@@ -51,7 +51,7 @@ view = snx.View(
         children=[volume1, volume2],
         interactive=True,
     ),
-    camera=snx.Camera(interactive=True),
+    camera=snx.Camera(),
 )
 
 blend_modes = list(scenex.model.BlendMode)
@@ -75,11 +75,10 @@ def change_blend_mode(event: Event) -> bool:
     return False
 
 
-view.set_event_filter(change_blend_mode)
-
-
 snx.use("vispy")
-snx.show(view)
+canvas = snx.show(view)
+ci = snx.CanvasInteractor(canvas)
+ci.set_view_filter(view, change_blend_mode)
 
 # Orbit around the center of the volume
 orbit_center = np.mean(np.asarray(view.scene.bounding_box), axis=0)
@@ -93,6 +92,6 @@ view.camera.projection = projections.perspective(
     near=1,
     far=1_000_000,  # Just need something big
 )
-view.camera.controller = snx.Orbit(center=orbit_center)
+ci.set_controller(view, snx.Orbit(center=orbit_center))
 
 snx.run()

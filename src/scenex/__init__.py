@@ -29,6 +29,7 @@ Create and display a simple visualization::
 See Also
 --------
 - scenex.model: Core declarative model classes
+- scenex.interaction: Interaction components and coordinator
 - scenex.adaptors: Backend adaptor implementations
 - scenex.app: Application and event handling
 """
@@ -43,6 +44,15 @@ except PackageNotFoundError:
     __version__ = "uninstalled"
 
 from .adaptors import use
+from .interaction import (
+    CameraController,
+    CanvasInteractor,
+    Letterbox,
+    Orbit,
+    PanZoom,
+    ResizePolicy,
+    ViewInteractor,
+)
 from .model._canvas import Canvas
 from .model._color import (
     ColorModel,
@@ -54,7 +64,7 @@ from .model._layout import (
     Coord,
     Layout,
 )
-from .model._nodes.camera import Camera, CameraController, Orbit, PanZoom
+from .model._nodes.camera import Camera
 from .model._nodes.image import Image
 from .model._nodes.line import Line
 from .model._nodes.mesh import Mesh
@@ -64,13 +74,14 @@ from .model._nodes.scene import Scene
 from .model._nodes.text import Text
 from .model._nodes.volume import Volume
 from .model._transform import Transform
-from .model._view import Letterbox, ResizePolicy, View
+from .model._view import View
 from .util import run, set_cursor, show
 
 __all__ = [
     "Camera",
     "CameraController",
     "Canvas",
+    "CanvasInteractor",
     "ColorModel",
     "Coord",
     "FaceColors",
@@ -90,6 +101,7 @@ __all__ = [
     "UniformColor",
     "VertexColors",
     "View",
+    "ViewInteractor",
     "Volume",
     "run",
     "set_cursor",

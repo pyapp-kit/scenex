@@ -120,8 +120,6 @@ class CameraAdaptor(NodeAdaptor[TCamera, TNative]):
 
     @abstractmethod
     def _snx_set_projection(self, arg: model.Transform, /) -> None: ...
-    @abstractmethod
-    def _snx_set_controller(self, arg: model.CameraController | None, /) -> None: ...
 
 
 class ImageAdaptor(NodeAdaptor[TImage, TNative]):

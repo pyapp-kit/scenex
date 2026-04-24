@@ -41,11 +41,24 @@ class Canvas(CanvasAdaptor):
         self._views: list[model.View] = []
         for view in canvas.views:
             self._snx_add_view(view)
-        self._filter = app().install_event_filter(self._canvas.native, canvas.handle)
+        self._filter = app().install_event_filter(
+            self._canvas.native, self._dispatch_event
+        )
 
         self._visual_to_node: dict[VisualNode, model.Node | None] = {}
         self._last_canvas_pos: tuple[float, float] | None = None
         self._model = canvas
+
+    def _dispatch_event(self, event: Any) -> bool:
+        from scenex.app.events import ResizeEvent
+
+        if isinstance(event, ResizeEvent):
+            self._model.size = (event.width, event.height)
+        from scenex.interaction._coordinator import _interactor_by_canvas_id
+
+        if ci := _interactor_by_canvas_id.get(self._model._model_id.hex):
+            return ci.handle(event)
+        return False
 
     def _snx_get_native(self) -> Any:
         return self._canvas.native
