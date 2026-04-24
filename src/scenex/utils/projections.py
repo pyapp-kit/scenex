@@ -120,7 +120,7 @@ def zoom_to_fit(
         increases beyond 1.0, the bounds of the scene will expand linearly beyond the
         view.
     letterbox: bool
-        Whether to lettterbox/pillarbox to prevent anisotropic distortion. When True,
+        Whether to letterbox/pillarbox to prevent anisotropic distortion. When True,
         squares will appear as squares regardless of view dimensions. When False,
         content may be stretched to fill the view. Default False.
     """
@@ -166,7 +166,6 @@ def zoom_to_fit(
         # maps to the near plane of the frustum.
         z_bound = center[2] + (d / 2) + a
         view.camera.transform = Transform().translated((center[0], center[1], z_bound))
-        # TODO: Consider making near/far parameters
         proj = perspective(fov, near=1, far=1_000_000)
         if letterbox and (ar := _aspect_ratio(view)) is not None:
             # Second, if the viewport is non-square, we'll have to adjust our (square)
@@ -179,8 +178,13 @@ def zoom_to_fit(
         raise TypeError(f"Unrecognized projection type: {type}")
 
 
-def _aspect_ratio(view: View) -> float:
+def _aspect_ratio(view: View) -> float | None:
     if not (canvas := view._canvas):
-        raise Exception("Cannot preserve aspect ratio without a canvas.")
+        # If the view isn't attached to a canvas, we can't get viewport dimensions, and
+        # can't compute an aspect ratio.
+        return None
     _, _, pw, ph = canvas.rect_for(view)
+    if pw <= 0 or ph <= 0:
+        # If the view has non-positive dimensions, we can't compute an aspect ratio.
+        return None
     return pw / ph

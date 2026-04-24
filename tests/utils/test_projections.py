@@ -161,7 +161,7 @@ def test_zoom_to_fit_orthographic_letterbox() -> None:
     # ...and [100, 200, 0] to NDC coordinates [1, 1]
     assert np.array_equal((1, 1), tform.map((100, 200, 0))[:2])
 
-    # Now with aspect preservation the longer axis (y) should fit exactly, and the
+    # Now with letterbox=True, the longer axis (y) should fit exactly, and the
     # shorter axis (x) should have some padding to maintain aspect ratio
     zoom_to_fit(view, type="orthographic", letterbox=True)
     # Assert the camera is moved to the center of the scene
