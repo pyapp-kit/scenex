@@ -55,24 +55,30 @@ def evented_canvas(qtbot: QtBot) -> snx.Canvas:
     return canvas
 
 
-def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
+@pytest.mark.parametrize(
+    "qt_button, expected_buttons",
+    [
+        (Qt.MouseButton.LeftButton, MouseButton.LEFT),
+        (Qt.MouseButton.RightButton, MouseButton.RIGHT),
+        (Qt.MouseButton.MiddleButton, MouseButton.MIDDLE),
+    ],
+)
+def test_mouse_press(
+    evented_canvas: snx.Canvas,
+    qtbot: QtBot,
+    qt_button: Qt.MouseButton,
+    expected_buttons: MouseButton,
+) -> None:
     adaptor = evented_canvas._get_adaptors(create=True)[0]
     native = cast("CanvasAdaptor", adaptor)._snx_get_native()
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (5, 10)
-    # Press the left button
-    qtbot.mousePress(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
+    # Press the button
+    qtbot.mousePress(native, qt_button, pos=QPoint(*press_point))
     mock_filter.assert_called_once_with(
-        MousePressEvent(pos=press_point, buttons=MouseButton.LEFT)
-    )
-
-    mock_filter.reset_mock()
-    # Now press the right button
-    qtbot.mousePress(native, Qt.MouseButton.RightButton, pos=QPoint(*press_point))
-    mock_filter.assert_called_once_with(
-        MousePressEvent(pos=press_point, buttons=MouseButton.RIGHT)
+        MousePressEvent(pos=press_point, buttons=expected_buttons)
     )
 
 
