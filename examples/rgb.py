@@ -34,7 +34,7 @@ view = snx.View(
             img,
         ]
     ),
-    camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
+    camera=snx.Camera(),
 )
 
 idx = 0
@@ -56,7 +56,8 @@ def _event_filter(event: events.Event) -> bool:
     return False
 
 
-view.set_event_filter(_event_filter)
-
-snx.show(view)
+canvas = snx.show(view)
+ci = snx.CanvasInteractor(canvas)
+ci.set_controller(view, snx.PanZoom())
+ci.set_view_filter(view, _event_filter)
 snx.run()

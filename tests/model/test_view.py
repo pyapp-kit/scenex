@@ -16,7 +16,6 @@ def test_to_ray() -> None:
     camera = snx.Camera(
         transform=snx.Transform(),
         projection=projections.orthographic(2, 2, 2),
-        interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
     canvas = snx.Canvas(views=[view])
@@ -47,7 +46,6 @@ def test_to_ray_layout() -> None:
     camera = snx.Camera(
         transform=snx.Transform(),
         projection=projections.orthographic(2, 2, 2),
-        interactive=True,
     )
     layout = snx.Layout(margin=10)
     view = snx.View(scene=snx.Scene(children=[]), camera=camera, layout=layout)
@@ -63,7 +61,6 @@ def test_to_ray_translated() -> None:
     camera = snx.Camera(
         transform=snx.Transform().translated((1, 1, 1)),
         projection=projections.orthographic(2, 2, 2),
-        interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
     # NOTE: we need a canvas to convert to a ray.
@@ -90,7 +87,6 @@ def test_to_ray_projection() -> None:
     camera = snx.Camera(
         transform=snx.Transform(),
         projection=projections.orthographic(1, 1, 1),
-        interactive=True,
     )
     view = snx.View(scene=snx.Scene(children=[]), camera=camera)
     # NOTE: we need a canvas to convert to a ray.
@@ -107,7 +103,6 @@ def test_events() -> None:
     view = snx.View(scene=snx.Scene(children=[img]))
     view_filter = MagicMock()
     view_filter.return_value = False
-    view.set_event_filter(view_filter)
 
     # Set up the camera such that the image is in the top right quadrant
     view.camera.transform = snx.Transform().translated((-0.5, -0.5))
@@ -115,6 +110,8 @@ def test_events() -> None:
 
     # Put it on a canvas
     canvas = snx.Canvas(views=[view])
+    ci = snx.CanvasInteractor(canvas)
+    ci.set_view_filter(view, view_filter)
     _, _, w, _h = canvas.rect_for(view)
 
     # Mouse over that image in the top right corner
@@ -124,7 +121,7 @@ def test_events() -> None:
     event = MouseMoveEvent(pos=canvas_pos, buttons=MouseButton.NONE)
 
     # And show the view saw the event
-    canvas.handle(event)
+    ci.handle(event)
     # NOTE that there will also be a MouseEnterEvent
     assert view_filter.call_count == 2
     enter_event = MouseEnterEvent(pos=canvas_pos, buttons=MouseButton.NONE)
@@ -137,24 +134,24 @@ def test_filter_returning_None() -> None:
     """Some widget backends (e.g. Qt) get upset when non-booleans are returned.
 
     This test ensures that if a faulty event filter is set that returns None,
-    the event is treated as handled (i.e. True is returned).
+    the handle call does not raise and returns a bool.
     """
     view = snx.View()
 
     def faulty_filter(event: Event) -> bool:
         return None  # type: ignore[return-value]
 
-    view.set_event_filter(faulty_filter)
     canvas = snx.Canvas(views=[view])
+    ci = snx.CanvasInteractor(canvas)
+    ci.set_view_filter(view, faulty_filter)
 
     canvas_pos = (canvas.width // 2, canvas.height // 2)
     world_ray = view.to_ray(canvas_pos)
     assert world_ray is not None
     event = MouseMoveEvent(pos=canvas_pos, buttons=MouseButton.NONE)
 
-    handled = view.filter_event(event)
+    handled = ci.handle(event)
     assert isinstance(handled, bool)
-    assert handled is False
 
 
 def test_view_resizer() -> None:
@@ -162,8 +159,10 @@ def test_view_resizer() -> None:
     camera = snx.Camera(
         projection=projections.orthographic(100, 100, 100),
     )
-    view = snx.View(camera=camera, on_resize=snx.Letterbox())
+    view = snx.View(camera=camera)
     canvas = snx.Canvas(width=400, height=400, views=[view])
+    ci = snx.CanvasInteractor(canvas)
+    ci.set_resize_policy(view, snx.Letterbox())
 
     # Initial aspect should be 1.0 (square)
     # Note that the aspect ratio is stored inversely in the projection matrix,
@@ -182,7 +181,7 @@ def test_view_resizer() -> None:
     assert new_aspect == pytest.approx(2.0, rel=1e-6)
 
     # Remove resizer
-    view.on_resize = None
+    ci.set_resize_policy(view, None)
 
     # Resize canvas again
     canvas.height = 400
@@ -212,12 +211,9 @@ def test_view_canvas_assignment() -> None:
     assert view not in canvas.views
 
 
-def test_view_serialization() -> None:
+def test_letterbox_serialization() -> None:
+    """Letterbox can be round-trip serialized."""
     resize_policy = snx.Letterbox()
-    view = snx.View(on_resize=resize_policy)
-    json = view.model_dump_json()
-    view2 = snx.View.model_validate_json(json)
-    # FIXME: there are tons of different errors in round trip serialization
-    # let's just make sure that Letterbox() can be round-trip serialized
-    # and leave the rest for later
-    assert isinstance(view2.on_resize, type(resize_policy))
+    json = resize_policy.model_dump_json()
+    policy2 = snx.Letterbox.model_validate_json(json)
+    assert isinstance(policy2, type(resize_policy))

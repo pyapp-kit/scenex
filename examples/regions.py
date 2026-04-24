@@ -68,12 +68,12 @@ def _on_click(event: events.Event) -> bool:
     return False
 
 
-view.set_event_filter(_on_click)
-
 name, *_ = REGIONS[region_idx]
 print(f"[{region_idx + 1}/{len(REGIONS)}] {name}")
 print("Click the view to cycle through layout options.")
 
 snx.show(canvas)
+ci = snx.CanvasInteractor(canvas)
+ci.set_view_filter(view, _on_click)
 zoom_to_fit(view)
 snx.run()

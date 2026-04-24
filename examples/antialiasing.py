@@ -66,8 +66,8 @@ def _toggle_antialias(event: Event) -> bool:
     return False
 
 
-view.set_event_filter(_toggle_antialias)
-
-snx.show(view)
+canvas = snx.show(view)
+ci = snx.CanvasInteractor(canvas)
+ci.set_view_filter(view, _toggle_antialias)
 view.camera.projection = projections.orthographic(2, 2, 1e5)
 snx.run()

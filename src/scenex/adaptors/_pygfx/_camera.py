@@ -33,6 +33,3 @@ class Camera(Node, CameraAdaptor):
 
     def _snx_set_projection(self, arg: model.Transform) -> None:
         self._pygfx_node.projection_matrix = arg.root  # pyright: ignore[reportAttributeAccessIssue]
-
-    def _snx_set_controller(self, arg: model.CameraController | None) -> None:
-        pass

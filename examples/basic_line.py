@@ -33,10 +33,7 @@ pressed_color_model = snx.VertexColors(
 )
 line = snx.Line(vertices=original_vertices, color=line_color_model)
 
-view = snx.View(
-    scene=snx.Scene(children=[line]),
-    camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
-)
+view = snx.View(scene=snx.Scene(children=[line]))
 
 
 pressed = False
@@ -71,9 +68,9 @@ def _view_event_filter(event: Event) -> bool:
     return False
 
 
-# Set up the event filter
-view.set_event_filter(_view_event_filter)
-
-# Show and position camera
-snx.show(view)
+# Show and position camera, then set up interaction
+canvas = snx.show(view)
+ci = snx.CanvasInteractor(canvas)
+ci.set_controller(view, snx.PanZoom())
+ci.set_view_filter(view, _view_event_filter)
 snx.run()

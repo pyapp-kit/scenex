@@ -75,10 +75,7 @@ mesh = snx.Mesh(
     color=per_vertex_model,
 )
 
-view = snx.View(
-    scene=snx.Scene(children=[mesh]),
-    camera=snx.Camera(controller=snx.PanZoom(), interactive=True),
-)
+view = snx.View(scene=snx.Scene(children=[mesh]))
 
 
 def event_filter(event: Event) -> bool:
@@ -107,11 +104,11 @@ def event_filter(event: Event) -> bool:
     return False
 
 
-# Set up the event filter
-view.set_event_filter(event_filter)
-
-# Show and position camera
-snx.show(view)
+# Show and position camera, then set up interaction
+canvas = snx.show(view)
+ci = snx.CanvasInteractor(canvas)
+ci.set_controller(view, snx.PanZoom())
+ci.set_view_filter(view, event_filter)
 
 print("Interactive Mesh Demo:")
 print("- Move mouse over mesh to delete intersected faces")

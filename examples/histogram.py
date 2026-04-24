@@ -85,7 +85,7 @@ class Histogram:
         # plot
         self.view = snx.View(
             scene=snx.Scene(name="main scene"),
-            camera=snx.Camera(interactive=True),
+            camera=snx.Camera(),
         )
         self.view.layout.x_start = f"{_AXIS}px"
         self.view.layout.y_end = f"-{_AXIS}px"
@@ -213,13 +213,11 @@ class Histogram:
         self.controls.order = 1
         self.view.scene.add_child(self.controls)
 
-        # Set up event handlers and controllers
-        self.view.camera.controller = snx.PanZoom(lock_y=True)
+        self._pan_zoom = snx.PanZoom(lock_y=True)
 
         self.view.camera.events.transform.connect(self._update_x_axis)
         self.view.camera.events.projection.connect(self._update_x_axis)
         self.canvas.events.width.connect(self._update_x_axis)
-        self.view.set_event_filter(self._on_main_view)
 
     def _on_main_view(self, event: events.Event) -> bool:
         # If we have a mouse event...
@@ -236,7 +234,7 @@ class Histogram:
                 ]
                 if len(intersections):
                     self._grabbed = intersections[0]
-                    self.view.camera.interactive = False
+                    self.ci.set_controller(self.view, None)
             # ... and are double-pressing the gamma handle, reset the gamma
             elif isinstance(event, events.MouseDoublePressEvent):
                 if (
@@ -281,7 +279,7 @@ class Histogram:
         # If we have a mouse release or leave event, end any drag
         if isinstance(event, events.MouseReleaseEvent | events.MouseLeaveEvent):
             self._grabbed = None
-            self.view.camera.interactive = True
+            self.ci.set_controller(self.view, self._pan_zoom)
         return False
 
     def set_clims(self, clims: tuple[float, float]) -> None:
@@ -355,6 +353,12 @@ class Histogram:
         self._update_y_axis()
         if first_data:
             self.set_range()
+
+    def setup_interactor(self, ci: snx.CanvasInteractor) -> None:
+        """Wire up the CanvasInteractor for the main view."""
+        self.ci = ci
+        ci.set_controller(self.view, self._pan_zoom)
+        ci.set_view_filter(self.view, self._on_main_view)
 
     def set_range(self) -> None:
         """Sets the range of the x axis."""
@@ -500,8 +504,9 @@ class Histogram:
 
 # Create the histogram
 histogram = Histogram()
-# Show the histogram
+# Show the histogram and wire up interaction
 snx.show(histogram.canvas)
+histogram.setup_interactor(snx.CanvasInteractor(histogram.canvas))
 # Add some data
 data = gaussian_dataset(n=10000)
 histogram.set_data(data)

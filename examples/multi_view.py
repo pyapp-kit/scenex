@@ -59,14 +59,8 @@ def _make_scene() -> snx.Scene:
 
 
 # We'll make two views on the same scene
-view1 = snx.View(
-    scene=_make_scene(),
-    camera=snx.Camera(interactive=True),
-)
-view2 = snx.View(
-    scene=_make_scene(),
-    camera=snx.Camera(interactive=True),
-)
+view1 = snx.View(scene=_make_scene(), camera=snx.Camera())
+view2 = snx.View(scene=_make_scene(), camera=snx.Camera())
 
 # Partition the canvas into two halves for the first two views
 view1.layout.x_end = view2.layout.x_start = "50%"
@@ -99,9 +93,9 @@ def _view1_event_filter(event: Event) -> bool:
     return False
 
 
-view1.set_event_filter(_view1_event_filter)
-
 snx.show(canvas)
+ci = snx.CanvasInteractor(canvas)
+ci.set_view_filter(view1, _view1_event_filter)
 
 # Orbit around the center of the volume
 orbit_center = np.mean(np.asarray(view2.scene.bounding_box), axis=0)
@@ -115,7 +109,7 @@ view1.camera.projection = projections.perspective(
     near=1,
     far=1_000_000,  # Just need something big
 )
-view1.camera.controller = snx.Orbit(center=orbit_center)
+ci.set_controller(view1, snx.Orbit(center=orbit_center))
 
 # The second camera can just look down (-z) at the center of the volume
 view2.camera.transform = Transform().translated(orbit_center).translated((0, 0, 300))
