@@ -80,6 +80,8 @@ class QtEventFilter(QObject, EventFilter):
             return MouseButton.LEFT
         if btn == Qt.MouseButton.RightButton:
             return MouseButton.RIGHT
+        if btn == Qt.MouseButton.MiddleButton:
+            return MouseButton.MIDDLE
         if btn == Qt.MouseButton.NoButton:
             return MouseButton.NONE
 
