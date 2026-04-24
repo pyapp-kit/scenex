@@ -5152,7 +5152,7 @@ y_start-&gt; +--------------------------------+
 </span><span id=__span-0-182>    <span class=n>reg</span><span class=o>.</span><span class=n>get_adaptor</span><span class=p>(</span><span class=n>canvas</span><span class=p>,</span> <span class=n>create</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
 </span><span id=__span-0-183>    <span class=n>app</span><span class=p>()</span><span class=o>.</span><span class=n>create_app</span><span class=p>()</span>
 </span><span id=__span-0-184>    <span class=k>for</span> <span class=n>view</span> <span class=ow>in</span> <span class=n>canvas</span><span class=o>.</span><span class=n>views</span><span class=p>:</span>
-</span><span id=__span-0-185>        <span class=n>projections</span><span class=o>.</span><span class=n>zoom_to_fit</span><span class=p>(</span><span class=n>view</span><span class=p>,</span> <span class=n>zoom_factor</span><span class=o>=</span><span class=mf>0.9</span><span class=p>,</span> <span class=n>preserve_aspect_ratio</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span><span id=__span-0-185>        <span class=n>projections</span><span class=o>.</span><span class=n>zoom_to_fit</span><span class=p>(</span><span class=n>view</span><span class=p>,</span> <span class=n>zoom_factor</span><span class=o>=</span><span class=mf>0.9</span><span class=p>,</span> <span class=n>letterbox</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
 </span><span id=__span-0-186>
 </span><span id=__span-0-187>        <span class=c1># logger.debug(&quot;SHOW MODEL  %s&quot;, tree_repr(view.scene))</span>
 </span><span id=__span-0-188>        <span class=c1># native_scene = view.scene._get_native()</span>
