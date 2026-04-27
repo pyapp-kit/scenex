@@ -273,7 +273,7 @@ class PanZoom(CameraController):
         >>> view = snx.View(
         ...     scene=snx.Scene(children=[snx.Image(data=my_data)]),
         ...     camera=snx.Camera(
-        ...         controller=PanZoom(),
+        ...         controller=snx.PanZoom(),
         ...         interactive=True,
         ...     ),
         ... )
