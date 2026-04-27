@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import math
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Annotated, Any, Literal, Union
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, Literal, Union
 
 import numpy as np
 import pylinalg as la
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
 from scenex.app.events import (
     MouseButton,
@@ -201,6 +201,11 @@ class CameraController(BaseModel):
     Orbit : 3D orbit controller
     Camera : Camera class that uses controllers
     """
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(
+        validate_default=True,
+        validate_assignment=True,
+    )
 
     @abstractmethod
     def handle_event(self, event: Event, view: View) -> bool:
