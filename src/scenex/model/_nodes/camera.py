@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Annotated, Any, Literal, Union
 
 import numpy as np
 import pylinalg as la
-from pydantic import Field, PrivateAttr
+from pydantic import BaseModel, Field, PrivateAttr
 
 from scenex.app.events import (
     MouseButton,
@@ -15,7 +15,6 @@ from scenex.app.events import (
     MousePressEvent,
     WheelEvent,
 )
-from scenex.model._base import EventedBase
 from scenex.utils import projections
 
 from .node import Node
@@ -176,7 +175,7 @@ class Camera(Node):
 # ====================================================================================
 
 
-class CameraController(EventedBase):
+class CameraController(BaseModel):
     """Base class defining how a camera responds to user interaction events.
 
     A CameraController handles user input (mouse, keyboard, wheel) to manipulate
@@ -268,11 +267,12 @@ class PanZoom(CameraController):
 
     Create an image viewer with pan/zoom:
         >>> import numpy as np
+        >>> import scenex as snx
         >>> from scenex.utils import projections
         >>> my_data = np.random.rand(512, 512).astype(np.float32)
-        >>> view = View(
-        ...     scene=Scene(children=[Image(data=my_data)]),
-        ...     camera=Camera(
+        >>> view = snx.View(
+        ...     scene=snx.Scene(children=[snx.Image(data=my_data)]),
+        ...     camera=snx.Camera(
         ...         controller=PanZoom(),
         ...         interactive=True,
         ...     ),
@@ -403,39 +403,42 @@ class Orbit(CameraController):
     Examples
     --------
     Orbit around the origin:
+        >>> import scenex as snx
         >>> from scenex.utils import projections
         >>> # Create a perspective camera...
-        >>> camera = Camera(
+        >>> camera = snx.Camera(
         ...     interactive=True,
         ...     projection=projections.perspective(fov=70, near=1, far=1000),
         ... )
         >>> # ...positioned along the X axis...
-        >>> camera.transform = Transform().translated((100, 0, 0))
+        >>> camera.transform = snx.Transform().translated((100, 0, 0))
         >>> # ...looking at the origin...
         >>> camera.look_at((0, 0, 0), up=(0, 0, 1))
         >>> # ...that orbits around the origin
-        >>> camera.controller = Orbit(center=(0, 0, 0))
+        >>> camera.controller = snx.Orbit(center=(0, 0, 0))
 
     Orbit around a data volume's center:
         >>> import numpy as np
         >>> my_data = np.random.rand(100, 100, 100).astype(np.float32)
-        >>> volume = Volume(data=my_data)
+        >>> volume = snx.Volume(data=my_data)
         >>> center = np.mean(volume.bounding_box, axis=0)
         >>> # Create a perspective camera...
-        >>> camera = Camera(
+        >>> camera = snx.Camera(
         ...     interactive=True,
         ...     projection=projections.perspective(fov=70, near=1, far=1000),
         ... )
         >>> # ...positioned along the X axis from the volume center...
-        >>> camera.transform = Transform().translated(center).translated((100, 0, 0))
+        >>> camera.transform = (
+        ...     snx.Transform().translated(center).translated((100, 0, 0))
+        ... )
         >>> # ...looking at the center...
         >>> camera.look_at(center, up=(0, 0, 1))
         >>> # ...that orbits around the center
-        >>> camera.controller = Orbit(center=center)
+        >>> camera.controller = snx.Orbit(center=center)
 
     Custom polar axis for Y-up scenes:
-        >>> camera = Camera(
-        ...     controller=Orbit(center=(0, 0, 0), polar_axis=(0, 1, 0)),
+        >>> camera = snx.Camera(
+        ...     controller=snx.Orbit(center=(0, 0, 0), polar_axis=(0, 1, 0)),
         ...     interactive=True,
         ... )
 
