@@ -14,6 +14,7 @@ from scenex.app.events._events import (
     KeyPressEvent,
     KeyReleaseEvent,
     MouseButton,
+    MouseDoublePressEvent,
     MouseEnterEvent,
     MouseLeaveEvent,
     MouseMoveEvent,
@@ -47,6 +48,9 @@ class WxEventFilter(EventFilter):
         self._widget.Bind(wx.EVT_RIGHT_UP, handler=self._on_mouse_up)
         self._widget.Bind(wx.EVT_MIDDLE_DOWN, handler=self._on_mouse_down)
         self._widget.Bind(wx.EVT_MIDDLE_UP, handler=self._on_mouse_up)
+        self._widget.Bind(wx.EVT_LEFT_DCLICK, handler=self._on_mouse_dclick)
+        self._widget.Bind(wx.EVT_RIGHT_DCLICK, handler=self._on_mouse_dclick)
+        self._widget.Bind(wx.EVT_MIDDLE_DCLICK, handler=self._on_mouse_dclick)
         self._widget.Bind(wx.EVT_MOTION, handler=self._on_mouse_move)
         self._widget.Bind(wx.EVT_MOUSEWHEEL, handler=self._on_wheel)
         self._widget.Bind(wx.EVT_LEAVE_WINDOW, handler=self._on_leave_window)
@@ -62,6 +66,9 @@ class WxEventFilter(EventFilter):
         self._widget.Unbind(wx.EVT_RIGHT_UP)
         self._widget.Unbind(wx.EVT_MIDDLE_DOWN)
         self._widget.Unbind(wx.EVT_MIDDLE_UP)
+        self._widget.Unbind(wx.EVT_LEFT_DCLICK)
+        self._widget.Unbind(wx.EVT_RIGHT_DCLICK)
+        self._widget.Unbind(wx.EVT_MIDDLE_DCLICK)
         self._widget.Unbind(wx.EVT_MOTION)
         self._widget.Unbind(wx.EVT_MOUSEWHEEL)
         self._widget.Unbind(wx.EVT_SIZE)
@@ -91,8 +98,16 @@ class WxEventFilter(EventFilter):
         )
         event.Skip()
 
-    def _on_mouse_down(self, event: wx.MouseEvent) -> None:
+    def _on_mouse_dclick(self, event: wx.MouseEvent) -> None:
         btn = self._map_button(event)
+        self._active_button |= btn
+        pos = event.GetPosition()
+        self._handler(MouseDoublePressEvent(pos=(pos.x, pos.y), buttons=btn))
+        event.Skip()
+
+    def _on_mouse_down(self, event: wx.MouseEvent) -> None:
+        # Find only the NEW button being pressed
+        btn = self._map_button(event) & ~self._active_button
         self._active_button |= btn
         pos = event.GetPosition()
         self._handler(MousePressEvent(pos=(pos.x, pos.y), buttons=btn))
@@ -151,13 +166,17 @@ class WxEventFilter(EventFilter):
         event.Skip()
 
     def _map_button(self, event: wx.MouseEvent) -> MouseButton:
-        if event.LeftDown() or event.LeftUp():
-            return MouseButton.LEFT
-        if event.RightDown() or event.RightUp():
-            return MouseButton.RIGHT
-        if event.MiddleDown() or event.MiddleUp():
-            return MouseButton.MIDDLE
-        return MouseButton.NONE
+        """Map wx.MouseEvent to a MouseButton."""
+        button = MouseButton.NONE
+        # Note that for a single click, e.g. (only) LeftDown is True
+        # But for a dclick, (only) LeftIsDown is True.
+        if event.LeftDown() or event.LeftIsDown() or event.LeftUp():
+            button |= MouseButton.LEFT
+        if event.RightDown() or event.RightIsDown() or event.RightUp():
+            button |= MouseButton.RIGHT
+        if event.MiddleDown() or event.MiddleIsDown() or event.MiddleUp():
+            button |= MouseButton.MIDDLE
+        return button
 
 
 class WxAppWrap(App):

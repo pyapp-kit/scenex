@@ -14,6 +14,7 @@ from scenex.app.events import (
     KeyPressEvent,
     KeyReleaseEvent,
     MouseButton,
+    MouseDoublePressEvent,
     MouseEnterEvent,
     MouseLeaveEvent,
     MouseMoveEvent,
@@ -70,6 +71,19 @@ def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None
     evtLoop = wx.App.Get().GetTraits().CreateEventLoop()
     wx.EventLoopActivator(evtLoop)
     evtLoop.YieldFor(wx.EVT_CATEGORY_ALL)  # pyright: ignore[reportAttributeAccessIssue]
+
+
+def test_mouse_double_click(evented_canvas: snx.Canvas) -> None:
+    adaptor = evented_canvas._get_adaptors(create=True)[0]
+    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    mock_filter = MagicMock(return_value=False)
+    evented_canvas.set_event_filter(mock_filter)
+
+    press_point = (5, 10)
+    _processEvent(wx.EVT_LEFT_DCLICK, native, pos=wx.Point(*press_point))
+    mock_filter.assert_called_once_with(
+        MouseDoublePressEvent(pos=press_point, buttons=MouseButton.LEFT)
+    )
 
 
 def test_mouse_press(evented_canvas: snx.Canvas) -> None:
