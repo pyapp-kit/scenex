@@ -38,7 +38,6 @@ class WxEventFilter(EventFilter):
     ) -> None:
         self._widget = widget
         self._handler = handler
-        self._active_button: MouseButton = MouseButton.NONE
         self._install_events()
 
     def _install_events(self) -> None:
@@ -48,9 +47,9 @@ class WxEventFilter(EventFilter):
         self._widget.Bind(wx.EVT_RIGHT_UP, handler=self._on_mouse_up)
         self._widget.Bind(wx.EVT_MIDDLE_DOWN, handler=self._on_mouse_down)
         self._widget.Bind(wx.EVT_MIDDLE_UP, handler=self._on_mouse_up)
-        self._widget.Bind(wx.EVT_LEFT_DCLICK, handler=self._on_mouse_dclick)
-        self._widget.Bind(wx.EVT_RIGHT_DCLICK, handler=self._on_mouse_dclick)
-        self._widget.Bind(wx.EVT_MIDDLE_DCLICK, handler=self._on_mouse_dclick)
+        self._widget.Bind(wx.EVT_LEFT_DCLICK, handler=self._on_left_dclick)
+        self._widget.Bind(wx.EVT_RIGHT_DCLICK, handler=self._on_right_dclick)
+        self._widget.Bind(wx.EVT_MIDDLE_DCLICK, handler=self._on_middle_dclick)
         self._widget.Bind(wx.EVT_MOTION, handler=self._on_mouse_move)
         self._widget.Bind(wx.EVT_MOUSEWHEEL, handler=self._on_wheel)
         self._widget.Bind(wx.EVT_LEAVE_WINDOW, handler=self._on_leave_window)
@@ -84,7 +83,7 @@ class WxEventFilter(EventFilter):
         self._handler(
             MouseEnterEvent(
                 pos=(pos.x, pos.y),
-                buttons=self._active_button,
+                buttons=self._get_active_buttons(event),
             )
         )
         event.Skip()
@@ -98,31 +97,47 @@ class WxEventFilter(EventFilter):
         )
         event.Skip()
 
-    def _on_mouse_dclick(self, event: wx.MouseEvent) -> None:
-        btn = self._map_button(event)
-        self._active_button |= btn
+    def _on_left_dclick(self, event: wx.MouseEvent) -> None:
+        # NOTE that wx does not provide the button in the double click event
+        # so we need a separate handler for each button type to know which one
+        # was double-clicked
         pos = event.GetPosition()
-        self._handler(MouseDoublePressEvent(pos=(pos.x, pos.y), buttons=btn))
+        self._handler(
+            MouseDoublePressEvent(pos=(pos.x, pos.y), buttons=MouseButton.LEFT)
+        )
+        event.Skip()
+
+    def _on_right_dclick(self, event: wx.MouseEvent) -> None:
+        # NOTE that wx does not provide the button in the double click event
+        # so we need a separate handler for each button type to know which one
+        # was double-clicked
+        pos = event.GetPosition()
+        self._handler(
+            MouseDoublePressEvent(pos=(pos.x, pos.y), buttons=MouseButton.RIGHT)
+        )
+        event.Skip()
+
+    def _on_middle_dclick(self, event: wx.MouseEvent) -> None:
+        # NOTE that wx does not provide the button in the double click event
+        # so we need a separate handler for each button type to know which one
+        # was double-clicked
+        pos = event.GetPosition()
+        self._handler(
+            MouseDoublePressEvent(pos=(pos.x, pos.y), buttons=MouseButton.MIDDLE)
+        )
         event.Skip()
 
     def _on_mouse_down(self, event: wx.MouseEvent) -> None:
         # Find only the NEW button being pressed
-        btn = self._map_button(event) & ~self._active_button
-        self._active_button |= btn
+        btn = self._get_pressed_button(event)
         pos = event.GetPosition()
         self._handler(MousePressEvent(pos=(pos.x, pos.y), buttons=btn))
         event.Skip()
 
     def _on_mouse_up(self, event: wx.MouseEvent) -> None:
-        btn = self._map_button(event)
-        self._active_button &= ~btn
+        btn = self._get_released_button(event)
         pos = event.GetPosition()
-        self._handler(
-            MouseReleaseEvent(
-                pos=(pos.x, pos.y),
-                buttons=btn,
-            )
-        )
+        self._handler(MouseReleaseEvent(pos=(pos.x, pos.y), buttons=btn))
         event.Skip()
 
     def _on_mouse_move(self, event: wx.MouseEvent) -> None:
@@ -130,7 +145,7 @@ class WxEventFilter(EventFilter):
         self._handler(
             MouseMoveEvent(
                 pos=(pos.x, pos.y),
-                buttons=self._active_button,
+                buttons=self._get_active_buttons(event),
             )
         )
         event.Skip()
@@ -147,7 +162,7 @@ class WxEventFilter(EventFilter):
         self._handler(
             WheelEvent(
                 pos=(pos.x, pos.y),
-                buttons=self._active_button,
+                buttons=self._get_active_buttons(event),
                 angle_delta=angle_delta,
             )
         )
@@ -165,16 +180,36 @@ class WxEventFilter(EventFilter):
         self._handler(KeyReleaseEvent(key=KeyBinding(parts=[part])))
         event.Skip()
 
-    def _map_button(self, event: wx.MouseEvent) -> MouseButton:
-        """Map wx.MouseEvent to a MouseButton."""
+    def _get_active_buttons(self, event: wx.MouseEvent) -> MouseButton:
+        """Map a DOWN wx.MouseEvent to a MouseButton."""
         button = MouseButton.NONE
-        # Note that for a single click, e.g. (only) LeftDown is True
-        # But for a dclick, (only) LeftIsDown is True.
-        if event.LeftDown() or event.LeftIsDown() or event.LeftUp():
+        if event.LeftIsDown():
             button |= MouseButton.LEFT
-        if event.RightDown() or event.RightIsDown() or event.RightUp():
+        if event.RightIsDown():
             button |= MouseButton.RIGHT
-        if event.MiddleDown() or event.MiddleIsDown() or event.MiddleUp():
+        if event.MiddleIsDown():
+            button |= MouseButton.MIDDLE
+        return button
+
+    def _get_pressed_button(self, event: wx.MouseEvent) -> MouseButton:
+        """Map an UP wx.MouseEvent to a MouseButton."""
+        button = MouseButton.NONE
+        if event.LeftDown():
+            button |= MouseButton.LEFT
+        if event.RightDown():
+            button |= MouseButton.RIGHT
+        if event.MiddleDown():
+            button |= MouseButton.MIDDLE
+        return button
+
+    def _get_released_button(self, event: wx.MouseEvent) -> MouseButton:
+        """Map an MOVE wx.MouseEvent to a MouseButton."""
+        button = MouseButton.NONE
+        if event.LeftUp():
+            button |= MouseButton.LEFT
+        if event.RightUp():
+            button |= MouseButton.RIGHT
+        if event.MiddleUp():
             button |= MouseButton.MIDDLE
         return button
 
