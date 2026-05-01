@@ -70,6 +70,8 @@ class WxEventFilter(EventFilter):
         self._widget.Unbind(wx.EVT_MIDDLE_DCLICK)
         self._widget.Unbind(wx.EVT_MOTION)
         self._widget.Unbind(wx.EVT_MOUSEWHEEL)
+        self._widget.Unbind(wx.EVT_LEAVE_WINDOW)
+        self._widget.Unbind(wx.EVT_ENTER_WINDOW)
         self._widget.Unbind(wx.EVT_SIZE)
         self._widget.Unbind(wx.EVT_KEY_DOWN)
         self._widget.Unbind(wx.EVT_KEY_UP)
