@@ -33,7 +33,16 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
     "Typing :: Typed",
 ]
-dependencies = ["app-model>=0.3", "cmap>=0.5", "numpy>=1.24", "psygnal>=0.11.1", "pydantic>=2.10", "pylinalg"]
+dependencies = [
+    "app-model>=0.3",
+    "cmap>=0.5",
+    "numpy>=1.24",
+    # Gives us SignalGroupDescriptor.connect_child_events
+    "psygnal >=0.14",
+    # Gives us ModelWrapValidatorHandler
+    "pydantic >=2.11",
+    "pylinalg"
+]
 
 [project.optional-dependencies]
 jupyter = [
