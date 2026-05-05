@@ -142,11 +142,11 @@ jobs:
           sudo apt install -y libegl1-mesa-dev libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers
       - name: Test min deps
         shell: bash
-        run: uv run --exact --no-dev --resolution=lowest-direct ${{ matrix.uv_flags }} pytest --color=yes
+        run: uv run --exact --no-dev --resolution=lowest-direct --group test ${{ matrix.uv_flags }} pytest --color=yes
       - name: Test notebooks
         if: matrix.gui == 'jupyter'
         shell: bash
-        run: uv run --exact --no-dev --resolution=lowest-direct ${{ matrix.uv_flags }} pytest --color=yes --nbval examples/*.ipynb
+        run: uv run --exact --no-dev --resolution=lowest-direct --group test ${{ matrix.uv_flags }} pytest --color=yes --nbval examples/*.ipynb
 
   upload_coverage:
     if: always()
