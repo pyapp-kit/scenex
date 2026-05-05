@@ -115,14 +115,17 @@ jobs:
             python-version: "3.10"
             gui: pyqt
             canvas: vispy
+            uv_flags: --extra=vispy --extra=pyqt6 --group=testqt
           - os: macos-latest
             python-version: "3.13"
             gui: jupyter
             canvas: pygfx
+            uv_flags: --extra=pygfx --extra=jupyter --group=testjupyter
           - os: windows-latest
             python-version: "3.10"
             gui: pyqt
             canvas: pygfx
+            uv_flags: --extra=pygfx --extra=pyqt6 --group=testqt
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v7
@@ -139,11 +142,11 @@ jobs:
           sudo apt install -y libegl1-mesa-dev libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers
       - name: Test min deps
         shell: bash
-        run: uv run --exact --no-dev --resolution=lowest-direct --extra=${{ matrix.canvas }} --group=${{ matrix.gui }} coverage run -p -m pytest --color=yes
+        run: uv run --exact --no-dev --resolution=lowest-direct ${{ matrix.uv_flags }} coverage run -p -m pytest --color=yes
       - name: Test notebooks
         if: matrix.gui == 'jupyter'
         shell: bash
-        run: uv run --exact --no-dev --resolution=lowest-direct --extra=${{ matrix.canvas }} --group=${{ matrix.gui }} coverage run -p -m pytest --color=yes --nbval examples/*.ipynb
+        run: uv run --exact --no-dev --resolution=lowest-direct ${{ matrix.uv_flags }} coverage run -p -m pytest --color=yes --nbval examples/*.ipynb
 
   upload_coverage:
     if: always()
