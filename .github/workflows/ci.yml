@@ -115,12 +115,12 @@ jobs:
           - os: ubuntu-latest
             python-version: "3.10"
             gui: pyqt
-            uv_flags: --extra=vispy --group=pyqt6 --group=testqt
+            uv_flags: --extra=vispy --extra=pyqt6 --group=testqt
           # macOS jupyter pygfx
           - os: macos-latest
             python-version: "3.13"
             gui: jupyter
-            uv_flags: --extra=pygfx --group=jupyter --group=testjupyter
+            uv_flags: --extra=pygfx --extra=jupyter --group=testjupyter
           # windows wx pygfx
           - os: windows-latest
             python-version: "3.10"
