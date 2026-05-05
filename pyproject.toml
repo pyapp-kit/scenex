@@ -35,7 +35,8 @@ classifiers = [
 ]
 dependencies = [
     "app-model>=0.3",
-    "cmap>=0.5",
+    # Starting from this point Colormap.to_pygfx() returns a pygfx.TextureMap
+    "cmap>=0.5.1",
     "numpy >=2.1.0; python_version >= '3.13'",
     "numpy >=1.26.0; python_version < '3.13'",
     # Gives us SignalGroupDescriptor.connect_child_events
