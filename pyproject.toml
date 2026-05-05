@@ -36,7 +36,8 @@ classifiers = [
 dependencies = [
     "app-model>=0.3",
     "cmap>=0.5",
-    "numpy>=1.24",
+    "numpy >=2.1.0; python_version >= '3.13'",
+    "numpy >=1.26.0; python_version < '3.13'",
     # Gives us SignalGroupDescriptor.connect_child_events
     "psygnal >=0.14",
     # Gives us ModelWrapValidatorHandler
@@ -51,9 +52,9 @@ jupyter = [
     # TODO: Enforce a minimum bound once >1.0.2 released
     "jupyter_rfb >=0.3.3, <= 0.5.4",
     # Note that this dep is only needed for Vispy, something like simplejpeg would work fine if just pygfx.
-    "glfw",
+    "glfw>=2.4",
     # Otherwise jupyter_rfb will use PNG, which is apparently slower
-    "simplejpeg",
+    "simplejpeg>=1.9.0",
 ]
 pyqt6 = [
     "pyqt6 >=6.4,!=6.6",
@@ -69,7 +70,7 @@ pygfx = [
     # Needed to correctly resizes wx widgets
     "rendercanvas>=2.5.1"
 ]
-vispy = ["vispy>=0.15.0", "pyopengl"]
+vispy = ["vispy>=0.15.0", "pyopengl>=3.1"]
 # This extra is a mess!
 # Our source code for the pygfx adaptors relies on pygfx>=0.13.0 (see that extra for why).
 # However no versions of imgui-bundle that I'm aware of work for pygfx v0.13.0, because each version of pygfx
@@ -103,12 +104,12 @@ dev = [
     { include-group = "docs" },
     "scenex[pygfx,vispy,imgui,jupyter,pyqt6, wx]",
     "imageio[tifffile] >=2.20",
-    "ipython",
-    "mypy",
-    "pdbpp; sys_platform != 'win32'",
-    "pre-commit-uv",
-    "rich",
-    "ruff",
+    "ipython>=8.18.1",
+    "mypy>=1.14.1",
+    "pdbpp>=0.12.1; sys_platform != 'win32'",
+    "pre-commit-uv>=0.4",
+    "rich>=13.9.4",
+    "ruff>=0.9.4",
     "pyright>=1.1.392",
 ]
 

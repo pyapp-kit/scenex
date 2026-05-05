@@ -115,12 +115,12 @@ jobs:
           - os: ubuntu-latest
             python-version: "3.10"
             gui: pyqt
-            uv_flags: --extra=vispy --extra=pyqt6 --group=testqt
+            uv_flags: --extra=vispy --group=pyqt6 --group=testqt
           # macOS jupyter pygfx
           - os: macos-latest
             python-version: "3.13"
             gui: jupyter
-            uv_flags: --extra=pygfx --extra=jupyter --group=testjupyter
+            uv_flags: --extra=pygfx --group=jupyter --group=testjupyter
           # windows wx pygfx
           - os: windows-latest
             python-version: "3.10"
@@ -142,11 +142,11 @@ jobs:
           sudo apt install -y libegl1-mesa-dev libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers
       - name: Test min deps
         shell: bash
-        run: uv run --exact --no-dev --resolution=lowest-direct ${{ matrix.uv_flags }} coverage run -p -m pytest --color=yes
+        run: uv run --exact --no-dev --resolution=lowest-direct ${{ matrix.uv_flags }} pytest --color=yes
       - name: Test notebooks
         if: matrix.gui == 'jupyter'
         shell: bash
-        run: uv run --exact --no-dev --resolution=lowest-direct ${{ matrix.uv_flags }} coverage run -p -m pytest --color=yes --nbval examples/*.ipynb
+        run: uv run --exact --no-dev --resolution=lowest-direct ${{ matrix.uv_flags }} pytest --color=yes --nbval examples/*.ipynb
 
   upload_coverage:
     if: always()
