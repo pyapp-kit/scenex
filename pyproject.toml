@@ -43,7 +43,7 @@ dependencies = [
     "psygnal >=0.14",
     # Gives us ModelWrapValidatorHandler
     "pydantic >=2.11",
-    "pylinalg"
+    "pylinalg>=0.6.1"
 ]
 
 [project.optional-dependencies]
