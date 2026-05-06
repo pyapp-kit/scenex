@@ -254,7 +254,7 @@ class MainThreadInvoker(QObject):
             _INVOKERS.discard(self)
 
 
-_INVOKERS = set()
+_INVOKERS: set[MainThreadInvoker] = set()
 
 
 def _call_in_main_thread(
