@@ -89,12 +89,12 @@ jobs:
 
       - name: Test
         shell: bash
-        run: uv run -v --no-sync coverage run -p -m pytest -v
+        run: uv run --no-sync coverage run -p -m pytest -v
 
       - name: Test notebooks
         if: matrix.canvas == 'jupyter'
         shell: bash
-        run: uv run -v --no-sync coverage run -p -m pytest -v --nbval examples/*.ipynb
+        run: uv run --no-sync coverage run -p -m pytest -v --nbval examples/*.ipynb
 
       - name: Upload coverage
         uses: actions/upload-artifact@v7
@@ -142,11 +142,19 @@ jobs:
           sudo apt install -y libegl1-mesa-dev libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers
       - name: Test min deps
         shell: bash
-        run: uv run -v --exact --no-dev --resolution=lowest-direct --group test ${{ matrix.uv_flags }} pytest --color=yes
+        run: |
+          # Sync the environment
+          uv sync --exact --no-dev --resolution=lowest-direct --group test ${{ matrix.uv_flags }}
+          # Print the environment (to ensure minimum dependencies)
+          uv pip list
+          # Run the tests
+          uv run --no-sync pytest --color=yes
       - name: Test notebooks
         if: matrix.gui == 'jupyter'
         shell: bash
-        run: uv run -v --exact --no-dev --resolution=lowest-direct --group test ${{ matrix.uv_flags }} pytest --color=yes --nbval examples/*.ipynb
+        run: |
+          # Run the notebook tests
+          uv run --no-sync pytest --color=yes --nbval examples/*.ipynb
 
   upload_coverage:
     if: always()
