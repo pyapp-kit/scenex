@@ -73,7 +73,7 @@ pygfx = [
     # Needed to correctly resizes wx widgets
     "rendercanvas>=2.5.1"
 ]
-vispy = ["vispy>=0.16.0", "pyopengl>=3.1"]
+vispy = ["vispy>=0.15.0", "pyopengl>=3.1"]
 # This extra is a mess!
 # Our source code for the pygfx adaptors relies on pygfx>=0.13.0 (see that extra for why).
 # However no versions of imgui-bundle that I'm aware of work for pygfx v0.13.0, because each version of pygfx
