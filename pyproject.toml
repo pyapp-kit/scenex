@@ -34,7 +34,8 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "app-model>=0.3",
+    # Minimum version that works with pydantic v2
+    "app-model>=0.2",
     # Starting from this point Colormap.to_pygfx() returns a pygfx.TextureMap
     "cmap>=0.5.1",
     "numpy >=2.1.0; python_version >= '3.13'",
