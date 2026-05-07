@@ -43,6 +43,7 @@ dependencies = [
     "psygnal >=0.14",
     # Gives us ModelWrapValidatorHandler
     "pydantic >=2.11",
+    # Gives us la.mat_decompose
     "pylinalg>=0.6.1"
 ]
 
@@ -59,7 +60,9 @@ jupyter = [
 ]
 pyqt6 = [
     "pyqt6 >=6.4,!=6.6",
+    "pyqt6-qt6 >=6.4, !=6.6",
     "pyqt6 >=6.5.3; python_version >= '3.12'",
+    "pyqt6-qt6 >=6.5.3; python_version >= '3.12'",
     "qtpy >=2",
 ]
 wx= [
@@ -71,7 +74,7 @@ pygfx = [
     # Needed to correctly resizes wx widgets
     "rendercanvas>=2.5.1"
 ]
-vispy = ["vispy>=0.15.0", "pyopengl>=3.1"]
+vispy = ["vispy>=0.16.0", "pyopengl>=3.1"]
 # This extra is a mess!
 # Our source code for the pygfx adaptors relies on pygfx>=0.13.0 (see that extra for why).
 # However no versions of imgui-bundle that I'm aware of work for pygfx v0.13.0, because each version of pygfx
