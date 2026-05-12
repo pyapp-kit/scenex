@@ -235,7 +235,7 @@ class CameraController(BaseModel):
         need ``view.to_ray()`` to unproject screen-space event positions into world
         space, which requires both the camera matrices and the viewport dimensions.
         """
-        raise NotImplementedError
+        ...
 
 
 class PanZoom(CameraController):

@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 import os
 import sys
+from abc import abstractmethod
 from collections import OrderedDict
 from concurrent.futures import Executor, Future, ThreadPoolExecutor
 from enum import Enum, auto
@@ -132,6 +133,7 @@ class App:
     determine_app : Function to determine which GUI backend to use
     """
 
+    @abstractmethod
     def create_app(self) -> Any:
         """Create the application instance, if not already created.
 
@@ -148,8 +150,9 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
+    @abstractmethod
     def run(self) -> None:
         """Start the application event loop.
 
@@ -161,8 +164,9 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
+    @abstractmethod
     def show(self, native_widget: Any, visible: bool) -> None:
         """Show or hide a native canvas widget.
 
@@ -177,8 +181,9 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
+    @abstractmethod
     def install_event_filter(
         self, widget: Any, handler: Callable[[Event], bool]
     ) -> EventFilter:
@@ -205,8 +210,9 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
+    @abstractmethod
     def process_events(self) -> None:
         """Yields the current thread to process all pending GUI events.
 
@@ -214,7 +220,7 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
     def call_in_main_thread(
         self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
@@ -250,6 +256,7 @@ class App:
         future.set_result(func(*args, **kwargs))
         return future
 
+    @abstractmethod
     def call_later(self, msec: int, func: Callable[[], None]) -> None:
         """Schedule a function to be called after a delay.
 
@@ -264,7 +271,7 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
     def get_executor(self) -> Executor:
         """Return an executor for running tasks in background threads.
@@ -284,6 +291,8 @@ class App:
         return _thread_pool_executor()
 
     # ------------------------------ cursor API -------------------------------
+
+    @abstractmethod
     def set_cursor(self, native_widget: Any, cursor: CursorType) -> None:
         """Set the cursor on a native canvas widget.
 
@@ -296,7 +305,7 @@ class App:
         cursor : CursorType
             The type of cursor to set.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
 
 @cache

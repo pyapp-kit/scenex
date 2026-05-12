@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from dataclasses import dataclass
 from enum import IntFlag, auto
 from typing import TYPE_CHECKING, NamedTuple, TypeAlias
@@ -394,6 +395,7 @@ class EventFilter:
     needed, ensuring proper cleanup and preventing memory leaks.
     """
 
+    @abstractmethod
     def uninstall(self) -> None:
         """Remove this event filter.
 
@@ -401,4 +403,4 @@ class EventFilter:
         longer be called for future events. After calling uninstall(), this
         EventFilter instance should not be used further.
         """
-        raise NotImplementedError("This method should be implemented by subclasses.")
+        ...

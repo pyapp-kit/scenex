@@ -320,7 +320,7 @@ class ResizePolicy(EventedBase):
         view : View
             The view being resized.
         """
-        raise NotImplementedError
+        ...
 
 
 class Letterbox(ResizePolicy):
