@@ -59,7 +59,14 @@ if TYPE_CHECKING:
     from scenex.app.events import Event
 
 
-class QtEventFilter(QObject, EventFilter):
+# QObject and EventFilter(ABC) use incompatible metaclasses. This combined metaclass
+# inherits from both so that QtEventFilter can subclass QObject and EventFilter,
+# avoiding MRO conflict.
+class _QtEventFilterMeta(type(EventFilter), type(QObject)):  # type: ignore
+    pass
+
+
+class QtEventFilter(QObject, EventFilter, metaclass=_QtEventFilterMeta):
     def __init__(self, widget: QWidget, handler: Callable[[Event], bool]) -> None:
         super().__init__()
         self._widget = widget
@@ -94,25 +101,27 @@ class QtEventFilter(QObject, EventFilter):
             canvas_pos = (pos.x(), pos.y())
 
             etype = qevent.type()
-            btn = self.mouse_btn(qevent.button())
             if etype == QEvent.Type.MouseMove:
                 return MouseMoveEvent(
                     pos=canvas_pos,
                     buttons=self._active_buttons,
                 )
             elif etype == QEvent.Type.MouseButtonDblClick:
+                btn = self.mouse_btn(qevent.button())
                 self._active_buttons |= btn
                 return MouseDoublePressEvent(
                     pos=canvas_pos,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonPress:
+                btn = self.mouse_btn(qevent.button())
                 self._active_buttons |= btn
                 return MousePressEvent(
                     pos=canvas_pos,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonRelease:
+                btn = self.mouse_btn(qevent.button())
                 self._active_buttons &= ~btn
                 return MouseReleaseEvent(
                     pos=canvas_pos,
