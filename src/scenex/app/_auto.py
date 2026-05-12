@@ -3,7 +3,7 @@ from __future__ import annotations
 import importlib
 import os
 import sys
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from collections import OrderedDict
 from concurrent.futures import Executor, Future, ThreadPoolExecutor
 from enum import Enum, auto
@@ -109,7 +109,7 @@ class CursorType(Enum):
     FDIAG_ARROW = auto()
 
 
-class App:
+class App(ABC):
     """Base class for GUI application wrappers.
 
     App provides an abstract interface for integrating scenex with different GUI

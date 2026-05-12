@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import IntFlag, auto
 from typing import TYPE_CHECKING, NamedTuple, TypeAlias
@@ -387,7 +387,7 @@ class KeyReleaseEvent(KeyEvent):
     pass
 
 
-class EventFilter:
+class EventFilter(ABC):
     """Base class for event filter handles.
 
     EventFilter instances are returned when installing event filters on views or
