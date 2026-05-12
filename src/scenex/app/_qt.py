@@ -59,7 +59,14 @@ if TYPE_CHECKING:
     from scenex.app.events import Event
 
 
-class QtEventFilter(QObject, EventFilter):
+# QObject and EventFilter(ABC) use incompatible metaclasses. This combined metaclass
+# inherits from both so that QtEventFilter can subclass QObject and EventFilter,
+# avoiding MRO conflict.
+class _QtEventFilterMeta(type(EventFilter), type(QObject)):  # type: ignore
+    pass
+
+
+class QtEventFilter(QObject, EventFilter, metaclass=_QtEventFilterMeta):
     def __init__(self, widget: QWidget, handler: Callable[[Event], bool]) -> None:
         super().__init__()
         self._widget = widget
