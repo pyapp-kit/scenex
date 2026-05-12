@@ -101,25 +101,27 @@ class QtEventFilter(QObject, EventFilter, metaclass=_QtEventFilterMeta):
             canvas_pos = (pos.x(), pos.y())
 
             etype = qevent.type()
-            btn = self.mouse_btn(qevent.button())
             if etype == QEvent.Type.MouseMove:
                 return MouseMoveEvent(
                     pos=canvas_pos,
                     buttons=self._active_buttons,
                 )
             elif etype == QEvent.Type.MouseButtonDblClick:
+                btn = self.mouse_btn(qevent.button())
                 self._active_buttons |= btn
                 return MouseDoublePressEvent(
                     pos=canvas_pos,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonPress:
+                btn = self.mouse_btn(qevent.button())
                 self._active_buttons |= btn
                 return MousePressEvent(
                     pos=canvas_pos,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonRelease:
+                btn = self.mouse_btn(qevent.button())
                 self._active_buttons &= ~btn
                 return MouseReleaseEvent(
                     pos=canvas_pos,
