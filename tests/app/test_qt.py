@@ -52,9 +52,8 @@ def evented_canvas(qtbot: QtBot) -> Iterator[snx.Canvas]:
     canvas = snx.Canvas(views=[view])
     adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
     native = adaptor._snx_get_native()
-    qtbot.addWidget(native)
+    qtbot.addWidget(native, before_close_func=lambda _: adaptor._filter.uninstall())  # type: ignore
     yield canvas
-    adaptor._filter.uninstall()  # type: ignore
 
 
 @pytest.mark.parametrize(
