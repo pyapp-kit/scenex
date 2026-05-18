@@ -3,17 +3,22 @@ from __future__ import annotations
 import importlib
 import os
 import sys
+import threading
+import traceback
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from concurrent.futures import Executor, Future, ThreadPoolExecutor
+from contextlib import suppress
 from enum import Enum, auto
 from functools import cache, wraps
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
+    from types import TracebackType
     from typing import Any
 
+    import pydevd  # type: ignore[import-untyped]
     from typing_extensions import ParamSpec, TypeVar
 
     from scenex.app.events._events import Event, EventFilter
@@ -107,6 +112,73 @@ class CursorType(Enum):
     ALL_ARROW = auto()
     BDIAG_ARROW = auto()
     FDIAG_ARROW = auto()
+
+
+# -------------------- Exception handling --------------------
+SCENEX_DEBUG_EXCEPTIONS = "SCENEX_DEBUG_EXCEPTIONS"
+"""Whether to drop into a debugger when an exception is raised. Default False."""
+
+SCENEX_EXIT_ON_EXCEPTION = "SCENEX_EXIT_ON_EXCEPTION"
+"""Whether to exit the application when an exception is raised. Default False."""
+
+
+def _print_exception(
+    exc_type: type[BaseException],
+    exc_value: BaseException,
+    exc_traceback: TracebackType | None,
+) -> None:
+    try:
+        import psygnal
+        from rich.console import Console
+        from rich.traceback import Traceback
+
+        tb = Traceback.from_exception(
+            exc_type, exc_value, exc_traceback, suppress=[psygnal], max_frames=10
+        )
+        Console(stderr=True).print(tb)
+    except ImportError:
+        traceback.print_exception(exc_type, value=exc_value, tb=exc_traceback)
+
+
+def scenex_excepthook(
+    exc_type: type[BaseException], exc_value: BaseException, tb: TracebackType | None
+) -> None:
+    _print_exception(exc_type, exc_value, tb)
+    if not tb:
+        return
+
+    if (
+        (debugpy := sys.modules.get("debugpy"))
+        and debugpy.is_client_connected()
+        and ("pydevd" in sys.modules)
+        and (py_db := _pydevd_debugger())
+    ):
+        with suppress(Exception):
+            thread = threading.current_thread()
+            additional_info = py_db.set_additional_thread_info(thread)
+            additional_info.is_tracing += 1
+
+            try:
+                arg = (exc_type, exc_value, tb)
+                py_db.stop_on_unhandled_exception(py_db, thread, additional_info, arg)
+            finally:
+                additional_info.is_tracing -= 1
+    elif os.getenv(SCENEX_DEBUG_EXCEPTIONS) in ("1", "true", "True"):
+        import pdb
+
+        pdb.post_mortem(tb)
+
+    if os.getenv(SCENEX_EXIT_ON_EXCEPTION) in ("1", "true", "True"):
+        print(f"\n{SCENEX_EXIT_ON_EXCEPTION} is set, exiting.")
+        sys.exit(1)
+
+
+def _pydevd_debugger() -> pydevd.PyDB | None:
+    with suppress(Exception):
+        import pydevd
+
+        return pydevd.get_global_debugger()
+    return None
 
 
 class App(ABC):
@@ -289,6 +361,19 @@ class App(ABC):
         executors.
         """
         return _thread_pool_executor()
+
+    @staticmethod
+    def _install_excepthook() -> None:
+        """Install a custom excepthook that does not raise sys.exit().
+
+        This is necessary to prevent the application from closing when an exception
+        is raised.
+        """
+        if hasattr(sys, "_original_excepthook_"):
+            # don't install the excepthook more than once
+            return
+        sys._original_excepthook_ = sys.excepthook  # type: ignore[attr-defined]
+        sys.excepthook = scenex_excepthook
 
     # ------------------------------ cursor API -------------------------------
 
