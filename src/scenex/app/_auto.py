@@ -128,6 +128,7 @@ def _print_exception(
     exc_traceback: TracebackType | None,
 ) -> None:
     try:
+        # Use rich if we have it...
         import psygnal
         from rich.console import Console
         from rich.traceback import Traceback
@@ -137,22 +138,26 @@ def _print_exception(
         )
         Console(stderr=True).print(tb)
     except ImportError:
+        # ...or traceback if we don't
         traceback.print_exception(exc_type, value=exc_value, tb=exc_traceback)
 
 
 def scenex_excepthook(
     exc_type: type[BaseException], exc_value: BaseException, tb: TracebackType | None
 ) -> None:
+    # Render the exception to stderr
     _print_exception(exc_type, exc_value, tb)
     if not tb:
         return
 
+    # If we're running with debugpy and pydevd...
     if (
         (debugpy := sys.modules.get("debugpy"))
         and debugpy.is_client_connected()
         and ("pydevd" in sys.modules)
         and (py_db := _pydevd_debugger())
     ):
+        # pause at the spot of the error
         with suppress(Exception):
             thread = threading.current_thread()
             additional_info = py_db.set_additional_thread_info(thread)
@@ -163,11 +168,13 @@ def scenex_excepthook(
                 py_db.stop_on_unhandled_exception(py_db, thread, additional_info, arg)
             finally:
                 additional_info.is_tracing -= 1
+    # Otherwise, if we're running with SCENEX_DEBUG_EXCEPTIONS, drop into pdb
     elif os.getenv(SCENEX_DEBUG_EXCEPTIONS) in ("1", "true", "True"):
         import pdb
 
         pdb.post_mortem(tb)
 
+    # Finally, exit if the environment variable suggests we should
     if os.getenv(SCENEX_EXIT_ON_EXCEPTION) in ("1", "true", "True"):
         print(f"\n{SCENEX_EXIT_ON_EXCEPTION} is set, exiting.")
         sys.exit(1)
@@ -364,7 +371,7 @@ class App(ABC):
 
     @staticmethod
     def _install_excepthook() -> None:
-        """Install a custom excepthook that does not raise sys.exit().
+        """Install a custom excepthook.
 
         This is necessary to prevent the application from closing when an exception
         is raised.
