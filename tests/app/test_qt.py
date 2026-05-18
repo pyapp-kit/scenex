@@ -25,8 +25,6 @@ from scenex.app.events import (
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
-
     from scenex.adaptors._base import CanvasAdaptor
 
 if determine_app() == GuiFrontend.QT:
@@ -45,7 +43,7 @@ else:
 
 
 @pytest.fixture
-def evented_canvas(qtbot: QtBot) -> Iterator[snx.Canvas]:
+def evented_canvas(qtbot: QtBot) -> snx.Canvas:
     camera = snx.Camera(transform=Transform(), interactive=True)
     scene = snx.Scene(children=[])
     view = snx.View(scene=scene, camera=camera)
@@ -53,7 +51,7 @@ def evented_canvas(qtbot: QtBot) -> Iterator[snx.Canvas]:
     adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
     native = adaptor._snx_get_native()
     qtbot.addWidget(native, before_close_func=lambda _: adaptor._filter.uninstall())  # type: ignore
-    yield canvas
+    return canvas
 
 
 @pytest.mark.parametrize(
