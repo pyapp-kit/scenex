@@ -96,7 +96,7 @@ class QtEventFilter(QObject, EventFilter, metaclass=_QtEventFilterMeta):
 
     def _convert_event(self, qevent: QEvent) -> Event | None:
         """Convert a QEvent to a SceneX Event."""
-        if isinstance(qevent, QMouseEvent):
+        if isinstance(qevent, QMouseEvent | QEnterEvent):
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
 
@@ -127,13 +127,11 @@ class QtEventFilter(QObject, EventFilter, metaclass=_QtEventFilterMeta):
                     pos=canvas_pos,
                     buttons=btn,
                 )
-        elif isinstance(qevent, QEnterEvent):
-            pos = qevent.position()
-            canvas_pos = (pos.x(), pos.y())
-            return MouseEnterEvent(
-                pos=canvas_pos,
-                buttons=self._active_buttons,
-            )
+            elif etype == QEvent.Type.Enter:
+                return MouseEnterEvent(
+                    pos=canvas_pos,
+                    buttons=self._active_buttons,
+                )
 
         elif qevent.type() == QEvent.Type.Leave:
             return MouseLeaveEvent()
