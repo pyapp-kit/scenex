@@ -224,7 +224,7 @@ class WxAppWrap(App):
     def create_app(self) -> Any:
         global _app
         if (wxapp := wx.App.Get()) is None:
-            _app = wxapp = wx.App()
+            _app = wxapp = wx.App(redirect=False)
 
         self._install_excepthook()
         return wxapp
