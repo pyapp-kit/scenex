@@ -58,6 +58,22 @@ if TYPE_CHECKING:
     from scenex.app._auto import P, T
     from scenex.app.events import Event
 
+try:
+    from qtpy.sip import isdeleted
+
+    def is_qt_object_destroyed(obj: QObject) -> bool:
+        return isdeleted(obj)
+
+except ImportError:
+    try:
+        from qtpy.shiboken import isValid  # type: ignore[attr-defined]
+
+        def is_qt_object_destroyed(obj: QObject) -> bool:
+            return not isValid(obj)
+
+    except ImportError as e:
+        raise Exception("Could not delegate is_qt_object_destroyed check") from e
+
 
 # QObject and EventFilter(ABC) use incompatible metaclasses. This combined metaclass
 # inherits from both so that QtEventFilter can subclass QObject and EventFilter,
@@ -72,12 +88,14 @@ class QtEventFilter(QObject, EventFilter, metaclass=_QtEventFilterMeta):
         self._widget = widget
         self._handler = handler
         self._active_buttons: MouseButton = MouseButton.NONE
-        widget.destroyed.connect(self.uninstall)
 
     def eventFilter(self, a0: QObject | None = None, a1: QEvent | None = None) -> bool:
-        if isinstance(a0, QWidget) and not a0.signalsBlocked():
-            if isinstance(a1, QEvent) and (evt := self._convert_event(a1)):
-                return self._handler(evt)
+        if a0 is not self._widget:
+            return False
+        if self._widget.signalsBlocked() or is_qt_object_destroyed(self._widget):
+            return False
+        if isinstance(a1, QEvent) and (evt := self._convert_event(a1)):
+            return self._handler(evt)
         return False
 
     def uninstall(self) -> None:
