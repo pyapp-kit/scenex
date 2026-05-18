@@ -74,12 +74,19 @@ class QtEventFilter(QObject, EventFilter, metaclass=_QtEventFilterMeta):
         self._active_buttons: MouseButton = MouseButton.NONE
 
     def eventFilter(self, a0: QObject | None = None, a1: QEvent | None = None) -> bool:
-        if not isinstance(a0, QWidget) or not isinstance(a1, QEvent):
+        # Ensure a real event on a real widget
+        if a0 is None or a1 is None:
             return False
+        # If the widget is being closed, uninstall the event filter
         if a1.type() == QEvent.Type.Close:
             self.uninstall()
             return False
-        if not a0.signalsBlocked() and (evt := self._convert_event(a1)):
+        # Ignore events if they are being blocked
+        if a0.signalsBlocked():
+            return False
+        # If we can convert the event...
+        if evt := self._convert_event(a1):
+            # ...handle it!
             return self._handler(evt)
         return False
 
