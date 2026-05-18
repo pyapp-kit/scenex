@@ -48,9 +48,10 @@ def evented_canvas(qtbot: QtBot) -> snx.Canvas:
     scene = snx.Scene(children=[])
     view = snx.View(scene=scene, camera=camera)
     canvas = snx.Canvas(views=[view])
-    adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
-    native = adaptor._snx_get_native()
-    qtbot.addWidget(native, before_close_func=lambda _: adaptor._filter.uninstall())  # type: ignore
+    native = cast(
+        "CanvasAdaptor", canvas._get_adaptors(create=True)[0]
+    )._snx_get_native()
+    qtbot.addWidget(native)
     return canvas
 
 
