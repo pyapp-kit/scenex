@@ -58,22 +58,6 @@ if TYPE_CHECKING:
     from scenex.app._auto import P, T
     from scenex.app.events import Event
 
-try:
-    from qtpy.sip import isdeleted
-
-    def is_qt_object_destroyed(obj: QObject) -> bool:
-        return isdeleted(obj)
-
-except ImportError:
-    try:
-        from qtpy.shiboken import isValid  # type: ignore[attr-defined]
-
-        def is_qt_object_destroyed(obj: QObject) -> bool:
-            return not isValid(obj)
-
-    except ImportError as e:
-        raise Exception("Could not delegate is_qt_object_destroyed check") from e
-
 
 # QObject and EventFilter(ABC) use incompatible metaclasses. This combined metaclass
 # inherits from both so that QtEventFilter can subclass QObject and EventFilter,
@@ -92,7 +76,7 @@ class QtEventFilter(QObject, EventFilter, metaclass=_QtEventFilterMeta):
     def eventFilter(self, a0: QObject | None = None, a1: QEvent | None = None) -> bool:
         if a0 is not self._widget:
             return False
-        if self._widget.signalsBlocked() or is_qt_object_destroyed(self._widget):
+        if self._widget.signalsBlocked():
             return False
         if isinstance(a1, QEvent) and (evt := self._convert_event(a1)):
             return self._handler(evt)
@@ -115,7 +99,7 @@ class QtEventFilter(QObject, EventFilter, metaclass=_QtEventFilterMeta):
 
     def _convert_event(self, qevent: QEvent) -> Event | None:
         """Convert a QEvent to a SceneX Event."""
-        if isinstance(qevent, QMouseEvent | QEnterEvent):
+        if isinstance(qevent, QMouseEvent):
             pos = qevent.position()
             canvas_pos = (pos.x(), pos.y())
 
@@ -146,11 +130,13 @@ class QtEventFilter(QObject, EventFilter, metaclass=_QtEventFilterMeta):
                     pos=canvas_pos,
                     buttons=btn,
                 )
-            elif etype == QEvent.Type.Enter:
-                return MouseEnterEvent(
-                    pos=canvas_pos,
-                    buttons=self._active_buttons,
-                )
+        elif isinstance(qevent, QEnterEvent):
+            pos = qevent.position()
+            canvas_pos = (pos.x(), pos.y())
+            return MouseEnterEvent(
+                pos=canvas_pos,
+                buttons=self._active_buttons,
+            )
 
         elif qevent.type() == QEvent.Type.Leave:
             return MouseLeaveEvent()
