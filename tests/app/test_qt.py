@@ -144,10 +144,7 @@ def test_mouse_double_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_resize(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
-    qtbot.add_widget(native)
+    native = cast("CanvasAdaptor", evented_canvas._get_adaptors()[0])._snx_get_native()
     new_size = (400, 300)
     assert evented_canvas.width != new_size[0]
     assert evented_canvas.height != new_size[1]
