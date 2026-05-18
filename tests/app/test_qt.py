@@ -25,6 +25,8 @@ from scenex.app.events import (
 from scenex.model._transform import Transform
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from scenex.adaptors._base import CanvasAdaptor
 
 if determine_app() == GuiFrontend.QT:
@@ -43,16 +45,16 @@ else:
 
 
 @pytest.fixture
-def evented_canvas(qtbot: QtBot) -> snx.Canvas:
+def evented_canvas(qtbot: QtBot) -> Iterator[snx.Canvas]:
     camera = snx.Camera(transform=Transform(), interactive=True)
     scene = snx.Scene(children=[])
     view = snx.View(scene=scene, camera=camera)
     canvas = snx.Canvas(views=[view])
-    native = cast(
-        "CanvasAdaptor", canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
+    adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
+    native = adaptor._snx_get_native()
     qtbot.addWidget(native)
-    return canvas
+    yield canvas
+    adaptor._filter.uninstall()  # type: ignore
 
 
 @pytest.mark.parametrize(
@@ -144,10 +146,7 @@ def test_mouse_double_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_resize(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
-    qtbot.add_widget(native)
+    native = cast("CanvasAdaptor", evented_canvas._get_adaptors()[0])._snx_get_native()
     new_size = (400, 300)
     assert evented_canvas.width != new_size[0]
     assert evented_canvas.height != new_size[1]

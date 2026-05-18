@@ -83,7 +83,12 @@ class QtEventFilter(QObject, EventFilter, metaclass=_QtEventFilterMeta):
         return False
 
     def uninstall(self) -> None:
-        self._widget.removeEventFilter(self)
+        try:
+            self._widget.removeEventFilter(self)
+        except RuntimeError:
+            # This can happen if the widget has already been deleted.
+            # In that case, we can just ignore it.
+            pass
 
     def mouse_btn(self, btn: Any) -> MouseButton:
         if btn == Qt.MouseButton.LeftButton:
