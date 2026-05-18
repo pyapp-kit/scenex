@@ -369,7 +369,7 @@ class App(ABC):
         This is necessary to prevent the application from closing when an exception
         is raised.
         """
-        if hasattr(sys, "_original_excepthook_"):
+        if sys.excepthook == scenex_excepthook:
             # don't install the excepthook more than once
             return
         sys._original_excepthook_ = sys.excepthook  # type: ignore[attr-defined]
