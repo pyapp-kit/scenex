@@ -220,9 +220,11 @@ class WxAppWrap(App):
     """Provider for wxPython."""
 
     def create_app(self) -> Any:
-        if wx.App.Get():
-            return wx.App.Get()
-        return wx.App(False)
+        if (wxapp := wx.App.Get()) is None:
+            wxapp = wx.App(redirect=False)
+
+        self._install_excepthook()
+        return wxapp
 
     def run(self) -> None:
         app = wx.App.Get() or self.create_app()
@@ -251,7 +253,12 @@ class WxAppWrap(App):
 
     def call_later(self, msec: int, func: Callable[[], None]) -> None:
         """Call `func` after `msec` milliseconds."""
-        wx.CallLater(msec, func)
+        if msec == 0:
+            wx.CallAfter(func)
+        else:
+            # NOTE: CallLater requires the main event loop to be running.
+            # If it's not, this probably will not execute.
+            wx.CallLater(msec, func)
 
     def call_in_main_thread(
         self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
