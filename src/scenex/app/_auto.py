@@ -115,10 +115,10 @@ class CursorType(Enum):
 
 
 # -------------------- Exception handling --------------------
-SCENEX_DEBUG_EXCEPTIONS = "SCENEX_DEBUG_EXCEPTIONS"
+DEBUG_EXCEPTIONS = "SCENEX_DEBUG_EXCEPTIONS"
 """Whether to drop into a debugger when an exception is raised. Default False."""
 
-SCENEX_EXIT_ON_EXCEPTION = "SCENEX_EXIT_ON_EXCEPTION"
+EXIT_ON_EXCEPTION = "SCENEX_EXIT_ON_EXCEPTION"
 """Whether to exit the application when an exception is raised. Default False."""
 
 
@@ -169,14 +169,14 @@ def scenex_excepthook(
             finally:
                 additional_info.is_tracing -= 1
     # Otherwise, if we're running with SCENEX_DEBUG_EXCEPTIONS, drop into pdb
-    elif os.getenv(SCENEX_DEBUG_EXCEPTIONS) in ("1", "true", "True"):
+    elif os.getenv(DEBUG_EXCEPTIONS) in ("1", "true", "True"):
         import pdb
 
         pdb.post_mortem(tb)
 
     # Finally, exit if the environment variable suggests we should
-    if os.getenv(SCENEX_EXIT_ON_EXCEPTION) in ("1", "true", "True"):
-        print(f"\n{SCENEX_EXIT_ON_EXCEPTION} is set, exiting.")
+    if os.getenv(EXIT_ON_EXCEPTION) in ("1", "true", "True"):
+        print(f"\n{EXIT_ON_EXCEPTION} is set, exiting.")
         sys.exit(1)
 
 
