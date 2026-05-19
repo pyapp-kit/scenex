@@ -29,8 +29,6 @@ if TYPE_CHECKING:
 
     from scenex.app._auto import P, T
 
-_app: wx.App | None = None
-
 
 class WxEventFilter(EventFilter):
     def __init__(
@@ -222,9 +220,8 @@ class WxAppWrap(App):
     """Provider for wxPython."""
 
     def create_app(self) -> Any:
-        global _app
         if (wxapp := wx.App.Get()) is None:
-            _app = wxapp = wx.App(redirect=False)
+            wxapp = wx.App(redirect=False)
 
         self._install_excepthook()
         return wxapp

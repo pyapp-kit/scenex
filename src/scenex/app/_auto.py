@@ -142,7 +142,7 @@ def _print_exception(
         traceback.print_exception(exc_type, value=exc_value, tb=exc_traceback)
 
 
-def scenex_excepthook(
+def _scenex_excepthook(
     exc_type: type[BaseException], exc_value: BaseException, tb: TracebackType | None
 ) -> None:
     # Render the exception to stderr
@@ -376,11 +376,11 @@ class App(ABC):
         This is necessary to prevent the application from closing when an exception
         is raised.
         """
-        if sys.excepthook == scenex_excepthook:
+        if sys.excepthook == _scenex_excepthook:
             # don't install the excepthook more than once
             return
         sys._original_excepthook_ = sys.excepthook  # type: ignore[attr-defined]
-        sys.excepthook = scenex_excepthook
+        sys.excepthook = _scenex_excepthook
 
     # ------------------------------ cursor API -------------------------------
 
