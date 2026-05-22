@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
+import numpy as np
 import pygfx
 
 from scenex.adaptors._base import CanvasAdaptor
@@ -10,7 +11,6 @@ from scenex.app import GuiFrontend, app, determine_app
 from ._adaptor_registry import get_adaptor
 
 if TYPE_CHECKING:
-    import numpy as np
     from cmap import Color
     from rendercanvas.base import BaseRenderCanvas
     from rendercanvas.offscreen import OffscreenRenderCanvas
@@ -166,4 +166,6 @@ class Canvas(CanvasAdaptor):
 
         self._offscreen_canvas.set_logical_size(self._canvas.width, self._canvas.height)
         self._draw(self._offscreen_renderer)
-        return self._offscreen_canvas.draw()  # type: ignore
+        # NOTE: np.asarray is necessary for older versions of rendercanvas, which return
+        # the image as a memoryview. Newer versions return a numpy array directly.
+        return np.asarray(self._offscreen_canvas.draw())
