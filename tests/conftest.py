@@ -9,9 +9,21 @@ import numpy as np
 import pytest
 
 import scenex as snx
+from scenex.adaptors._auto import determine_backend
+from scenex.app._auto import GuiFrontend, determine_app
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+# HACK: Enable tests inside vispy
+if determine_backend() == "vispy" and determine_app() == GuiFrontend.JUPYTER:
+    import asyncio
+    import os
+
+    os.environ["_VISPY_TESTING_APP"] = "jupyter_rfb"
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
+    os.environ["SCENEX_APP_BACKEND"] = "jupyter"
 
 
 @pytest.fixture

@@ -3,14 +3,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
 import numpy as np
+from vispy.color import Color as Color
 
 from scenex.adaptors._base import CanvasAdaptor
-from scenex.app import app
+from scenex.app import GuiFrontend, app, determine_app
 
 from ._adaptor_registry import get_adaptor
 
 if TYPE_CHECKING:
-    from cmap import Color
+    import cmap
     from rendercanvas.base import BaseRenderCanvas
 
     from scenex import model
@@ -83,7 +84,7 @@ class Canvas(CanvasAdaptor):
         for view in self._views:
             cast("View", get_adaptor(view))._on_size_changed()
 
-    def _snx_set_background_color(self, arg: Color | None) -> None:
+    def _snx_set_background_color(self, arg: cmap.Color | None) -> None:
         if arg is None:
             self._canvas.bgcolor = "black"
         else:
@@ -100,18 +101,52 @@ class Canvas(CanvasAdaptor):
         self,
         region: tuple[int, int, int, int] | None = None,
         size: tuple[int, int] | None = None,
-        bgcolor: Color | None = None,
+        bgcolor: cmap.Color | None = None,
         crop: np.ndarray | tuple[int, int, int, int] | None = None,
         alpha: bool = True,
     ) -> np.ndarray:
-        """Render to screenshot."""
-        vispy_bgcolor = None
-        if bgcolor and bgcolor.name:
-            from vispy.color import Color as _Color
-
-            vispy_bgcolor = _Color(bgcolor.name)
-        return np.asarray(
-            self._canvas.render(
-                region=region, size=size, bgcolor=vispy_bgcolor, crop=crop, alpha=alpha
+        """Render a screenshot."""
+        app = determine_app()
+        if app == GuiFrontend.JUPYTER:
+            # The jupyter_rfb backend uses some tricks, breaking SceneCanvas.render
+            # That backend's CanvasBackend.get_frame() allows an alternative approach
+            native = self._canvas.native
+            # The canvas refuses to render unless it has been correctly sized.
+            # Correct sizing happens through handling a resize event passed through
+            # IPython events
+            native.handle_event(
+                {
+                    "event_type": "resize",
+                    "width": self._model.width,
+                    "height": self._model.height,
+                    "pixel_ratio": 1,
+                }
             )
-        )
+            # Post-resize, get the frame!
+            return native.get_frame()  # type: ignore
+        else:
+            # Convert background color to vispy
+            vispy_bgcolor = None
+            if bgcolor is not None:
+                vispy_bgcolor = Color(bgcolor.rgba)
+            # To render in VisPy, we need the canvas' GL context to be current.
+            # Within wx, a current context enforces IsShown() at the C++ level.
+            # So we have to show it.
+            was_visible = self._model.visible
+            if app == GuiFrontend.WX and not was_visible:
+                self._snx_set_visible(True)
+            # Render!
+            img = np.asarray(
+                self._canvas.render(
+                    region=region,
+                    size=size,
+                    bgcolor=vispy_bgcolor,
+                    crop=crop,
+                    alpha=alpha,
+                )
+            )
+            # Within wx, a current context enforces IsShown() at the C++ level.
+            # Now that we've rendered, let's hide it if it wasn't visible to start with.
+            if app == GuiFrontend.WX and not was_visible:
+                self._snx_set_visible(False)
+            return img
