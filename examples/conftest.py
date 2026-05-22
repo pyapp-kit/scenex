@@ -40,5 +40,7 @@ def pytest_collection_modifyitems(
                 r"snapshot-[a-f0-9]+": "snapshot-XXXXX",
                 # -- Normalize canvas data (within the img tag) -- #
                 r"data:image/png;base64,[A-Za-z0-9+/=]+": "data:image/png;base64,XXXXX",
+                # -- Normalize RenderCanvas memory addresses -- #
+                r"RenderCanvas object at 0x[0-9a-fA-F]+": "RenderCanvas object at 0xXXXXX",
             }
         )
