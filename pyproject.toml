@@ -8,6 +8,9 @@ build-backend = "hatchling.build"
 source = "vcs"
 
 # read more about configuring hatch at:
+[tool.hatch.metadata]
+allow-direct-references = true
+
 # https://hatch.pypa.io/latest/config/build/
 [tool.hatch.build.targets.wheel]
 only-include = ["src"]
@@ -52,8 +55,7 @@ dependencies = [
 jupyter = [
     "ipywidgets >=8.0.5",
     "jupyter >=1.1",
-    # TODO: Enforce a minimum bound once >1.0.2 released
-    "jupyter_rfb >=0.3.3, <= 0.5.4",
+    "jupyter_rfb @ git+https://github.com/vispy/jupyter_rfb.git",
     # Note that this dep is only needed for Vispy, something like simplejpeg would work fine if just pygfx.
     "glfw>=2.4",
     # Otherwise jupyter_rfb will use PNG, which is apparently slower
@@ -73,7 +75,11 @@ pygfx = [
     # Needed to correctly resizes wx widgets
     "rendercanvas>=2.5.1"
 ]
-vispy = ["vispy>=0.15.0", "pyopengl>=3.1"]
+vispy = [
+    # Needed for proper anywidget support
+    "vispy>=0.16.2",
+    "pyopengl>=3.1"
+]
 # This extra is a mess!
 # Our source code for the pygfx adaptors relies on pygfx>=0.13.0 (see that extra for why).
 # However no versions of imgui-bundle that I'm aware of work for pygfx v0.13.0, because each version of pygfx

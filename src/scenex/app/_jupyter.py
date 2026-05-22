@@ -47,7 +47,7 @@ class JupyterEventFilter(EventFilter):
             filter: JupyterEventFilter,
         ) -> Callable[[RemoteFrameBuffer, dict], None]:
             def _handle_event(self: RemoteFrameBuffer, ev: dict) -> None:
-                etype = ev["event_type"]
+                etype = ev["type"]
                 if etype == "pointer_move":
                     filter._active_button = MouseButton.NONE
                     if btn := ev.get("button", None):
