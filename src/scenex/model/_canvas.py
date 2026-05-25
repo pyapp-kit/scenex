@@ -168,7 +168,15 @@ class Canvas(EventedBase):
         self.width, self.height = value
 
     def render(self) -> np.ndarray:
-        """Show the canvas."""
+        """Render the canvas to an image array.
+
+        Returns
+        -------
+        np.ndarray
+            The rendered canvas as an RGBA image array. The array is expected
+            to follow standard image conventions, with shape
+            ``(height, width, 4)``.
+        """
         if adaptors := self._get_adaptors(create=True):
             return cast("CanvasAdaptor", adaptors[0])._snx_render()
         raise RuntimeError("No adaptor found for Canvas.")
