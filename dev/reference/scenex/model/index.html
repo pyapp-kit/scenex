@@ -547,7 +547,7 @@
                   return '';
                 }
               });
-            </script> <p>A rendering surface that displays one or more views.</p> <p>The Canvas represents the top-level rendering context where views are displayed. In desktop applications, a canvas corresponds to a window. In web applications, it corresponds to a DOM element. Multiple views can be arranged on a single canvas using their layout parameters.</p> <p><span class=doc-section-title>Examples:</span></p> <p>Create a simple canvas with default settings: &gt;&gt;&gt; canvas = Canvas()</p> <p>Create a canvas with custom size and title: &gt;&gt;&gt; canvas = Canvas(width=800, height=600, title="My Visualization")</p> <p>Create a canvas with multiple views side-by-side: &gt;&gt;&gt; canvas = Canvas(width=800, height=400, views=[View(), View()])</p> <p><span class=doc-section-title>Methods:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            close (scenex.model.Canvas.close)" href=#scenex.model.Canvas.close>close</a></code></b> – <div class=doc-md-description> <p>Close the canvas and release resources.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            content_rect_for (scenex.model.Canvas.content_rect_for)" href=#scenex.model.Canvas.content_rect_for>content_rect_for</a></code></b> – <div class=doc-md-description> <p>The pixel rect (x, y, width, height) of the content area for a view.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            filter_event (scenex.model.Canvas.filter_event)" href=#scenex.model.Canvas.filter_event>filter_event</a></code></b> – <div class=doc-md-description> <p>Pass <em>event</em> through the canvas-level filter, if any.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            handle (scenex.model.Canvas.handle)" href=#scenex.model.Canvas.handle>handle</a></code></b> – <div class=doc-md-description> <p>Handle the passed event.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            model_post_init (scenex.model.Canvas.model_post_init)" href=#scenex.model.Canvas.model_post_init>model_post_init</a></code></b> – <div class=doc-md-description> <p>Post-initialization hook for the model.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            rect_for (scenex.model.Canvas.rect_for)" href=#scenex.model.Canvas.rect_for>rect_for</a></code></b> – <div class=doc-md-description> <p>The pixel rect (x, y, width, height) for a view, computed from its layout.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            render (scenex.model.Canvas.render)" href=#scenex.model.Canvas.render>render</a></code></b> – <div class=doc-md-description> <p>Show the canvas.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            set_event_filter (scenex.model.Canvas.set_event_filter)" href=#scenex.model.Canvas.set_event_filter>set_event_filter</a></code></b> – <div class=doc-md-description> <p>Register a callable to filter all canvas events before view dispatch.</p> </div> </li> </ul> <p><span class=doc-section-title>Attributes:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            size
+            </script> <p>A rendering surface that displays one or more views.</p> <p>The Canvas represents the top-level rendering context where views are displayed. In desktop applications, a canvas corresponds to a window. In web applications, it corresponds to a DOM element. Multiple views can be arranged on a single canvas using their layout parameters.</p> <p><span class=doc-section-title>Examples:</span></p> <p>Create a simple canvas with default settings: &gt;&gt;&gt; canvas = Canvas()</p> <p>Create a canvas with custom size and title: &gt;&gt;&gt; canvas = Canvas(width=800, height=600, title="My Visualization")</p> <p>Create a canvas with multiple views side-by-side: &gt;&gt;&gt; canvas = Canvas(width=800, height=400, views=[View(), View()])</p> <p><span class=doc-section-title>Methods:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            close (scenex.model.Canvas.close)" href=#scenex.model.Canvas.close>close</a></code></b> – <div class=doc-md-description> <p>Close the canvas and release resources.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            content_rect_for (scenex.model.Canvas.content_rect_for)" href=#scenex.model.Canvas.content_rect_for>content_rect_for</a></code></b> – <div class=doc-md-description> <p>The pixel rect (x, y, width, height) of the content area for a view.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            filter_event (scenex.model.Canvas.filter_event)" href=#scenex.model.Canvas.filter_event>filter_event</a></code></b> – <div class=doc-md-description> <p>Pass <em>event</em> through the canvas-level filter, if any.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            handle (scenex.model.Canvas.handle)" href=#scenex.model.Canvas.handle>handle</a></code></b> – <div class=doc-md-description> <p>Handle the passed event.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            model_post_init (scenex.model.Canvas.model_post_init)" href=#scenex.model.Canvas.model_post_init>model_post_init</a></code></b> – <div class=doc-md-description> <p>Post-initialization hook for the model.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            rect_for (scenex.model.Canvas.rect_for)" href=#scenex.model.Canvas.rect_for>rect_for</a></code></b> – <div class=doc-md-description> <p>The pixel rect (x, y, width, height) for a view, computed from its layout.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            render (scenex.model.Canvas.render)" href=#scenex.model.Canvas.render>render</a></code></b> – <div class=doc-md-description> <p>Render the canvas to an image array.</p> </div> </li> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            set_event_filter (scenex.model.Canvas.set_event_filter)" href=#scenex.model.Canvas.set_event_filter>set_event_filter</a></code></b> – <div class=doc-md-description> <p>Register a callable to filter all canvas events before view dispatch.</p> </div> </li> </ul> <p><span class=doc-section-title>Attributes:</span></p> <ul> <li class="doc-section-item field-body"> <b><code><a class="autorefs autorefs-internal" title="            size
 
 
   
@@ -599,50 +599,42 @@
   
       dataclass
    (scenex.app.events.Event)" href=../app/events/#scenex.app.events.Event>Event</a></span><span class=p>)</span> <span class=o>-&gt;</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#bool>bool</a></span>
-</span></code></pre></div> <div class="doc doc-contents "> <p>Pass <em>event</em> through the canvas-level filter, if any.</p> <p>Returns True iff the event was handled and should not propagate.</p> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/model/_canvas.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>196</span>
-<span class=normal>197</span>
-<span class=normal>198</span>
-<span class=normal>199</span>
-<span class=normal>200</span>
-<span class=normal>201</span>
-<span class=normal>202</span>
-<span class=normal>203</span>
-<span class=normal>204</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Pass <em>event</em> through the canvas-level filter, if any.</p> <p>Returns True iff the event was handled and should not propagate.</p> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/model/_canvas.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>204</span>
 <span class=normal>205</span>
 <span class=normal>206</span>
 <span class=normal>207</span>
 <span class=normal>208</span>
 <span class=normal>209</span>
-<span class=normal>210</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-196><span class=k>def</span><span class=w> </span><span class=nf>filter_event</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>event</span><span class=p>:</span> <span class=n>Event</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>bool</span><span class=p>:</span>
-</span><span id=__span-0-197><span class=w>    </span><span class=sd>&quot;&quot;&quot;Pass *event* through the canvas-level filter, if any.</span>
-</span><span id=__span-0-198>
-</span><span id=__span-0-199><span class=sd>    Returns True iff the event was handled and should not propagate.</span>
-</span><span id=__span-0-200><span class=sd>    &quot;&quot;&quot;</span>
-</span><span id=__span-0-201>    <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_filter</span><span class=p>:</span>
-</span><span id=__span-0-202>        <span class=n>handled</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_filter</span><span class=p>(</span><span class=n>event</span><span class=p>)</span>
-</span><span id=__span-0-203>        <span class=k>if</span> <span class=ow>not</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>handled</span><span class=p>,</span> <span class=nb>bool</span><span class=p>):</span>
-</span><span id=__span-0-204>            <span class=n>logger</span><span class=o>.</span><span class=n>warning</span><span class=p>(</span>
-</span><span id=__span-0-205>                <span class=sa>f</span><span class=s2>&quot;Canvas event filter </span><span class=si>{</span><span class=bp>self</span><span class=o>.</span><span class=n>_filter</span><span class=si>}</span><span class=s2> did not return a boolean. &quot;</span>
-</span><span id=__span-0-206>                <span class=s2>&quot;Returning False.&quot;</span>
-</span><span id=__span-0-207>            <span class=p>)</span>
-</span><span id=__span-0-208>            <span class=n>handled</span> <span class=o>=</span> <span class=kc>False</span>
-</span><span id=__span-0-209>        <span class=k>return</span> <span class=n>handled</span>
-</span><span id=__span-0-210>    <span class=k>return</span> <span class=kc>False</span>
+<span class=normal>210</span>
+<span class=normal>211</span>
+<span class=normal>212</span>
+<span class=normal>213</span>
+<span class=normal>214</span>
+<span class=normal>215</span>
+<span class=normal>216</span>
+<span class=normal>217</span>
+<span class=normal>218</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-204><span class=k>def</span><span class=w> </span><span class=nf>filter_event</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>event</span><span class=p>:</span> <span class=n>Event</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>bool</span><span class=p>:</span>
+</span><span id=__span-0-205><span class=w>    </span><span class=sd>&quot;&quot;&quot;Pass *event* through the canvas-level filter, if any.</span>
+</span><span id=__span-0-206>
+</span><span id=__span-0-207><span class=sd>    Returns True iff the event was handled and should not propagate.</span>
+</span><span id=__span-0-208><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-209>    <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_filter</span><span class=p>:</span>
+</span><span id=__span-0-210>        <span class=n>handled</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_filter</span><span class=p>(</span><span class=n>event</span><span class=p>)</span>
+</span><span id=__span-0-211>        <span class=k>if</span> <span class=ow>not</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>handled</span><span class=p>,</span> <span class=nb>bool</span><span class=p>):</span>
+</span><span id=__span-0-212>            <span class=n>logger</span><span class=o>.</span><span class=n>warning</span><span class=p>(</span>
+</span><span id=__span-0-213>                <span class=sa>f</span><span class=s2>&quot;Canvas event filter </span><span class=si>{</span><span class=bp>self</span><span class=o>.</span><span class=n>_filter</span><span class=si>}</span><span class=s2> did not return a boolean. &quot;</span>
+</span><span id=__span-0-214>                <span class=s2>&quot;Returning False.&quot;</span>
+</span><span id=__span-0-215>            <span class=p>)</span>
+</span><span id=__span-0-216>            <span class=n>handled</span> <span class=o>=</span> <span class=kc>False</span>
+</span><span id=__span-0-217>        <span class=k>return</span> <span class=n>handled</span>
+</span><span id=__span-0-218>    <span class=k>return</span> <span class=kc>False</span>
 </span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.model.Canvas.handle class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">handle</span> <a href=#scenex.model.Canvas.handle class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>handle</span><span class=p>(</span><span class=n><span title=scenex.model.Canvas.handle(event)>event</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-internal" title="            Event
 
 
   
       dataclass
    (scenex.app.events.Event)" href=../app/events/#scenex.app.events.Event>Event</a></span><span class=p>)</span> <span class=o>-&gt;</span> <span class=n><a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#bool>bool</a></span>
-</span></code></pre></div> <div class="doc doc-contents "> <p>Handle the passed event.</p> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/model/_canvas.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>212</span>
-<span class=normal>213</span>
-<span class=normal>214</span>
-<span class=normal>215</span>
-<span class=normal>216</span>
-<span class=normal>217</span>
-<span class=normal>218</span>
-<span class=normal>219</span>
-<span class=normal>220</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Handle the passed event.</p> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/model/_canvas.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>220</span>
 <span class=normal>221</span>
 <span class=normal>222</span>
 <span class=normal>223</span>
@@ -683,56 +675,64 @@
 <span class=normal>258</span>
 <span class=normal>259</span>
 <span class=normal>260</span>
-<span class=normal>261</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-212><span class=k>def</span><span class=w> </span><span class=nf>handle</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>event</span><span class=p>:</span> <span class=n>Event</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>bool</span><span class=p>:</span>
-</span><span id=__span-0-213><span class=w>    </span><span class=sd>&quot;&quot;&quot;Handle the passed event.&quot;&quot;&quot;</span>
-</span><span id=__span-0-214>    <span class=c1># 0. Handle events pertaining to the canvas model</span>
-</span><span id=__span-0-215>    <span class=k>if</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>event</span><span class=p>,</span> <span class=n>ResizeEvent</span><span class=p>):</span>
-</span><span id=__span-0-216>        <span class=bp>self</span><span class=o>.</span><span class=n>size</span> <span class=o>=</span> <span class=p>(</span><span class=n>event</span><span class=o>.</span><span class=n>width</span><span class=p>,</span> <span class=n>event</span><span class=o>.</span><span class=n>height</span><span class=p>)</span>
-</span><span id=__span-0-217>
-</span><span id=__span-0-218>    <span class=c1># 1. Canvas-level filter sees all events first.</span>
-</span><span id=__span-0-219>    <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>filter_event</span><span class=p>(</span><span class=n>event</span><span class=p>):</span>
-</span><span id=__span-0-220>        <span class=k>return</span> <span class=kc>True</span>
-</span><span id=__span-0-221>
-</span><span id=__span-0-222>    <span class=c1># 2. Pass the event to the view under the mouse.</span>
-</span><span id=__span-0-223>    <span class=c1># NOTE: Currently, only mouse events have a position. Maybe other events should</span>
-</span><span id=__span-0-224>    <span class=c1># have them too?</span>
-</span><span id=__span-0-225>    <span class=k>if</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>event</span><span class=p>,</span> <span class=n>MouseEvent</span><span class=p>):</span>
-</span><span id=__span-0-226>        <span class=c1># Find the view under the mouse, if any.</span>
-</span><span id=__span-0-227>        <span class=n>current_view</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_containing_view</span><span class=p>(</span><span class=n>event</span><span class=o>.</span><span class=n>pos</span><span class=p>)</span>
-</span><span id=__span-0-228>
-</span><span id=__span-0-229>        <span class=c1># If that view is different from the last view...</span>
-</span><span id=__span-0-230>        <span class=c1># TODO: Add a test for this once multiple views are better supported</span>
-</span><span id=__span-0-231>        <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span> <span class=o>!=</span> <span class=n>current_view</span><span class=p>:</span>
-</span><span id=__span-0-232>            <span class=c1># ...send a MouseLeaveEvent to the last view...</span>
-</span><span id=__span-0-233>            <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
-</span><span id=__span-0-234>                <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span><span class=o>.</span><span class=n>filter_event</span><span class=p>(</span><span class=n>MouseLeaveEvent</span><span class=p>())</span>
-</span><span id=__span-0-235>            <span class=c1># ...and a MouseEnterEvent to the new view (if the incoming event isn&#39;t</span>
-</span><span id=__span-0-236>            <span class=c1># one already).</span>
-</span><span id=__span-0-237>            <span class=k>if</span> <span class=n>current_view</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span> <span class=ow>and</span> <span class=ow>not</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>event</span><span class=p>,</span> <span class=n>MouseEnterEvent</span><span class=p>):</span>
-</span><span id=__span-0-238>                <span class=n>current_view</span><span class=o>.</span><span class=n>filter_event</span><span class=p>(</span>
-</span><span id=__span-0-239>                    <span class=n>MouseEnterEvent</span><span class=p>(</span><span class=n>pos</span><span class=o>=</span><span class=n>event</span><span class=o>.</span><span class=n>pos</span><span class=p>,</span> <span class=n>buttons</span><span class=o>=</span><span class=n>event</span><span class=o>.</span><span class=n>buttons</span><span class=p>)</span>
-</span><span id=__span-0-240>                <span class=p>)</span>
-</span><span id=__span-0-241>        <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span> <span class=o>=</span> <span class=n>current_view</span>
-</span><span id=__span-0-242>
-</span><span id=__span-0-243>        <span class=k>if</span> <span class=n>current_view</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
-</span><span id=__span-0-244>            <span class=c1># 2a. Give the view under the mouse the chance to handle the event.</span>
-</span><span id=__span-0-245>            <span class=k>if</span> <span class=n>current_view</span><span class=o>.</span><span class=n>filter_event</span><span class=p>(</span><span class=n>event</span><span class=p>):</span>
-</span><span id=__span-0-246>                <span class=k>return</span> <span class=kc>True</span>
-</span><span id=__span-0-247>            <span class=c1># 2b. If the view didn&#39;t handle the event, give any camera controller</span>
-</span><span id=__span-0-248>            <span class=c1>#    on the view the chance to handle it.</span>
-</span><span id=__span-0-249>            <span class=k>if</span> <span class=n>current_view</span><span class=o>.</span><span class=n>camera</span><span class=o>.</span><span class=n>interactive</span><span class=p>:</span>
-</span><span id=__span-0-250>                <span class=k>if</span> <span class=n>ctrl</span> <span class=o>:=</span> <span class=n>current_view</span><span class=o>.</span><span class=n>camera</span><span class=o>.</span><span class=n>controller</span><span class=p>:</span>
-</span><span id=__span-0-251>                    <span class=k>return</span> <span class=n>ctrl</span><span class=o>.</span><span class=n>handle_event</span><span class=p>(</span><span class=n>event</span><span class=p>,</span> <span class=n>current_view</span><span class=p>)</span>
-</span><span id=__span-0-252>
-</span><span id=__span-0-253>    <span class=c1># 3. MouseLeave events won&#39;t be on any view (because they have no position),</span>
-</span><span id=__span-0-254>    <span class=c1>#    so we need to handle them at the canvas level to clear the last_mouse_view.</span>
-</span><span id=__span-0-255>    <span class=k>elif</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>event</span><span class=p>,</span> <span class=n>MouseLeaveEvent</span><span class=p>):</span>
-</span><span id=__span-0-256>        <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
-</span><span id=__span-0-257>            <span class=n>handled</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span><span class=o>.</span><span class=n>filter_event</span><span class=p>(</span><span class=n>event</span><span class=p>)</span>
-</span><span id=__span-0-258>            <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span> <span class=o>=</span> <span class=kc>None</span>
-</span><span id=__span-0-259>            <span class=k>return</span> <span class=n>handled</span>
+<span class=normal>261</span>
+<span class=normal>262</span>
+<span class=normal>263</span>
+<span class=normal>264</span>
+<span class=normal>265</span>
+<span class=normal>266</span>
+<span class=normal>267</span>
+<span class=normal>268</span>
+<span class=normal>269</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-220><span class=k>def</span><span class=w> </span><span class=nf>handle</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>event</span><span class=p>:</span> <span class=n>Event</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>bool</span><span class=p>:</span>
+</span><span id=__span-0-221><span class=w>    </span><span class=sd>&quot;&quot;&quot;Handle the passed event.&quot;&quot;&quot;</span>
+</span><span id=__span-0-222>    <span class=c1># 0. Handle events pertaining to the canvas model</span>
+</span><span id=__span-0-223>    <span class=k>if</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>event</span><span class=p>,</span> <span class=n>ResizeEvent</span><span class=p>):</span>
+</span><span id=__span-0-224>        <span class=bp>self</span><span class=o>.</span><span class=n>size</span> <span class=o>=</span> <span class=p>(</span><span class=n>event</span><span class=o>.</span><span class=n>width</span><span class=p>,</span> <span class=n>event</span><span class=o>.</span><span class=n>height</span><span class=p>)</span>
+</span><span id=__span-0-225>
+</span><span id=__span-0-226>    <span class=c1># 1. Canvas-level filter sees all events first.</span>
+</span><span id=__span-0-227>    <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>filter_event</span><span class=p>(</span><span class=n>event</span><span class=p>):</span>
+</span><span id=__span-0-228>        <span class=k>return</span> <span class=kc>True</span>
+</span><span id=__span-0-229>
+</span><span id=__span-0-230>    <span class=c1># 2. Pass the event to the view under the mouse.</span>
+</span><span id=__span-0-231>    <span class=c1># NOTE: Currently, only mouse events have a position. Maybe other events should</span>
+</span><span id=__span-0-232>    <span class=c1># have them too?</span>
+</span><span id=__span-0-233>    <span class=k>if</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>event</span><span class=p>,</span> <span class=n>MouseEvent</span><span class=p>):</span>
+</span><span id=__span-0-234>        <span class=c1># Find the view under the mouse, if any.</span>
+</span><span id=__span-0-235>        <span class=n>current_view</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_containing_view</span><span class=p>(</span><span class=n>event</span><span class=o>.</span><span class=n>pos</span><span class=p>)</span>
+</span><span id=__span-0-236>
+</span><span id=__span-0-237>        <span class=c1># If that view is different from the last view...</span>
+</span><span id=__span-0-238>        <span class=c1># TODO: Add a test for this once multiple views are better supported</span>
+</span><span id=__span-0-239>        <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span> <span class=o>!=</span> <span class=n>current_view</span><span class=p>:</span>
+</span><span id=__span-0-240>            <span class=c1># ...send a MouseLeaveEvent to the last view...</span>
+</span><span id=__span-0-241>            <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+</span><span id=__span-0-242>                <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span><span class=o>.</span><span class=n>filter_event</span><span class=p>(</span><span class=n>MouseLeaveEvent</span><span class=p>())</span>
+</span><span id=__span-0-243>            <span class=c1># ...and a MouseEnterEvent to the new view (if the incoming event isn&#39;t</span>
+</span><span id=__span-0-244>            <span class=c1># one already).</span>
+</span><span id=__span-0-245>            <span class=k>if</span> <span class=n>current_view</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span> <span class=ow>and</span> <span class=ow>not</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>event</span><span class=p>,</span> <span class=n>MouseEnterEvent</span><span class=p>):</span>
+</span><span id=__span-0-246>                <span class=n>current_view</span><span class=o>.</span><span class=n>filter_event</span><span class=p>(</span>
+</span><span id=__span-0-247>                    <span class=n>MouseEnterEvent</span><span class=p>(</span><span class=n>pos</span><span class=o>=</span><span class=n>event</span><span class=o>.</span><span class=n>pos</span><span class=p>,</span> <span class=n>buttons</span><span class=o>=</span><span class=n>event</span><span class=o>.</span><span class=n>buttons</span><span class=p>)</span>
+</span><span id=__span-0-248>                <span class=p>)</span>
+</span><span id=__span-0-249>        <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span> <span class=o>=</span> <span class=n>current_view</span>
+</span><span id=__span-0-250>
+</span><span id=__span-0-251>        <span class=k>if</span> <span class=n>current_view</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+</span><span id=__span-0-252>            <span class=c1># 2a. Give the view under the mouse the chance to handle the event.</span>
+</span><span id=__span-0-253>            <span class=k>if</span> <span class=n>current_view</span><span class=o>.</span><span class=n>filter_event</span><span class=p>(</span><span class=n>event</span><span class=p>):</span>
+</span><span id=__span-0-254>                <span class=k>return</span> <span class=kc>True</span>
+</span><span id=__span-0-255>            <span class=c1># 2b. If the view didn&#39;t handle the event, give any camera controller</span>
+</span><span id=__span-0-256>            <span class=c1>#    on the view the chance to handle it.</span>
+</span><span id=__span-0-257>            <span class=k>if</span> <span class=n>current_view</span><span class=o>.</span><span class=n>camera</span><span class=o>.</span><span class=n>interactive</span><span class=p>:</span>
+</span><span id=__span-0-258>                <span class=k>if</span> <span class=n>ctrl</span> <span class=o>:=</span> <span class=n>current_view</span><span class=o>.</span><span class=n>camera</span><span class=o>.</span><span class=n>controller</span><span class=p>:</span>
+</span><span id=__span-0-259>                    <span class=k>return</span> <span class=n>ctrl</span><span class=o>.</span><span class=n>handle_event</span><span class=p>(</span><span class=n>event</span><span class=p>,</span> <span class=n>current_view</span><span class=p>)</span>
 </span><span id=__span-0-260>
-</span><span id=__span-0-261>    <span class=k>return</span> <span class=kc>False</span>
+</span><span id=__span-0-261>    <span class=c1># 3. MouseLeave events won&#39;t be on any view (because they have no position),</span>
+</span><span id=__span-0-262>    <span class=c1>#    so we need to handle them at the canvas level to clear the last_mouse_view.</span>
+</span><span id=__span-0-263>    <span class=k>elif</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>event</span><span class=p>,</span> <span class=n>MouseLeaveEvent</span><span class=p>):</span>
+</span><span id=__span-0-264>        <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+</span><span id=__span-0-265>            <span class=n>handled</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span><span class=o>.</span><span class=n>filter_event</span><span class=p>(</span><span class=n>event</span><span class=p>)</span>
+</span><span id=__span-0-266>            <span class=bp>self</span><span class=o>.</span><span class=n>_last_mouse_view</span> <span class=o>=</span> <span class=kc>None</span>
+</span><span id=__span-0-267>            <span class=k>return</span> <span class=n>handled</span>
+</span><span id=__span-0-268>
+</span><span id=__span-0-269>    <span class=k>return</span> <span class=kc>False</span>
 </span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.model.Canvas.model_post_init class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">model_post_init</span> <a href=#scenex.model.Canvas.model_post_init class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>model_post_init</span><span class=p>(</span><span class=n><span title=scenex.model.Canvas.model_post_init(__context)>__context</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" title=typing.Any href=https://docs.python.org/3/library/typing.html#typing.Any>Any</a></span><span class=p>)</span> <span class=o>-&gt;</span> <span class=kc>None</span>
 </span></code></pre></div> <div class="doc doc-contents "> <p>Post-initialization hook for the model.</p> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/model/_canvas.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal> 98</span>
 <span class=normal> 99</span>
@@ -766,15 +766,31 @@
 </span><span id=__span-0-118>    <span class=n>h</span> <span class=o>=</span> <span class=n>view</span><span class=o>.</span><span class=n>layout</span><span class=o>.</span><span class=n>y_end</span><span class=o>.</span><span class=n>resolve</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>height</span><span class=p>)</span> <span class=o>-</span> <span class=n>y</span>
 </span><span id=__span-0-119>    <span class=k>return</span> <span class=p>(</span><span class=n>x</span><span class=p>,</span> <span class=n>y</span><span class=p>,</span> <span class=n>w</span><span class=p>,</span> <span class=n>h</span><span class=p>)</span>
 </span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.model.Canvas.render class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">render</span> <a href=#scenex.model.Canvas.render class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>render</span><span class=p>()</span> <span class=o>-&gt;</span> <span class=n><a class="autorefs autorefs-external" title=numpy.ndarray href=https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray>ndarray</a></span>
-</span></code></pre></div> <div class="doc doc-contents "> <p>Show the canvas.</p> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/model/_canvas.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>170</span>
+</span></code></pre></div> <div class="doc doc-contents "> <p>Render the canvas to an image array.</p> <p><span class=doc-section-title>Returns:</span></p> <ul> <li class="doc-section-item field-body"> <code><a class="autorefs autorefs-external" title=numpy.ndarray href=https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray>ndarray</a></code> – <div class=doc-md-description> <p>The rendered canvas as an RGBA image array. The array is expected to follow standard image conventions, with shape <code>(height, width, 4)</code>.</p> </div> </li> </ul> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/model/_canvas.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>170</span>
 <span class=normal>171</span>
 <span class=normal>172</span>
 <span class=normal>173</span>
-<span class=normal>174</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-170><span class=k>def</span><span class=w> </span><span class=nf>render</span><span class=p>(</span><span class=bp>self</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=n>np</span><span class=o>.</span><span class=n>ndarray</span><span class=p>:</span>
-</span><span id=__span-0-171><span class=w>    </span><span class=sd>&quot;&quot;&quot;Show the canvas.&quot;&quot;&quot;</span>
-</span><span id=__span-0-172>    <span class=k>if</span> <span class=n>adaptors</span> <span class=o>:=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_get_adaptors</span><span class=p>():</span>
-</span><span id=__span-0-173>        <span class=k>return</span> <span class=n>cast</span><span class=p>(</span><span class=s2>&quot;CanvasAdaptor&quot;</span><span class=p>,</span> <span class=n>adaptors</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span><span class=o>.</span><span class=n>_snx_render</span><span class=p>()</span>
-</span><span id=__span-0-174>    <span class=k>raise</span> <span class=ne>RuntimeError</span><span class=p>(</span><span class=s2>&quot;No adaptor found for Canvas.&quot;</span><span class=p>)</span>
+<span class=normal>174</span>
+<span class=normal>175</span>
+<span class=normal>176</span>
+<span class=normal>177</span>
+<span class=normal>178</span>
+<span class=normal>179</span>
+<span class=normal>180</span>
+<span class=normal>181</span>
+<span class=normal>182</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-170><span class=k>def</span><span class=w> </span><span class=nf>render</span><span class=p>(</span><span class=bp>self</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=n>np</span><span class=o>.</span><span class=n>ndarray</span><span class=p>:</span>
+</span><span id=__span-0-171><span class=w>    </span><span class=sd>&quot;&quot;&quot;Render the canvas to an image array.</span>
+</span><span id=__span-0-172>
+</span><span id=__span-0-173><span class=sd>    Returns</span>
+</span><span id=__span-0-174><span class=sd>    -------</span>
+</span><span id=__span-0-175><span class=sd>    np.ndarray</span>
+</span><span id=__span-0-176><span class=sd>        The rendered canvas as an RGBA image array. The array is expected</span>
+</span><span id=__span-0-177><span class=sd>        to follow standard image conventions, with shape</span>
+</span><span id=__span-0-178><span class=sd>        ``(height, width, 4)``.</span>
+</span><span id=__span-0-179><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-180>    <span class=k>if</span> <span class=n>adaptors</span> <span class=o>:=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_get_adaptors</span><span class=p>(</span><span class=n>create</span><span class=o>=</span><span class=kc>True</span><span class=p>):</span>
+</span><span id=__span-0-181>        <span class=k>return</span> <span class=n>cast</span><span class=p>(</span><span class=s2>&quot;CanvasAdaptor&quot;</span><span class=p>,</span> <span class=n>adaptors</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span><span class=o>.</span><span class=n>_snx_render</span><span class=p>()</span>
+</span><span id=__span-0-182>    <span class=k>raise</span> <span class=ne>RuntimeError</span><span class=p>(</span><span class=s2>&quot;No adaptor found for Canvas.&quot;</span><span class=p>)</span>
 </span></code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=scenex.model.Canvas.set_event_filter class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">set_event_filter</span> <a href=#scenex.model.Canvas.set_event_filter class=headerlink title="Permanent link">#</a></h3> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>set_event_filter</span><span class=p>(</span>
 </span><span id=__span-0-2>    <span class=n><a class="autorefs autorefs-internal" title="event_filter (scenex.model.Canvas.set_event_filter(event_filter))" href=#scenex.model.Canvas.set_event_filter(event_filter)>event_filter</a></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" title=collections.abc.Callable href=https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable>Callable</a></span><span class=p>[[</span><span class=n><a class="autorefs autorefs-internal" title="            Event
 
@@ -798,15 +814,7 @@
 
   
       dataclass
-   (scenex.app.events.Event)" href=../app/events/#scenex.app.events.Event>Event</a>], <a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#bool>bool</a>] | None</code> – <div class=doc-md-description> <p>The previous event filter, or None if there was no filter.</p> </div> </li> </ul> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/model/_canvas.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>176</span>
-<span class=normal>177</span>
-<span class=normal>178</span>
-<span class=normal>179</span>
-<span class=normal>180</span>
-<span class=normal>181</span>
-<span class=normal>182</span>
-<span class=normal>183</span>
-<span class=normal>184</span>
+   (scenex.app.events.Event)" href=../app/events/#scenex.app.events.Event>Event</a>], <a class="autorefs autorefs-external" href=https://docs.python.org/3/library/functions.html#bool>bool</a>] | None</code> – <div class=doc-md-description> <p>The previous event filter, or None if there was no filter.</p> </div> </li> </ul> <details class=mkdocstrings-source> <summary>Source code in <code>src/scenex/model/_canvas.py</code></summary> <div class="language-python highlight"><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>184</span>
 <span class=normal>185</span>
 <span class=normal>186</span>
 <span class=normal>187</span>
@@ -816,25 +824,33 @@
 <span class=normal>191</span>
 <span class=normal>192</span>
 <span class=normal>193</span>
-<span class=normal>194</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-176><span class=k>def</span><span class=w> </span><span class=nf>set_event_filter</span><span class=p>(</span>
-</span><span id=__span-0-177>    <span class=bp>self</span><span class=p>,</span> <span class=n>event_filter</span><span class=p>:</span> <span class=n>Callable</span><span class=p>[[</span><span class=n>Event</span><span class=p>],</span> <span class=nb>bool</span><span class=p>]</span> <span class=o>|</span> <span class=kc>None</span>
-</span><span id=__span-0-178><span class=p>)</span> <span class=o>-&gt;</span> <span class=n>Callable</span><span class=p>[[</span><span class=n>Event</span><span class=p>],</span> <span class=nb>bool</span><span class=p>]</span> <span class=o>|</span> <span class=kc>None</span><span class=p>:</span>
-</span><span id=__span-0-179><span class=w>    </span><span class=sd>&quot;&quot;&quot;Register a callable to filter all canvas events before view dispatch.</span>
-</span><span id=__span-0-180>
-</span><span id=__span-0-181><span class=sd>    Parameters</span>
-</span><span id=__span-0-182><span class=sd>    ----------</span>
-</span><span id=__span-0-183><span class=sd>    event_filter : Callable[[Event], bool] | None</span>
-</span><span id=__span-0-184><span class=sd>        A callable that takes an Event and returns True if the event was handled</span>
-</span><span id=__span-0-185><span class=sd>        and should not be propagated further, False otherwise. Pass None to remove</span>
-</span><span id=__span-0-186><span class=sd>        any existing filter.</span>
-</span><span id=__span-0-187>
-</span><span id=__span-0-188><span class=sd>    Returns</span>
-</span><span id=__span-0-189><span class=sd>    -------</span>
-</span><span id=__span-0-190><span class=sd>    Callable[[Event], bool] | None</span>
-</span><span id=__span-0-191><span class=sd>        The previous event filter, or None if there was no filter.</span>
-</span><span id=__span-0-192><span class=sd>    &quot;&quot;&quot;</span>
-</span><span id=__span-0-193>    <span class=n>old</span><span class=p>,</span> <span class=bp>self</span><span class=o>.</span><span class=n>_filter</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_filter</span><span class=p>,</span> <span class=n>event_filter</span>
-</span><span id=__span-0-194>    <span class=k>return</span> <span class=n>old</span>
+<span class=normal>194</span>
+<span class=normal>195</span>
+<span class=normal>196</span>
+<span class=normal>197</span>
+<span class=normal>198</span>
+<span class=normal>199</span>
+<span class=normal>200</span>
+<span class=normal>201</span>
+<span class=normal>202</span></pre></div></td><td class=code><div><pre><span></span><code><span id=__span-0-184><span class=k>def</span><span class=w> </span><span class=nf>set_event_filter</span><span class=p>(</span>
+</span><span id=__span-0-185>    <span class=bp>self</span><span class=p>,</span> <span class=n>event_filter</span><span class=p>:</span> <span class=n>Callable</span><span class=p>[[</span><span class=n>Event</span><span class=p>],</span> <span class=nb>bool</span><span class=p>]</span> <span class=o>|</span> <span class=kc>None</span>
+</span><span id=__span-0-186><span class=p>)</span> <span class=o>-&gt;</span> <span class=n>Callable</span><span class=p>[[</span><span class=n>Event</span><span class=p>],</span> <span class=nb>bool</span><span class=p>]</span> <span class=o>|</span> <span class=kc>None</span><span class=p>:</span>
+</span><span id=__span-0-187><span class=w>    </span><span class=sd>&quot;&quot;&quot;Register a callable to filter all canvas events before view dispatch.</span>
+</span><span id=__span-0-188>
+</span><span id=__span-0-189><span class=sd>    Parameters</span>
+</span><span id=__span-0-190><span class=sd>    ----------</span>
+</span><span id=__span-0-191><span class=sd>    event_filter : Callable[[Event], bool] | None</span>
+</span><span id=__span-0-192><span class=sd>        A callable that takes an Event and returns True if the event was handled</span>
+</span><span id=__span-0-193><span class=sd>        and should not be propagated further, False otherwise. Pass None to remove</span>
+</span><span id=__span-0-194><span class=sd>        any existing filter.</span>
+</span><span id=__span-0-195>
+</span><span id=__span-0-196><span class=sd>    Returns</span>
+</span><span id=__span-0-197><span class=sd>    -------</span>
+</span><span id=__span-0-198><span class=sd>    Callable[[Event], bool] | None</span>
+</span><span id=__span-0-199><span class=sd>        The previous event filter, or None if there was no filter.</span>
+</span><span id=__span-0-200><span class=sd>    &quot;&quot;&quot;</span>
+</span><span id=__span-0-201>    <span class=n>old</span><span class=p>,</span> <span class=bp>self</span><span class=o>.</span><span class=n>_filter</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_filter</span><span class=p>,</span> <span class=n>event_filter</span>
+</span><span id=__span-0-202>    <span class=k>return</span> <span class=n>old</span>
 </span></code></pre></div></td></tr></table></div> </details> </div> </div> </div> </div> </div> <div class="doc doc-object doc-class"> <h2 id=scenex.model.ColorModel class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code> <span class="doc doc-object-name doc-class-name">ColorModel</span> <a href=#scenex.model.ColorModel class=headerlink title="Permanent link">#</a></h2> <div class="language-python doc-signature highlight"><pre><span></span><code><span id=__span-0-1><span class=nf>ColorModel</span><span class=p>(</span><span class=o>**</span><span class=n><span title=scenex.model.ColorModel(**data)>data</span></span><span class=p>:</span> <span class=n><a class="autorefs autorefs-external" title=typing.Any href=https://docs.python.org/3/library/typing.html#typing.Any>Any</a></span><span class=p>)</span>
 </span></code></pre></div> <div class="doc doc-contents "> <p class="doc doc-class-bases"> Bases: <code><a class="autorefs autorefs-external" title=pydantic.BaseModel href=https://docs.pydantic.dev/latest/api/pydantic/base_model/#pydantic.BaseModel>BaseModel</a></code></p> <div style="display: none"> <a class="autorefs autorefs-internal" title="            ColorModel (scenex.model.ColorModel)" href=#scenex.model.ColorModel id=mermaid-link-scenex.model.ColorModel></a> </div> <pre class=mermaid><code id=mermaid-diagram-scenex.model.ColorModel>
               flowchart TD
