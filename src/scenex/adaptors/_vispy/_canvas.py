@@ -106,8 +106,8 @@ class Canvas(CanvasAdaptor):
         alpha: bool = True,
     ) -> np.ndarray:
         """Render a screenshot."""
-        app = determine_app()
-        if app == GuiFrontend.JUPYTER:
+        backend = determine_app()
+        if backend == GuiFrontend.JUPYTER:
             # The jupyter_rfb backend uses some tricks, breaking SceneCanvas.render
             # That backend's CanvasBackend.get_frame() allows an alternative approach
             native = self._canvas.native
@@ -133,7 +133,7 @@ class Canvas(CanvasAdaptor):
             # Within wx, a current context enforces IsShown() at the C++ level.
             # So we have to show it.
             was_visible = self._model.visible
-            if app == GuiFrontend.WX and not was_visible:
+            if backend == GuiFrontend.WX and not was_visible:
                 self._snx_set_visible(True)
             # Render!
             img = np.asarray(
@@ -147,6 +147,6 @@ class Canvas(CanvasAdaptor):
             )
             # Within wx, a current context enforces IsShown() at the C++ level.
             # Now that we've rendered, let's hide it if it wasn't visible to start with.
-            if app == GuiFrontend.WX and not was_visible:
+            if backend == GuiFrontend.WX and not was_visible:
                 self._snx_set_visible(False)
             return img
