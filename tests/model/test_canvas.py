@@ -163,3 +163,5 @@ def test_render() -> None:
     ]:
         corner_rgb = pixel[:3]
         np.testing.assert_array_equal(corner_rgb, background_rgb)
+
+    canvas.close()
