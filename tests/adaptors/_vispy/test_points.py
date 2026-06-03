@@ -21,7 +21,7 @@ def points() -> snx.Points:
         edge_width=1.0,
         symbol="disc",
         scaling="fixed",
-        antialias=0,
+        antialias=False,
     )
 
 
@@ -74,11 +74,11 @@ def test_points_antialias(points: snx.Points, adaptor: adaptors.Points) -> None:
     node = adaptor._vispy_node
     assert isinstance(node, vispy.scene.Markers)
     # Initial state
-    assert points.antialias == 0
-    assert node.antialias == points.antialias
+    assert not points.antialias
+    assert node.antialias == (1.0 if points.antialias else 0.0)
     # Change antialias
-    points.antialias = 1
-    assert node.antialias == 1
+    points.antialias = True
+    assert node.antialias == (1.0 if points.antialias else 0.0)
 
 
 def test_points_scaling(points: snx.Points, adaptor: adaptors.Points) -> None:

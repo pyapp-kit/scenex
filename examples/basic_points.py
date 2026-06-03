@@ -71,8 +71,9 @@ view = snx.View(
 
 def _on_view_event(event: Event) -> bool:
     if isinstance(event, MouseMoveEvent):
-        intersections = event.world_ray.intersections(view.scene)
-        if points in [n for n, _ in intersections]:
+        if (ray := view.to_ray(event.pos)) is None:
+            return False
+        if ray.intersections(points):
             points.face_color = snx.UniformColor(color=cmap.Color("white"))
             points.edge_color = snx.VertexColors(color=colors)
         else:
@@ -83,9 +84,6 @@ def _on_view_event(event: Event) -> bool:
 
 
 view.set_event_filter(_on_view_event)
-
-snx.use("pygfx")
-# snx.use("vispy")
 
 # Show and position camera
 snx.show(view)

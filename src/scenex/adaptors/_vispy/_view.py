@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
@@ -35,27 +34,32 @@ class View(ViewAdaptor):
     def __init__(self, view: model.View, **backend_kwargs: Any) -> None:
         self._model = view
         self._vispy_viewbox = vispy.scene.ViewBox()
-        self._vispy_viewbox.events.resize.connect(self._on_vispy_viewbox_resized)  # pyright: ignore
 
         self._snx_set_camera(view.camera)
         self._snx_set_scene(view.scene)
 
-        view.layout.events.all.connect(self._on_layout_changed)
-        self._on_layout_changed()
+        # -- Layout connections -- #
+        self._model.layout.events.background_color.connect(self._set_background_color)
+        # It is vital that whenever the view size changes, we allow the ResizePolicy to
+        # respond. That size can change when (a) the layout changes, or (b) the canvas
+        # resizes. We listen to (a) here and (b) in the vispy canvas adaptor.
+        self._model.layout.events.x_start.connect(self._on_size_changed)
+        self._model.layout.events.x_end.connect(self._on_size_changed)
+        self._model.layout.events.y_start.connect(self._on_size_changed)
+        self._model.layout.events.y_end.connect(self._on_size_changed)
 
-    def _on_vispy_viewbox_resized(self, event: Any) -> None:
-        # Update camera's _from_NDC transform
-        w, h = self._vispy_viewbox.rect.size
-        self._cam_adaptor._set_view(w, h)
+        # -- Initialization -- #
+        self._set_background_color(view.layout.background_color)
+        self._on_size_changed()
 
-    def _on_layout_changed(self, event: Any | None = None) -> None:
-        rect = Rect(self._model.layout.content_rect)
-        self._vispy_viewbox.rect = rect
-        self._vispy_viewbox.update()
-        self._cam_adaptor._set_view(rect.width, rect.height)
-
-    def _snx_get_native(self) -> Any:
-        return self._vispy_viewbox
+    def _on_size_changed(self, event: Any | None = None) -> None:
+        """When the view size changes we need to update the vispy viewbox and camera."""
+        if rect := self._model.content_rect:
+            self._vispy_viewbox.rect = Rect(*rect)
+            self._vispy_viewbox.update()
+            # The camera also needs to be made aware of its new size
+            _, _, w, h = rect
+            self._cam_adaptor._set_view(w, h)
 
     def _snx_set_visible(self, arg: bool) -> None:
         pass
@@ -71,12 +75,6 @@ class View(ViewAdaptor):
         new = cast("_scene.Scene", get_adaptor(scene))._vispy_node
         self._vispy_viewbox._scene = new
         new.parent = self._vispy_viewbox
-
-        # FIXME: Viewbox expects there to always be a Clipper
-        # Let's just copy the old one?
-        if isinstance(prev, vispy.scene.subscene.SubScene):
-            new._clipper = prev.clipper
-            new.clip_children = prev.clip_children
 
         # Add the camera to the scene
         if hasattr(self, "_vispy_cam"):
@@ -96,31 +94,9 @@ class View(ViewAdaptor):
     def _draw(self) -> None:
         self._vispy_viewbox.update()
 
-    def _snx_set_position(self, arg: tuple[float, float]) -> None:
-        raise NotImplementedError()
-
-    def _snx_set_size(self, arg: tuple[float, float] | None) -> None:
-        raise NotImplementedError()
-
-    def _snx_set_border_width(self, arg: float) -> None:
-        warnings.warn(
-            "set_border_width not implemented for vispy", RuntimeWarning, stacklevel=2
-        )
-
-    def _snx_set_border_color(self, arg: Color | None) -> None:
-        warnings.warn(
-            "set_border_color not implemented for vispy", RuntimeWarning, stacklevel=2
-        )
-
-    def _snx_set_padding(self, arg: int) -> None:
-        warnings.warn(
-            "set_padding not implemented for vispy", RuntimeWarning, stacklevel=2
-        )
-
-    def _snx_set_margin(self, arg: int) -> None:
-        warnings.warn(
-            "set_margin not implemented for vispy", RuntimeWarning, stacklevel=2
-        )
+    def _set_background_color(self, color: Color | None) -> None:
+        color_data = None if color is None else color.rgba
+        self._vispy_viewbox.bgcolor = color_data
 
     def _snx_render(self) -> np.ndarray:
         """Render to screenshot."""

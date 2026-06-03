@@ -47,7 +47,7 @@ def test_points_ray_intersection_screen_space() -> None:
 
     # Ray going through the center of the point
     canvas_center = (canvas.width // 2, canvas.height // 2)
-    ray = canvas.to_world(canvas_center)
+    ray = view.to_ray(canvas_center)
     assert ray is not None
     distance = points.passes_through(ray)
     # Should hit the closer point (at distance 1)
@@ -55,14 +55,14 @@ def test_points_ray_intersection_screen_space() -> None:
 
     # Ray going within the point radius should hit
     canvas_offset = (canvas.width // 2 + 1, canvas.height // 2 + 1)
-    ray = canvas.to_world(canvas_offset)
+    ray = view.to_ray(canvas_offset)
     assert ray is not None
     distance = points.passes_through(ray)
     assert distance is not None
 
     # Ray going outside the point radius should miss
     canvas_far = (canvas.width // 2 + 3, canvas.height // 2 + 5)
-    ray = canvas.to_world(canvas_far)
+    ray = view.to_ray(canvas_far)
     assert ray is not None
     distance = points.passes_through(ray)
     assert distance is None
@@ -89,7 +89,7 @@ def test_points_ray_intersection_world_space() -> None:
 
     # Ray going through the center of the points
     canvas_center = (canvas.width // 2, canvas.height // 2)
-    ray = canvas.to_world(canvas_center)
+    ray = view.to_ray(canvas_center)
     assert ray is not None
     distance = points.passes_through(ray)
     # Should hit the center of the point
@@ -99,7 +99,7 @@ def test_points_ray_intersection_world_space() -> None:
 
     # Ray going slightly off center but within radius should hit
     canvas_offset = (canvas.width // 2 + 10, canvas.height // 2)
-    ray = canvas.to_world(canvas_offset)
+    ray = view.to_ray(canvas_offset)
     assert ray is not None
     distance = points.passes_through(ray)
     # The actual intersection distance will vary based on the offset
@@ -108,7 +108,7 @@ def test_points_ray_intersection_world_space() -> None:
 
     # Ray going far off should miss
     canvas_far = (canvas.width // 4 - 1, canvas.height // 2)
-    ray = canvas.to_world(canvas_far)
+    ray = view.to_ray(canvas_far)
     assert ray is not None
     distance = points.passes_through(ray)
     assert distance is None
@@ -136,14 +136,14 @@ def test_points_ray_intersection_transformed() -> None:
 
     # Ray going through the center should hit
     canvas_center = (canvas.width // 2, canvas.height // 2)
-    ray = canvas.to_world(canvas_center)
+    ray = view.to_ray(canvas_center)
     assert ray is not None
     distance = points.passes_through(ray)
     assert distance is not None and np.isclose(distance, 2)
 
     # Ray going off center should miss
     canvas_offset = (canvas.width // 2 + 10, canvas.height // 2 + 10)
-    ray = canvas.to_world(canvas_offset)
+    ray = view.to_ray(canvas_offset)
     assert ray is not None
     distance = points.passes_through(ray)
     assert distance is None
@@ -158,7 +158,7 @@ def test_points_ray_intersection_edge_cases() -> None:
     view = snx.View(scene=snx.Scene(children=[empty_points]))
     canvas = snx.Canvas(views=[view])
 
-    ray = canvas.to_world((canvas.width // 2, canvas.height // 2))
+    ray = view.to_ray((canvas.width // 2, canvas.height // 2))
     assert ray is not None
     distance = empty_points.passes_through(ray)
     assert distance is None
@@ -181,7 +181,7 @@ def test_points_ray_intersection_edge_cases() -> None:
 
     # Should hit due to larger effective radius (size/2 + edge_width = 1 + 2 = 3)
     canvas_offset = (canvas.width // 2 + 2, canvas.height // 2)
-    ray = canvas.to_world(canvas_offset)
+    ray = view.to_ray(canvas_offset)
     assert ray is not None
     distance = points_with_edge.passes_through(ray)
     assert distance is not None

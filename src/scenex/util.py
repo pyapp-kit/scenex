@@ -14,7 +14,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable, Iterable
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol, cast
 
 from scenex import model
 from scenex.app import app
@@ -22,6 +22,9 @@ from scenex.utils import projections
 
 if TYPE_CHECKING:
     from typing import TypeAlias
+
+    from scenex.adaptors._base import CanvasAdaptor
+    from scenex.app._auto import CursorType
 
     Tree: TypeAlias = str | dict[str, list["Tree"]]
 
@@ -170,24 +173,59 @@ def show(
             scene = model.Scene(children=[obj])
             view = model.View(scene=scene)
 
-        canvas = model.Canvas(
-            # Respect the view size if provided
-            width=int(view.layout.width),
-            height=int(view.layout.height),
-            views=[view],
-        )
+        canvas = model.Canvas()
+        if view:
+            canvas.views.append(view)
 
     canvas.visible = True
     reg = get_adaptor_registry(backend=backend)
     reg.get_adaptor(canvas, create=True)
     app().create_app()
     for view in canvas.views:
-        projections.zoom_to_fit(view, zoom_factor=0.9, preserve_aspect_ratio=True)
+        projections.zoom_to_fit(view, zoom_factor=0.9, letterbox=True)
 
         # logger.debug("SHOW MODEL  %s", tree_repr(view.scene))
         # native_scene = view.scene._get_native()
         # logger.debug("SHOW NATIVE %s", tree_repr(native_scene))
     return canvas
+
+
+def run() -> None:
+    """Start the GUI event loop to display interactive visualizations.
+
+    This function enters the native event loop of the graphics backend, allowing
+    interactive visualizations to respond to user input (mouse, keyboard) and remain
+    visible. The function blocks until the visualization window is closed.
+
+    Call this function after creating and showing your visualizations with `show()`.
+    It is only needed for desktop applications; in Jupyter notebooks, visualizations
+    are displayed automatically without calling `run()`.
+
+    Examples
+    --------
+    Basic usage with a scene:
+        >>> import numpy as np
+        >>> import scenex as snx
+        >>> scene = snx.Scene(
+        ...     children=[snx.Image(data=np.random.rand(100, 100).astype(np.float32))]
+        ... )
+        >>> snx.show(scene)
+        Canvas(...)
+        >>> snx.run()  # Blocks until window is closed
+
+    Create multiple views and run:
+        >>> canvas = snx.Canvas(views=[snx.View(), snx.View()])
+        >>> canvas.visible = True
+        >>> snx.run()
+
+    Notes
+    -----
+    - This function blocks execution until all visualization windows are closed
+    - Not needed in Jupyter notebooks or other interactive environments
+    - Must be called after `show()` has been used to create visualizations
+    - The event loop handles user interactions like pan, zoom, and picking
+    """
+    app().run()
 
 
 def _cls_name_with_id(obj: Any) -> str:
@@ -233,3 +271,27 @@ def _get_children(obj: Any) -> Iterable[Any]:
     if (children := getattr(obj, "children", None)) is None:
         return ()
     return _ensure_iterable(children)
+
+
+def set_cursor(canvas: model.Canvas, cursor: CursorType) -> None:
+    """Set the cursor for the given canvas.
+
+    Parameters
+    ----------
+    canvas : model.Canvas
+        The canvas on which to set the cursor.
+    cursor : CursorType
+        The type of cursor to set.
+
+    Notes
+    -----
+    Practically and generally speaking, setting the cursor is an app-level concern.
+    Unfortunately, setting the cursor often requires access to a native widget, meaning
+    any scenex abstractions for setting the cursor will need as input the canvas model
+    or a derivative adaptor. Proper separation of concerns suggests that the app-level
+    API should just take the native widget. This function is a convenience that performs
+    the intermediate steps to get the native widget from a canvas model.
+    """
+    for adaptor in canvas._get_adaptors(create=True):
+        widget = cast("CanvasAdaptor", adaptor)._snx_get_native()
+        app().set_cursor(widget, cursor)

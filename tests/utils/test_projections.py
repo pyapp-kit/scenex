@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from pylinalg import vec_unproject
 
 import scenex as snx
@@ -58,6 +59,24 @@ def test_orthographic() -> None:
     )
     assert np.array_equal(exp_corners, vec_unproject(CORNERS, act_mat))
 
+    # Testing inappropriate values for width, height, depth
+    for i in range(3):
+        args = [1.0, 1.0, 1.0]
+        # Test negative values raise an error
+        args[i] = -1
+        with pytest.raises(ValueError):
+            orthographic(*args)
+        # Test zero values raise an error
+        args[i] = 0
+        with pytest.raises(ValueError):
+            orthographic(*args)
+        # Test extremely small values are replaced with very small values
+        args[i] = 1e-200
+        exp_mat = orthographic(*args)
+        args[i] = 1e-311
+        act_mat = orthographic(*args)
+        assert np.allclose(exp_mat, act_mat, rtol=1e-10)
+
 
 def test_perspective() -> None:
     """Basic testing of the perspective matrix"""
@@ -92,13 +111,13 @@ def test_perspective() -> None:
 def test_zoom_to_fit_orthographic() -> None:
     view = snx.View(
         scene=snx.Scene(
-            children=[snx.Points(vertices=np.asarray([[0, 100, 0], [100, 0, 1]]))]
+            children=[snx.Points(vertices=np.asarray([[0, 100, 0], [100, 0, 0]]))]
         )
     )
 
     zoom_to_fit(view, type="orthographic")
     # Assert the camera is moved to the center of the scene
-    assert view.camera.transform == snx.Transform().translated((50, 50, 0.5))
+    assert view.camera.transform == snx.Transform().translated((50, 50, 0))
     # Projection that maps world space to canvas coordinates
     tform = view.camera.transform.inv() @ view.camera.projection
     # Assert the camera projects [0, 0, 0] to NDC coordinates [-1, -1]
@@ -109,7 +128,7 @@ def test_zoom_to_fit_orthographic() -> None:
     zoom_factor = 0.9
     zoom_to_fit(view, type="orthographic", zoom_factor=zoom_factor)
     # Assert the camera is still at the center of the scene
-    assert view.camera.transform == snx.Transform().translated((50, 50, 0.5))
+    assert view.camera.transform == snx.Transform().translated((50, 50, 0))
     # Projection that maps world space to canvas coordinates
     tform = view.camera.transform.inv() @ view.camera.projection
     # Assert the camera projects [0, 0, 0] to NDC coordinates [-0.9, -0.9]
@@ -122,12 +141,15 @@ def test_zoom_to_fit_orthographic() -> None:
     )
 
 
-def test_zoom_to_fit_orthographic_preserving_aspect_ratio() -> None:
+def test_zoom_to_fit_orthographic_letterbox() -> None:
+    # Put a view on a (square) canvas
+    canvas = snx.Canvas(width=400, height=400)
     view = snx.View(
         scene=snx.Scene(
             children=[snx.Points(vertices=np.asarray([[0, 200, 1], [100, 0, 0]]))]
         )
     )
+    view.canvas = canvas
     # By default, the view is not square
     zoom_to_fit(view, type="orthographic")
     # Assert the camera is moved to the center of the scene
@@ -139,9 +161,9 @@ def test_zoom_to_fit_orthographic_preserving_aspect_ratio() -> None:
     # ...and [100, 200, 0] to NDC coordinates [1, 1]
     assert np.array_equal((1, 1), tform.map((100, 200, 0))[:2])
 
-    # Now with aspect preservation the longer axis (y) should fit exactly, and the
+    # Now with letterbox=True, the longer axis (y) should fit exactly, and the
     # shorter axis (x) should have some padding to maintain aspect ratio
-    zoom_to_fit(view, type="orthographic", preserve_aspect_ratio=True)
+    zoom_to_fit(view, type="orthographic", letterbox=True)
     # Assert the camera is moved to the center of the scene
     assert view.camera.transform == snx.Transform().translated((50, 100, 0.5))
     # Projection that maps world space to canvas coordinates
@@ -196,6 +218,46 @@ def test_zoom_to_fit_perspective() -> None:
     # And assert the entire scene is within the canvas:
     assert np.all(_project(tform, (0, 0, 0)) > _project(tform, (0, 0, 1)))
     assert np.all(_project(tform, (100, 100, 0)) < _project(tform, (100, 100, 1)))
+
+
+def test_zoom_to_fit_perspective_letterbox() -> None:
+    view = snx.View(
+        scene=snx.Scene(
+            children=[snx.Points(vertices=np.asarray([[0, 100, 1], [100, 0, 0]]))]
+        )
+    )
+    # Put the view on a non-square canvas
+    canvas = snx.Canvas(width=800, height=400, views=[view])
+    zoom_to_fit(view, type="perspective", letterbox=True)
+
+    # Assert the camera is moved to the center of the scene
+    # Depth isn't particularly important to test here.
+    assert np.array_equal(
+        view.camera.transform,
+        Transform().translated((50, 50, view.camera.transform.root[3, 2])),
+    )
+    # Projection that maps world space to canvas coordinates
+    tform = view.camera.projection @ view.camera.transform.inv().T
+    # Assert the camera projects [0, 0, 0] to NDC coordinates [-1, -1]
+    assert np.allclose((-1, -1), _project(tform, (-50, 0, 1))[:2])
+    # ...and [100, 100, 0] to NDC coordinates [1, 1]
+    assert np.allclose((1, 1), _project(tform, (150, 100, 1))[:2])
+
+    # Now, do the same thing but with height > width
+    canvas.size = (400, 800)
+    zoom_to_fit(view, type="perspective", letterbox=True)
+    # Assert the camera is moved to the center of the scene
+    # Depth isn't particularly important to test here.
+    assert np.array_equal(
+        view.camera.transform,
+        Transform().translated((50, 50, view.camera.transform.root[3, 2])),
+    )
+    # Projection that maps world space to canvas coordinates
+    tform = view.camera.projection @ view.camera.transform.inv().T
+    # Assert the camera projects [0, 0, 0] to NDC coordinates [-1, -1]
+    assert np.allclose((-1, -1), _project(tform, (0, -50, 1))[:2])
+    # ...and [100, 100, 0] to NDC coordinates [1, 1]
+    assert np.allclose((1, 1), _project(tform, (100, 150, 1))[:2])
 
 
 def _project(mat: snx.Transform, world_pos: tuple[float, float, float]) -> np.ndarray:

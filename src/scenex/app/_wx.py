@@ -4,11 +4,17 @@ from concurrent.futures import Future
 from typing import TYPE_CHECKING, Any, cast
 
 import wx
+from app_model.types import KeyBinding, SimpleKeyBinding
 
 from scenex.app._auto import App, CursorType
+from scenex.app._wx_keymap import wxevent2modelkey
 from scenex.app.events._events import (
+    Event,
     EventFilter,
+    KeyPressEvent,
+    KeyReleaseEvent,
     MouseButton,
+    MouseDoublePressEvent,
     MouseEnterEvent,
     MouseLeaveEvent,
     MouseMoveEvent,
@@ -21,64 +27,71 @@ from scenex.app.events._events import (
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from scenex import Canvas
-    from scenex.adaptors._base import CanvasAdaptor
     from scenex.app._auto import P, T
 
 
 class WxEventFilter(EventFilter):
     def __init__(
         self,
-        canvas: wx.Window,
-        model_canvas: Canvas,
+        widget: wx.Window,
+        handler: Callable[[Event], bool],
     ) -> None:
-        self._canvas = canvas
-        self._model_canvas = model_canvas
-        self._active_button: MouseButton = MouseButton.NONE
+        self._widget = widget
+        self._handler = handler
         self._install_events()
 
     def _install_events(self) -> None:
-        self._canvas.Bind(wx.EVT_LEFT_DOWN, handler=self._on_mouse_down)
-        self._canvas.Bind(wx.EVT_LEFT_UP, handler=self._on_mouse_up)
-        self._canvas.Bind(wx.EVT_RIGHT_DOWN, handler=self._on_mouse_down)
-        self._canvas.Bind(wx.EVT_RIGHT_UP, handler=self._on_mouse_up)
-        self._canvas.Bind(wx.EVT_MIDDLE_DOWN, handler=self._on_mouse_down)
-        self._canvas.Bind(wx.EVT_MIDDLE_UP, handler=self._on_mouse_up)
-        self._canvas.Bind(wx.EVT_MOTION, handler=self._on_mouse_move)
-        self._canvas.Bind(wx.EVT_MOUSEWHEEL, handler=self._on_wheel)
-        self._canvas.Bind(wx.EVT_LEAVE_WINDOW, handler=self._on_leave_window)
-        self._canvas.Bind(wx.EVT_ENTER_WINDOW, handler=self._on_enter_window)
-        self._canvas.Bind(wx.EVT_SIZE, handler=self._on_resize)
+        self._widget.Bind(wx.EVT_LEFT_DOWN, handler=self._on_mouse_down)
+        self._widget.Bind(wx.EVT_LEFT_UP, handler=self._on_mouse_up)
+        self._widget.Bind(wx.EVT_RIGHT_DOWN, handler=self._on_mouse_down)
+        self._widget.Bind(wx.EVT_RIGHT_UP, handler=self._on_mouse_up)
+        self._widget.Bind(wx.EVT_MIDDLE_DOWN, handler=self._on_mouse_down)
+        self._widget.Bind(wx.EVT_MIDDLE_UP, handler=self._on_mouse_up)
+        self._widget.Bind(wx.EVT_LEFT_DCLICK, handler=self._on_left_dclick)
+        self._widget.Bind(wx.EVT_RIGHT_DCLICK, handler=self._on_right_dclick)
+        self._widget.Bind(wx.EVT_MIDDLE_DCLICK, handler=self._on_middle_dclick)
+        self._widget.Bind(wx.EVT_MOTION, handler=self._on_mouse_move)
+        self._widget.Bind(wx.EVT_MOUSEWHEEL, handler=self._on_wheel)
+        self._widget.Bind(wx.EVT_LEAVE_WINDOW, handler=self._on_leave_window)
+        self._widget.Bind(wx.EVT_ENTER_WINDOW, handler=self._on_enter_window)
+        self._widget.Bind(wx.EVT_SIZE, handler=self._on_resize)
+        self._widget.Bind(wx.EVT_KEY_DOWN, handler=self._on_key_down)
+        self._widget.Bind(wx.EVT_KEY_UP, handler=self._on_key_up)
 
     def uninstall(self) -> None:
-        self._canvas.Unbind(wx.EVT_LEFT_DOWN)
-        self._canvas.Unbind(wx.EVT_LEFT_UP)
-        self._canvas.Unbind(wx.EVT_RIGHT_DOWN)
-        self._canvas.Unbind(wx.EVT_RIGHT_UP)
-        self._canvas.Unbind(wx.EVT_MIDDLE_DOWN)
-        self._canvas.Unbind(wx.EVT_MIDDLE_UP)
-        self._canvas.Unbind(wx.EVT_MOTION)
-        self._canvas.Unbind(wx.EVT_MOUSEWHEEL)
-        self._canvas.Unbind(wx.EVT_SIZE)
+        self._widget.Unbind(wx.EVT_LEFT_DOWN)
+        self._widget.Unbind(wx.EVT_LEFT_UP)
+        self._widget.Unbind(wx.EVT_RIGHT_DOWN)
+        self._widget.Unbind(wx.EVT_RIGHT_UP)
+        self._widget.Unbind(wx.EVT_MIDDLE_DOWN)
+        self._widget.Unbind(wx.EVT_MIDDLE_UP)
+        self._widget.Unbind(wx.EVT_LEFT_DCLICK)
+        self._widget.Unbind(wx.EVT_RIGHT_DCLICK)
+        self._widget.Unbind(wx.EVT_MIDDLE_DCLICK)
+        self._widget.Unbind(wx.EVT_MOTION)
+        self._widget.Unbind(wx.EVT_MOUSEWHEEL)
+        self._widget.Unbind(wx.EVT_LEAVE_WINDOW)
+        self._widget.Unbind(wx.EVT_ENTER_WINDOW)
+        self._widget.Unbind(wx.EVT_SIZE)
+        self._widget.Unbind(wx.EVT_KEY_DOWN)
+        self._widget.Unbind(wx.EVT_KEY_UP)
 
     def _on_leave_window(self, event: wx.MouseEvent) -> None:
-        self._model_canvas.handle(MouseLeaveEvent())
+        self._handler(MouseLeaveEvent())
         event.Skip()
 
     def _on_enter_window(self, event: wx.MouseEvent) -> None:
         pos = event.GetPosition()
-        if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            self._model_canvas.handle(
-                MouseEnterEvent(
-                    canvas_pos=(pos.x, pos.y),
-                    world_ray=ray,
-                    buttons=self._active_button,
-                )
+        self._handler(
+            MouseEnterEvent(
+                pos=(pos.x, pos.y),
+                buttons=self._get_active_buttons(event),
             )
-            event.Skip()
+        )
+        event.Skip()
 
     def _on_resize(self, event: wx.SizeEvent) -> None:
-        self._model_canvas.handle(
+        self._handler(
             ResizeEvent(
                 width=event.GetSize().GetWidth(),
                 height=event.GetSize().GetHeight(),
@@ -86,79 +99,132 @@ class WxEventFilter(EventFilter):
         )
         event.Skip()
 
-    def _on_mouse_down(self, event: wx.MouseEvent) -> None:
-        btn = self._map_button(event)
-        self._active_button |= btn
+    def _on_left_dclick(self, event: wx.MouseEvent) -> None:
+        # NOTE that wx does not provide the button in the double click event
+        # so we need a separate handler for each button type to know which one
+        # was double-clicked
         pos = event.GetPosition()
-        if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            self._model_canvas.handle(
-                MousePressEvent(canvas_pos=(pos.x, pos.y), world_ray=ray, buttons=btn)
-            )
-            event.Skip()
+        self._handler(
+            MouseDoublePressEvent(pos=(pos.x, pos.y), buttons=MouseButton.LEFT)
+        )
+        event.Skip()
+
+    def _on_right_dclick(self, event: wx.MouseEvent) -> None:
+        # NOTE that wx does not provide the button in the double click event
+        # so we need a separate handler for each button type to know which one
+        # was double-clicked
+        pos = event.GetPosition()
+        self._handler(
+            MouseDoublePressEvent(pos=(pos.x, pos.y), buttons=MouseButton.RIGHT)
+        )
+        event.Skip()
+
+    def _on_middle_dclick(self, event: wx.MouseEvent) -> None:
+        # NOTE that wx does not provide the button in the double click event
+        # so we need a separate handler for each button type to know which one
+        # was double-clicked
+        pos = event.GetPosition()
+        self._handler(
+            MouseDoublePressEvent(pos=(pos.x, pos.y), buttons=MouseButton.MIDDLE)
+        )
+        event.Skip()
+
+    def _on_mouse_down(self, event: wx.MouseEvent) -> None:
+        # Find only the NEW button being pressed
+        btn = self._get_pressed_button(event)
+        pos = event.GetPosition()
+        self._handler(MousePressEvent(pos=(pos.x, pos.y), buttons=btn))
+        event.Skip()
 
     def _on_mouse_up(self, event: wx.MouseEvent) -> None:
-        btn = self._map_button(event)
-        self._active_button &= ~btn
+        btn = self._get_released_button(event)
         pos = event.GetPosition()
-        if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            self._model_canvas.handle(
-                MouseReleaseEvent(
-                    canvas_pos=(pos.x, pos.y),
-                    world_ray=ray,
-                    buttons=btn,
-                )
-            )
-            event.Skip()
+        self._handler(MouseReleaseEvent(pos=(pos.x, pos.y), buttons=btn))
+        event.Skip()
 
     def _on_mouse_move(self, event: wx.MouseEvent) -> None:
         pos = event.GetPosition()
-        if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            self._model_canvas.handle(
-                MouseMoveEvent(
-                    canvas_pos=(pos.x, pos.y),
-                    world_ray=ray,
-                    buttons=self._active_button,
-                )
+        self._handler(
+            MouseMoveEvent(
+                pos=(pos.x, pos.y),
+                buttons=self._get_active_buttons(event),
             )
-            event.Skip()
+        )
+        event.Skip()
 
     def _on_wheel(self, event: wx.MouseEvent) -> None:
         pos = event.GetPosition()
-        if ray := self._model_canvas.to_world((pos.x, pos.y)):
-            if event.GetWheelAxis() == 0:
-                # Vertical Scroll
-                angle_delta = (0, event.GetWheelRotation())
-            else:
-                # Horizontal Scroll
-                angle_delta = (event.GetWheelRotation(), 0)
+        if event.GetWheelAxis() == 0:
+            # Vertical Scroll
+            angle_delta = (0, event.GetWheelRotation())
+        else:
+            # Horizontal Scroll
+            angle_delta = (event.GetWheelRotation(), 0)
 
-            self._model_canvas.handle(
-                WheelEvent(
-                    canvas_pos=(pos.x, pos.y),
-                    world_ray=ray,
-                    buttons=self._active_button,
-                    angle_delta=angle_delta,
-                )
+        self._handler(
+            WheelEvent(
+                pos=(pos.x, pos.y),
+                buttons=self._get_active_buttons(event),
+                angle_delta=angle_delta,
             )
-            event.Skip()
+        )
+        event.Skip()
 
-    def _map_button(self, event: wx.MouseEvent) -> MouseButton:
-        if event.LeftDown() or event.LeftUp():
-            return MouseButton.LEFT
-        if event.RightDown() or event.RightUp():
-            return MouseButton.RIGHT
-        if event.MiddleDown() or event.MiddleUp():
-            return MouseButton.MIDDLE
-        return MouseButton.NONE
+    def _on_key_down(self, event: wx.KeyEvent) -> None:
+        model_key = wxevent2modelkey(event)
+        part = SimpleKeyBinding.from_int(model_key)
+        self._handler(KeyPressEvent(key=KeyBinding(parts=[part])))
+        event.Skip()
+
+    def _on_key_up(self, event: wx.KeyEvent) -> None:
+        model_key = wxevent2modelkey(event)
+        part = SimpleKeyBinding.from_int(model_key)
+        self._handler(KeyReleaseEvent(key=KeyBinding(parts=[part])))
+        event.Skip()
+
+    def _get_active_buttons(self, event: wx.MouseEvent) -> MouseButton:
+        """Map a DOWN wx.MouseEvent to a MouseButton."""
+        button = MouseButton.NONE
+        if event.LeftIsDown():
+            button |= MouseButton.LEFT
+        if event.RightIsDown():
+            button |= MouseButton.RIGHT
+        if event.MiddleIsDown():
+            button |= MouseButton.MIDDLE
+        return button
+
+    def _get_pressed_button(self, event: wx.MouseEvent) -> MouseButton:
+        """Map an UP wx.MouseEvent to a MouseButton."""
+        button = MouseButton.NONE
+        if event.LeftDown():
+            button |= MouseButton.LEFT
+        if event.RightDown():
+            button |= MouseButton.RIGHT
+        if event.MiddleDown():
+            button |= MouseButton.MIDDLE
+        return button
+
+    def _get_released_button(self, event: wx.MouseEvent) -> MouseButton:
+        """Map an MOVE wx.MouseEvent to a MouseButton."""
+        button = MouseButton.NONE
+        if event.LeftUp():
+            button |= MouseButton.LEFT
+        if event.RightUp():
+            button |= MouseButton.RIGHT
+        if event.MiddleUp():
+            button |= MouseButton.MIDDLE
+        return button
 
 
 class WxAppWrap(App):
     """Provider for wxPython."""
 
     def create_app(self) -> Any:
-        if wx.App.Get():
-            return wx.App.Get()
-        return wx.App(False)
+        if (wxapp := wx.App.Get()) is None:
+            wxapp = wx.App(redirect=False)
+
+        self._install_excepthook()
+        return wxapp
 
     def run(self) -> None:
         app = wx.App.Get() or self.create_app()
@@ -172,14 +238,13 @@ class WxAppWrap(App):
 
     def install_event_filter(
         self,
-        canvas: wx.Window,
-        model_canvas: Canvas,
+        widget: wx.Window,
+        handler: Callable[[Event], bool],
     ) -> EventFilter:
-        return WxEventFilter(canvas, model_canvas)
+        return WxEventFilter(widget, handler)
 
-    def show(self, canvas: Canvas, visible: bool) -> None:
-        adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
-        adaptor._snx_get_native().Show(visible)
+    def show(self, native_widget: Any, visible: bool) -> None:
+        native_widget.Show(visible)
         self.process_events()
 
     def process_events(self) -> None:
@@ -188,18 +253,21 @@ class WxAppWrap(App):
 
     def call_later(self, msec: int, func: Callable[[], None]) -> None:
         """Call `func` after `msec` milliseconds."""
-        wx.CallLater(msec, func)
+        if msec == 0:
+            wx.CallAfter(func)
+        else:
+            # NOTE: CallLater requires the main event loop to be running.
+            # If it's not, this probably will not execute.
+            wx.CallLater(msec, func)
 
     def call_in_main_thread(
         self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
     ) -> Future[T]:
         return call_in_main_thread(func, *args, **kwargs)
 
-    def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
-        adaptor = cast("CanvasAdaptor", canvas._get_adaptors(create=True)[0])
-        native = cast("wx.Window", adaptor._snx_get_native())
+    def set_cursor(self, native_widget: Any, cursor: CursorType) -> None:
         # wx Cursor objects are immutable; just set a new one
-        native.SetCursor(self._cursor_to_wx(cursor))
+        cast("wx.Window", native_widget).SetCursor(self._cursor_to_wx(cursor))
 
     def _cursor_to_wx(self, cursor: CursorType) -> wx.Cursor:
         """Convert abstract CursorType to wx.Cursor."""

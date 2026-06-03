@@ -40,14 +40,14 @@ def test_line_ray_intersection() -> None:
 
     # Ray going through the center of the line
     canvas_center = (canvas.width // 2, canvas.height // 2)
-    ray = canvas.to_world(canvas_center)
+    ray = view.to_ray(canvas_center)
     assert ray is not None
     distance = line.passes_through(ray)
     assert distance is not None and np.isclose(distance, 1)
 
     # Ray going through the edge of the line
     canvas_center = (canvas.width, canvas.height // 2)
-    ray = canvas.to_world(canvas_center)
+    ray = view.to_ray(canvas_center)
     assert ray is not None
     distance = line.passes_through(ray)
     # Note that the distance is larger because the line is at z=-1 at this point
@@ -55,14 +55,14 @@ def test_line_ray_intersection() -> None:
 
     # Ray going 1 pixel off center should hit
     canvas_center = (canvas.width // 2, canvas.height // 2 + 1)
-    ray = canvas.to_world(canvas_center)
+    ray = view.to_ray(canvas_center)
     assert ray is not None
     distance = line.passes_through(ray)
     assert distance is not None and np.isclose(distance, 1)
 
     # Ray going 2 pixels off center should miss
     canvas_center = (canvas.width // 2, canvas.height // 2 + 2)
-    ray = canvas.to_world(canvas_center)
+    ray = view.to_ray(canvas_center)
     assert ray is not None
     distance = line.passes_through(ray)
     assert distance is None
@@ -91,14 +91,14 @@ def test_line_ray_intersection_transformed() -> None:
 
     # Ray going through the center of the line should hit
     canvas_center = (canvas.width // 2, canvas.height // 2)
-    ray = canvas.to_world(canvas_center)
+    ray = view.to_ray(canvas_center)
     assert ray is not None
     distance = line.passes_through(ray)
     assert distance is not None and np.isclose(distance, 1)
 
     # Ray going 2 pixels off center should miss
     canvas_center = (canvas.width // 2, canvas.height // 2 + 2)
-    ray = canvas.to_world(canvas_center)
+    ray = view.to_ray(canvas_center)
     assert ray is not None
     distance = line.passes_through(ray)
     assert distance is None
@@ -109,14 +109,14 @@ def test_line_ray_intersection_transformed() -> None:
 
     # Ray going through the center of the line should hit
     canvas_center = (canvas.width // 2, canvas.height // 2)
-    ray = canvas.to_world(canvas_center)
+    ray = view.to_ray(canvas_center)
     assert ray is not None
     distance = line.passes_through(ray)
     assert distance is not None and np.isclose(distance, 1)
 
     # Ray going 2 pixels off center should miss
     canvas_center = (canvas.width // 2, canvas.height // 2 + 2)
-    ray = canvas.to_world(canvas_center)
+    ray = view.to_ray(canvas_center)
     assert ray is not None
     distance = line.passes_through(ray)
     assert distance is None

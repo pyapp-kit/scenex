@@ -21,6 +21,9 @@ Scene
 """.strip()
 
 
+_BACKEND_INTERNAL = frozenset({"Background"})
+
+
 def _obj_name(obj: Any) -> str:
     """Return the name of a backend node object.
     Replace backend names with the corresponding model name.
@@ -32,7 +35,24 @@ def _obj_name(obj: Any) -> str:
         return "Points"
     if name == "SubScene":
         return "Scene"
+    if name in _BACKEND_INTERNAL:
+        return "<BackendInternal>"
     return name
+
+
+def _filter_backend_nodes(tree: Any) -> Any:
+    """Recursively remove backend-internal nodes from a tree_dict result.
+
+    Some backends (e.g. pygfx) automatically add nodes like Background to
+    represent layout properties (background color). These have no counterpart
+    in the scenex model tree, so we filter them out for structural comparisons.
+    """
+    if isinstance(tree, str):
+        return tree
+    return {
+        k: [_filter_backend_nodes(c) for c in v if not (c == "<BackendInternal>")]
+        for k, v in tree.items()
+    }
 
 
 def _child_names(obj: Any) -> list[str]:
@@ -72,7 +92,7 @@ def test_view_tree_matches_native(basic_view: snx.View) -> None:
     native_scene = _native_scene(basic_view.scene)
     view_tree = snx.util.tree_dict(native_scene, obj_name=_obj_name)
     assert isinstance(view_tree, dict)
-    assert model_tree == view_tree
+    assert model_tree == _filter_backend_nodes(view_tree)
 
 
 def test_changing_parent_updates_adaptor() -> None:

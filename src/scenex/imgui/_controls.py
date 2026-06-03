@@ -111,6 +111,9 @@ def add_imgui_controls(view: View) -> None:
     - Mesh node (color, opacity, blending, etc.)
     """
     snx_canvas_model = view.canvas
+    if snx_canvas_model is None:
+        # No canvas to render to
+        return
     try:
         snx_canvas_adaptor = snx_canvas_model._get_adaptors(backend="pygfx")[0]
         snx_view_adaptor = view._get_adaptors(backend="pygfx")[0]
@@ -148,7 +151,7 @@ def add_imgui_controls(view: View) -> None:
 
     @render_canv.request_draw
     def _update() -> None:
-        snx_canvas_adaptor._draw()
+        snx_canvas_adaptor._draw_loop()
         imgui_renderer.render()
 
     class ImguiEventFilter:
@@ -159,7 +162,7 @@ def add_imgui_controls(view: View) -> None:
             # It may capture more events (notably, keypresses).
             # We will have to intercept scenex events here if that occurs
             if isinstance(event, MouseMoveEvent):
-                move_dict = {"x": event.canvas_pos[0], "y": event.canvas_pos[1]}
+                move_dict = {"x": event.pos[0], "y": event.pos[1]}
                 imgui_renderer._on_mouse_move(move_dict)
                 if move_dict.get("stop_propagation", False):
                     return True

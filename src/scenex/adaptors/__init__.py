@@ -65,7 +65,7 @@ scenex.use : Function to select rendering backend
 scenex.show : Function that creates adaptors
 """
 
-from ._auto import get_adaptor_registry, get_all_adaptors, run, use
+from ._auto import get_adaptor_registry, get_all_adaptors, use
 from ._base import Adaptor
 from ._registry import AdaptorRegistry
 
@@ -74,6 +74,5 @@ __all__ = [
     "AdaptorRegistry",
     "get_adaptor_registry",
     "get_all_adaptors",
-    "run",
     "use",
 ]

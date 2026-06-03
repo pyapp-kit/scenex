@@ -80,7 +80,7 @@ class EventedList(MutableSequence[_T]):
         if value is old:
             return
 
-        self._list[key] = value  # type: ignore [index,assignment]
+        self._list[key] = value  # type: ignore [index]
         self.item_changed.emit(key, value, old)
 
     def __delitem__(self, key: SupportsIndex | slice) -> None:

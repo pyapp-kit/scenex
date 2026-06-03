@@ -7,6 +7,10 @@ camera controllers, etc. to respond to input in a framework-agnostic way.
 
 Event Types
 -----------
+**Keyboard Events**:
+    - KeyPressEvent: Key pressed
+    - KeyReleaseEvent: Key released
+
 **Mouse Events**:
     - MousePressEvent: Mouse button pressed
     - MouseReleaseEvent: Mouse button released
@@ -67,6 +71,9 @@ scenex.model.View : View with event filter support
 from ._events import (
     Event,
     EventFilter,
+    KeyEvent,
+    KeyPressEvent,
+    KeyReleaseEvent,
     MouseButton,
     MouseDoublePressEvent,
     MouseEnterEvent,
@@ -83,6 +90,9 @@ from ._events import (
 __all__ = [
     "Event",
     "EventFilter",
+    "KeyEvent",
+    "KeyPressEvent",
+    "KeyReleaseEvent",
     "MouseButton",
     "MouseDoublePressEvent",
     "MouseEnterEvent",

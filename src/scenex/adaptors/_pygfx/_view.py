@@ -34,8 +34,17 @@ class View(ViewAdaptor):
 
         self._snx_set_scene(view.scene)
         self._snx_set_camera(view.camera)
-        # TODO: this is needed... but breaks tests until we deal with Layout better.
-        # self._snx_set_background_color(view.layout.background_color)
+
+        # -- Layout components -- #
+        self._background_mat = pygfx.BackgroundMaterial()
+        self._background = pygfx.Background(None, material=self._background_mat)
+        self._pygfx_scene.add(self._background)
+
+        # -- Layout connections -- #
+        self._model.layout.events.background_color.connect(self._set_background_color)
+
+        # -- Layout initialization -- #
+        self._set_background_color(view.layout.background_color)
 
     def _snx_set_visible(self, arg: bool) -> None:
         pass
@@ -49,7 +58,11 @@ class View(ViewAdaptor):
         self._pygfx_cam = self._cam_adaptor._pygfx_node
 
     def _draw(self, renderer: pygfx.renderers.WgpuRenderer) -> None:
-        rect = self._model.layout.content_rect
+        if not (canvas := self._model._canvas):
+            # Can't draw if you don't have a canvas!
+            return
+        # TODO: Cache this
+        rect = canvas.content_rect_for(self._model)
         # FIXME: On Qt, for HiDPI screens, the logical screen size (the rect
         # variable above) can, through rounding error during resizing, become
         # slightly larger than the physical size, which causes pygfx to error.
@@ -67,28 +80,9 @@ class View(ViewAdaptor):
 
         renderer.render(self._pygfx_scene, self._pygfx_cam, rect=rect, flush=False)
 
-    def _snx_set_position(self, arg: tuple[float, float]) -> None:
-        logger.warning("View.set_position not implemented for pygfx")
-
-    def _snx_set_size(self, arg: tuple[float, float] | None) -> None:
-        logger.warning("Ignoring View.set_size(None): Don't know how to handle this...")
-
-    def _snx_set_background_color(self, color: Color | None) -> None:
-        colors = (color.rgba,) if color is not None else ()
-        background = pygfx.Background(None, material=pygfx.BackgroundMaterial(*colors))
-        self._pygfx_scene.add(background)
-
-    def _snx_set_border_width(self, arg: float) -> None:
-        logger.warning("View.set_border_width not implemented for pygfx")
-
-    def _snx_set_border_color(self, arg: Color | None) -> None:
-        logger.warning("View.set_border_color not implemented for pygfx")
-
-    def _snx_set_padding(self, arg: int) -> None:
-        logger.warning("View.set_padding not implemented for pygfx")
-
-    def _snx_set_margin(self, arg: int) -> None:
-        logger.warning("View.set_margin not implemented for pygfx")
+    def _set_background_color(self, color: Color | None) -> None:
+        rgba = color.rgba if color is not None else (0, 0, 0, 0)
+        self._background_mat.set_colors(rgba)
 
     def _snx_render(self) -> np.ndarray:
         """Render to offscreen buffer."""

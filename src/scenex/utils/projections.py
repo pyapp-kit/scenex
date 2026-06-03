@@ -26,16 +26,16 @@ def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Trans
     Parameters
     ----------
     width: float, optional
-        The width of the camera rectangular prism. Default 1 (mirroring the side length
-        of a unit cube).
+        The width of the camera rectangular prism. Must be positive. Default 1
+        (mirroring the side length of a unit cube).
     height: float, optional
-        The height of the camera rectangular prism. Default 1 (mirroring the side length
-        of a unit cube).
+        The height of the camera rectangular prism. Must be positive. Default 1
+        (mirroring the side length of a unit cube).
     depth: float, optional
-        The depth of the camera rectangular prism. The near and far clipping planes of
-        the resulting matrix become (-depth / 2) and (depth / 2) respectively. Default
-        1, increase (to render things farther away) or decrease (to increase
-        performance) as needed.
+        The depth of the camera rectangular prism. Must be positive. The near and far
+        clipping planes of the resulting matrix become (-depth / 2) and (depth / 2)
+        respectively. Default 1, increase (to render things farther away) or decrease
+        (to increase performance) as needed.
 
         TODO: Is this a good default? May want to consider some large number (1000?)
         instead
@@ -45,9 +45,14 @@ def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Trans
     projection: Transform
         A Transform matrix creating an orthographic camera view
     """
-    width = width if width else 1e-6
-    height = height if height else 1e-6
-    depth = depth if depth else 1e-6
+    if any(arg <= 0 for arg in (width, height, depth)):
+        # Negative values would flip the view, an unlikely user intention.
+        # But it could be allowed if there's a good reason...
+        raise ValueError("Orthographic projection parameters must be positive.")
+    # REALLY small values could cause overflow in division, so we clamp to a min value.
+    width = max(width, 1e-200)
+    height = max(height, 1e-200)
+    depth = max(depth, 1e-200)
     return Transform().scaled((2 / width, 2 / height, -2 / depth))
 
 
@@ -97,7 +102,7 @@ def zoom_to_fit(
     view: View,
     type: Literal["perspective", "orthographic"] = "orthographic",
     zoom_factor: float = 1.0,
-    preserve_aspect_ratio: bool = False,
+    letterbox: bool = False,
 ) -> None:
     """Adjusts the Camera to fit the entire scene.
 
@@ -114,40 +119,72 @@ def zoom_to_fit(
         approaches 0, the scene will linearly decrease in size. As the zoom factor
         increases beyond 1.0, the bounds of the scene will expand linearly beyond the
         view.
-    preserve_aspect_ratio: bool
-        Whether to apply aspect ratio correction to prevent distortion. When True,
+    letterbox: bool
+        Whether to letterbox/pillarbox to prevent anisotropic distortion. When True,
         squares will appear as squares regardless of view dimensions. When False,
         content may be stretched to fill the view. Default False.
-
-        FIXME: Is this the correct name for this behavior?
     """
     bb = view.scene.bounding_box
     center = np.mean(bb, axis=0) if bb else (0, 0, 0)
-    w, h, d = np.ptp(bb, axis=0) if bb else (1, 1, 1)
+    # Note that the np.maximum avoids bounding boxes with zero width, height, or depth.
+    # These wouldn't really be boxes, and would cause division by zero errors in
+    # projection matrix calculations
+    w, h, d = np.maximum(np.ptp(bb, axis=0) if bb else (1, 1, 1), 1e-6)
 
-    # Apply aspect ratio correction only if requested
-    if preserve_aspect_ratio:
-        aspect_ratio = view.layout.width / view.layout.height
-        if aspect_ratio is not None:
-            if w / h > aspect_ratio:
-                h = w / aspect_ratio
-            else:
-                w = h * aspect_ratio
     if type == "orthographic":
+        if letterbox:
+            # The scene has aspect w:h. If that doesn't match the viewport's aspect
+            # ratio ar, setting the orthographic frustum to those values will distort
+            # world-space squares. We can correct this distortion by expanding whichever
+            # dimension is too small to make w:h == ar. This is kinda like letterboxing,
+            # except you'll see extra scene background instead of black bars.
+            if (ar := _aspect_ratio(view)) is not None:
+                if w / h > ar:  # scene wider than view - expand height
+                    h = w / ar
+                else:  # scene taller than view - expand width
+                    w = h * ar
         view.camera.transform = Transform().translated(center)
         view.camera.projection = orthographic(w, h, d).scaled([zoom_factor] * 3)
     elif type == "perspective":
-        # Compute the distance a to the near plane of the frustum using a default fov
-        o = max(w, h) / 2
         fov = 70
+        # First, we need to figure out how far away to place the camera so that the
+        # entire scene fits within the frustum defined by the FOV. Calculation borrowed
+        # from
+        # https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
+        if letterbox and (ar := _aspect_ratio(view)) is not None:
+            # perspective() produces a square frustum (equal x/y FOV). If the viewport
+            # isn't square, world-space squares will appear distorted. We correct this
+            # by adjusting two different camera parameters. First, if the scene is wider
+            # than the viewport, our distance will actually have to increased based on
+            # that view aspect ratio.
+            o = max(h, w / ar) / 2
+        else:
+            o = max(w, h) / 2
         a = o / tan(fov * pi / 360) / zoom_factor
 
-        # So that the bounding cube's front plane is mapped to the canvas,
-        # the camera must be a units away from the front plane (at z=(center[2] + d/2))
+        # Place the camera so the bounding box's front face (z = center[2] + d/2)
+        # maps to the near plane of the frustum.
         z_bound = center[2] + (d / 2) + a
         view.camera.transform = Transform().translated((center[0], center[1], z_bound))
-        # Note that the near and far planes are set to reasonable defaults.
-        # TODO: Consider making these parameters
-        view.camera.projection = perspective(fov, near=1, far=1_000_000)
+        proj = perspective(fov, near=1, far=1_000_000)
+        if letterbox and (ar := _aspect_ratio(view)) is not None:
+            # Second, if the viewport is non-square, we'll have to adjust our (square)
+            # projection matrix to reflect the non-square viewport. The result is kinda
+            # like letterboxing, except you'll see extra scene background instead of
+            # black bars.
+            proj = proj.scaled((1.0 / ar, 1.0, 1.0))
+        view.camera.projection = proj
     else:
         raise TypeError(f"Unrecognized projection type: {type}")
+
+
+def _aspect_ratio(view: View) -> float | None:
+    if not (canvas := view._canvas):
+        # If the view isn't attached to a canvas, we can't get viewport dimensions, and
+        # can't compute an aspect ratio.
+        return None
+    _, _, pw, ph = canvas.rect_for(view)
+    if pw <= 0 or ph <= 0:
+        # If the view has non-positive dimensions, we can't compute an aspect ratio.
+        return None
+    return pw / ph

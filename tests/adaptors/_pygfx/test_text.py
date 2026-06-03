@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import cmap
 import numpy as np
+import pygfx.materials
 import pytest
 
 import scenex as snx
@@ -15,6 +16,7 @@ def text() -> snx.Text:
         text="Hello, World!",
         color=cmap.Color("red"),
         size=12,
+        antialias=False,
     )
 
 
@@ -23,6 +25,17 @@ def adaptor(text: snx.Text) -> adaptors.Text:
     adaptor = get_adaptor_registry().get_adaptor(text, create=True)
     assert isinstance(adaptor, adaptors.Text)
     return adaptor
+
+
+def test_antialias(text: snx.Text, adaptor: adaptors.Text) -> None:
+    mat = adaptor._pygfx_node.material
+    assert isinstance(mat, pygfx.materials.TextMaterial)
+    # Initial state
+    assert not text.antialias
+    assert mat.aa == text.antialias
+    # Change antialias
+    text.antialias = True
+    assert mat.aa
 
 
 def test_data(text: snx.Text, adaptor: adaptors.Text) -> None:

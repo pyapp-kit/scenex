@@ -3,20 +3,25 @@ from __future__ import annotations
 import importlib
 import os
 import sys
+import threading
+import traceback
+from abc import ABC, abstractmethod
 from collections import OrderedDict
 from concurrent.futures import Executor, Future, ThreadPoolExecutor
+from contextlib import suppress
 from enum import Enum, auto
 from functools import cache, wraps
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
+    from types import TracebackType
     from typing import Any
 
+    import pydevd  # type: ignore[import-untyped]
     from typing_extensions import ParamSpec, TypeVar
 
-    from scenex.app.events._events import EventFilter
-    from scenex.model import Canvas
+    from scenex.app.events._events import Event, EventFilter
 
     T = TypeVar("T")
     P = ParamSpec("P")
@@ -90,14 +95,14 @@ class CursorType(Enum):
     Set a crosshair cursor during drawing mode:
         >>> import scenex as snx
         >>> canvas = snx.Canvas()
-        >>> app().set_cursor(canvas, CursorType.CROSS)
+        >>> snx.set_cursor(canvas, CursorType.CROSS)  # doctest: +SKIP
 
     Restore default cursor after operation:
-        >>> app().set_cursor(canvas, CursorType.DEFAULT)
+        >>> snx.set_cursor(canvas, CursorType.DEFAULT)  # doctest: +SKIP
 
     See Also
     --------
-    App.set_cursor : Method to set cursor on a canvas
+    snx.set_cursor : Function to set cursor on a canvas
     """
 
     DEFAULT = auto()
@@ -109,7 +114,81 @@ class CursorType(Enum):
     FDIAG_ARROW = auto()
 
 
-class App:
+# -------------------- Exception handling --------------------
+DEBUG_EXCEPTIONS = "SCENEX_DEBUG_EXCEPTIONS"
+"""Whether to drop into a debugger when an exception is raised. Default False."""
+
+EXIT_ON_EXCEPTION = "SCENEX_EXIT_ON_EXCEPTION"
+"""Whether to exit the application when an exception is raised. Default False."""
+
+
+def _print_exception(
+    exc_type: type[BaseException],
+    exc_value: BaseException,
+    exc_traceback: TracebackType | None,
+) -> None:
+    try:
+        # Use rich if we have it...
+        import psygnal
+        from rich.console import Console
+        from rich.traceback import Traceback
+
+        tb = Traceback.from_exception(
+            exc_type, exc_value, exc_traceback, suppress=[psygnal], max_frames=10
+        )
+        Console(stderr=True).print(tb)
+    except ImportError:
+        # ...or traceback if we don't
+        traceback.print_exception(exc_type, value=exc_value, tb=exc_traceback)
+
+
+def _scenex_excepthook(
+    exc_type: type[BaseException], exc_value: BaseException, tb: TracebackType | None
+) -> None:
+    # Render the exception to stderr
+    _print_exception(exc_type, exc_value, tb)
+    if not tb:
+        return
+
+    # If we're running with debugpy and pydevd...
+    if (
+        (debugpy := sys.modules.get("debugpy"))
+        and debugpy.is_client_connected()
+        and ("pydevd" in sys.modules)
+        and (py_db := _pydevd_debugger())
+    ):
+        # pause at the spot of the error
+        with suppress(Exception):
+            thread = threading.current_thread()
+            additional_info = py_db.set_additional_thread_info(thread)
+            additional_info.is_tracing += 1
+
+            try:
+                arg = (exc_type, exc_value, tb)
+                py_db.stop_on_unhandled_exception(py_db, thread, additional_info, arg)
+            finally:
+                additional_info.is_tracing -= 1
+    # Otherwise, if we're running with SCENEX_DEBUG_EXCEPTIONS, drop into pdb
+    elif os.getenv(DEBUG_EXCEPTIONS) in ("1", "true", "True"):
+        import pdb
+
+        pdb.post_mortem(tb)
+
+    # Finally, exit if the environment variable suggests we should
+    if os.getenv(EXIT_ON_EXCEPTION) in ("1", "true", "True"):
+        print(f"\n{EXIT_ON_EXCEPTION} is set, exiting.")
+        sys.exit(1)
+
+
+def _pydevd_debugger() -> pydevd.PyDB | None:
+    with suppress(Exception):
+        import pydevd
+
+        return pydevd.get_global_debugger()
+    return None
+
+
+class App(ABC):
     """Base class for GUI application wrappers.
 
     App provides an abstract interface for integrating scenex with different GUI
@@ -133,6 +212,7 @@ class App:
     determine_app : Function to determine which GUI backend to use
     """
 
+    @abstractmethod
     def create_app(self) -> Any:
         """Create the application instance, if not already created.
 
@@ -149,8 +229,9 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
+    @abstractmethod
     def run(self) -> None:
         """Start the application event loop.
 
@@ -162,15 +243,16 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
-    def show(self, canvas: Canvas, visible: bool) -> None:
-        """Show or hide a canvas window.
+    @abstractmethod
+    def show(self, native_widget: Any, visible: bool) -> None:
+        """Show or hide a native canvas widget.
 
         Parameters
         ----------
-        canvas : Canvas
-            The canvas to show or hide
+        native_widget : Any
+            The backend-specific native canvas widget to show or hide.
         visible : bool
             True to show the canvas window, False to hide it.
 
@@ -178,20 +260,25 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
-    def install_event_filter(self, canvas: Any, model_canvas: Canvas) -> EventFilter:
-        """Install an event filter on a canvas to forward events to the model.
+    @abstractmethod
+    def install_event_filter(
+        self, widget: Any, handler: Callable[[Event], bool]
+    ) -> EventFilter:
+        """Install an event filter on a native widget to forward events to a handler.
 
         Implementations of this method will capture all events given to the native
-        widget, translated them into scenex events, and route them to `model_canvas`.
+        widget, translate them into scenex events, and call ``handler`` with each one.
 
         Parameters
         ----------
-        canvas : Any
+        widget : Any
             The backend-specific native canvas widget.
-        model_canvas : Canvas
-            The scenex Canvas model that should receive events.
+        handler : Callable[[Event], bool]
+            A callable that receives each translated scenex event and returns True if
+            the event was handled (stopping further propagation), False otherwise.
+            Typically ``model_canvas.handle``.
 
         Returns
         -------
@@ -202,8 +289,9 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
+    @abstractmethod
     def process_events(self) -> None:
         """Yields the current thread to process all pending GUI events.
 
@@ -211,7 +299,7 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
     def call_in_main_thread(
         self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
@@ -247,6 +335,7 @@ class App:
         future.set_result(func(*args, **kwargs))
         return future
 
+    @abstractmethod
     def call_later(self, msec: int, func: Callable[[], None]) -> None:
         """Schedule a function to be called after a delay.
 
@@ -261,7 +350,7 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
     def get_executor(self) -> Executor:
         """Return an executor for running tasks in background threads.
@@ -280,20 +369,35 @@ class App:
         """
         return _thread_pool_executor()
 
+    @staticmethod
+    def _install_excepthook() -> None:
+        """Install a custom excepthook.
+
+        This is necessary to prevent the application from closing when an exception
+        is raised.
+        """
+        if sys.excepthook == _scenex_excepthook:
+            # don't install the excepthook more than once
+            return
+        sys._original_excepthook_ = sys.excepthook  # type: ignore[attr-defined]
+        sys.excepthook = _scenex_excepthook
+
     # ------------------------------ cursor API -------------------------------
-    def set_cursor(self, canvas: Canvas, cursor: CursorType) -> None:
-        """Set the cursor for the given canvas.
+
+    @abstractmethod
+    def set_cursor(self, native_widget: Any, cursor: CursorType) -> None:
+        """Set the cursor on a native canvas widget.
 
         Backends override this to translate the abstract cursor into native form.
 
         Parameters
         ----------
-        canvas : Canvas
-            The canvas on which to set the cursor.
+        native_widget : Any
+            The backend-specific native canvas widget.
         cursor : CursorType
             The type of cursor to set.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
 
 @cache

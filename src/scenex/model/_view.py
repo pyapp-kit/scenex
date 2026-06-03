@@ -6,7 +6,11 @@ import logging
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Annotated, Any, Literal, Union, cast
 
+import numpy as np
+import pylinalg as la
 from pydantic import Field, PrivateAttr
+
+from scenex.app.events import Ray
 
 from ._base import EventedBase
 from ._layout import Layout
@@ -15,8 +19,6 @@ from ._nodes.scene import Scene
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-
-    import numpy as np
 
     from scenex import Transform
     from scenex.adaptors._base import ViewAdaptor
@@ -79,39 +81,124 @@ class View(EventedBase):
         default=True, description="Whether the view is visible and should be rendered"
     )
 
+    # Backreference to the canvas displaying this view. Used to make the View size
+    # concrete for canvas intersection and resizing policy computations.
+    # This variable should not be set directly; use the canvas property instead to
+    # ensure proper event connections.
     _canvas: Canvas | None = PrivateAttr(None)
 
     def model_post_init(self, __context: Any) -> None:
         """Post-initialization hook for the model."""
         super().model_post_init(__context)
         self.camera.parent = self.scene
+        # It is vital that whenever the view size changes, we allow the ResizePolicy to
+        # respond. That size can change when (a) the layout changes, or (b) the canvas
+        # resizes. We listen to (a) here and (b) in the canvas setter.
+        self.layout.events.x_start.connect(self._on_size_change)
+        self.layout.events.x_end.connect(self._on_size_change)
+        self.layout.events.y_start.connect(self._on_size_change)
+        self.layout.events.y_end.connect(self._on_size_change)
 
-        # FIXME: Reconnect this when the layout is changed
-        self.layout.events.width.connect(self._on_layout_change)
-        self.layout.events.height.connect(self._on_layout_change)
-
-    def _on_layout_change(self, *args: Any) -> None:
+    def _on_size_change(self, *args: Any) -> None:
         if on_resize := self.on_resize:
             on_resize.handle_resize(self)
 
     @property
-    def canvas(self) -> Canvas:
-        """The canvas that the view is on.
-
-        If one hasn't been created/assigned, a new one is created.
-        """
-        if (canvas := self._canvas) is None:
-            from ._canvas import Canvas
-
-            self.canvas = canvas = Canvas()
-        return canvas
+    def canvas(self) -> Canvas | None:
+        """The canvas that the view is on."""
+        return self._canvas
 
     @canvas.setter
-    def canvas(self, value: Canvas) -> None:
-        self._canvas = value
-        # If this view is not already on the canvas, just add it to the end
-        if self not in value.views:
-            value.views.append(self)
+    def canvas(self, value: Canvas | None) -> None:
+        old, self._canvas = self._canvas, value
+
+        # Disconnect old canvas events
+        if old:
+            old.events.width.disconnect(self._on_size_change)
+            old.events.height.disconnect(self._on_size_change)
+            if self in old.views:
+                old.views.remove(self)
+
+        # Connect new canvas events
+        if self._canvas:
+            self._canvas.events.width.connect(self._on_size_change)
+            self._canvas.events.height.connect(self._on_size_change)
+            if self not in self._canvas.views:
+                self._canvas.views.append(self)
+
+    @property
+    def rect(self) -> tuple[int, int, int, int] | None:
+        """Pixel rect (x, y, width, height) of this view on its canvas.
+
+        None if the view is not on a canvas.
+        """
+        if self._canvas is not None:
+            return self._canvas.rect_for(self)
+        return None
+
+    @property
+    def content_rect(self) -> tuple[int, int, int, int] | None:
+        """Pixel content rect (x, y, width, height) of this view, excluding insets.
+
+        None if the view is not on a canvas.
+        """
+        if self._canvas is not None:
+            return self._canvas.content_rect_for(self)
+        return None
+
+    def _to_ndc(self, view_pos: tuple[float, float]) -> tuple[float, float] | None:
+        """Map a view-relative pixel position to normalized device coordinates (NDC)."""
+        if (rect := self.content_rect) is None:
+            return None
+        _, _, width, height = rect
+        ndc_x = view_pos[0] / width * 2 - 1
+        ndc_y = -(view_pos[1] / height * 2 - 1)
+        return (ndc_x, ndc_y)
+
+    def to_ray(self, canvas_pos: tuple[float, float]) -> Ray | None:
+        """Compute the world-space ray for a canvas position within this view.
+
+        Parameters
+        ----------
+        canvas_pos : tuple[float, float]
+            The (x, y) position in canvas pixel coordinates.
+
+        Returns
+        -------
+        Ray | None
+            The world-space Ray, or None if this view has no canvas.
+
+        Notes
+        -----
+        If ``canvas_pos`` falls outside this view's rectangle, a Ray is still
+        returned — it simply points outside the visible frustum. Callers that
+        need to restrict to within-bounds positions should check
+        ``view.content_rect`` before calling this method.
+        """
+        # We need this view to be on a canvas to make sense of the canvas position.
+        if self._canvas is None:
+            logger.warning(
+                "to_ray() called on a View not attached to a Canvas. "
+                "Canvas coordinates have no meaning without a canvas."
+            )
+            return None
+        # Convert canvas position to view position
+        x, y = self._canvas.content_rect_for(self)[:2]
+        view_pos = (canvas_pos[0] - x, canvas_pos[1] - y)
+        # Convert view position to NDC
+        ndc = self._to_ndc(view_pos)
+        if ndc is None:
+            return None
+        return self._ndc_to_ray(ndc)
+
+    def _ndc_to_ray(self, ndc: tuple[float, float]) -> Ray:
+        """Unproject an NDC position to a world-space Ray through this view."""
+        camera_matrix = self.camera.projection @ self.camera.transform.inv().T
+        pos = la.vec_unproject(ndc, camera_matrix)
+        pos_far = la.vec_unproject(ndc, camera_matrix, depth=1)
+        direction = pos_far - pos
+        direction = direction / np.linalg.norm(direction)
+        return Ray(origin=tuple(pos), direction=tuple(direction), source=self)
 
     def render(self) -> np.ndarray:
         """Render the view to an array."""
@@ -233,7 +320,7 @@ class ResizePolicy(EventedBase):
         view : View
             The view being resized.
         """
-        raise NotImplementedError
+        ...
 
 
 class Letterbox(ResizePolicy):
@@ -295,9 +382,11 @@ class Letterbox(ResizePolicy):
         if view.camera.projection != self._last_adjustment or self._reference is None:
             self._reference = view.camera.projection
 
-        view_width = int(view.layout.width)
-        view_height = int(view.layout.height)
-        if view_height == 0 or self._reference is None:
+        if (view_rect := view.rect) is None or self._reference is None:
+            # Nothing to do.
+            return
+        _, _, view_width, view_height = view_rect
+        if view_height == 0:
             return
 
         # Extract projection scales that define the content aspect ratio

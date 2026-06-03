@@ -86,15 +86,22 @@ class Image(Node):
         if not hasattr(self.data, "shape"):
             raise TypeError(f"{self.data} does not have a shape!")
         shape = self.data.shape
-        mi = [-0.5 for _d in shape] + [0] * (3 - len(shape))
-        ma = [d - 0.5 for d in shape] + [0] * (3 - len(shape))
-        return (tuple(mi), tuple(ma))  # type: ignore
+        min_x = -0.5
+        min_y = -0.5
+        min_z = 0
+        # NOTE: the way this is written works for grayscale and RGB(A) images.
+        max_x = min_x + shape[1]
+        max_y = min_y + shape[0]
+        max_z = min_z
+
+        return ((min_x, min_y, min_z), (max_x, max_y, max_z))
 
     def passes_through(self, ray: Ray) -> float | None:
         mi, _ma = self.bounding_box
         origin = self.transform.map(mi)[:3]
-        u = self.transform.map((self.data.shape[0], 0, 0, 0))[:3]
-        v = self.transform.map((0, self.data.shape[1], 0, 0))[:3]
+        # Note that conventionally, image data is in (Y, X) order.
+        u = self.transform.map((self.data.shape[1], 0, 0, 0))[:3]
+        v = self.transform.map((0, self.data.shape[0], 0, 0))[:3]
         return _passes_through_parallelogram(ray, origin, u, v)
 
 

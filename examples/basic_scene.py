@@ -9,7 +9,7 @@ try:
     from scenex.imgui import add_imgui_controls
 except ImportError:
     print("imgui not available, skipping imgui controls")
-    add_imgui_controls = None  # type: ignore[assignment]
+    add_imgui_controls = None
 
 view = snx.View(
     scene=snx.Scene(

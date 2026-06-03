@@ -34,6 +34,13 @@ class Text(Node):
     size: int = Field(
         default=12, ge=0, description="Font size in pixels, must be non-negative"
     )
+    antialias: bool = Field(
+        default=True,
+        description=(
+            "Whether to apply anti-aliasing to text rendering. The anti-aliasing"
+            " implementation, when enabled, is left to the backend."
+        ),
+    )
 
     @property
     def bounding_box(self) -> AABB:

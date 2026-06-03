@@ -182,6 +182,9 @@ class Node(EventedBase):
             if not isinstance(ch, Node):
                 ch = self._validate_json(ch)
             self.add_child(ch)  # type: ignore [arg-type]
+        if "parent" in data:
+            # ensure parent-child consistency if parent is provided via kwargs
+            self._update_parent_children(self, old_parent=None)
 
     def _validate_json(self, json: Any) -> Node:
         # All nodes in AnyNode must be imported here to fully define the AnyNode type.
@@ -218,6 +221,8 @@ class Node(EventedBase):
 
     def add_child(self, child: AnyNode) -> None:
         """Add a child node to this node."""
+        if child in self._children:
+            return
         self._children.append(child)
         child.parent = cast("AnyNode", self)
         self.child_added.emit(child)
@@ -275,7 +280,7 @@ class Node(EventedBase):
                 new_parent._children.append(cast("AnyNode", node))
                 new_parent.child_added.emit(node)
             if old_parent is not None and node in old_parent._children:
-                old_parent._children.remove(cast("AnyNode", node))
+                old_parent._children.remove(node)
                 old_parent.child_removed.emit(node)
 
     @model_serializer(mode="wrap")
