@@ -1,10 +1,31 @@
+---
+icon: material/home
+---
 # scenex
 
-`scenex` is a library for describing and visualizing scenes. `scenex` is:
+`scenex` is a library for describing and visualizing scenes, with minimal dependencies.
 
-* **Declarative:** FINISH
-* **Evented:** Tap into 
-* **Flexible:** scenes can be visualized using [vispy](https://vispy.org/) or [pygfx](https://docs.pygfx.org/stable/index.html), rendered to widgets in [qtpy](https://github.com/spyder-ide/qtpy), [jupyter](https://jupyter.org/), or [wx](https://wxpython.org/index.html)
+<div class="grid cards cols-3" markdown>
+
+-   :material-pencil-ruler:{ .lg .middle } **Declarative**
+
+    ---
+
+    Scenes are created by [pydantic](https://pydantic.dev/) models that say *what* to show instead of *how* to show it.
+
+-   :material-flash:{ .lg .middle } **Evented**
+
+    ---
+
+    Nodes can react to changes throughout the scene — update your data, and the scene updates with it.
+
+-   :material-puzzle:{ .lg .middle } **Flexible**
+
+    ---
+
+    Visualize with [vispy](https://vispy.org/) or [pygfx](https://docs.pygfx.org/stable/index.html), rendered to widgets in [qtpy](https://github.com/spyder-ide/qtpy), [jupyter](https://jupyter.org/), or [wx](https://wxpython.org/index.html)
+
+</div>
 
 
 ---
@@ -23,13 +44,7 @@ Because `scenex` can run with different visualization and widget backends, it do
     pip install "scenex[pygfx,pyqt6]"
     ```
 
-=== "vispy + Qt"
-
-    ```bash
-    pip install "scenex[vispy,pyqt6]"
-    ```
-
-=== "Jupyter"
+=== "vispy + Jupyter"
 
     ```bash
     pip install "scenex[pygfx,jupyter]"

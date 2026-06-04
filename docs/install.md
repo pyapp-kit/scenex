@@ -1,3 +1,6 @@
+---
+icon: material/download
+---
 # Installation
 
 `scenex` can be used in a variety of contexts. It supports various **GUI
