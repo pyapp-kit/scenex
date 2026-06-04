@@ -94,6 +94,8 @@ test = ["pytest>=8", "pytest-cov>=6"]
 testqt = [{ include-group = "test" }, "pytest-qt >=4.4"]
 testjupyter = [{ include-group = "test" }, "nbval>=0.11.0"]
 docs = [
+    "scenex[pygfx,pyqt6]",
+    "imageio[tifffile] >=2.20",
     "zensical>=0.0.24",
     "mkdocstrings-python>=1.16.10",
 ]
