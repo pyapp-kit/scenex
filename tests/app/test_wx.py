@@ -27,8 +27,6 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
     from typing import Any
 
-    from scenex.adaptors._base import CanvasAdaptor
-
 if determine_app() == GuiFrontend.WX:
     import wx
 else:
@@ -111,8 +109,7 @@ def _processEvent(
 def test_mouse_double_click(
     evented_canvas: snx.Canvas, evt: wx.PyEventBinder, button: MouseButton
 ) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -127,8 +124,7 @@ def test_mouse_double_click_after_press(evented_canvas: snx.Canvas) -> None:
     """Double clicks use <button>IsDown to determine active buttons, which means that we
     need to be careful when handling these events to ensure that the correct button is
     reported when multiple are pressed."""
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -156,8 +152,7 @@ def test_mouse_double_click_after_press(evented_canvas: snx.Canvas) -> None:
 def test_mouse_press(
     evented_canvas: snx.Canvas, evt: wx.PyEventBinder, button: MouseButton
 ) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -169,8 +164,7 @@ def test_mouse_press(
 
 
 def test_mouse_release(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -182,8 +176,7 @@ def test_mouse_release(evented_canvas: snx.Canvas) -> None:
 
 
 def test_multiple_mouse_release(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -205,8 +198,7 @@ def test_multiple_mouse_release(evented_canvas: snx.Canvas) -> None:
 
 
 def test_mouse_move(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -228,8 +220,7 @@ def test_mouse_move(evented_canvas: snx.Canvas) -> None:
 
 
 def test_mouse_wheel(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -241,9 +232,7 @@ def test_mouse_wheel(evented_canvas: snx.Canvas) -> None:
 
 
 def test_resize(evented_canvas: snx.Canvas) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
+    native = snx.native(evented_canvas)
 
     new_size = (400, 300)
     # Note that the widget must be visible for a resize event to fire
@@ -253,8 +242,7 @@ def test_resize(evented_canvas: snx.Canvas) -> None:
 
 
 def test_mouse_enter(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -268,8 +256,7 @@ def test_mouse_enter(evented_canvas: snx.Canvas) -> None:
 
 
 def test_mouse_leave(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -286,8 +273,7 @@ def test_mouse_leave(evented_canvas: snx.Canvas) -> None:
 
 
 def test_set_cursor(evented_canvas: snx.Canvas) -> None:
-    adaptor = cast("CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0])
-    native = cast("wx.Window", adaptor._snx_get_native())
+    native = cast("wx.Window", snx.native(evented_canvas))
     # Wx doesn't really give us a way to assert the right thing happened...
     # ...the best we can do is assert a change.
     old = native.GetCursor()
@@ -296,8 +282,7 @@ def test_set_cursor(evented_canvas: snx.Canvas) -> None:
 
 
 def test_key_event(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
