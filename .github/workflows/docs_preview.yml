@@ -28,10 +28,10 @@ jobs:
 
       - name: Autogenerate examples
         run: |
-          uv run python docs/gen_examples.py
+          uv run --exact --no-dev --extra pygfx --extra pyqt6 --group docs python docs/gen_examples.py
 
       - name: Deploy dev docs
-        run: uv run mike deploy --push --update-aliases zensical
+        run: uv run --exact --no-dev --extra pygfx --extra pyqt6 --group docs mike deploy --push --update-aliases zensical
         env:
           DOCS_DEV: true
           UV_PYTHON: "3.13"
