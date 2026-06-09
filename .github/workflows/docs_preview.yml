@@ -11,7 +11,7 @@ permissions:
 jobs:
   deploy:
     runs-on: macos-latest  # nicer screenshots
-    if: github.repository == 'gjselzer/scenex'
+    if: github.repository == 'gselzer/scenex'
     steps:
       - uses: actions/checkout@v6
         with:
