@@ -11,7 +11,7 @@ icon: material/lightbulb-outline
 
 The module `scenex.models` contains [scenegraph](https://en.wikipedia.org/wiki/Scene_graph) building blocks, written as [pydantic](https://pydantic.dev/) dataclasses augmented with [psygnal](https://psygnal.readthedocs.io/) signals. This combination results in dataclasses with some useful properties:
 
-- **Validation**: node properties are checked on assignment.
+- **Validation**: node properties are checked on assignment - for example:
     - `opacity` can be confined to `[0, 1]`, so bad values raise an error immediately rather than producing subtle visual artifacts.
     - sizes and widths can be confined to non-negative values.
 - **Serialization**: scenegraphs can be serialized to/from JSON, making it straightforward to save or share a complete scenegraph.
