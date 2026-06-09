@@ -1,6 +1,6 @@
 [project]
 site_name = "scenex"
-site_url = "https://pyapp-kit.github.io/scenex/"
+site_url = "https://gselzer.github.io/scenex/"
 site_description = "Declarative scene graph model and backend abstraction."
 repo_name = "pyapp-kit/scenex"
 repo_url = "https://github.com/pyapp-kit/scenex"

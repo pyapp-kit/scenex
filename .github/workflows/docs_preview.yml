@@ -1,0 +1,31 @@
+name: Preview docs on fork
+
+on:
+  push:
+    branches: [zensical]
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Config git
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git fetch origin gh-pages --depth=1 || echo "No gh-pages branch yet"
+
+      - name: Deploy preview docs
+        run: uv run mike deploy --push --update-aliases zensical
+        env:
+          DOCS_DEV: true
+          UV_PYTHON: "3.13"
