@@ -6,12 +6,13 @@ on:
 
 permissions:
   contents: write
+  pages: write
 
 jobs:
   deploy:
     runs-on: macos-latest  # nicer screenshots
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: astral-sh/setup-uv@v7
@@ -22,10 +23,33 @@ jobs:
         run: |
           git config user.name github-actions[bot]
           git config user.email github-actions[bot]@users.noreply.github.com
-          git fetch origin gh-pages --depth=1 || echo "No gh-pages branch yet"
+          git fetch origin gh-pages --depth=1
 
-      - name: Deploy preview docs
-        run: uv run mike deploy --push --update-aliases zensical
+      - name: Autogenerate examples
+        run: |
+          uv run python docs/gen_examples.py
+
+      - name: Deploy release docs
+        run: |
+          VERSION=$(git describe --abbrev=0 --tags)
+          # check if rc or beta release
+          if [[ $VERSION == *"rc"* ]] || [[ $VERSION == *"beta"* ]]; then
+            export DOCS_PRERELEASE=true
+            echo "Deploying pre-release docs"
+            uv run mike deploy --push --update-aliases $VERSION rc
+          else
+            echo "Deploying release docs"
+            uv run mike deploy --push --update-aliases $VERSION latest
+          fi
+        env:
+          DOCS_DEV: false
+          UV_PYTHON: "3.13"
+
+      - name: Deploy dev docs
+        run: uv run mike deploy --push --update-aliases dev
         env:
           DOCS_DEV: true
           UV_PYTHON: "3.13"
+
+      # - name: Update default release docs
+      #   run: mike set-default --push latest
