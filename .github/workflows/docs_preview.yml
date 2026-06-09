@@ -30,24 +30,8 @@ jobs:
         run: |
           uv run python docs/gen_examples.py
 
-      - name: Deploy release docs
-        run: |
-          VERSION=$(git describe --abbrev=0 --tags)
-          # check if rc or beta release
-          if [[ $VERSION == *"rc"* ]] || [[ $VERSION == *"beta"* ]]; then
-            export DOCS_PRERELEASE=true
-            echo "Deploying pre-release docs"
-            uv run mike deploy --push --update-aliases $VERSION rc
-          else
-            echo "Deploying release docs"
-            uv run mike deploy --push --update-aliases $VERSION latest
-          fi
-        env:
-          DOCS_DEV: false
-          UV_PYTHON: "3.13"
-
       - name: Deploy dev docs
-        run: uv run mike deploy --push --update-aliases dev
+        run: uv run mike deploy --push --update-aliases zensical
         env:
           DOCS_DEV: true
           UV_PYTHON: "3.13"
