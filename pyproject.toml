@@ -98,6 +98,8 @@ docs = [
     "imageio[tifffile] >=2.20",
     "zensical>=0.0.24",
     "mkdocstrings-python>=1.16.10",
+    # FIXME: Temp solution: https://zensical.org/docs/setup/versioning/
+    "mike @ git+https://github.com/squidfunk/mike.git",
 ]
 dev = [
     { include-group = "test" },

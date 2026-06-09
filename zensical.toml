@@ -132,3 +132,6 @@ link = "https://github.com/pyapp-kit/scenex"
 [[project.extra.social]]
 icon = "fontawesome/brands/python"
 link = "https://pypi.org/project/scenex/"
+
+[project.extra.version]
+provider = "mike"
