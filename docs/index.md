@@ -76,3 +76,15 @@ img.cmap   = Colormap("viridis")
 img.clims  = (0.2, 0.8)
 img.opacity = 0.7
 ```
+
+## Alternatives
+
+Like any tool, `scenex` is not a panacea. It aims to be **flexible**, describing scenes at a high level and abstracting away graphics primitives, animation loops, etc. *If you need lower-level access, consider using [pygfx](https://pygfx.org), [vispy](https://vispy.org), or [datoviz](https://datoviz.org/) directly.*
+
+The primary focus of `scenex` is rendering **scenes**. While you can render *anything* in a scene, you might get more convenience from alternative visualization tools:
+
+| I want to visualize... | Consider |
+|-|-|
+| plots | [matplotlib](https://matplotlib.org), [fastplotlib](https://www.fastplotlib.org/), [Plotly](https://plotly.com/python/), [Bokeh](https://bokeh.org), [Vega-Altair](https://altair-viz.github.io/) |
+| nD datasets | [napari](https://napari.org) |
+| 3D meshes / geometry | [PyVista](https://pyvista.org), [vedo](https://vedo.embl.es) |
