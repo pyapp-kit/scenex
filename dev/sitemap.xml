@@ -10,6 +10,57 @@
         <loc>https://pyapp-kit.github.io/scenex/dev/theory/</loc>
       </url>
       <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/antialiasing/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/basic_line/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/basic_mesh/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/basic_points/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/basic_scene/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/basic_text/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/basic_volume/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/blending/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/cursor_points/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/draggable_rect/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/event_filters/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/histogram/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/keyboard_pan_zoom/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/multi_view/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/regions/</loc>
+      </url>
+      <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/examples/rgb/</loc>
+      </url>
+      <url>
         <loc>https://pyapp-kit.github.io/scenex/dev/references/</loc>
       </url>
       <url>

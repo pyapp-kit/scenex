@@ -10,34 +10,36 @@
       
       
       
-        <link rel="canonical" href="https://pyapp-kit.github.io/scenex/dev/">
+        <link rel="canonical" href="https://pyapp-kit.github.io/scenex/dev/examples/basic_mesh/">
       
       
+        <link rel="prev" href="../basic_line/">
       
-        <link rel="next" href="./install/">
+      
+        <link rel="next" href="../basic_points/">
       
       
         
       
       
-      <link rel="icon" href="./assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="zensical-0.0.45">
     
     
       
-        <title>scenex - scenex</title>
+        <title>Basic Mesh - scenex</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="./assets/stylesheets/modern/main.fba56155.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.fba56155.min.css">
       
         
           
         
-        <link rel="stylesheet" href="./assets/stylesheets/modern/palette.dfe2e883.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.dfe2e883.min.css">
       
       
 
@@ -56,11 +58,11 @@
       
     
     
-      <link rel="stylesheet" href="./css/extra.css">
+      <link rel="stylesheet" href="../../css/extra.css">
     
-      <link rel="stylesheet" href="./css/install-table.css">
+      <link rel="stylesheet" href="../../css/install-table.css">
     
-    <script>__md_scope=new URL(".",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -85,7 +87,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#scenex" class="md-skip">
+        <a href="#basic-mesh" class="md-skip">
           Skip to content
         </a>
       
@@ -105,7 +107,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="" title="scenex" class="md-header__button md-logo" aria-label="scenex" data-md-component="logo">
+    <a href="../.." title="scenex" class="md-header__button md-logo" aria-label="scenex" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 17c-.13 0-.26 0-.39.04l-1.61-3.25a2.5 2.5 0 0 0-1.75-4.29c-.13 0-.25 0-.39.04l-1.63-3.25c.48-.45.77-1.08.77-1.79a2.5 2.5 0 0 0-5 0c0 .71.29 1.34.76 1.79L8.64 9.54c-.14-.04-.26-.04-.39-.04a2.5 2.5 0 0 0-1.75 4.29l-1.61 3.25C4.76 17 4.63 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.79c.46-.45.75-1.08.75-1.79s-.29-1.34-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21c-.45.45-.75 1.09-.75 1.79a2.5 2.5 0 0 0 2.5 2.5c.13 0 .25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5"/></svg>
@@ -125,7 +127,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              scenex
+              Basic Mesh
             
           </span>
         </div>
@@ -224,7 +226,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="" title="scenex" class="md-nav__button md-logo" aria-label="scenex" data-md-component="logo">
+    <a href="../.." title="scenex" class="md-nav__button md-logo" aria-label="scenex" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 17c-.13 0-.26 0-.39.04l-1.61-3.25a2.5 2.5 0 0 0-1.75-4.29c-.13 0-.25 0-.39.04l-1.63-3.25c.48-.45.77-1.08.77-1.79a2.5 2.5 0 0 0-5 0c0 .71.29 1.34.76 1.79L8.64 9.54c-.14-.04-.26-.04-.39-.04a2.5 2.5 0 0 0-1.75 4.29l-1.61 3.25C4.76 17 4.63 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.79c.46-.45.75-1.08.75-1.79s-.29-1.34-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21c-.45.45-.75 1.09-.75 1.79a2.5 2.5 0 0 0 2.5 2.5c.13 0 .25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5"/></svg>
@@ -251,38 +253,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-  
-  <span class="md-ellipsis">
-    
-  
-  scenex
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -299,60 +273,6 @@
   
 
       </a>
-      
-        
-
-
-<nav class="md-nav md-nav--secondary" aria-label="On this page">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Installation
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Usage
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#alternatives" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Alternatives
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -364,7 +284,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./install/" class="md-nav__link">
+      <a href="../../install/" class="md-nav__link">
         
   
   
@@ -392,7 +312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./theory/" class="md-nav__link">
+      <a href="../../theory/" class="md-nav__link">
         
   
   
@@ -417,6 +337,8 @@
       
   
   
+    
+  
   
   
     
@@ -462,15 +384,15 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="./examples/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -495,7 +417,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -514,7 +436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/antialiasing/" class="md-nav__link">
+      <a href="../antialiasing/" class="md-nav__link">
         
   
   
@@ -541,7 +463,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/basic_line/" class="md-nav__link">
+      <a href="../basic_line/" class="md-nav__link">
         
   
   
@@ -565,10 +487,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="./examples/basic_mesh/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
@@ -583,6 +514,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -595,7 +527,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/basic_points/" class="md-nav__link">
+      <a href="../basic_points/" class="md-nav__link">
         
   
   
@@ -622,7 +554,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/basic_scene/" class="md-nav__link">
+      <a href="../basic_scene/" class="md-nav__link">
         
   
   
@@ -649,7 +581,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/basic_text/" class="md-nav__link">
+      <a href="../basic_text/" class="md-nav__link">
         
   
   
@@ -676,7 +608,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/basic_volume/" class="md-nav__link">
+      <a href="../basic_volume/" class="md-nav__link">
         
   
   
@@ -703,7 +635,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/blending/" class="md-nav__link">
+      <a href="../blending/" class="md-nav__link">
         
   
   
@@ -730,7 +662,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/cursor_points/" class="md-nav__link">
+      <a href="../cursor_points/" class="md-nav__link">
         
   
   
@@ -757,7 +689,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/draggable_rect/" class="md-nav__link">
+      <a href="../draggable_rect/" class="md-nav__link">
         
   
   
@@ -784,7 +716,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/event_filters/" class="md-nav__link">
+      <a href="../event_filters/" class="md-nav__link">
         
   
   
@@ -811,7 +743,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/histogram/" class="md-nav__link">
+      <a href="../histogram/" class="md-nav__link">
         
   
   
@@ -838,7 +770,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/keyboard_pan_zoom/" class="md-nav__link">
+      <a href="../keyboard_pan_zoom/" class="md-nav__link">
         
   
   
@@ -865,7 +797,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/multi_view/" class="md-nav__link">
+      <a href="../multi_view/" class="md-nav__link">
         
   
   
@@ -892,7 +824,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/regions/" class="md-nav__link">
+      <a href="../regions/" class="md-nav__link">
         
   
   
@@ -919,7 +851,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./examples/rgb/" class="md-nav__link">
+      <a href="../rgb/" class="md-nav__link">
         
   
   
@@ -953,7 +885,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./references/" class="md-nav__link">
+      <a href="../../references/" class="md-nav__link">
         
   
   
@@ -981,7 +913,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   
@@ -1019,11 +951,6 @@
                       
                     
                     
-                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-                      <div class="md-sidebar-button__wrapper">
-                        <label class="md-sidebar-button" for="__toc"></label>
-                      </div>
-                    
                   
                   <div class="md-sidebar__inner">
                     
@@ -1035,47 +962,6 @@
   
     
   
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Installation
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Usage
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#alternatives" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Alternatives
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -1093,91 +979,127 @@
   
 
 
-<h1 id="scenex">scenex<a class="headerlink" href="#scenex" title="Permanent link">#</a></h1>
-<p><code>scenex</code> is a library for describing and visualizing scenes, with minimal dependencies.</p>
-<div class="grid cards cols-3">
-<ul>
-<li>
-<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.93l-3.75-3.75zm19.61 1.11-4.25 4.25-5.2-5.2 1.77-1.77 1 1 2.47-2.48 1.42 1.42L18.36 17l1.06 1 1.42-1.4zm-16-7.53L1.39 5.64l4.25-4.25L7.4 3.16 4.93 5.64 6 6.7l2.46-2.48 1.42 1.42-1.42 1.41 1 1zM20.71 7c.39-.39.39-1 0-1.41l-2.34-2.3c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75z"/></svg></span> <strong>Declarative</strong></p>
-<hr />
-<p>Scenes are created by <a href="https://pydantic.dev/">pydantic</a> models that say <em>what</em> to show instead of <em>how</em> to show it.</p>
-</li>
-<li>
-<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg></span> <strong>Evented</strong></p>
-<hr />
-<p>Nodes can react to changes throughout the scene — update your data, and the scene updates with it.</p>
-</li>
-<li>
-<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.5 11H19V7a2 2 0 0 0-2-2h-4V3.5A2.5 2.5 0 0 0 10.5 1 2.5 2.5 0 0 0 8 3.5V5H4a2 2 0 0 0-2 2v3.8h1.5c1.5 0 2.7 1.2 2.7 2.7S5 16.2 3.5 16.2H2V20a2 2 0 0 0 2 2h3.8v-1.5c0-1.5 1.2-2.7 2.7-2.7s2.7 1.2 2.7 2.7V22H17a2 2 0 0 0 2-2v-4h1.5a2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5"/></svg></span> <strong>Flexible</strong></p>
-<hr />
-<p>Visualize with <a href="https://vispy.org/">vispy</a> or <a href="https://docs.pygfx.org/stable/index.html">pygfx</a>, rendered to widgets in <a href="https://github.com/spyder-ide/qtpy">qtpy</a>, <a href="https://jupyter.org/">jupyter</a>, or <a href="https://wxpython.org/index.html">wx</a></p>
-</li>
-</ul>
-</div>
-<hr />
-<div class="admonition warning">
-<p class="admonition-title">In development</p>
-<p>scenex is a work in progress.  The public API may change between releases.</p>
-</div>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p>Because <code>scenex</code> can run with different visualization and widget backends, it doesn't ship with any backends by default. You can install the backends you'll like to use with extras:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">pygfx + Qt</label><label for="__tabbed_1_2">vispy + Jupyter</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1">pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;scenex[pygfx,pyqt6]&quot;</span>
+<h1 id="basic-mesh">Basic Mesh<a class="headerlink" href="#basic-mesh" title="Permanent link">#</a></h1>
+<p>Interactive mesh example demonstrating ColorModel subclasses.</p>
+<p>This example shows:
+- Per-vertex coloring with VertexColors (gradient based on position)
+- Uniform coloring with UniformColor (solid purple)
+- Interactive face removal on mouse hover
+- Cycling between color models with right-click
+- Mesh reset on left-click</p>
+<p>The mesh starts with per-vertex colors creating a colorful gradient. Right-clicking
+toggles between per-vertex and uniform coloring modes.</p>
+<p><img alt="Screenshot of Basic Mesh" src="../images/basic_mesh.png" /></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><span class="kn">import</span><span class="w"> </span><span class="nn">cmap</span>
+</span><span id="__span-0-2"><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="__span-0-3">
+</span><span id="__span-0-4"><span class="kn">import</span><span class="w"> </span><span class="nn">scenex</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">snx</span>
+</span><span id="__span-0-5"><span class="kn">from</span><span class="w"> </span><span class="nn">scenex.app.events</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="__span-0-6">    <span class="n">Event</span><span class="p">,</span>
+</span><span id="__span-0-7">    <span class="n">MouseButton</span><span class="p">,</span>
+</span><span id="__span-0-8">    <span class="n">MouseMoveEvent</span><span class="p">,</span>
+</span><span id="__span-0-9">    <span class="n">MousePressEvent</span><span class="p">,</span>
+</span><span id="__span-0-10"><span class="p">)</span>
+</span><span id="__span-0-11">
+</span><span id="__span-0-12">
+</span><span id="__span-0-13"><span class="c1"># Create a more complex mesh - a grid of vertices</span>
+</span><span id="__span-0-14"><span class="k">def</span><span class="w"> </span><span class="nf">create_grid_mesh</span><span class="p">(</span>
+</span><span id="__span-0-15">    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
+</span><span id="__span-0-16"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+</span><span id="__span-0-17"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a grid mesh with given size and spacing.&quot;&quot;&quot;</span>
+</span><span id="__span-0-18">    <span class="n">vertices</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="__span-0-19">    <span class="n">faces</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="__span-0-20">
+</span><span id="__span-0-21">    <span class="c1"># Create vertices in a grid</span>
+</span><span id="__span-0-22">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+</span><span id="__span-0-23">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+</span><span id="__span-0-24">            <span class="n">x</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">spacing</span>
+</span><span id="__span-0-25">            <span class="n">y</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">spacing</span>
+</span><span id="__span-0-26">            <span class="n">z</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span id="__span-0-27">            <span class="n">vertices</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+</span><span id="__span-0-28">
+</span><span id="__span-0-29">    <span class="c1"># Create triangular faces</span>
+</span><span id="__span-0-30">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+</span><span id="__span-0-31">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+</span><span id="__span-0-32">            <span class="c1"># Current vertex indices</span>
+</span><span id="__span-0-33">            <span class="n">v0</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">size</span> <span class="o">+</span> <span class="n">j</span>
+</span><span id="__span-0-34">            <span class="n">v1</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">size</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-0-35">            <span class="n">v2</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">size</span> <span class="o">+</span> <span class="n">j</span>
+</span><span id="__span-0-36">            <span class="n">v3</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">size</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-0-37">
+</span><span id="__span-0-38">            <span class="c1"># Two triangles per grid square</span>
+</span><span id="__span-0-39">            <span class="n">faces</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">v0</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">])</span>
+</span><span id="__span-0-40">            <span class="n">faces</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">v1</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="n">v2</span><span class="p">])</span>
+</span><span id="__span-0-41">
+</span><span id="__span-0-42">    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vertices</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">faces</span><span class="p">)</span>
+</span><span id="__span-0-43">
+</span><span id="__span-0-44">
+</span><span id="__span-0-45"><span class="c1"># Create the mesh</span>
+</span><span id="__span-0-46"><span class="n">original_vertices</span><span class="p">,</span> <span class="n">original_faces</span> <span class="o">=</span> <span class="n">create_grid_mesh</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+</span><span id="__span-0-47">
+</span><span id="__span-0-48"><span class="c1"># Create per-vertex colors (gradient based on position)</span>
+</span><span id="__span-0-49"><span class="n">per_vertex_model</span> <span class="o">=</span> <span class="n">snx</span><span class="o">.</span><span class="n">VertexColors</span><span class="p">(</span>
+</span><span id="__span-0-50">    <span class="n">color</span><span class="o">=</span><span class="p">[</span>
+</span><span id="__span-0-51">        <span class="n">cmap</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;hsl(</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">50</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">360</span><span class="si">}</span><span class="s2">, 100%, 50%)&quot;</span><span class="p">)</span>
+</span><span id="__span-0-52">        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">original_vertices</span>
+</span><span id="__span-0-53">    <span class="p">],</span>
+</span><span id="__span-0-54"><span class="p">)</span>
+</span><span id="__span-0-55">
+</span><span id="__span-0-56"><span class="c1"># Create uniform colors</span>
+</span><span id="__span-0-57"><span class="n">uniform_model</span> <span class="o">=</span> <span class="n">snx</span><span class="o">.</span><span class="n">UniformColor</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">cmap</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;purple&quot;</span><span class="p">))</span>
+</span><span id="__span-0-58">
+</span><span id="__span-0-59"><span class="n">mesh</span> <span class="o">=</span> <span class="n">snx</span><span class="o">.</span><span class="n">Mesh</span><span class="p">(</span>
+</span><span id="__span-0-60">    <span class="n">vertices</span><span class="o">=</span><span class="n">original_vertices</span><span class="p">,</span>
+</span><span id="__span-0-61">    <span class="n">faces</span><span class="o">=</span><span class="n">original_faces</span><span class="p">,</span>
+</span><span id="__span-0-62">    <span class="n">color</span><span class="o">=</span><span class="n">per_vertex_model</span><span class="p">,</span>
+</span><span id="__span-0-63"><span class="p">)</span>
+</span><span id="__span-0-64">
+</span><span id="__span-0-65"><span class="n">view</span> <span class="o">=</span> <span class="n">snx</span><span class="o">.</span><span class="n">View</span><span class="p">(</span>
+</span><span id="__span-0-66">    <span class="n">scene</span><span class="o">=</span><span class="n">snx</span><span class="o">.</span><span class="n">Scene</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">mesh</span><span class="p">]),</span>
+</span><span id="__span-0-67">    <span class="n">camera</span><span class="o">=</span><span class="n">snx</span><span class="o">.</span><span class="n">Camera</span><span class="p">(</span><span class="n">controller</span><span class="o">=</span><span class="n">snx</span><span class="o">.</span><span class="n">PanZoom</span><span class="p">(),</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span id="__span-0-68"><span class="p">)</span>
+</span><span id="__span-0-69">
+</span><span id="__span-0-70">
+</span><span id="__span-0-71"><span class="k">def</span><span class="w"> </span><span class="nf">event_filter</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-0-72"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Interactive mesh manipulation based on mouse events.&quot;&quot;&quot;</span>
+</span><span id="__span-0-73">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">MouseMoveEvent</span><span class="p">):</span>
+</span><span id="__span-0-74">        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">ray</span> <span class="o">:=</span> <span class="n">view</span><span class="o">.</span><span class="n">to_ray</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">)):</span>
+</span><span id="__span-0-75">            <span class="k">return</span> <span class="kc">False</span>
+</span><span id="__span-0-76">        <span class="k">if</span> <span class="n">ray</span><span class="o">.</span><span class="n">intersections</span><span class="p">(</span><span class="n">mesh</span><span class="p">):</span>
+</span><span id="__span-0-77">            <span class="c1"># Remove the intersected face</span>
+</span><span id="__span-0-78">            <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_d</span> <span class="ow">in</span> <span class="n">mesh</span><span class="o">.</span><span class="n">intersecting_faces</span><span class="p">(</span><span class="n">ray</span><span class="p">)]</span>
+</span><span id="__span-0-79">            <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-0-80">            <span class="k">return</span> <span class="kc">True</span>
+</span><span id="__span-0-81">    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">MousePressEvent</span><span class="p">):</span>
+</span><span id="__span-0-82">        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">buttons</span> <span class="o">&amp;</span> <span class="n">MouseButton</span><span class="o">.</span><span class="n">LEFT</span><span class="p">:</span>
+</span><span id="__span-0-83">            <span class="c1"># Reset the mesh on click</span>
+</span><span id="__span-0-84">            <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">original_vertices</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span id="__span-0-85">            <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span> <span class="o">=</span> <span class="n">original_faces</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span id="__span-0-86">            <span class="k">return</span> <span class="kc">True</span>
+</span><span id="__span-0-87">        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">buttons</span> <span class="o">&amp;</span> <span class="n">MouseButton</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">:</span>
+</span><span id="__span-0-88">            <span class="c1"># Right click cycles the colormodel</span>
+</span><span id="__span-0-89">            <span class="k">if</span> <span class="n">mesh</span><span class="o">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">uniform_model</span><span class="p">:</span>
+</span><span id="__span-0-90">                <span class="n">mesh</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">per_vertex_model</span>
+</span><span id="__span-0-91">            <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-0-92">                <span class="n">mesh</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">uniform_model</span>
+</span><span id="__span-0-93">
+</span><span id="__span-0-94">    <span class="k">return</span> <span class="kc">False</span>
+</span><span id="__span-0-95">
+</span><span id="__span-0-96">
+</span><span id="__span-0-97"><span class="c1"># Set up the event filter</span>
+</span><span id="__span-0-98"><span class="n">view</span><span class="o">.</span><span class="n">set_event_filter</span><span class="p">(</span><span class="n">event_filter</span><span class="p">)</span>
+</span><span id="__span-0-99">
+</span><span id="__span-0-100"><span class="c1"># Show and position camera</span>
+</span><span id="__span-0-101"><span class="n">snx</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+</span><span id="__span-0-102">
+</span><span id="__span-0-103"><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Interactive Mesh Demo:&quot;</span><span class="p">)</span>
+</span><span id="__span-0-104"><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;- Move mouse over mesh to delete intersected faces&quot;</span><span class="p">)</span>
+</span><span id="__span-0-105"><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;- Left click to reset all faces&quot;</span><span class="p">)</span>
+</span><span id="__span-0-106"><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;- Right click to cycle color models&quot;</span><span class="p">)</span>
+</span><span id="__span-0-107"><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;- Use mouse to pan/zoom the camera&quot;</span><span class="p">)</span>
+</span><span id="__span-0-108">
+</span><span id="__span-0-109"><span class="n">snx</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </span></code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1">pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;scenex[pygfx,jupyter]&quot;</span>
-</span></code></pre></div>
-</div>
-</div>
-</div>
-<p>See the <a href="install/">install istructions</a> for comprehensive installation instructions!</p>
-<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">#</a></h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-</span><span id="__span-2-2"><span class="kn">import</span><span class="w"> </span><span class="nn">scenex</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">snx</span>
-</span><span id="__span-2-3">
-</span><span id="__span-2-4"><span class="c1"># A single node — show() wraps it in a Scene and View for you</span>
-</span><span id="__span-2-5"><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-</span><span id="__span-2-6"><span class="n">img</span>  <span class="o">=</span> <span class="n">snx</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
-</span><span id="__span-2-7">
-</span><span id="__span-2-8"><span class="n">snx</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
-</span><span id="__span-2-9"><span class="n">snx</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>            <span class="c1"># enter the event loop (not needed in Jupyter)</span>
-</span></code></pre></div>
-<p>Mutating the model <em>after</em> it is displayed updates the rendered scene
-immediately:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><span class="kn">from</span><span class="w"> </span><span class="nn">cmap</span><span class="w"> </span><span class="kn">import</span> <span class="n">Colormap</span>
-</span><span id="__span-3-2">
-</span><span id="__span-3-3"><span class="n">img</span><span class="o">.</span><span class="n">cmap</span>   <span class="o">=</span> <span class="n">Colormap</span><span class="p">(</span><span class="s2">&quot;viridis&quot;</span><span class="p">)</span>
-</span><span id="__span-3-4"><span class="n">img</span><span class="o">.</span><span class="n">clims</span>  <span class="o">=</span> <span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
-</span><span id="__span-3-5"><span class="n">img</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">0.7</span>
-</span></code></pre></div>
-<h2 id="alternatives">Alternatives<a class="headerlink" href="#alternatives" title="Permanent link">#</a></h2>
-<p>Like any tool, <code>scenex</code> is not a panacea. It aims to be <strong>flexible</strong>, describing scenes at a high level and abstracting away graphics primitives, animation loops, etc. <em>If you need lower-level access, consider using <a href="https://pygfx.org">pygfx</a>, <a href="https://vispy.org">vispy</a>, or <a href="https://datoviz.org/">datoviz</a> directly.</em></p>
-<p>The primary focus of <code>scenex</code> is rendering <strong>scenes</strong>. While you can render <em>anything</em> in a scene, you might get more convenience from alternative visualization tools:</p>
-<table>
-<thead>
-<tr>
-<th>I want to visualize...</th>
-<th>Consider</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>plots</td>
-<td><a href="https://matplotlib.org">matplotlib</a>, <a href="https://www.fastplotlib.org/">fastplotlib</a>, <a href="https://plotly.com/python/">Plotly</a>, <a href="https://bokeh.org">Bokeh</a>, <a href="https://altair-viz.github.io/">Vega-Altair</a></td>
-</tr>
-<tr>
-<td>nD datasets</td>
-<td><a href="https://napari.org">napari</a></td>
-</tr>
-<tr>
-<td>3D meshes / geometry</td>
-<td><a href="https://pyvista.org">PyVista</a>, <a href="https://vedo.embl.es">vedo</a></td>
-</tr>
-</tbody>
-</table>
 
 
 
@@ -1186,9 +1108,6 @@ immediately:</p>
 
 
 
-
-  
-  
 
 
 
@@ -1211,15 +1130,31 @@ immediately:</p>
       
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
+          
+          <a href="../basic_line/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Basic Line">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Basic Line
+              </div>
+            </div>
+          </a>
+        
         
           
-          <a href="./install/" class="md-footer__link md-footer__link--next" aria-label="Next: Installation">
+          <a href="../basic_points/" class="md-footer__link md-footer__link--next" aria-label="Next: Basic Points">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Installation
+                Basic Points
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1283,12 +1218,12 @@ immediately:</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":".","features":["search.highlight","search.suggest","content.code.copy","content.code.annotate","navigation.indexes","navigation.footer","toc.follow"],"search":"./assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["search.highlight","search.suggest","content.code.copy","content.code.annotate","navigation.indexes","navigation.footer","toc.follow"],"search":"../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="./assets/javascripts/bundle.6e5f0216.min.js"></script>
+      <script src="../../assets/javascripts/bundle.6e5f0216.min.js"></script>
       
-        <script src="./js/install-table.js"></script>
+        <script src="../../js/install-table.js"></script>
       
     
   </body>
