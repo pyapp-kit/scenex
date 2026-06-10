@@ -28,7 +28,6 @@ jobs:
           git fetch origin gh-pages --depth=1
 
       - name: Autogenerate examples
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           uv run --exact --no-dev --extra pygfx --extra pyqt6 --group docs python docs/gen_examples.py
 
