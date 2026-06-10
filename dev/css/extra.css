@@ -52,6 +52,10 @@ a.autorefs-external:hover::after {
   background-color: var(--md-accent-fg-color);
 }
 
+.md-typeset .grid.cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 img.auto-screenshot {
   border-radius: 6px;
   margin-top: 1em;
