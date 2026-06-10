@@ -3,7 +3,7 @@ icon: material/lightbulb-outline
 ---
 # Theory
 
-`scenex` is a library for building **declarative** visuals. Users describe **what** is in the scene, but *not* **how** to render it - allowing the same scene to run in any environment - standalone or embedded in an existing application - and insulating it from changes in graphics technology.
+`scenex` is a library for building **declarative** visuals, where users describe **what** is in the scene rather than **how** to render it. This allows the same scene code to run unchanged across environments - standalone or embedded in an existing application - insulated from changes in graphics technology.
 
 ---
 
