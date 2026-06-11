@@ -37,7 +37,7 @@ if TYPE_CHECKING:
             ...
 
 
-__all__ = ["show", "tree_dict", "tree_repr"]
+__all__ = ["native", "show", "tree_dict", "tree_repr"]
 
 logger = logging.getLogger("scenex")
 
@@ -188,6 +188,36 @@ def show(
         # native_scene = view.scene._get_native()
         # logger.debug("SHOW NATIVE %s", tree_repr(native_scene))
     return canvas
+
+
+def native(canvas: model.Canvas, create: bool = True) -> Any:
+    """Get the native widget for the given canvas.
+
+    Parameters
+    ----------
+    canvas : model.Canvas
+        The canvas for which to get the native widget.
+    create : bool, optional
+        Whether to create adaptors if they do not already exist. Defaults to `True`.
+
+    Returns
+    -------
+    Any
+        The native widget associated with the canvas.
+
+    Raises
+    ------
+    KeyError
+        If no adaptor yet exists for `canvas` and `create=False`.
+
+    Notes
+    -----
+    This function is a convenience that retrieves the native widget from the first
+    adaptor associated with the canvas. If multiple adaptors are present, it returns the
+    native widget from the first one found.
+    """
+    for adaptor in canvas._get_adaptors(create=create):
+        return cast("CanvasAdaptor", adaptor)._snx_get_native()
 
 
 def run() -> None:
