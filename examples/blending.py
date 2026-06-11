@@ -77,8 +77,6 @@ def change_blend_mode(event: Event) -> bool:
 
 view.set_event_filter(change_blend_mode)
 
-
-snx.use("vispy")
 snx.show(view)
 
 # Orbit around the center of the volume

@@ -110,6 +110,9 @@ ENV/
 .vscode/
 .idea/
 
+# docs examples
+docs/examples
+
 # LLM Configuration
 AGENTS.md
 .claude/

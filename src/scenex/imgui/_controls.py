@@ -151,7 +151,7 @@ def add_imgui_controls(view: View) -> None:
 
     @render_canv.request_draw
     def _update() -> None:
-        snx_canvas_adaptor._draw()
+        snx_canvas_adaptor._draw_loop()
         imgui_renderer.render()
 
     class ImguiEventFilter:
