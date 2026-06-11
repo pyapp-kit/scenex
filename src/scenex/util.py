@@ -203,17 +203,21 @@ def native(canvas: model.Canvas, create: bool = True) -> Any:
     Returns
     -------
     Any
-        The native widget associated with the canvas, or None if no adaptor is found.
+        The native widget associated with the canvas.
+
+    Raises
+    ------
+    KeyError
+        If no adaptor yet exists for `canvas` and `create=False`.
 
     Notes
     -----
     This function is a convenience that retrieves the native widget from the first
     adaptor associated with the canvas. If multiple adaptors are present, it returns the
-    native widget from the first one found. If no adaptors are found, it returns None.
+    native widget from the first one found.
     """
     for adaptor in canvas._get_adaptors(create=create):
         return cast("CanvasAdaptor", adaptor)._snx_get_native()
-    return None
 
 
 def run() -> None:
