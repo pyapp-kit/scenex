@@ -1266,6 +1266,13 @@ snx.run()
 <p><span class="doc-section-title">Functions:</span></p>
     <ul>
           <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-function&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;native&lt;/span&gt;" href="./#scenex.native">native</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Get the native widget for the given canvas.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
             <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-function&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;run&lt;/span&gt;" href="./#scenex.run">run</a></code></b>
             –
             <div class="doc-md-description">
@@ -13042,6 +13049,139 @@ the two entities; otherwise an exception will be raised.</p>
 <div class="doc doc-object doc-function">
 
 
+<h2 id="scenex.native" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">native</span>
+
+
+<a href="#scenex.native" class="headerlink" title="Permanent link">#</a></h2>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">native</span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="&lt;b&gt;&lt;code&gt;canvas&lt;/code&gt;&lt;/b&gt;" href="./#scenex.native(canvas)">canvas</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Canvas&lt;/span&gt;" href="./#scenex.Canvas">Canvas</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;b&gt;&lt;code&gt;create&lt;/code&gt;&lt;/b&gt;" href="./#scenex.native(create)">create</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Get the native widget for the given canvas.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+<h3 id="scenex.native(canvas)" class="doc doc-heading doc-heading-parameter">              <b><code>canvas</code></b>
+<a href="#scenex.native(canvas)" class="headerlink" title="Permanent link">#</a></h3>              (<code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Canvas&lt;/span&gt;" href="./#scenex.Canvas">Canvas</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The canvas for which to get the native widget.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+<h3 id="scenex.native(create)" class="doc doc-heading doc-heading-parameter">              <b><code>create</code></b>
+<a href="#scenex.native(create)" class="headerlink" title="Permanent link">#</a></h3>              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to create adaptors if they do not already exist. Defaults to <code>True</code>.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></code>
+          –
+          <div class="doc-md-description">
+            <p>The native widget associated with the canvas.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/exceptions.html#KeyError">KeyError</a></code>
+            –
+          <div class="doc-md-description">
+            <p>If no adaptor yet exists for <code>canvas</code> and <code>create=False</code>.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>This function is a convenience that retrieves the native widget from the first
+adaptor associated with the canvas. If multiple adaptors are present, it returns the
+native widget from the first one found.</p>
+</details>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/scenex/util.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-193"><span class="k">def</span><span class="w"> </span><span class="nf">native</span><span class="p">(</span><span class="n">canvas</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">,</span> <span class="n">create</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span id="__span-0-194"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the native widget for the given canvas.</span>
+</span><span id="__span-0-195">
+</span><span id="__span-0-196"><span class="sd">    Parameters</span>
+</span><span id="__span-0-197"><span class="sd">    ----------</span>
+</span><span id="__span-0-198"><span class="sd">    canvas : model.Canvas</span>
+</span><span id="__span-0-199"><span class="sd">        The canvas for which to get the native widget.</span>
+</span><span id="__span-0-200"><span class="sd">    create : bool, optional</span>
+</span><span id="__span-0-201"><span class="sd">        Whether to create adaptors if they do not already exist. Defaults to `True`.</span>
+</span><span id="__span-0-202">
+</span><span id="__span-0-203"><span class="sd">    Returns</span>
+</span><span id="__span-0-204"><span class="sd">    -------</span>
+</span><span id="__span-0-205"><span class="sd">    Any</span>
+</span><span id="__span-0-206"><span class="sd">        The native widget associated with the canvas.</span>
+</span><span id="__span-0-207">
+</span><span id="__span-0-208"><span class="sd">    Raises</span>
+</span><span id="__span-0-209"><span class="sd">    ------</span>
+</span><span id="__span-0-210"><span class="sd">    KeyError</span>
+</span><span id="__span-0-211"><span class="sd">        If no adaptor yet exists for `canvas` and `create=False`.</span>
+</span><span id="__span-0-212">
+</span><span id="__span-0-213"><span class="sd">    Notes</span>
+</span><span id="__span-0-214"><span class="sd">    -----</span>
+</span><span id="__span-0-215"><span class="sd">    This function is a convenience that retrieves the native widget from the first</span>
+</span><span id="__span-0-216"><span class="sd">    adaptor associated with the canvas. If multiple adaptors are present, it returns the</span>
+</span><span id="__span-0-217"><span class="sd">    native widget from the first one found.</span>
+</span><span id="__span-0-218"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-219">    <span class="k">for</span> <span class="n">adaptor</span> <span class="ow">in</span> <span class="n">canvas</span><span class="o">.</span><span class="n">_get_adaptors</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="n">create</span><span class="p">):</span>
+</span><span id="__span-0-220">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;CanvasAdaptor&quot;</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span><span class="o">.</span><span class="n">_snx_get_native</span><span class="p">()</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h2 id="scenex.run" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">run</span>
 
@@ -13089,77 +13229,77 @@ are displayed automatically without calling <code>run()</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/scenex/util.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
 <span class="normal">227</span>
-<span class="normal">228</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-193"><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-194"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Start the GUI event loop to display interactive visualizations.</span>
-</span><span id="__span-0-195">
-</span><span id="__span-0-196"><span class="sd">    This function enters the native event loop of the graphics backend, allowing</span>
-</span><span id="__span-0-197"><span class="sd">    interactive visualizations to respond to user input (mouse, keyboard) and remain</span>
-</span><span id="__span-0-198"><span class="sd">    visible. The function blocks until the visualization window is closed.</span>
-</span><span id="__span-0-199">
-</span><span id="__span-0-200"><span class="sd">    Call this function after creating and showing your visualizations with `show()`.</span>
-</span><span id="__span-0-201"><span class="sd">    It is only needed for desktop applications; in Jupyter notebooks, visualizations</span>
-</span><span id="__span-0-202"><span class="sd">    are displayed automatically without calling `run()`.</span>
-</span><span id="__span-0-203">
-</span><span id="__span-0-204"><span class="sd">    Examples</span>
-</span><span id="__span-0-205"><span class="sd">    --------</span>
-</span><span id="__span-0-206"><span class="sd">    Basic usage with a scene:</span>
-</span><span id="__span-0-207"><span class="sd">        &gt;&gt;&gt; import numpy as np</span>
-</span><span id="__span-0-208"><span class="sd">        &gt;&gt;&gt; import scenex as snx</span>
-</span><span id="__span-0-209"><span class="sd">        &gt;&gt;&gt; scene = snx.Scene(</span>
-</span><span id="__span-0-210"><span class="sd">        ...     children=[snx.Image(data=np.random.rand(100, 100).astype(np.float32))]</span>
-</span><span id="__span-0-211"><span class="sd">        ... )</span>
-</span><span id="__span-0-212"><span class="sd">        &gt;&gt;&gt; snx.show(scene)</span>
-</span><span id="__span-0-213"><span class="sd">        Canvas(...)</span>
-</span><span id="__span-0-214"><span class="sd">        &gt;&gt;&gt; snx.run()  # Blocks until window is closed</span>
-</span><span id="__span-0-215">
-</span><span id="__span-0-216"><span class="sd">    Create multiple views and run:</span>
-</span><span id="__span-0-217"><span class="sd">        &gt;&gt;&gt; canvas = snx.Canvas(views=[snx.View(), snx.View()])</span>
-</span><span id="__span-0-218"><span class="sd">        &gt;&gt;&gt; canvas.visible = True</span>
-</span><span id="__span-0-219"><span class="sd">        &gt;&gt;&gt; snx.run()</span>
-</span><span id="__span-0-220">
-</span><span id="__span-0-221"><span class="sd">    Notes</span>
-</span><span id="__span-0-222"><span class="sd">    -----</span>
-</span><span id="__span-0-223"><span class="sd">    - This function blocks execution until all visualization windows are closed</span>
-</span><span id="__span-0-224"><span class="sd">    - Not needed in Jupyter notebooks or other interactive environments</span>
-</span><span id="__span-0-225"><span class="sd">    - Must be called after `show()` has been used to create visualizations</span>
-</span><span id="__span-0-226"><span class="sd">    - The event loop handles user interactions like pan, zoom, and picking</span>
-</span><span id="__span-0-227"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-228">    <span class="n">app</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-223"><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-224"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Start the GUI event loop to display interactive visualizations.</span>
+</span><span id="__span-0-225">
+</span><span id="__span-0-226"><span class="sd">    This function enters the native event loop of the graphics backend, allowing</span>
+</span><span id="__span-0-227"><span class="sd">    interactive visualizations to respond to user input (mouse, keyboard) and remain</span>
+</span><span id="__span-0-228"><span class="sd">    visible. The function blocks until the visualization window is closed.</span>
+</span><span id="__span-0-229">
+</span><span id="__span-0-230"><span class="sd">    Call this function after creating and showing your visualizations with `show()`.</span>
+</span><span id="__span-0-231"><span class="sd">    It is only needed for desktop applications; in Jupyter notebooks, visualizations</span>
+</span><span id="__span-0-232"><span class="sd">    are displayed automatically without calling `run()`.</span>
+</span><span id="__span-0-233">
+</span><span id="__span-0-234"><span class="sd">    Examples</span>
+</span><span id="__span-0-235"><span class="sd">    --------</span>
+</span><span id="__span-0-236"><span class="sd">    Basic usage with a scene:</span>
+</span><span id="__span-0-237"><span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+</span><span id="__span-0-238"><span class="sd">        &gt;&gt;&gt; import scenex as snx</span>
+</span><span id="__span-0-239"><span class="sd">        &gt;&gt;&gt; scene = snx.Scene(</span>
+</span><span id="__span-0-240"><span class="sd">        ...     children=[snx.Image(data=np.random.rand(100, 100).astype(np.float32))]</span>
+</span><span id="__span-0-241"><span class="sd">        ... )</span>
+</span><span id="__span-0-242"><span class="sd">        &gt;&gt;&gt; snx.show(scene)</span>
+</span><span id="__span-0-243"><span class="sd">        Canvas(...)</span>
+</span><span id="__span-0-244"><span class="sd">        &gt;&gt;&gt; snx.run()  # Blocks until window is closed</span>
+</span><span id="__span-0-245">
+</span><span id="__span-0-246"><span class="sd">    Create multiple views and run:</span>
+</span><span id="__span-0-247"><span class="sd">        &gt;&gt;&gt; canvas = snx.Canvas(views=[snx.View(), snx.View()])</span>
+</span><span id="__span-0-248"><span class="sd">        &gt;&gt;&gt; canvas.visible = True</span>
+</span><span id="__span-0-249"><span class="sd">        &gt;&gt;&gt; snx.run()</span>
+</span><span id="__span-0-250">
+</span><span id="__span-0-251"><span class="sd">    Notes</span>
+</span><span id="__span-0-252"><span class="sd">    -----</span>
+</span><span id="__span-0-253"><span class="sd">    - This function blocks execution until all visualization windows are closed</span>
+</span><span id="__span-0-254"><span class="sd">    - Not needed in Jupyter notebooks or other interactive environments</span>
+</span><span id="__span-0-255"><span class="sd">    - Must be called after `show()` has been used to create visualizations</span>
+</span><span id="__span-0-256"><span class="sd">    - The event loop handles user interactions like pan, zoom, and picking</span>
+</span><span id="__span-0-257"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-258">    <span class="n">app</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -13215,49 +13355,49 @@ the intermediate steps to get the native widget from a canvas model.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/scenex/util.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-276"><span class="k">def</span><span class="w"> </span><span class="nf">set_cursor</span><span class="p">(</span><span class="n">canvas</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">CursorType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-277"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the cursor for the given canvas.</span>
-</span><span id="__span-0-278">
-</span><span id="__span-0-279"><span class="sd">    Parameters</span>
-</span><span id="__span-0-280"><span class="sd">    ----------</span>
-</span><span id="__span-0-281"><span class="sd">    canvas : model.Canvas</span>
-</span><span id="__span-0-282"><span class="sd">        The canvas on which to set the cursor.</span>
-</span><span id="__span-0-283"><span class="sd">    cursor : CursorType</span>
-</span><span id="__span-0-284"><span class="sd">        The type of cursor to set.</span>
-</span><span id="__span-0-285">
-</span><span id="__span-0-286"><span class="sd">    Notes</span>
-</span><span id="__span-0-287"><span class="sd">    -----</span>
-</span><span id="__span-0-288"><span class="sd">    Practically and generally speaking, setting the cursor is an app-level concern.</span>
-</span><span id="__span-0-289"><span class="sd">    Unfortunately, setting the cursor often requires access to a native widget, meaning</span>
-</span><span id="__span-0-290"><span class="sd">    any scenex abstractions for setting the cursor will need as input the canvas model</span>
-</span><span id="__span-0-291"><span class="sd">    or a derivative adaptor. Proper separation of concerns suggests that the app-level</span>
-</span><span id="__span-0-292"><span class="sd">    API should just take the native widget. This function is a convenience that performs</span>
-</span><span id="__span-0-293"><span class="sd">    the intermediate steps to get the native widget from a canvas model.</span>
-</span><span id="__span-0-294"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-295">    <span class="k">for</span> <span class="n">adaptor</span> <span class="ow">in</span> <span class="n">canvas</span><span class="o">.</span><span class="n">_get_adaptors</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-</span><span id="__span-0-296">        <span class="n">widget</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;CanvasAdaptor&quot;</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span><span class="o">.</span><span class="n">_snx_get_native</span><span class="p">()</span>
-</span><span id="__span-0-297">        <span class="n">app</span><span class="p">()</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-306"><span class="k">def</span><span class="w"> </span><span class="nf">set_cursor</span><span class="p">(</span><span class="n">canvas</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">CursorType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-307"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the cursor for the given canvas.</span>
+</span><span id="__span-0-308">
+</span><span id="__span-0-309"><span class="sd">    Parameters</span>
+</span><span id="__span-0-310"><span class="sd">    ----------</span>
+</span><span id="__span-0-311"><span class="sd">    canvas : model.Canvas</span>
+</span><span id="__span-0-312"><span class="sd">        The canvas on which to set the cursor.</span>
+</span><span id="__span-0-313"><span class="sd">    cursor : CursorType</span>
+</span><span id="__span-0-314"><span class="sd">        The type of cursor to set.</span>
+</span><span id="__span-0-315">
+</span><span id="__span-0-316"><span class="sd">    Notes</span>
+</span><span id="__span-0-317"><span class="sd">    -----</span>
+</span><span id="__span-0-318"><span class="sd">    Practically and generally speaking, setting the cursor is an app-level concern.</span>
+</span><span id="__span-0-319"><span class="sd">    Unfortunately, setting the cursor often requires access to a native widget, meaning</span>
+</span><span id="__span-0-320"><span class="sd">    any scenex abstractions for setting the cursor will need as input the canvas model</span>
+</span><span id="__span-0-321"><span class="sd">    or a derivative adaptor. Proper separation of concerns suggests that the app-level</span>
+</span><span id="__span-0-322"><span class="sd">    API should just take the native widget. This function is a convenience that performs</span>
+</span><span id="__span-0-323"><span class="sd">    the intermediate steps to get the native widget from a canvas model.</span>
+</span><span id="__span-0-324"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-325">    <span class="k">for</span> <span class="n">adaptor</span> <span class="ow">in</span> <span class="n">canvas</span><span class="o">.</span><span class="n">_get_adaptors</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+</span><span id="__span-0-326">        <span class="n">widget</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;CanvasAdaptor&quot;</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span><span class="o">.</span><span class="n">_snx_get_native</span><span class="p">()</span>
+</span><span id="__span-0-327">        <span class="n">app</span><span class="p">()</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
