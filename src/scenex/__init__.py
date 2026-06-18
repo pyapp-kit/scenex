@@ -65,7 +65,7 @@ from .model._nodes.text import Text
 from .model._nodes.volume import Volume
 from .model._transform import Transform
 from .model._view import Letterbox, ResizePolicy, View
-from .util import native, run, set_cursor, show
+from .utils import native, run, set_cursor, show
 
 __all__ = [
     "Camera",
