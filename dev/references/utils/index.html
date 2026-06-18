@@ -10,36 +10,36 @@
       
       
       
-        <link rel="canonical" href="https://pyapp-kit.github.io/scenex/dev/examples/">
+        <link rel="canonical" href="https://pyapp-kit.github.io/scenex/dev/references/utils/">
       
       
-        <link rel="prev" href="../theory/">
+        <link rel="prev" href="../imgui/">
       
       
-        <link rel="next" href="./antialiasing/">
+        <link rel="next" href="./projections/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="zensical-0.0.45">
     
     
       
-        <title>Examples - scenex</title>
+        <title>scenex.utils - scenex</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../assets/stylesheets/modern/main.fba56155.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.fba56155.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.dfe2e883.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.dfe2e883.min.css">
       
       
 
@@ -58,11 +58,11 @@
       
     
     
-      <link rel="stylesheet" href="../css/extra.css">
+      <link rel="stylesheet" href="../../css/extra.css">
     
-      <link rel="stylesheet" href="../css/install-table.css">
+      <link rel="stylesheet" href="../../css/install-table.css">
     
-    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -87,7 +87,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#examples" class="md-skip">
+        <a href="#scenexutils" class="md-skip">
           Skip to content
         </a>
       
@@ -107,7 +107,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="./.." title="scenex" class="md-header__button md-logo" aria-label="scenex" data-md-component="logo">
+    <a href="../.." title="scenex" class="md-header__button md-logo" aria-label="scenex" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 17c-.13 0-.26 0-.39.04l-1.61-3.25a2.5 2.5 0 0 0-1.75-4.29c-.13 0-.25 0-.39.04l-1.63-3.25c.48-.45.77-1.08.77-1.79a2.5 2.5 0 0 0-5 0c0 .71.29 1.34.76 1.79L8.64 9.54c-.14-.04-.26-.04-.39-.04a2.5 2.5 0 0 0-1.75 4.29l-1.61 3.25C4.76 17 4.63 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.79c.46-.45.75-1.08.75-1.79s-.29-1.34-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21c-.45.45-.75 1.09-.75 1.79a2.5 2.5 0 0 0 2.5 2.5c.13 0 .25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5"/></svg>
@@ -127,7 +127,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Examples
+              scenex.utils
             
           </span>
         </div>
@@ -226,7 +226,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="./.." title="scenex" class="md-nav__button md-logo" aria-label="scenex" data-md-component="logo">
+    <a href="../.." title="scenex" class="md-nav__button md-logo" aria-label="scenex" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 17c-.13 0-.26 0-.39.04l-1.61-3.25a2.5 2.5 0 0 0-1.75-4.29c-.13 0-.25 0-.39.04l-1.63-3.25c.48-.45.77-1.08.77-1.79a2.5 2.5 0 0 0-5 0c0 .71.29 1.34.76 1.79L8.64 9.54c-.14-.04-.26-.04-.39-.04a2.5 2.5 0 0 0-1.75 4.29l-1.61 3.25C4.76 17 4.63 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.79c.46-.45.75-1.08.75-1.79s-.29-1.34-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21c-.45.45-.75 1.09-.75 1.79a2.5 2.5 0 0 0 2.5 2.5c.13 0 .25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5"/></svg>
@@ -256,7 +256,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -284,7 +284,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../install/" class="md-nav__link">
+      <a href="../../install/" class="md-nav__link">
         
   
   
@@ -312,7 +312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../theory/" class="md-nav__link">
+      <a href="../../theory/" class="md-nav__link">
         
   
   
@@ -337,8 +337,6 @@
       
   
   
-    
-  
   
   
     
@@ -384,15 +382,15 @@
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="././" class="md-nav__link md-nav__link--active">
+            <a href="../../examples/" class="md-nav__link ">
               
   
   
@@ -411,13 +409,13 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_4" id="__nav_4_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -436,7 +434,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./antialiasing/" class="md-nav__link">
+      <a href="../../examples/antialiasing/" class="md-nav__link">
         
   
   
@@ -463,7 +461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./basic_line/" class="md-nav__link">
+      <a href="../../examples/basic_line/" class="md-nav__link">
         
   
   
@@ -490,7 +488,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./basic_mesh/" class="md-nav__link">
+      <a href="../../examples/basic_mesh/" class="md-nav__link">
         
   
   
@@ -517,7 +515,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./basic_points/" class="md-nav__link">
+      <a href="../../examples/basic_points/" class="md-nav__link">
         
   
   
@@ -544,7 +542,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./basic_scene/" class="md-nav__link">
+      <a href="../../examples/basic_scene/" class="md-nav__link">
         
   
   
@@ -571,7 +569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./basic_text/" class="md-nav__link">
+      <a href="../../examples/basic_text/" class="md-nav__link">
         
   
   
@@ -598,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./basic_volume/" class="md-nav__link">
+      <a href="../../examples/basic_volume/" class="md-nav__link">
         
   
   
@@ -625,7 +623,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./blending/" class="md-nav__link">
+      <a href="../../examples/blending/" class="md-nav__link">
         
   
   
@@ -652,7 +650,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./cursor_points/" class="md-nav__link">
+      <a href="../../examples/cursor_points/" class="md-nav__link">
         
   
   
@@ -679,7 +677,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./draggable_rect/" class="md-nav__link">
+      <a href="../../examples/draggable_rect/" class="md-nav__link">
         
   
   
@@ -706,7 +704,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./event_filters/" class="md-nav__link">
+      <a href="../../examples/event_filters/" class="md-nav__link">
         
   
   
@@ -733,7 +731,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./histogram/" class="md-nav__link">
+      <a href="../../examples/histogram/" class="md-nav__link">
         
   
   
@@ -760,7 +758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./keyboard_pan_zoom/" class="md-nav__link">
+      <a href="../../examples/keyboard_pan_zoom/" class="md-nav__link">
         
   
   
@@ -787,7 +785,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./multi_view/" class="md-nav__link">
+      <a href="../../examples/multi_view/" class="md-nav__link">
         
   
   
@@ -814,7 +812,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./regions/" class="md-nav__link">
+      <a href="../../examples/regions/" class="md-nav__link">
         
   
   
@@ -841,7 +839,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./rgb/" class="md-nav__link">
+      <a href="../../examples/rgb/" class="md-nav__link">
         
   
   
@@ -872,6 +870,8 @@
       
   
   
+    
+  
   
   
     
@@ -895,15 +895,15 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../references/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -928,7 +928,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -947,7 +947,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../references/model/" class="md-nav__link">
+      <a href="../model/" class="md-nav__link">
         
   
   
@@ -976,7 +976,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../references/app/" class="md-nav__link">
+      <a href="../app/" class="md-nav__link">
         
   
   
@@ -1005,7 +1005,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../references/adaptors/" class="md-nav__link">
+      <a href="../adaptors/" class="md-nav__link">
         
   
   
@@ -1034,7 +1034,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../references/imgui/" class="md-nav__link">
+      <a href="../imgui/" class="md-nav__link">
         
   
   
@@ -1060,6 +1060,8 @@
                 
   
   
+    
+  
   
   
     
@@ -1075,15 +1077,15 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../references/utils/" class="md-nav__link ">
+            <a href="././" class="md-nav__link md-nav__link--active">
               
   
   
@@ -1102,13 +1104,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+              <label class="md-nav__link md-nav__link--active" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1127,7 +1129,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../references/utils/projections/" class="md-nav__link">
+      <a href="./projections/" class="md-nav__link">
         
   
   
@@ -1171,7 +1173,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   
@@ -1209,11 +1211,6 @@
                       
                     
                     
-                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-                      <div class="md-sidebar-button__wrapper">
-                        <label class="md-sidebar-button" for="__toc"></label>
-                      </div>
-                    
                   
                   <div class="md-sidebar__inner">
                     
@@ -1225,190 +1222,6 @@
   
     
   
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#antialiasing" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Antialiasing
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#basic-line" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Basic Line
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#basic-mesh" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Basic Mesh
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#basic-points" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Basic Points
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#basic-scene" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Basic Scene
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#basic-text" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Basic Text
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#basic-volume" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Basic Volume
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#blending" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Blending
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cursor-points" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Cursor Points
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#draggable-rect" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Draggable Rect
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#event-filters" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Event Filters
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#histogram" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Histogram
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#keyboard-pan-zoom" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Keyboard Pan Zoom
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#multi-view" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Multi View
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#regions" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Regions
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#rgb" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Rgb
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -1426,104 +1239,67 @@
   
 
 
-<h1 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h1>
-<hr />
-<h2 id="antialiasing"><a href="antialiasing/">Antialiasing</a><a class="headerlink" href="#antialiasing" title="Permanent link">#</a></h2>
-<p>Demonstrates antialiasing for Lines, Points, and Text.</p>
-<p>Three nodes are shown — a diagonal line, a disc point, and a text label —
-each supporting the <code>antialias</code> property.</p>
-<p><strong>Interaction</strong>
-- Left-click anywhere in the view to toggle antialiasing on all nodes.
-  The status text updates to reflect the current state.</p>
-<p>Antialiasing is most noticeable on the diagonal line (jagged stairstepping
-appears on its edges without AA) and on the curved edge of the disc.</p>
-<hr />
-<h2 id="basic-line"><a href="basic_line/">Basic Line</a><a class="headerlink" href="#basic-line" title="Permanent link">#</a></h2>
-<p>Demonstrates a line with a vertex colormap iff the user hovers over it.</p>
-<hr />
-<h2 id="basic-mesh"><a href="basic_mesh/">Basic Mesh</a><a class="headerlink" href="#basic-mesh" title="Permanent link">#</a></h2>
-<p>Interactive mesh example demonstrating ColorModel subclasses.</p>
-<p>This example shows:
-- Per-vertex coloring with VertexColors (gradient based on position)
-- Uniform coloring with UniformColor (solid purple)
-- Interactive face removal on mouse hover
-- Cycling between color models with right-click
-- Mesh reset on left-click</p>
-<p>The mesh starts with per-vertex colors creating a colorful gradient. Right-clicking
-toggles between per-vertex and uniform coloring modes.</p>
-<hr />
-<h2 id="basic-points"><a href="basic_points/">Basic Points</a><a class="headerlink" href="#basic-points" title="Permanent link">#</a></h2>
-<p>Interactive points example demonstrating ColorModel subclasses and scaling modes.</p>
-<p>This example shows:
-- Per-vertex coloring with VertexColors (each point gets a different color)
-- Uniform coloring with UniformColor (all points same color)
-- Fixed vs. scene-based point scaling modes
-- Interactive color swapping on mouse hover (face and edge colors swap)</p>
-<p>The points start with per-vertex face colors (red, green, blue, yellow) and a white
-uniform edge. When the mouse hovers over any point, the colors invert: faces become
-white (uniform) and edges become colored (per-vertex).</p>
-<p>Scaling modes:
-- "fixed": Point size in pixels, stays constant when zooming
-- "scene": Point size in world-space units, scales when zooming</p>
-<hr />
-<h2 id="basic-scene"><a href="basic_scene/">Basic Scene</a><a class="headerlink" href="#basic-scene" title="Permanent link">#</a></h2>
-<p>Demonstrates a basic scene with multiple visual elements and imgui controls.</p>
-<hr />
-<h2 id="basic-text"><a href="basic_text/">Basic Text</a><a class="headerlink" href="#basic-text" title="Permanent link">#</a></h2>
-<p>Demonstrates rendering text.</p>
-<hr />
-<h2 id="basic-volume"><a href="basic_volume/">Basic Volume</a><a class="headerlink" href="#basic-volume" title="Permanent link">#</a></h2>
-<p>Demonstrates 3D volume rendering with orbit camera controls.</p>
-<hr />
-<h2 id="blending"><a href="blending/">Blending</a><a class="headerlink" href="#blending" title="Permanent link">#</a></h2>
-<p>An example demonstrating different blend modes.</p>
-<p>Unaltered, each channel of the volume is blended additively, resulting in transparency.</p>
-<p>By clicking on the green volume, the blend mode will cycle through the available modes.</p>
-<hr />
-<h2 id="cursor-points"><a href="cursor_points/">Cursor Points</a><a class="headerlink" href="#cursor-points" title="Permanent link">#</a></h2>
-<p>Shows how event filters can be used to change the cursor bitmap.</p>
-<hr />
-<h2 id="draggable-rect"><a href="draggable_rect/">Draggable Rect</a><a class="headerlink" href="#draggable-rect" title="Permanent link">#</a></h2>
-<p>Draggable rectangle with corner handles overlaid on a grayscale image.</p>
-<p>Pixels contained within the rectangle are inverted in the background image. Note that,
-for a pixel to be considered "contained" its center must be contained.</p>
-<p>This example demonstrates:
-- Composing a rectangle from three nodes: a semi-transparent mesh (fill),
-  a solid line (outline), and disc point markers (handles).
-- Using an event filter to implement click-and-drag interactions.
-- Changing cursor shapes to signal behaviors.</p>
-<hr />
-<h2 id="event-filters"><a href="event_filters/">Event Filters</a><a class="headerlink" href="#event-filters" title="Permanent link">#</a></h2>
-<p>Demonstrates how event filters can be used to interact with a scene.</p>
-<p>In this example, a yellow square is drawn under the mouse cursor when it
-hovers over an image. When the mouse leaves the image, a bright border is
-drawn around it.</p>
-<hr />
-<h2 id="histogram"><a href="histogram/">Histogram</a><a class="headerlink" href="#histogram" title="Permanent link">#</a></h2>
-<p>An interactive histogram.</p>
-<hr />
-<h2 id="keyboard-pan-zoom"><a href="keyboard_pan_zoom/">Keyboard Pan Zoom</a><a class="headerlink" href="#keyboard-pan-zoom" title="Permanent link">#</a></h2>
-<p>Demonstrates keyboard-driven pan and zoom on top of the PanZoom controller.</p>
-<p>Arrow keys pan the view; + and - zoom in and out. Mouse drag and scroll
-continue to work as normal via the PanZoom controller.</p>
-<hr />
-<h2 id="multi-view"><a href="multi_view/">Multi View</a><a class="headerlink" href="#multi-view" title="Permanent link">#</a></h2>
-<p>Demonstrates multiple views of volumetric data with interactive slicing.</p>
-<p>Shows two channels of volumetric data: the left view displays the full volume
-with a perspective camera where mousing over the volume extracts and displays
-a 2D slice from the other channel in pink at the intersection point. The right
-view shows an orthographic top-down perspective with no interaction.</p>
-<hr />
-<h2 id="regions"><a href="regions/">Regions</a><a class="headerlink" href="#regions" title="Permanent link">#</a></h2>
-<p>Demonstrates various layout options for positioning a view on a canvas.</p>
-<p>Each layout is described by x_start, x_end, y_start, and y_end Dim values.
-Click on the image to cycle through the examples. The active layout is printed to the
-terminal. Resize the window to see how each configuration responds!</p>
-<hr />
-<h2 id="rgb"><a href="rgb/">Rgb</a><a class="headerlink" href="#rgb" title="Permanent link">#</a></h2>
-<p>Demonstrates displaying an RGB image.</p>
-<p>Pressing the mouse buttons cycles through the R, G, and B channels
-Releasing the mouse button returns to the full RGB image.</p>
+<h1 id="scenexutils">scenex.utils<a class="headerlink" href="#scenexutils" title="Permanent link">#</a></h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h1 id="scenex.utils" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">scenex.utils</span>
+
+
+<a href="#scenex.utils" class="headerlink" title="Permanent link">#</a></h1>
+
+    <div class="doc doc-contents first">
+
+        <p>Utilities for working with scenex structures.</p>
+
+
+
+
+
+
+<p><span class="doc-section-title">Modules:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-module&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-module-name&quot;&gt;scenex.utils.projections&lt;/span&gt;" href="projections/#scenex.utils.projections">projections</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Utilities for creating projection matrices.</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 
@@ -1558,7 +1334,7 @@ Releasing the mouse button returns to the full RGB image.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../theory/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Theory">
+          <a href="../imgui/" class="md-footer__link md-footer__link--prev" aria-label="Previous: scenex.imgui">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
@@ -1568,20 +1344,20 @@ Releasing the mouse button returns to the full RGB image.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Theory
+                scenex.imgui
               </div>
             </div>
           </a>
         
         
           
-          <a href="./antialiasing/" class="md-footer__link md-footer__link--next" aria-label="Next: Antialiasing">
+          <a href="./projections/" class="md-footer__link md-footer__link--next" aria-label="Next: scenex.utils.projections">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Antialiasing
+                scenex.utils.projections
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1645,12 +1421,12 @@ Releasing the mouse button returns to the full RGB image.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["search.highlight","search.suggest","content.code.copy","content.code.annotate","navigation.indexes","navigation.footer","toc.follow"],"search":"../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["search.highlight","search.suggest","content.code.copy","content.code.annotate","navigation.indexes","navigation.footer","toc.follow"],"search":"../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.6e5f0216.min.js"></script>
+      <script src="../../assets/javascripts/bundle.6e5f0216.min.js"></script>
       
-        <script src="../js/install-table.js"></script>
+        <script src="../../js/install-table.js"></script>
       
     
   </body>
