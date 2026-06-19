@@ -1,3 +1,10 @@
+"""Utility functions pertaining to the underlying application.
+
+The `show()` function is the primary entry point for creating visualizations,
+handling the details of canvas creation, backend selection, and camera fitting
+automatically for a provided node, view or canvas.
+"""
+
 from __future__ import annotations
 
 import logging
