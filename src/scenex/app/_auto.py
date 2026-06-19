@@ -93,12 +93,14 @@ class CursorType(Enum):
     Examples
     --------
     Set a crosshair cursor during drawing mode:
-        >>> import scenex as snx
-        >>> canvas = snx.Canvas()
-        >>> snx.set_cursor(canvas, CursorType.CROSS)  # doctest: +SKIP
+
+    >>> import scenex as snx
+    >>> canvas = snx.Canvas()
+    >>> snx.set_cursor(canvas, CursorType.CROSS)  # doctest: +SKIP
 
     Restore default cursor after operation:
-        >>> snx.set_cursor(canvas, CursorType.DEFAULT)  # doctest: +SKIP
+
+    >>> snx.set_cursor(canvas, CursorType.DEFAULT)  # doctest: +SKIP
 
     See Also
     --------
@@ -451,12 +453,13 @@ def ensure_main_thread(func: Callable[P, T]) -> Callable[P, Future[T]]:
     Examples
     --------
     Ensure a GUI operation runs on the main thread:
-        >>> @ensure_main_thread
-        ... def update_widget(value: int) -> None:
-        ...     # Update some GUI widget with the given value
-        ...     pass
-        >>> future = update_widget(42)  # Returns immediately with Future
-        >>> result = future.result()  # Block until completion if needed
+
+    >>> @ensure_main_thread
+    ... def update_widget(value: int) -> None:
+    ...     # Update some GUI widget with the given value
+    ...     pass
+    >>> future = update_widget(42)  # Returns immediately with Future
+    >>> result = future.result()  # Block until completion if needed
 
     See Also
     --------
@@ -499,12 +502,14 @@ def determine_app() -> GuiFrontend:
     Examples
     --------
     Let the function auto-detect the backend:
-        >>> backend = determine_app()
+
+    >>> backend = determine_app()
 
     Force a specific backend via environment variable:
-        >>> import os
-        >>> os.environ["SCENEX_APP_BACKEND"] = "qt"  # doctest: +SKIP
-        >>> backend = determine_app()  # Will use Qt
+
+    >>> import os
+    >>> os.environ["SCENEX_APP_BACKEND"] = "qt"  # doctest: +SKIP
+    >>> backend = determine_app()  # Will use Qt
 
     See Also
     --------
@@ -562,7 +567,8 @@ def app() -> App:
     Examples
     --------
     Get the app and run the event loop:
-        >>> app().run()
+
+    >>> app().run()
 
     See Also
     --------

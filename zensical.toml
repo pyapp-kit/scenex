@@ -13,7 +13,7 @@ nav = [
   {References = [
     "references/index.md",
     "references/model.md",
-    "references/app.md",
+    {"scenex.app" = ["references/app/index.md", "references/app/events.md"]},
     "references/adaptors.md",
     "references/imgui.md",
     {"scenex.utils" = ["references/utils/index.md", "references/utils/projections.md"]}]},

@@ -43,21 +43,24 @@ class View(EventedBase):
     Examples
     --------
     Create a view with a scene containing an image:
-        >>> import numpy as np
-        >>> my_array = np.random.rand(100, 100).astype(np.float32)
-        >>> scene = Scene(children=[Image(data=my_array)])
-        >>> view = View(scene=scene, camera=Camera())
+
+    >>> import numpy as np
+    >>> my_array = np.random.rand(100, 100).astype(np.float32)
+    >>> scene = Scene(children=[Image(data=my_array)])
+    >>> view = View(scene=scene, camera=Camera())
 
     Create a view with interactive camera and letterbox resizing:
-        >>> view = View(
-        ...     scene=scene,
-        ...     camera=Camera(controller=PanZoom(), interactive=True),
-        ...     on_resize=Letterbox(),
-        ... )
+
+    >>> view = View(
+    ...     scene=scene,
+    ...     camera=Camera(controller=PanZoom(), interactive=True),
+    ...     on_resize=Letterbox(),
+    ... )
 
     Add a view to a canvas:
-        >>> canvas = Canvas()
-        >>> canvas.views.append(view)
+
+    >>> canvas = Canvas()
+    >>> canvas.views.append(view)
     """
 
     scene: Scene = Field(
@@ -294,10 +297,12 @@ class ResizePolicy(EventedBase):
     Examples
     --------
     Maintain aspect ratio when view resizes:
-        >>> view = View(camera=Camera(), on_resize=Letterbox())
+
+    >>> view = View(camera=Camera(), on_resize=Letterbox())
 
     No resize behavior (omit the on_resize parameter):
-        >>> view = View(camera=Camera())
+
+    >>> view = View(camera=Camera())
 
     See Also
     --------
@@ -343,11 +348,12 @@ class Letterbox(ResizePolicy):
     Examples
     --------
     Create a view with letterbox resizing:
-        >>> from scenex.utils.projections import orthographic
-        >>> view = View(
-        ...     camera=Camera(projection=orthographic(100, 100, 100)),
-        ...     on_resize=Letterbox(),
-        ... )
+
+    >>> from scenex.utils.projections import orthographic
+    >>> view = View(
+    ...     camera=Camera(projection=orthographic(100, 100, 100)),
+    ...     on_resize=Letterbox(),
+    ... )
 
     When view is resized to 200x100 pixels, the projection expands horizontally
     to maintain the 1:1 aspect ratio, showing more content on the sides rather

@@ -99,39 +99,45 @@ class Transform(RootModel):
     Examples
     --------
     Create an identity transform:
-        >>> transform = Transform()
+
+    >>> transform = Transform()
 
     Translate an object:
-        >>> transform = Transform().translated((10, 20, 30))
+
+    >>> transform = Transform().translated((10, 20, 30))
 
     Rotate 45 degrees around the z-axis:
-        >>> transform = Transform().rotated(45, axis=(0, 0, 1))
+
+    >>> transform = Transform().rotated(45, axis=(0, 0, 1))
 
     Scale uniformly by 2x:
-        >>> transform = Transform().scaled((2, 2, 2))
+
+    >>> transform = Transform().scaled((2, 2, 2))
 
     Chain multiple transformations:
-        >>> transform = (
-        ...     Transform()
-        ...     .translated((10, 0, 0))
-        ...     .rotated(45, (0, 0, 1))
-        ...     .scaled((2, 2, 2))
-        ... )
+
+    >>> transform = (
+    ...     Transform().translated((10, 0, 0)).rotated(45, (0, 0, 1)).scaled((2, 2, 2))
+    ... )
 
     Rotate around a specific point:
-        >>> transform = Transform().rotated(90, axis=(0, 0, 1), about=(10, 10, 0))
+
+    >>> transform = Transform().rotated(90, axis=(0, 0, 1), about=(10, 10, 0))
 
     Transform coordinates:
-        >>> points = np.array([[0, 0, 0], [1, 1, 1]])
-        >>> transformed = transform.map(points)
+
+    >>> points = np.array([[0, 0, 0], [1, 1, 1]])
+    >>> transformed = transform.map(points)
 
     Combine two transforms:
-        >>> transform1 = Transform().translated((5, 0, 0))
-        >>> transform2 = Transform().scaled((2, 2, 2))
-        >>> combined = transform1 @ transform2
+
+    >>> transform1 = Transform().translated((5, 0, 0))
+    >>> transform2 = Transform().scaled((2, 2, 2))
+    >>> combined = transform1 @ transform2
 
     Invert a transform:
-        >>> inverse = transform.inv()
+
+    >>> inverse = transform.inv()
 
     Notes
     -----
