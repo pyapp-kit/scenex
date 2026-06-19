@@ -1,3 +1,5 @@
+"""Utility functions for displaying and debugging scenex scenegraphs."""
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
