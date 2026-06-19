@@ -22,8 +22,8 @@ Supported Frontends
 **WxPython**
 **Jupyter**
 
-Usage
------
+Examples
+--------
 The app is typically created automatically by `scenex.show()` and/or `scenex.run()`:
 
 >>> import scenex as snx
