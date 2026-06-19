@@ -975,9 +975,29 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../app/" class="md-nav__link">
+    
+    
+      
         
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../app/" class="md-nav__link ">
+              
   
   
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>
@@ -992,7 +1012,59 @@
   
   
 
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  scenex.app
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../app/events/" class="md-nav__link">
+        
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+  scenex.app.events
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1431,20 +1503,20 @@ the scene, with widgets dynamically created based on Pydantic field types.</p>
 </details>
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <p>Basic usage with an image::</p>
-<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; import scenex as snx
-&gt;&gt;&gt; import numpy as np
-&gt;&gt;&gt; from scenex.imgui import add_imgui_controls
-
-&gt;&gt;&gt; my_array = np.random.rand(100, 100).astype(np.float32)
-&gt;&gt;&gt; image = snx.Image(data=my_array)
-&gt;&gt;&gt; view = snx.View(scene=snx.Scene(children=[image]))
-&gt;&gt;&gt; snx.show(view)
-Canvas(...)
-&gt;&gt;&gt; add_imgui_controls(view)
-&gt;&gt;&gt; snx.run()
-</code></pre></div>
-<p>The control panel will show sections for:
+    <p>Basic usage with an image:</p>
+    <div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">scenex</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">snx</span>
+</span><span id="__span-0-2"><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="__span-0-3"><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">scenex.imgui</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_imgui_controls</span>
+</span></code></pre></div>
+    <div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><span class="gp">&gt;&gt;&gt; </span><span class="n">my_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span><span id="__span-0-2"><span class="gp">&gt;&gt;&gt; </span><span class="n">image</span> <span class="o">=</span> <span class="n">snx</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">my_array</span><span class="p">)</span>
+</span><span id="__span-0-3"><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">snx</span><span class="o">.</span><span class="n">View</span><span class="p">(</span><span class="n">scene</span><span class="o">=</span><span class="n">snx</span><span class="o">.</span><span class="n">Scene</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">image</span><span class="p">]))</span>
+</span><span id="__span-0-4"><span class="gp">&gt;&gt;&gt; </span><span class="n">snx</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+</span><span id="__span-0-5"><span class="go">Canvas(...)</span>
+</span><span id="__span-0-6"><span class="gp">&gt;&gt;&gt; </span><span class="n">add_imgui_controls</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+</span><span id="__span-0-7"><span class="gp">&gt;&gt;&gt; </span><span class="n">snx</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span></code></pre></div>
+    <p>The control panel will show sections for:
 - View properties (camera, layout, etc.)
 - Image node (colormap, clims, opacity, etc.)
 - Points node (size, color, symbol, etc.)
@@ -1646,19 +1718,19 @@ Canvas(...)
 </span><span id="__span-0-90">
 </span><span id="__span-0-91"><span class="sd">    Examples</span>
 </span><span id="__span-0-92"><span class="sd">    --------</span>
-</span><span id="__span-0-93"><span class="sd">    Basic usage with an image::</span>
+</span><span id="__span-0-93"><span class="sd">    Basic usage with an image:</span>
 </span><span id="__span-0-94">
-</span><span id="__span-0-95"><span class="sd">        &gt;&gt;&gt; import scenex as snx</span>
-</span><span id="__span-0-96"><span class="sd">        &gt;&gt;&gt; import numpy as np</span>
-</span><span id="__span-0-97"><span class="sd">        &gt;&gt;&gt; from scenex.imgui import add_imgui_controls</span>
+</span><span id="__span-0-95"><span class="sd">    &gt;&gt;&gt; import scenex as snx</span>
+</span><span id="__span-0-96"><span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+</span><span id="__span-0-97"><span class="sd">    &gt;&gt;&gt; from scenex.imgui import add_imgui_controls</span>
 </span><span id="__span-0-98">
-</span><span id="__span-0-99"><span class="sd">        &gt;&gt;&gt; my_array = np.random.rand(100, 100).astype(np.float32)</span>
-</span><span id="__span-0-100"><span class="sd">        &gt;&gt;&gt; image = snx.Image(data=my_array)</span>
-</span><span id="__span-0-101"><span class="sd">        &gt;&gt;&gt; view = snx.View(scene=snx.Scene(children=[image]))</span>
-</span><span id="__span-0-102"><span class="sd">        &gt;&gt;&gt; snx.show(view)</span>
-</span><span id="__span-0-103"><span class="sd">        Canvas(...)</span>
-</span><span id="__span-0-104"><span class="sd">        &gt;&gt;&gt; add_imgui_controls(view)</span>
-</span><span id="__span-0-105"><span class="sd">        &gt;&gt;&gt; snx.run()</span>
+</span><span id="__span-0-99"><span class="sd">    &gt;&gt;&gt; my_array = np.random.rand(100, 100).astype(np.float32)</span>
+</span><span id="__span-0-100"><span class="sd">    &gt;&gt;&gt; image = snx.Image(data=my_array)</span>
+</span><span id="__span-0-101"><span class="sd">    &gt;&gt;&gt; view = snx.View(scene=snx.Scene(children=[image]))</span>
+</span><span id="__span-0-102"><span class="sd">    &gt;&gt;&gt; snx.show(view)</span>
+</span><span id="__span-0-103"><span class="sd">    Canvas(...)</span>
+</span><span id="__span-0-104"><span class="sd">    &gt;&gt;&gt; add_imgui_controls(view)</span>
+</span><span id="__span-0-105"><span class="sd">    &gt;&gt;&gt; snx.run()</span>
 </span><span id="__span-0-106">
 </span><span id="__span-0-107"><span class="sd">    The control panel will show sections for:</span>
 </span><span id="__span-0-108"><span class="sd">    - View properties (camera, layout, etc.)</span>
