@@ -101,10 +101,6 @@ def show(
     app().create_app()
     for view in canvas.views:
         projections.zoom_to_fit(view, zoom_factor=0.9, letterbox=True)
-
-        # logger.debug("SHOW MODEL  %s", tree_repr(view.scene))
-        # native_scene = view.scene._get_native()
-        # logger.debug("SHOW NATIVE %s", tree_repr(native_scene))
     return canvas
 
 
