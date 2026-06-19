@@ -46,35 +46,39 @@ class Points(Node):
     Examples
     --------
     Create simple point markers:
-        >>> import numpy as np
-        >>> vertices = np.random.rand(100, 2) * 100
-        >>> points = Points(
-        ...     vertices=vertices,
-        ...     size=5,
-        ...     face_color=UniformColor(color=Color("red")),
-        ... )
+
+    >>> import numpy as np
+    >>> vertices = np.random.rand(100, 2) * 100
+    >>> points = Points(
+    ...     vertices=vertices,
+    ...     size=5,
+    ...     face_color=UniformColor(color=Color("red")),
+    ... )
 
     Create points with custom symbols and styling:
-        >>> points = Points(
-        ...     vertices=vertices,
-        ...     symbol="star",
-        ...     size=20,
-        ...     face_color=UniformColor(color=Color("yellow")),
-        ...     edge_color=UniformColor(color=Color("orange")),
-        ...     edge_width=2,
-        ... )
+
+    >>> points = Points(
+    ...     vertices=vertices,
+    ...     symbol="star",
+    ...     size=20,
+    ...     face_color=UniformColor(color=Color("yellow")),
+    ...     edge_color=UniformColor(color=Color("orange")),
+    ...     edge_width=2,
+    ... )
 
     Create fixed-size points that don't scale with zoom:
-        >>> points = Points(
-        ...     vertices=vertices,
-        ...     size=10,
-        ...     scaling="fixed",
-        ...     face_color=UniformColor(color=Color("blue")),
-        ... )
+
+    >>> points = Points(
+    ...     vertices=vertices,
+    ...     size=10,
+    ...     scaling="fixed",
+    ...     face_color=UniformColor(color=Color("blue")),
+    ... )
 
     Create 3D points:
-        >>> vertices_3d = np.random.rand(50, 3) * 100
-        >>> points = Points(vertices=vertices_3d, symbol="diamond", size=15)
+
+    >>> vertices_3d = np.random.rand(50, 3) * 100
+    >>> points = Points(vertices=vertices_3d, symbol="diamond", size=15)
     """
 
     node_type: Literal["points"] = "points"

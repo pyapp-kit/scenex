@@ -28,31 +28,33 @@ class Mesh(Node):
     Examples
     --------
     Create a simple triangle mesh:
-        >>> import numpy as np
-        >>> vertices = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]])
-        >>> faces = np.array([[0, 1, 2]])
-        >>> mesh = Mesh(
-        ...     vertices=vertices,
-        ...     faces=faces,
-        ...     color=UniformColor(color=Color("blue")),
-        ... )
+
+    >>> import numpy as np
+    >>> vertices = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]])
+    >>> faces = np.array([[0, 1, 2]])
+    >>> mesh = Mesh(
+    ...     vertices=vertices,
+    ...     faces=faces,
+    ...     color=UniformColor(color=Color("blue")),
+    ... )
 
     Create a square made of two triangles:
-        >>> vertices = np.array(
-        ...     [
-        ...         [0, 0, 0],  # bottom-left
-        ...         [1, 0, 0],  # bottom-right
-        ...         [1, 1, 0],  # top-right
-        ...         [0, 1, 0],  # top-left
-        ...     ]
-        ... )
-        >>> faces = np.array(
-        ...     [
-        ...         [0, 1, 2],  # first triangle
-        ...         [0, 2, 3],  # second triangle
-        ...     ]
-        ... )
-        >>> mesh = Mesh(vertices=vertices, faces=faces)
+
+    >>> vertices = np.array(
+    ...     [
+    ...         [0, 0, 0],  # bottom-left
+    ...         [1, 0, 0],  # bottom-right
+    ...         [1, 1, 0],  # top-right
+    ...         [0, 1, 0],  # top-left
+    ...     ]
+    ... )
+    >>> faces = np.array(
+    ...     [
+    ...         [0, 1, 2],  # first triangle
+    ...         [0, 2, 3],  # second triangle
+    ...     ]
+    ... )
+    >>> mesh = Mesh(vertices=vertices, faces=faces)
 
     Notes
     -----

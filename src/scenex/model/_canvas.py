@@ -52,13 +52,16 @@ class Canvas(EventedBase):
     Examples
     --------
     Create a simple canvas with default settings:
-        >>> canvas = Canvas()
+
+    >>> canvas = Canvas()
 
     Create a canvas with custom size and title:
-        >>> canvas = Canvas(width=800, height=600, title="My Visualization")
+
+    >>> canvas = Canvas(width=800, height=600, title="My Visualization")
 
     Create a canvas with multiple views side-by-side:
-        >>> canvas = Canvas(width=800, height=400, views=[View(), View()])
+
+    >>> canvas = Canvas(width=800, height=400, views=[View(), View()])
     """
 
     width: int = Field(default=600, description="The width of the canvas in pixels")

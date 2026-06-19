@@ -25,32 +25,36 @@ class Scene(Node):
     Examples
     --------
     Create a scene with visual elements:
-        >>> import numpy as np
-        >>> my_image = np.random.rand(100, 100).astype(np.float32)
-        >>> my_points = np.random.rand(100, 3).astype(np.float32)
-        >>> scene = Scene(
-        ...     children=[
-        ...         Image(data=my_image),
-        ...         Points(
-        ...             vertices=my_points,
-        ...             face_color=UniformColor(color=Color("red")),
-        ...         ),
-        ...     ]
-        ... )
+
+    >>> import numpy as np
+    >>> my_image = np.random.rand(100, 100).astype(np.float32)
+    >>> my_points = np.random.rand(100, 3).astype(np.float32)
+    >>> scene = Scene(
+    ...     children=[
+    ...         Image(data=my_image),
+    ...         Points(
+    ...             vertices=my_points,
+    ...             face_color=UniformColor(color=Color("red")),
+    ...         ),
+    ...     ]
+    ... )
 
     Create an empty scene and later add children:
-        >>> scene = Scene()
-        >>> scene.add_child(Image(data=my_image))
-        >>> scene.add_child(Points(vertices=my_points))
+
+    >>> scene = Scene()
+    >>> scene.add_child(Image(data=my_image))
+    >>> scene.add_child(Points(vertices=my_points))
 
     Create a hierarchical scene with nested nodes:
-        >>> grandchild = Image(data=my_image)
-        >>> parent = Points(vertices=my_points)
-        >>> scene = Scene(children=[parent])
+
+    >>> grandchild = Image(data=my_image)
+    >>> parent = Points(vertices=my_points)
+    >>> scene = Scene(children=[parent])
 
     Use a scene with a view:
-        >>> view = View(scene=scene, camera=Camera())
-        >>> canvas = Canvas(views=[view])
+
+    >>> view = View(scene=scene, camera=Camera())
+    >>> canvas = Canvas(views=[view])
 
     Notes
     -----

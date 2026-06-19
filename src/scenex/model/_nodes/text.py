@@ -18,7 +18,8 @@ class Text(Node):
     Examples
     --------
     Create a simple text label:
-        >>> text = Text(text="Hello World", color=Color("white"), size=14)
+
+    >>> text = Text(text="Hello World", color=Color("white"), size=14)
 
     Notes
     -----
