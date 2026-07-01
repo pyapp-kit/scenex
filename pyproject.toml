@@ -219,7 +219,7 @@ filterwarnings = [
     "error",
     "ignore:'count' is passed as positional argument::vispy",
     # See https://github.com/pygfx/pygfx/pull/1306
-    "ignore:Setting the shape on a NumPy array has been deprecated in NumPy 2.5:DeprecationWarning:pygfx.*",
+    "ignore:Setting the shape on a NumPy array has been deprecated in NumPy 2.5:DeprecationWarning:pygfx.*|vispy.*",
 ]
 
 # https://coverage.readthedocs.io/
