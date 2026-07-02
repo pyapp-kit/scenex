@@ -20,14 +20,17 @@ from scenex.utils import projections
 from .node import Node
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
+
     from scenex import View
     from scenex.app.events import Event
     from scenex.model._transform import Transform
 
-Position2D = tuple[float, float]
-Position3D = tuple[float, float, float]
-Vector3D = tuple[float, float, float]
-Position = Position2D | Position3D
+    Position2D = tuple[float, float]
+    Position3D = tuple[float, float, float]
+    Vector3D = tuple[float, float, float]
+    Position = Position2D | Position3D
+    Vec3Like = npt.ArrayLike
 
 AnyController = Annotated[
     Union["PanZoom", "Orbit", "None"], Field(discriminator="type")
@@ -103,7 +106,7 @@ class Camera(Node):
         return tuple(vector / np.linalg.norm(vector))
 
     @forward.setter
-    def forward(self, arg: Vector3D) -> None:
+    def forward(self, arg: Vec3Like) -> None:
         """Sets the forward direction of the camera."""
         # Check for no change - avoid divide-by-zeroes
         mag_old = np.linalg.norm(self.forward)
@@ -129,7 +132,7 @@ class Camera(Node):
         return tuple(self.transform.map((0, 1, 0)) - self.transform.map((0, 0, 0)))[:3]
 
     @up.setter
-    def up(self, arg: Vector3D) -> None:
+    def up(self, arg: Vec3Like) -> None:
         """Sets the up direction of the camera.
 
         Does not affect the forward direction of the camera so long as the new up
@@ -153,16 +156,18 @@ class Camera(Node):
             .translated(position)
         )
 
-    def look_at(self, target: Position3D, /, *, up: Vector3D | None = None) -> None:
+    def look_at(self, target: Vec3Like, /, *, up: Vec3Like | None = None) -> None:
         """Adjusts the camera to look at a target point in the world.
 
         Parameters
         ----------
-        target: Position3D
-            The position in 3D space that the camera should look at.
-        up: Vector3D, optional
-            The up direction for the camera. If provided, this vector must be
-            perpendicular to the forward vector that results from looking at target.
+        target: array-like
+            3 element sequence defining the position in 3D space that the camera
+            should look at.
+        up: array-like, optional
+            3 element sequence defining the up direction for the camera. If
+            provided, this vector must be perpendicular to the forward vector that
+            results from looking at target.
         """
         position = self.transform.map((0, 0, 0))[:3]
         self.forward = tuple(target - position)
