@@ -37,6 +37,12 @@ class AdaptorRegistry:
         """Return an iterator over all adaptors in the registry."""
         yield from self._objects.values()
 
+    def discard_adaptor(self, obj: model.EventedBase) -> None:
+        """Disconnect and forget an adaptor whose native resource was closed."""
+        adaptor = self._objects.pop(obj._model_id.hex, None)
+        if adaptor is not None:
+            obj.events.disconnect(adaptor.handle_event)
+
     # TODO: see if this can be done better with typevars.
     # (it doesn't appear to be trivial)
     @overload

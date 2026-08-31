@@ -100,7 +100,14 @@ class Canvas(CanvasAdaptor):
             return
         self._closed = True
         self._filter.uninstall()
+        for view in self._views:
+            vis_view = cast("View", get_adaptor(view))
+            vis_view._vispy_viewbox.parent = None
+        self._views.clear()
         self._canvas.close()
+        from scenex.adaptors import get_adaptor_registry
+
+        get_adaptor_registry("vispy").discard_adaptor(self._model)
 
     def _snx_render(
         self,
