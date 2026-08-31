@@ -106,6 +106,24 @@ def _close_canvases() -> Iterator[None]:
     with patch.object(snx, "show", side_effect=mock_show):
         yield
 
-    # Close any created canvases
-    for canvas in canvases:
+    # The adaptor registry intentionally retains native adaptors so model
+    # events remain connected. Close every canvas that acquired an adaptor,
+    # including canvases created directly rather than through ``show``. Leaving
+    # their Qt/OpenGL widgets for interpreter shutdown can crash in VisPy.
+    def has_adaptor(canvas: snx.Canvas) -> bool:
+        try:
+            return bool(canvas._get_adaptors(create=False))
+        except KeyError:
+            return False
+
+    registered = (
+        obj
+        for obj in tuple(snx.model.objects.all())
+        if isinstance(obj, snx.Canvas) and has_adaptor(obj)
+    )
+    seen: set[int] = set()
+    for canvas in (*canvases, *registered):
+        if id(canvas) in seen:
+            continue
+        seen.add(id(canvas))
         canvas.close()

@@ -47,6 +47,7 @@ class Canvas(CanvasAdaptor):
         self._visual_to_node: dict[VisualNode, model.Node | None] = {}
         self._last_canvas_pos: tuple[float, float] | None = None
         self._model = canvas
+        self._closed = False
 
     def _snx_get_native(self) -> Any:
         return self._canvas.native
@@ -95,6 +96,10 @@ class Canvas(CanvasAdaptor):
 
     def _snx_close(self) -> None:
         """Close canvas."""
+        if self._closed:
+            return
+        self._closed = True
+        self._filter.uninstall()
         self._canvas.close()
 
     def _snx_render(
