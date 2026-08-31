@@ -15,6 +15,15 @@ def test_close() -> None:
     assert canvas._model_id.hex not in adaptors.adaptors._objects
 
 
+def test_clear_registry_releases_adaptors() -> None:
+    canvas = snx.Canvas(views=[snx.View()])
+    canvas._get_adaptors(backend="vispy", create=True)
+
+    adaptors.adaptors.clear()
+
+    assert not tuple(adaptors.adaptors.all())
+
+
 def test_multiple_views() -> None:
     # Create a canvas with two views
     view1 = snx.View()  # Left half

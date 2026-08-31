@@ -37,6 +37,14 @@ class AdaptorRegistry:
         """Return an iterator over all adaptors in the registry."""
         yield from self._objects.values()
 
+    def clear(self) -> None:
+        """Disconnect and release every adaptor retained by this registry."""
+        objects, self._objects = self._objects, {}
+        for adaptor in objects.values():
+            model = getattr(adaptor, "_model", None)
+            if model is not None:
+                model.events.disconnect(adaptor.handle_event)
+
     def discard_adaptor(self, obj: model.EventedBase) -> None:
         """Disconnect and forget an adaptor whose native resource was closed."""
         adaptor = self._objects.pop(obj._model_id.hex, None)
