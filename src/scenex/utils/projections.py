@@ -13,6 +13,9 @@ if TYPE_CHECKING:
     from scenex.model import View
 
 
+_ORTHOGRAPHIC_DEPTH_MARGIN = 1.1
+
+
 def orthographic(width: float = 1, height: float = 1, depth: float = 1) -> Transform:
     """Creates an orthographic projection matrix.
 
@@ -144,7 +147,14 @@ def zoom_to_fit(
                 else:  # scene taller than view - expand width
                     w = h * ar
         view.camera.transform = Transform().translated(center)
-        view.camera.projection = orthographic(w, h, d).scaled([zoom_factor] * 3)
+        # Keep the scene strictly inside the clipping planes.  In particular,
+        # VisPy's volume ray marcher expands its sampling interval to pixel
+        # boundaries; an exactly fitted depth can therefore discard every ray.
+        # The user-facing zoom factor is two-dimensional and should not tighten
+        # the depth interval either.
+        view.camera.projection = orthographic(
+            w, h, d * _ORTHOGRAPHIC_DEPTH_MARGIN
+        ).scaled((zoom_factor, zoom_factor, 1))
     elif type == "perspective":
         fov = 70
         # First, we need to figure out how far away to place the camera so that the

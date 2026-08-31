@@ -10,6 +10,7 @@ import scenex.adaptors._vispy as adaptors
 from scenex.adaptors._auto import get_adaptor_registry
 from scenex.adaptors._vispy._image import _get_max_texture_sizes
 from scenex.model import BlendMode, Transform
+from scenex.utils.projections import zoom_to_fit
 
 if TYPE_CHECKING:
     from vispy.visuals import VolumeVisual
@@ -139,6 +140,25 @@ def test_oversized_texture() -> None:
     # downsampling, so the image appears at the correct size
     bb = _bounds(adaptor._vispy_node)
     np.testing.assert_almost_equal(bb, volume.bounding_box)
+
+
+def test_zoom_to_fit_renders_volume_inside_clipping_planes() -> None:
+    """Regression test for a blank frame when depth exactly fit the volume."""
+    z, y, x = np.indices((16, 16, 16))
+    data = (((z - 7.5) ** 2 + (y - 7.5) ** 2 + (x - 7.5) ** 2 < 36) * 255).astype(
+        np.uint8
+    )
+    volume = snx.Volume(data=data, clims=(0, 255), render_mode="mip")
+    view = snx.View(scene=snx.Scene(children=[volume]))
+    canvas = snx.Canvas(width=96, height=96, views=[view])
+    try:
+        zoom_to_fit(view, type="orthographic", letterbox=True)
+        rendered = canvas.render()
+    finally:
+        canvas.close()
+
+    assert rendered[..., :3].max() == 255
+    assert np.count_nonzero(rendered[..., :3]) > 0
 
 
 def _bounds(node: VolumeVisual) -> np.ndarray:
