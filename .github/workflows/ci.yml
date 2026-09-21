@@ -157,7 +157,7 @@ jobs:
           uv run --no-sync pytest --color=yes --nbval examples/*.ipynb
 
   upload_coverage:
-    if: always()
+    if: always() && github.repository == 'pyapp-kit/scenex'
     needs: [test]
     uses: pyapp-kit/workflows/.github/workflows/upload-coverage.yml@v2
     secrets:
