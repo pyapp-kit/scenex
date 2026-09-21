@@ -12,6 +12,16 @@ def test_close() -> None:
     with patch.object(vis_canvas._canvas, "close") as mock_close:
         canvas.close()
     mock_close.assert_called_once()
+    assert canvas._model_id.hex not in adaptors.adaptors._objects
+
+
+def test_clear_registry_releases_adaptors() -> None:
+    canvas = snx.Canvas(views=[snx.View()])
+    canvas._get_adaptors(backend="vispy", create=True)
+
+    adaptors.adaptors.clear()
+
+    assert not tuple(adaptors.adaptors.all())
 
 
 def test_multiple_views() -> None:
