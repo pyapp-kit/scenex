@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import scenex as snx
 import scenex.adaptors._vispy as adaptors
 
@@ -9,16 +7,16 @@ def test_close() -> None:
     canvas = snx.Canvas()
     vis_canvas = adaptors.adaptors.get_adaptor(canvas, create=True)
     assert isinstance(vis_canvas, adaptors.Canvas)
-    with patch.object(vis_canvas._canvas, "close") as mock_close:
-        canvas.close()
-        canvas.close()
-    mock_close.assert_called_once()
+    canvas.close()
+    assert vis_canvas._canvas._closed
+    canvas.close()
     assert canvas._model_id.hex not in adaptors.adaptors._objects
 
 
 def test_clear_registry_releases_adaptors() -> None:
     canvas = snx.Canvas(views=[snx.View()])
     canvas._get_adaptors(backend="vispy", create=True)
+    canvas.close()
 
     adaptors.adaptors.clear()
 
