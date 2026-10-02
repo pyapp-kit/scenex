@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-AnyResizePolicy = Annotated[Union["Letterbox", "None"], Field(discriminator="type")]
+AnyResizePolicy = Annotated[Union["Letterbox", None], Field(discriminator="type")]
 
 
 class View(EventedBase):

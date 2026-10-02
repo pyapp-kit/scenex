@@ -32,9 +32,7 @@ if TYPE_CHECKING:
     Position = Position2D | Position3D
     Vec3Like = npt.ArrayLike
 
-AnyController = Annotated[
-    Union["PanZoom", "Orbit", "None"], Field(discriminator="type")
-]
+AnyController = Annotated[Union["PanZoom", "Orbit", None], Field(discriminator="type")]
 
 
 class Camera(Node):
