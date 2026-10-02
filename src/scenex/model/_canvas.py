@@ -110,7 +110,11 @@ class Canvas(EventedBase):
 
     def close(self) -> None:
         """Close the canvas and release resources."""
-        for adaptor in self._get_adaptors():
+        try:
+            adaptors = self._get_adaptors()
+        except KeyError:
+            return
+        for adaptor in adaptors:
             cast("CanvasAdaptor", adaptor)._snx_close()
 
     def rect_for(self, view: View) -> tuple[int, int, int, int]:
