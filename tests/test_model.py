@@ -8,7 +8,7 @@ from scenex.adaptors import Adaptor
 def collect_adaptors(cls: type) -> list[type]:
     """Recursively collect all subclasses of Adaptor."""
     subclasses: list[type] = []
-    for subclass in cls.__subclasses__():
+    for subclass in cls.__subclasses__():  # type: ignore[var-annotated]
         subclasses.append(subclass)
         subclasses.extend(collect_adaptors(subclass))
     return subclasses
