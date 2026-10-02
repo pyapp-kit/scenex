@@ -11,6 +11,7 @@ def test_close() -> None:
     assert isinstance(vis_canvas, adaptors.Canvas)
     with patch.object(vis_canvas._canvas, "close") as mock_close:
         canvas.close()
+        canvas.close()
     mock_close.assert_called_once()
     assert canvas._model_id.hex not in adaptors.adaptors._objects
 
