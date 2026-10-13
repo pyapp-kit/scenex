@@ -51,14 +51,25 @@ class Adaptor(ABC, Generic[TModel, TNative]):
             # Parent change events are handled by the parent adaptor.
             return
 
+        arg = info.args[0]
         try:
             name = self.SETTER_METHOD.format(name=signal_name)
             setter = getattr(self, name)
         except AttributeError as e:
+            if len(info.path) > 1:
+                # A length 2+ path implies a child event bubbling up to a parent that
+                # doesn't have a handler for it. Let's just ignore it.
+                nested_name = "".join(f".{step.attr}" for step in info.path)[1:]
+                logger.debug(
+                    "EVENT: %r ignored %s=%r (bubbling up, no handler)",
+                    type(self),
+                    nested_name,
+                    arg,
+                )
+                return
             logger.exception(e)
             return
 
-        arg = info.args[0]
         logger.debug("EVENT: %r -> %s=%r  ", type(self), signal_name, arg)
 
         try:
