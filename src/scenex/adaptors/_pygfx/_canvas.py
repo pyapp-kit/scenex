@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeGuard, cast
 import numpy as np
 import pygfx
 
+from scenex.adaptors import get_adaptor_registry
 from scenex.adaptors._base import CanvasAdaptor
 from scenex.app import GuiFrontend, app, determine_app
 
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
     from rendercanvas.offscreen import OffscreenRenderCanvas
 
     from scenex import model
+    from scenex.app.events import EventFilter
 
     from ._view import View
 
@@ -81,6 +83,7 @@ class Canvas(CanvasAdaptor):
     """Canvas interface for pygfx Backend."""
 
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
+        self._closed = False
         self._canvas = canvas
         self._wgpu_canvas = _rendercanvas_class()
 
@@ -91,7 +94,9 @@ class Canvas(CanvasAdaptor):
         self._views: list[model.View] = []
         for view in canvas.views:
             self._snx_add_view(view)
-        self._filter = app().install_event_filter(self._snx_get_native(), canvas.handle)
+        self._filter: EventFilter | None = app().install_event_filter(
+            self._snx_get_native(), canvas.handle
+        )
         self._renderer = pygfx.renderers.WgpuRenderer(self._wgpu_canvas)
         # Schedule the first draw, to kick off the render loop.
         # Future calls to self._renderer.request_draw() will reuse this function
@@ -149,7 +154,17 @@ class Canvas(CanvasAdaptor):
 
     def _snx_close(self) -> None:
         """Close canvas."""
+        if self._closed:
+            return
+        self._closed = True
+        if self._filter is not None:
+            self._filter.uninstall()
+            self._filter = None
+        self._views.clear()
         self._wgpu_canvas.close()
+        if self._offscreen_canvas is not None:
+            self._offscreen_canvas.close()
+        get_adaptor_registry("pygfx").clear(self._canvas)
 
     def _snx_render(self) -> np.ndarray:
         """Render to offscreen buffer."""

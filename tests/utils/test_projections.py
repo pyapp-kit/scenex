@@ -140,11 +140,10 @@ def test_zoom_to_fit_orthographic() -> None:
         (zoom_factor, zoom_factor), tform.map((100, 100, 0))[:2], rtol=1e-10
     )
 
-    # Zoom is an in-plane operation, and scene depth remains strictly within
-    # the clipping interval for renderer sampling at the boundary.
+    # Zoom changes X/Y only; the model keeps the exact depth interval.
     near = tform.map((50, 50, -5e-7))[2]
     far = tform.map((50, 50, 5e-7))[2]
-    assert -1 < min(near, far) < max(near, far) < 1
+    np.testing.assert_allclose((near, far), (1, -1))
 
 
 def test_zoom_to_fit_orthographic_letterbox() -> None:

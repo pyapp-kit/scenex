@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+import numpy as np
 import vispy.geometry
 import vispy.scene
 
@@ -12,6 +13,9 @@ from ._node import Node
 
 if TYPE_CHECKING:
     from scenex import model
+
+
+_ORTHOGRAPHIC_DEPTH_MARGIN = 1.1
 
 
 class Camera(Node, CameraAdaptor):
@@ -67,6 +71,11 @@ class Camera(Node, CameraAdaptor):
         self._update_vispy_node_tform()
 
     def _snx_set_projection(self, arg: Transform) -> None:
+        # VisPy's volume ray marcher expands its sampling interval to pixel
+        # boundaries. Pad orthographic depth so exactly fitted volumes remain
+        # inside the clipping planes, without changing the shared camera model.
+        if np.array_equal(arg.root[3], (0, 0, 0, 1)):
+            arg = arg.scaled((1, 1, 1 / _ORTHOGRAPHIC_DEPTH_MARGIN))
         self._projection = arg
         # Recompute the vispy node transform since it's a product of multiple scenex
         # Transforms

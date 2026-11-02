@@ -11,9 +11,20 @@ def test_close() -> None:
     canvas = snx.Canvas()
     py_canvas = adaptors.adaptors.get_adaptor(canvas, create=True)
     assert isinstance(py_canvas, adaptors.Canvas)
-    with patch.object(py_canvas._wgpu_canvas, "close") as mock_close:
+    assert py_canvas._filter is not None
+    with patch.object(
+        py_canvas._filter, "uninstall", wraps=py_canvas._filter.uninstall
+    ) as uninstall:
+        # Closing the model closes the native canvas and releases its adaptor.
         canvas.close()
-    mock_close.assert_called_once()
+        assert py_canvas._wgpu_canvas.is_closed()
+        assert py_canvas._filter is None
+        assert canvas._model_id.hex not in adaptors.adaptors._objects
+
+        # Repeated closes through either entry point are harmless.
+        canvas.close()
+        py_canvas._snx_close()
+        uninstall.assert_called_once()
 
 
 def test_multiple_views() -> None:

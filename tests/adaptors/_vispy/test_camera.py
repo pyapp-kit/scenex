@@ -42,7 +42,7 @@ def test_transform_defaults(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
         [
             [w / 2, 0, 0, 0],
             [0, -h / 2, 0, 0],
-            [0, 0, -1, 0],
+            [0, 0, -1 / 1.1, 0],
             [w / 2, h / 2, 0, 1],
         ]
     )
@@ -65,7 +65,7 @@ def test_transform_translate(camera: tuple[snx.Camera, adaptors.Camera]) -> None
         [
             [w / 2, 0, 0, 0],
             [0, -h / 2, 0, 0],
-            [0, 0, -1, 0],
+            [0, 0, -1 / 1.1, 0],
             [0, h, 0, 1],
         ]
     )
@@ -88,8 +88,29 @@ def test_transform_scale(camera: tuple[snx.Camera, adaptors.Camera]) -> None:
         [
             [w / 4, 0, 0, 0],
             [0, -h / 4, 0, 0],
-            [0, 0, -1 / 2, 0],
+            [0, 0, -1 / 2 / 1.1, 0],
             [w / 2, h / 2, 0, 1],
         ]
     )
     assert np.array_equal(node.transform.matrix, exp_tform_mat)  # pyright: ignore[reportAttributeAccessIssue]
+
+
+def test_perspective_projection_unchanged(
+    camera: tuple[snx.Camera, adaptors.Camera],
+) -> None:
+    model, adaptor = camera
+    projection = projections.perspective(70, 1, 100)
+    model.projection = projection
+    assert adaptor._projection == projection
+
+
+def test_orthographic_padding_does_not_accumulate(
+    camera: tuple[snx.Camera, adaptors.Camera],
+) -> None:
+    model, adaptor = camera
+    projection = projections.orthographic(4, 4, 4)
+    for _ in range(2):
+        adaptor._snx_set_projection(projection)
+        np.testing.assert_allclose(adaptor._projection.map((0, 0, 2))[2], -1 / 1.1)
+    model.projection = projection
+    assert model.projection == projection

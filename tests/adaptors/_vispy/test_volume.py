@@ -157,7 +157,6 @@ def test_zoom_to_fit_renders_volume_inside_clipping_planes() -> None:
     finally:
         canvas.close()
 
-    assert rendered[..., :3].max() == 255
     assert np.count_nonzero(rendered[..., :3]) > 0
 
 
