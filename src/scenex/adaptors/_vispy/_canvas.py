@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeGuard, cast
 import numpy as np
 from vispy.color import Color as Color
 
+from scenex.adaptors import get_adaptor_registry
 from scenex.adaptors._base import CanvasAdaptor
 from scenex.app import GuiFrontend, app, determine_app
 
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
     from rendercanvas.base import BaseRenderCanvas
 
     from scenex import model
+    from scenex.app.events import EventFilter
 
     from ._view import View
 
@@ -42,7 +44,9 @@ class Canvas(CanvasAdaptor):
         self._views: list[model.View] = []
         for view in canvas.views:
             self._snx_add_view(view)
-        self._filter = app().install_event_filter(self._canvas.native, canvas.handle)
+        self._filter: EventFilter | None = app().install_event_filter(
+            self._canvas.native, canvas.handle
+        )
 
         self._visual_to_node: dict[VisualNode, model.Node | None] = {}
         self._last_canvas_pos: tuple[float, float] | None = None
@@ -99,15 +103,15 @@ class Canvas(CanvasAdaptor):
         if self._closed:
             return
         self._closed = True
-        self._filter.uninstall()
+        if self._filter is not None:
+            self._filter.uninstall()
+            self._filter = None
         for view in self._views:
             vis_view = cast("View", get_adaptor(view))
             vis_view._vispy_viewbox.parent = None
         self._views.clear()
         self._canvas.close()
-        from scenex.adaptors import get_adaptor_registry
-
-        get_adaptor_registry("vispy").discard_adaptor(self._model)
+        get_adaptor_registry("vispy").clear(self._model)
 
     def _snx_render(
         self,
