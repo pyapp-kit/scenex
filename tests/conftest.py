@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gc
 from collections.abc import Iterator
 from typing import TYPE_CHECKING
 from unittest.mock import patch
@@ -9,7 +10,9 @@ import numpy as np
 import pytest
 
 import scenex as snx
+from scenex.adaptors import get_adaptor_registry
 from scenex.adaptors._auto import determine_backend
+from scenex.app import app
 from scenex.app._auto import GuiFrontend, determine_app
 
 if TYPE_CHECKING:
@@ -106,6 +109,33 @@ def _close_canvases() -> Iterator[None]:
     with patch.object(snx, "show", side_effect=mock_show):
         yield
 
-    # Close any created canvases
-    for canvas in canvases:
+    # The adaptor registry intentionally retains native adaptors so model
+    # events remain connected. Close every canvas that acquired an adaptor,
+    # including canvases created directly rather than through ``show``. Leaving
+    # their Qt/OpenGL widgets for interpreter shutdown can crash in VisPy.
+    def has_adaptor(canvas: snx.Canvas) -> bool:
+        try:
+            return bool(canvas._get_adaptors(create=False))
+        except KeyError:
+            return False
+
+    registered = (
+        obj
+        for obj in tuple(snx.model.objects.all())
+        if isinstance(obj, snx.Canvas) and has_adaptor(obj)
+    )
+    seen: set[int] = set()
+    for canvas in (*canvases, *registered):
+        if id(canvas) in seen:
+            continue
+        seen.add(id(canvas))
         canvas.close()
+
+    # Models deliberately keep their backend adaptors alive between calls so a
+    # scene can be detached from one canvas and reused in another. Tests do not
+    # share scenes, though, and retaining native VisPy objects until interpreter
+    # shutdown can make Qt destroy them after their OpenGL context (SIGSEGV on
+    # Linux). Release the current backend while its GUI application is alive.
+    get_adaptor_registry(determine_backend()).clear()
+    gc.collect()
+    app().process_events()

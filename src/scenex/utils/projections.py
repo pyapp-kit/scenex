@@ -144,7 +144,10 @@ def zoom_to_fit(
                 else:  # scene taller than view - expand width
                     w = h * ar
         view.camera.transform = Transform().translated(center)
-        view.camera.projection = orthographic(w, h, d).scaled([zoom_factor] * 3)
+        # Zoom is an in-plane operation and should not tighten the depth interval.
+        view.camera.projection = orthographic(w, h, d).scaled(
+            (zoom_factor, zoom_factor, 1)
+        )
     elif type == "perspective":
         fov = 70
         # First, we need to figure out how far away to place the camera so that the

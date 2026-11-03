@@ -9,9 +9,20 @@ def test_close() -> None:
     canvas = snx.Canvas()
     vis_canvas = adaptors.adaptors.get_adaptor(canvas, create=True)
     assert isinstance(vis_canvas, adaptors.Canvas)
-    with patch.object(vis_canvas._canvas, "close") as mock_close:
+    assert vis_canvas._filter is not None
+    with patch.object(
+        vis_canvas._filter, "uninstall", wraps=vis_canvas._filter.uninstall
+    ) as uninstall:
+        # Closing the model closes the native canvas and releases its adaptor.
         canvas.close()
-    mock_close.assert_called_once()
+        assert vis_canvas._canvas._closed
+        assert vis_canvas._filter is None
+        assert canvas._model_id.hex not in adaptors.adaptors._objects
+
+        # Repeated closes through either entry point are harmless.
+        canvas.close()
+        vis_canvas._snx_close()
+        uninstall.assert_called_once()
 
 
 def test_multiple_views() -> None:
