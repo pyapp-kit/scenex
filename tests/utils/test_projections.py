@@ -140,6 +140,11 @@ def test_zoom_to_fit_orthographic() -> None:
         (zoom_factor, zoom_factor), tform.map((100, 100, 0))[:2], rtol=1e-10
     )
 
+    # Zoom changes X/Y only; the model keeps the exact depth interval.
+    near = tform.map((50, 50, -5e-7))[2]
+    far = tform.map((50, 50, 5e-7))[2]
+    np.testing.assert_allclose((near, far), (1, -1))
+
 
 def test_zoom_to_fit_orthographic_letterbox() -> None:
     # Put a view on a (square) canvas
