@@ -105,6 +105,10 @@ dev = [
     { include-group = "test" },
     { include-group = "docs" },
     "scenex[pygfx,vispy,imgui,jupyter,pyqt6, wx]",
+    # Type stubs in these releases break mypy (invalid syntax in PyQt6 6.12.0,
+    # new wx 4.3.2 stubs). Remove once fixed upstream or code is updated.
+    "pyqt6 <6.12",
+    "wxpython <4.3.2",
     "imageio[tifffile] >=2.20",
     "ipython>=8.18.1",
     "mypy>=1.14.1",
