@@ -13,6 +13,7 @@
         <link rel="canonical" href="https://pyapp-kit.github.io/scenex/dev/references/imgui/">
       
       
+      
         <link rel="prev" href="../adaptors/">
       
       
@@ -23,7 +24,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.63">
+      <meta name="generator" content="zensical-0.1.2">
     
     
       
@@ -34,12 +35,12 @@
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.10763589.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ebb7f775.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.812a03bb.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
       
       
 
@@ -83,14 +84,11 @@
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
     <div data-md-component="skip">
-      
-        
-        <a href="#sceneximgui" class="md-skip">
-          Skip to content
-        </a>
-      
+      <a href="#__skip" class="md-skip">
+        Skip to content
+      </a>
     </div>
     <div data-md-component="announce">
       
@@ -113,9 +111,10 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 17c-.13 0-.26 0-.39.04l-1.61-3.25a2.5 2.5 0 0 0-1.75-4.29c-.13 0-.25 0-.39.04l-1.63-3.25c.48-.45.77-1.08.77-1.79a2.5 2.5 0 0 0-5 0c0 .71.29 1.34.76 1.79L8.64 9.54c-.14-.04-.26-.04-.39-.04a2.5 2.5 0 0 0-1.75 4.29l-1.61 3.25C4.76 17 4.63 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.79c.46-.45.75-1.08.75-1.79s-.29-1.34-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21c-.45.45-.75 1.09-.75 1.79a2.5 2.5 0 0 0 2.5 2.5c.13 0 .25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+    <label class="md-header__button md-icon" for="__drawer">
       
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navigation</span>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -177,9 +176,10 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+        <label class="md-header__button md-icon" for="__search">
           
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Search</span>
         </label>
         <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
   <button type="button" class="md-search__button">
@@ -1321,8 +1321,10 @@
             <div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
                 
                   
+
   
   
 
@@ -1405,7 +1407,7 @@ transforms, and node-specific parameters.</p>
 <p><span class="doc-section-title">Functions:</span></p>
     <ul>
           <li class="doc-section-item field-body">
-            <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-function&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;add_imgui_controls&lt;/span&gt;" href="./#scenex.imgui.add_imgui_controls">add_imgui_controls</a></code></b>
+            <b><code><a class="autorefs autorefs-internal" title="            add_imgui_controls (scenex.imgui.add_imgui_controls)" href="./#scenex.imgui.add_imgui_controls">add_imgui_controls</a></code></b>
             –
             <div class="doc-md-description">
               <p>Add an interactive ImGui control panel to a view.</p>
@@ -1436,7 +1438,7 @@ transforms, and node-specific parameters.</p>
 
 
 <a href="#scenex.imgui.add_imgui_controls" class="headerlink" title="Permanent link">#</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">add_imgui_controls</span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="&lt;b&gt;&lt;code&gt;view&lt;/code&gt;&lt;/b&gt;" href="./#scenex.imgui.add_imgui_controls(view)">view</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;View&lt;/span&gt;" href="../#scenex.View">View</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">add_imgui_controls</span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="view (scenex.imgui.add_imgui_controls(view))" href="./#scenex.imgui.add_imgui_controls(view)">view</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            View (scenex.model._view.View)" href="../#scenex.View">View</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1452,7 +1454,7 @@ the scene, with widgets dynamically created based on Pydantic field types.</p>
     <ul>
         <li class="doc-section-item field-body">
 <h3 id="scenex.imgui.add_imgui_controls(view)" class="doc doc-heading doc-heading-parameter">              <b><code>view</code></b>
-<a href="#scenex.imgui.add_imgui_controls(view)" class="headerlink" title="Permanent link">#</a></h3>              (<code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;View&lt;/span&gt;" href="../#scenex.View">View</a></code>)
+<a href="#scenex.imgui.add_imgui_controls(view)" class="headerlink" title="Permanent link">#</a></h3>              (<code><a class="autorefs autorefs-internal" title="            View (scenex.model._view.View)" href="../#scenex.View">View</a></code>)
           –
           <div class="doc-md-description">
             <p>The view to control.</p>
@@ -1684,158 +1686,158 @@ the scene, with widgets dynamically created based on Pydantic field types.</p>
 <span class="normal">199</span>
 <span class="normal">200</span>
 <span class="normal">201</span>
-<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-51"><span class="k">def</span><span class="w"> </span><span class="nf">add_imgui_controls</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">View</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-52"><span class="w">    </span><span class="sd">"""Add an interactive ImGui control panel to a view.</span>
-</span><span id="__span-0-53">
-</span><span id="__span-0-54"><span class="sd">    Creates an overlay control panel that allows real-time manipulation of view</span>
-</span><span id="__span-0-55"><span class="sd">    properties and scene node attributes through automatically generated widgets.</span>
-</span><span id="__span-0-56"><span class="sd">    The panel displays collapsible sections for the view and each child node in</span>
-</span><span id="__span-0-57"><span class="sd">    the scene, with widgets dynamically created based on Pydantic field types.</span>
-</span><span id="__span-0-58">
-</span><span id="__span-0-59"><span class="sd">    Parameters</span>
-</span><span id="__span-0-60"><span class="sd">    ----------</span>
-</span><span id="__span-0-61"><span class="sd">    view : View</span>
-</span><span id="__span-0-62"><span class="sd">        The view to control.</span>
-</span><span id="__span-0-63">
-</span><span id="__span-0-64"><span class="sd">    Raises</span>
-</span><span id="__span-0-65"><span class="sd">    ------</span>
-</span><span id="__span-0-66"><span class="sd">    NotImplementedError</span>
-</span><span id="__span-0-67"><span class="sd">        If the view is not using the pygfx backend.</span>
-</span><span id="__span-0-68"><span class="sd">    RuntimeError</span>
-</span><span id="__span-0-69"><span class="sd">        If the pygfx renderer has not been initialized yet.</span>
-</span><span id="__span-0-70"><span class="sd">    ImportError</span>
-</span><span id="__span-0-71"><span class="sd">        If required dependencies (imgui_bundle, pygfx) are not installed.</span>
-</span><span id="__span-0-72">
-</span><span id="__span-0-73"><span class="sd">    Notes</span>
-</span><span id="__span-0-74"><span class="sd">    -----</span>
-</span><span id="__span-0-75"><span class="sd">    - Only works with the pygfx backend</span>
-</span><span id="__span-0-76"><span class="sd">    - The control panel is rendered as an overlay on the canvas. It is not (currently)</span>
-</span><span id="__span-0-77"><span class="sd">      restricted to a specific area of the canvas</span>
-</span><span id="__span-0-78"><span class="sd">    - Current architecture necessitates this function be called AFTER setting up camera</span>
-</span><span id="__span-0-79"><span class="sd">      interaction strategies and/or view event filters. All view events are intercepted</span>
-</span><span id="__span-0-80"><span class="sd">      and may not propagate to the user's view filter or camera filter, but a best</span>
-</span><span id="__span-0-81"><span class="sd">      attempt is made to propagate events that do not interact with the ImGui control</span>
-</span><span id="__span-0-82"><span class="sd">      panel.</span>
-</span><span id="__span-0-83"><span class="sd">    - Widgets are automatically generated from Pydantic field metadata:</span>
-</span><span id="__span-0-84"><span class="sd">        * Literal types → dropdown menus</span>
-</span><span id="__span-0-85"><span class="sd">        * bool → checkbox</span>
-</span><span id="__span-0-86"><span class="sd">        * int/float with bounds → slider</span>
-</span><span id="__span-0-87"><span class="sd">        * int/float without bounds → input field</span>
-</span><span id="__span-0-88"><span class="sd">        * Color → color picker</span>
-</span><span id="__span-0-89"><span class="sd">        * Colormap → colormap preview button</span>
-</span><span id="__span-0-90">
-</span><span id="__span-0-91"><span class="sd">    Examples</span>
-</span><span id="__span-0-92"><span class="sd">    --------</span>
-</span><span id="__span-0-93"><span class="sd">    Basic usage with an image:</span>
-</span><span id="__span-0-94">
-</span><span id="__span-0-95"><span class="sd">    &gt;&gt;&gt; import scenex as snx</span>
-</span><span id="__span-0-96"><span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-</span><span id="__span-0-97"><span class="sd">    &gt;&gt;&gt; from scenex.imgui import add_imgui_controls</span>
-</span><span id="__span-0-98">
-</span><span id="__span-0-99"><span class="sd">    &gt;&gt;&gt; my_array = np.random.rand(100, 100).astype(np.float32)</span>
-</span><span id="__span-0-100"><span class="sd">    &gt;&gt;&gt; image = snx.Image(data=my_array)</span>
-</span><span id="__span-0-101"><span class="sd">    &gt;&gt;&gt; view = snx.View(scene=snx.Scene(children=[image]))</span>
-</span><span id="__span-0-102"><span class="sd">    &gt;&gt;&gt; snx.show(view)</span>
-</span><span id="__span-0-103"><span class="sd">    Canvas(...)</span>
-</span><span id="__span-0-104"><span class="sd">    &gt;&gt;&gt; add_imgui_controls(view)</span>
-</span><span id="__span-0-105"><span class="sd">    &gt;&gt;&gt; snx.run()</span>
-</span><span id="__span-0-106">
-</span><span id="__span-0-107"><span class="sd">    The control panel will show sections for:</span>
-</span><span id="__span-0-108"><span class="sd">    - View properties (camera, layout, etc.)</span>
-</span><span id="__span-0-109"><span class="sd">    - Image node (colormap, clims, opacity, etc.)</span>
-</span><span id="__span-0-110"><span class="sd">    - Points node (size, color, symbol, etc.)</span>
-</span><span id="__span-0-111"><span class="sd">    - Mesh node (color, opacity, blending, etc.)</span>
-</span><span id="__span-0-112"><span class="sd">    """</span>
-</span><span id="__span-0-113">    <span class="n">snx_canvas_model</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">canvas</span>
-</span><span id="__span-0-114">    <span class="k">if</span> <span class="n">snx_canvas_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-115">        <span class="c1"># No canvas to render to</span>
-</span><span id="__span-0-116">        <span class="k">return</span>
-</span><span id="__span-0-117">    <span class="k">try</span><span class="p">:</span>
-</span><span id="__span-0-118">        <span class="n">snx_canvas_adaptor</span> <span class="o">=</span> <span class="n">snx_canvas_model</span><span class="o">.</span><span class="n">_get_adaptors</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"pygfx"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-</span><span id="__span-0-119">        <span class="n">snx_view_adaptor</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">_get_adaptors</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"pygfx"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-</span><span id="__span-0-120">    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
-</span><span id="__span-0-121">        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-</span><span id="__span-0-122">            <span class="s2">"No pygfx adaptor found view/canvas; cannot add imgui controls."</span><span class="p">,</span>
-</span><span id="__span-0-123">            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span id="__span-0-124">        <span class="p">)</span>
-</span><span id="__span-0-125">        <span class="k">return</span>
-</span><span id="__span-0-126">
-</span><span id="__span-0-127">    <span class="n">render_canv</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"CanvasAdaptor"</span><span class="p">,</span> <span class="n">snx_canvas_adaptor</span><span class="p">)</span><span class="o">.</span><span class="n">_snx_get_native</span><span class="p">()</span>
-</span><span id="__span-0-128">
-</span><span id="__span-0-129">    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-</span><span id="__span-0-130">        <span class="nb">isinstance</span><span class="p">(</span><span class="n">snx_canvas_adaptor</span><span class="p">,</span> <span class="n">PygfxCanvasAdaptor</span><span class="p">)</span>
-</span><span id="__span-0-131">        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">snx_view_adaptor</span><span class="p">,</span> <span class="n">PygfxViewAdaptor</span><span class="p">)</span>
-</span><span id="__span-0-132">        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">render_canv</span><span class="p">,</span> <span class="n">BaseRenderCanvas</span><span class="p">)</span>
-</span><span id="__span-0-133">    <span class="p">):</span>
-</span><span id="__span-0-134">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-</span><span id="__span-0-135">            <span class="s2">"Imgui controls can currently only be added to a canvas backed by pygfx."</span>
-</span><span id="__span-0-136">        <span class="p">)</span>
-</span><span id="__span-0-137">    <span class="k">if</span> <span class="ow">not</span> <span class="n">snx_canvas_adaptor</span><span class="o">.</span><span class="n">_renderer</span><span class="p">:</span>
-</span><span id="__span-0-138">        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"The pygfx renderer has not been initialized yet."</span><span class="p">)</span>
-</span><span id="__span-0-139">
-</span><span id="__span-0-140">    <span class="n">imgui_renderer</span> <span class="o">=</span> <span class="n">ImguiRenderer</span><span class="p">(</span>
-</span><span id="__span-0-141">        <span class="n">device</span><span class="o">=</span><span class="n">snx_canvas_adaptor</span><span class="o">.</span><span class="n">_renderer</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-</span><span id="__span-0-142">        <span class="n">canvas</span><span class="o">=</span><span class="n">render_canv</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportArgumentType] (incorrect hint)</span>
-</span><span id="__span-0-143">    <span class="p">)</span>
-</span><span id="__span-0-144">
-</span><span id="__span-0-145">    <span class="k">if</span> <span class="n">implot</span><span class="o">.</span><span class="n">get_current_context</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-146">        <span class="n">implot</span><span class="o">.</span><span class="n">create_context</span><span class="p">()</span>  <span class="c1"># must run after ImGui context exists</span>
-</span><span id="__span-0-147">
-</span><span id="__span-0-148">    <span class="nd">@imgui_renderer</span><span class="o">.</span><span class="n">set_gui</span>  <span class="c1"># type: ignore [untyped-decorator]</span>
-</span><span id="__span-0-149">    <span class="k">def</span><span class="w"> </span><span class="nf">_update_gui</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-150">        <span class="n">render_imgui_view_controls</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
-</span><span id="__span-0-151">
-</span><span id="__span-0-152">    <span class="nd">@render_canv</span><span class="o">.</span><span class="n">request_draw</span>
-</span><span id="__span-0-153">    <span class="k">def</span><span class="w"> </span><span class="nf">_update</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-154">        <span class="n">snx_canvas_adaptor</span><span class="o">.</span><span class="n">_draw_loop</span><span class="p">()</span>
-</span><span id="__span-0-155">        <span class="n">imgui_renderer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
-</span><span id="__span-0-156">
-</span><span id="__span-0-157">    <span class="k">class</span><span class="w"> </span><span class="nc">ImguiEventFilter</span><span class="p">:</span>
-</span><span id="__span-0-158">        <span class="n">internal_filter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Event</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="__span-0-159">
-</span><span id="__span-0-160">        <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="__span-0-161">            <span class="c1"># NOTE: As the scenex event system matures</span>
-</span><span id="__span-0-162">            <span class="c1"># It may capture more events (notably, keypresses).</span>
-</span><span id="__span-0-163">            <span class="c1"># We will have to intercept scenex events here if that occurs</span>
-</span><span id="__span-0-164">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">MouseMoveEvent</span><span class="p">):</span>
-</span><span id="__span-0-165">                <span class="n">move_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"x"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"y"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
-</span><span id="__span-0-166">                <span class="n">imgui_renderer</span><span class="o">.</span><span class="n">_on_mouse_move</span><span class="p">(</span><span class="n">move_dict</span><span class="p">)</span>
-</span><span id="__span-0-167">                <span class="k">if</span> <span class="n">move_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stop_propagation"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-</span><span id="__span-0-168">                    <span class="k">return</span> <span class="kc">True</span>
-</span><span id="__span-0-169">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">MousePressEvent</span><span class="p">):</span>
-</span><span id="__span-0-170">                <span class="n">btn</span> <span class="o">=</span> <span class="n">imgui_filter</span><span class="o">.</span><span class="n">convert_btn</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">)</span>
-</span><span id="__span-0-171">                <span class="n">press_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"button"</span><span class="p">:</span> <span class="n">btn</span><span class="p">,</span> <span class="s2">"event_type"</span><span class="p">:</span> <span class="s2">"pointer_down"</span><span class="p">}</span>
-</span><span id="__span-0-172">                <span class="n">imgui_renderer</span><span class="o">.</span><span class="n">_on_mouse</span><span class="p">(</span><span class="n">press_dict</span><span class="p">)</span>
-</span><span id="__span-0-173">                <span class="k">if</span> <span class="n">press_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stop_propagation"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-</span><span id="__span-0-174">                    <span class="k">return</span> <span class="kc">True</span>
-</span><span id="__span-0-175">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">MouseReleaseEvent</span><span class="p">):</span>
-</span><span id="__span-0-176">                <span class="n">btn</span> <span class="o">=</span> <span class="n">imgui_filter</span><span class="o">.</span><span class="n">convert_btn</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">)</span>
-</span><span id="__span-0-177">                <span class="n">release_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"button"</span><span class="p">:</span> <span class="n">btn</span><span class="p">,</span> <span class="s2">"event_type"</span><span class="p">:</span> <span class="s2">"pointer_up"</span><span class="p">}</span>
-</span><span id="__span-0-178">                <span class="n">imgui_renderer</span><span class="o">.</span><span class="n">_on_mouse</span><span class="p">(</span><span class="n">release_dict</span><span class="p">)</span>
-</span><span id="__span-0-179">                <span class="k">if</span> <span class="n">release_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stop_propagation"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-</span><span id="__span-0-180">                    <span class="k">return</span> <span class="kc">True</span>
-</span><span id="__span-0-181">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">WheelEvent</span><span class="p">):</span>
-</span><span id="__span-0-182">                <span class="c1"># FIXME: Validate correct delta sign</span>
-</span><span id="__span-0-183">                <span class="n">wheel_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"dx"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">angle_delta</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"dy"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">angle_delta</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
-</span><span id="__span-0-184">                <span class="n">imgui_renderer</span><span class="o">.</span><span class="n">_on_wheel</span><span class="p">(</span><span class="n">wheel_dict</span><span class="p">)</span>
-</span><span id="__span-0-185">                <span class="k">if</span> <span class="n">wheel_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stop_propagation"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-</span><span id="__span-0-186">                    <span class="k">return</span> <span class="kc">True</span>
-</span><span id="__span-0-187">
-</span><span id="__span-0-188">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_filter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-189">                <span class="k">return</span> <span class="kc">False</span>
-</span><span id="__span-0-190">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_filter</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-</span><span id="__span-0-191">
-</span><span id="__span-0-192">        <span class="k">def</span><span class="w"> </span><span class="nf">convert_btn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">btn</span><span class="p">:</span> <span class="n">MouseButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="__span-0-193">            <span class="k">if</span> <span class="n">btn</span> <span class="o">&amp;</span> <span class="n">MouseButton</span><span class="o">.</span><span class="n">LEFT</span><span class="p">:</span>
-</span><span id="__span-0-194">                <span class="k">return</span> <span class="mi">1</span>
-</span><span id="__span-0-195">            <span class="k">if</span> <span class="n">btn</span> <span class="o">&amp;</span> <span class="n">MouseButton</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">:</span>
-</span><span id="__span-0-196">                <span class="k">return</span> <span class="mi">2</span>
-</span><span id="__span-0-197">            <span class="k">if</span> <span class="n">btn</span> <span class="o">&amp;</span> <span class="n">MouseButton</span><span class="o">.</span><span class="n">MIDDLE</span><span class="p">:</span>
-</span><span id="__span-0-198">                <span class="k">return</span> <span class="mi">3</span>
-</span><span id="__span-0-199">            <span class="k">return</span> <span class="mi">0</span>
-</span><span id="__span-0-200">
-</span><span id="__span-0-201">    <span class="n">imgui_filter</span> <span class="o">=</span> <span class="n">ImguiEventFilter</span><span class="p">()</span>
-</span><span id="__span-0-202">    <span class="n">imgui_filter</span><span class="o">.</span><span class="n">internal_filter</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">set_event_filter</span><span class="p">(</span><span class="n">imgui_filter</span><span class="p">)</span>
+<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.imgui.add_imgui_controls--source--__span-0-51"><span class="k">def</span><span class="w"> </span><span class="nf">add_imgui_controls</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">View</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-52"><span class="w">    </span><span class="sd">"""Add an interactive ImGui control panel to a view.</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-53">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-54"><span class="sd">    Creates an overlay control panel that allows real-time manipulation of view</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-55"><span class="sd">    properties and scene node attributes through automatically generated widgets.</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-56"><span class="sd">    The panel displays collapsible sections for the view and each child node in</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-57"><span class="sd">    the scene, with widgets dynamically created based on Pydantic field types.</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-58">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-59"><span class="sd">    Parameters</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-60"><span class="sd">    ----------</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-61"><span class="sd">    view : View</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-62"><span class="sd">        The view to control.</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-63">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-64"><span class="sd">    Raises</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-65"><span class="sd">    ------</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-66"><span class="sd">    NotImplementedError</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-67"><span class="sd">        If the view is not using the pygfx backend.</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-68"><span class="sd">    RuntimeError</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-69"><span class="sd">        If the pygfx renderer has not been initialized yet.</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-70"><span class="sd">    ImportError</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-71"><span class="sd">        If required dependencies (imgui_bundle, pygfx) are not installed.</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-72">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-73"><span class="sd">    Notes</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-74"><span class="sd">    -----</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-75"><span class="sd">    - Only works with the pygfx backend</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-76"><span class="sd">    - The control panel is rendered as an overlay on the canvas. It is not (currently)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-77"><span class="sd">      restricted to a specific area of the canvas</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-78"><span class="sd">    - Current architecture necessitates this function be called AFTER setting up camera</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-79"><span class="sd">      interaction strategies and/or view event filters. All view events are intercepted</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-80"><span class="sd">      and may not propagate to the user's view filter or camera filter, but a best</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-81"><span class="sd">      attempt is made to propagate events that do not interact with the ImGui control</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-82"><span class="sd">      panel.</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-83"><span class="sd">    - Widgets are automatically generated from Pydantic field metadata:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-84"><span class="sd">        * Literal types → dropdown menus</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-85"><span class="sd">        * bool → checkbox</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-86"><span class="sd">        * int/float with bounds → slider</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-87"><span class="sd">        * int/float without bounds → input field</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-88"><span class="sd">        * Color → color picker</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-89"><span class="sd">        * Colormap → colormap preview button</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-90">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-91"><span class="sd">    Examples</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-92"><span class="sd">    --------</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-93"><span class="sd">    Basic usage with an image:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-94">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-95"><span class="sd">    &gt;&gt;&gt; import scenex as snx</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-96"><span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-97"><span class="sd">    &gt;&gt;&gt; from scenex.imgui import add_imgui_controls</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-98">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-99"><span class="sd">    &gt;&gt;&gt; my_array = np.random.rand(100, 100).astype(np.float32)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-100"><span class="sd">    &gt;&gt;&gt; image = snx.Image(data=my_array)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-101"><span class="sd">    &gt;&gt;&gt; view = snx.View(scene=snx.Scene(children=[image]))</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-102"><span class="sd">    &gt;&gt;&gt; snx.show(view)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-103"><span class="sd">    Canvas(...)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-104"><span class="sd">    &gt;&gt;&gt; add_imgui_controls(view)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-105"><span class="sd">    &gt;&gt;&gt; snx.run()</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-106">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-107"><span class="sd">    The control panel will show sections for:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-108"><span class="sd">    - View properties (camera, layout, etc.)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-109"><span class="sd">    - Image node (colormap, clims, opacity, etc.)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-110"><span class="sd">    - Points node (size, color, symbol, etc.)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-111"><span class="sd">    - Mesh node (color, opacity, blending, etc.)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-112"><span class="sd">    """</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-113">    <span class="n">snx_canvas_model</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">canvas</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-114">    <span class="k">if</span> <span class="n">snx_canvas_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-115">        <span class="c1"># No canvas to render to</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-116">        <span class="k">return</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-117">    <span class="k">try</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-118">        <span class="n">snx_canvas_adaptor</span> <span class="o">=</span> <span class="n">snx_canvas_model</span><span class="o">.</span><span class="n">_get_adaptors</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"pygfx"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-119">        <span class="n">snx_view_adaptor</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">_get_adaptors</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"pygfx"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-120">    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-121">        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-122">            <span class="s2">"No pygfx adaptor found view/canvas; cannot add imgui controls."</span><span class="p">,</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-123">            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-124">        <span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-125">        <span class="k">return</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-126">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-127">    <span class="n">render_canv</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"CanvasAdaptor"</span><span class="p">,</span> <span class="n">snx_canvas_adaptor</span><span class="p">)</span><span class="o">.</span><span class="n">_snx_get_native</span><span class="p">()</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-128">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-129">    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-130">        <span class="nb">isinstance</span><span class="p">(</span><span class="n">snx_canvas_adaptor</span><span class="p">,</span> <span class="n">PygfxCanvasAdaptor</span><span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-131">        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">snx_view_adaptor</span><span class="p">,</span> <span class="n">PygfxViewAdaptor</span><span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-132">        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">render_canv</span><span class="p">,</span> <span class="n">BaseRenderCanvas</span><span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-133">    <span class="p">):</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-134">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-135">            <span class="s2">"Imgui controls can currently only be added to a canvas backed by pygfx."</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-136">        <span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-137">    <span class="k">if</span> <span class="ow">not</span> <span class="n">snx_canvas_adaptor</span><span class="o">.</span><span class="n">_renderer</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-138">        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"The pygfx renderer has not been initialized yet."</span><span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-139">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-140">    <span class="n">imgui_renderer</span> <span class="o">=</span> <span class="n">ImguiRenderer</span><span class="p">(</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-141">        <span class="n">device</span><span class="o">=</span><span class="n">snx_canvas_adaptor</span><span class="o">.</span><span class="n">_renderer</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-142">        <span class="n">canvas</span><span class="o">=</span><span class="n">render_canv</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportArgumentType] (incorrect hint)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-143">    <span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-144">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-145">    <span class="k">if</span> <span class="n">implot</span><span class="o">.</span><span class="n">get_current_context</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-146">        <span class="n">implot</span><span class="o">.</span><span class="n">create_context</span><span class="p">()</span>  <span class="c1"># must run after ImGui context exists</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-147">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-148">    <span class="nd">@imgui_renderer</span><span class="o">.</span><span class="n">set_gui</span>  <span class="c1"># type: ignore [untyped-decorator]</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-149">    <span class="k">def</span><span class="w"> </span><span class="nf">_update_gui</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-150">        <span class="n">render_imgui_view_controls</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-151">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-152">    <span class="nd">@render_canv</span><span class="o">.</span><span class="n">request_draw</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-153">    <span class="k">def</span><span class="w"> </span><span class="nf">_update</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-154">        <span class="n">snx_canvas_adaptor</span><span class="o">.</span><span class="n">_draw_loop</span><span class="p">()</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-155">        <span class="n">imgui_renderer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-156">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-157">    <span class="k">class</span><span class="w"> </span><span class="nc">ImguiEventFilter</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-158">        <span class="n">internal_filter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Event</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-159">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-160">        <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-161">            <span class="c1"># NOTE: As the scenex event system matures</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-162">            <span class="c1"># It may capture more events (notably, keypresses).</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-163">            <span class="c1"># We will have to intercept scenex events here if that occurs</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-164">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">MouseMoveEvent</span><span class="p">):</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-165">                <span class="n">move_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"x"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"y"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-166">                <span class="n">imgui_renderer</span><span class="o">.</span><span class="n">_on_mouse_move</span><span class="p">(</span><span class="n">move_dict</span><span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-167">                <span class="k">if</span> <span class="n">move_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stop_propagation"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-168">                    <span class="k">return</span> <span class="kc">True</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-169">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">MousePressEvent</span><span class="p">):</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-170">                <span class="n">btn</span> <span class="o">=</span> <span class="n">imgui_filter</span><span class="o">.</span><span class="n">convert_btn</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-171">                <span class="n">press_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"button"</span><span class="p">:</span> <span class="n">btn</span><span class="p">,</span> <span class="s2">"event_type"</span><span class="p">:</span> <span class="s2">"pointer_down"</span><span class="p">}</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-172">                <span class="n">imgui_renderer</span><span class="o">.</span><span class="n">_on_mouse</span><span class="p">(</span><span class="n">press_dict</span><span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-173">                <span class="k">if</span> <span class="n">press_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stop_propagation"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-174">                    <span class="k">return</span> <span class="kc">True</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-175">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">MouseReleaseEvent</span><span class="p">):</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-176">                <span class="n">btn</span> <span class="o">=</span> <span class="n">imgui_filter</span><span class="o">.</span><span class="n">convert_btn</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-177">                <span class="n">release_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"button"</span><span class="p">:</span> <span class="n">btn</span><span class="p">,</span> <span class="s2">"event_type"</span><span class="p">:</span> <span class="s2">"pointer_up"</span><span class="p">}</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-178">                <span class="n">imgui_renderer</span><span class="o">.</span><span class="n">_on_mouse</span><span class="p">(</span><span class="n">release_dict</span><span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-179">                <span class="k">if</span> <span class="n">release_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stop_propagation"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-180">                    <span class="k">return</span> <span class="kc">True</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-181">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">WheelEvent</span><span class="p">):</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-182">                <span class="c1"># FIXME: Validate correct delta sign</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-183">                <span class="n">wheel_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"dx"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">angle_delta</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"dy"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">angle_delta</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-184">                <span class="n">imgui_renderer</span><span class="o">.</span><span class="n">_on_wheel</span><span class="p">(</span><span class="n">wheel_dict</span><span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-185">                <span class="k">if</span> <span class="n">wheel_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stop_propagation"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-186">                    <span class="k">return</span> <span class="kc">True</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-187">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-188">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_filter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-189">                <span class="k">return</span> <span class="kc">False</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-190">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_filter</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-191">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-192">        <span class="k">def</span><span class="w"> </span><span class="nf">convert_btn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">btn</span><span class="p">:</span> <span class="n">MouseButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-193">            <span class="k">if</span> <span class="n">btn</span> <span class="o">&amp;</span> <span class="n">MouseButton</span><span class="o">.</span><span class="n">LEFT</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-194">                <span class="k">return</span> <span class="mi">1</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-195">            <span class="k">if</span> <span class="n">btn</span> <span class="o">&amp;</span> <span class="n">MouseButton</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-196">                <span class="k">return</span> <span class="mi">2</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-197">            <span class="k">if</span> <span class="n">btn</span> <span class="o">&amp;</span> <span class="n">MouseButton</span><span class="o">.</span><span class="n">MIDDLE</span><span class="p">:</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-198">                <span class="k">return</span> <span class="mi">3</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-199">            <span class="k">return</span> <span class="mi">0</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-200">
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-201">    <span class="n">imgui_filter</span> <span class="o">=</span> <span class="n">ImguiEventFilter</span><span class="p">()</span>
+</span><span id="scenex.imgui.add_imgui_controls--source--__span-0-202">    <span class="n">imgui_filter</span><span class="o">.</span><span class="n">internal_filter</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">set_event_filter</span><span class="p">(</span><span class="n">imgui_filter</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1962,7 +1964,7 @@ the scene, with widgets dynamically created based on Pydantic field types.</p>
 </footer>
       
     </div>
-    <div class="md-dialog" data-md-component="dialog">
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
@@ -1974,10 +1976,10 @@ the scene, with widgets dynamically created based on Pydantic field types.</p>
       
         
         
-      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["search.highlight","search.suggest","content.code.copy","content.code.annotate","navigation.indexes","navigation.footer","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["search.highlight","search.suggest","content.code.copy","content.code.annotate","navigation.indexes","navigation.footer","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.8dcc8e9c.min.js"></script>
+      <script src="../../assets/javascripts/bundle.3cb411a8.min.js"></script>
       
         <script src="../../js/install-table.js"></script>
       

@@ -13,6 +13,7 @@
         <link rel="canonical" href="https://pyapp-kit.github.io/scenex/dev/references/app/events/">
       
       
+      
         <link rel="prev" href="../">
       
       
@@ -23,7 +24,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.63">
+      <meta name="generator" content="zensical-0.1.2">
     
     
       
@@ -34,12 +35,12 @@
       
         
       
-      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.10763589.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.ebb7f775.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/modern/palette.812a03bb.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/modern/palette.b60ce83d.min.css">
       
       
 
@@ -83,14 +84,11 @@
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
     <div data-md-component="skip">
-      
-        
-        <a href="#scenexappevents" class="md-skip">
-          Skip to content
-        </a>
-      
+      <a href="#__skip" class="md-skip">
+        Skip to content
+      </a>
     </div>
     <div data-md-component="announce">
       
@@ -113,9 +111,10 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 17c-.13 0-.26 0-.39.04l-1.61-3.25a2.5 2.5 0 0 0-1.75-4.29c-.13 0-.25 0-.39.04l-1.63-3.25c.48-.45.77-1.08.77-1.79a2.5 2.5 0 0 0-5 0c0 .71.29 1.34.76 1.79L8.64 9.54c-.14-.04-.26-.04-.39-.04a2.5 2.5 0 0 0-1.75 4.29l-1.61 3.25C4.76 17 4.63 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.79c.46-.45.75-1.08.75-1.79s-.29-1.34-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21c-.45.45-.75 1.09-.75 1.79a2.5 2.5 0 0 0 2.5 2.5c.13 0 .25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+    <label class="md-header__button md-icon" for="__drawer">
       
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navigation</span>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -177,9 +176,10 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+        <label class="md-header__button md-icon" for="__search">
           
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Search</span>
         </label>
         <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
   <button type="button" class="md-search__button">
@@ -1323,8 +1323,10 @@
             <div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
                 
                   
+
   
   
 
@@ -1424,177 +1426,177 @@ scenex.model.View : View with event filter support</p>
 <p><span class="doc-section-title">Classes:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event">Event</a></code></b>
+  
+      dataclass
+   (scenex.app.events.Event)" href="./#scenex.app.events.Event">Event</a></code></b>
           –
           <div class="doc-md-description">
             <p>Base class for all user interaction and system events.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;EventFilter&lt;/span&gt;" href="./#scenex.app.events.EventFilter">EventFilter</a></code></b>
+          <b><code><a class="autorefs autorefs-internal" title="            EventFilter (scenex.app.events.EventFilter)" href="./#scenex.app.events.EventFilter">EventFilter</a></code></b>
           –
           <div class="doc-md-description">
             <p>Base class for event filter handles.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;KeyEvent&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            KeyEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.KeyEvent">KeyEvent</a></code></b>
+  
+      dataclass
+   (scenex.app.events.KeyEvent)" href="./#scenex.app.events.KeyEvent">KeyEvent</a></code></b>
           –
           <div class="doc-md-description">
             <p>Base class for keyboard events.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;KeyPressEvent&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            KeyPressEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.KeyPressEvent">KeyPressEvent</a></code></b>
+  
+      dataclass
+   (scenex.app.events.KeyPressEvent)" href="./#scenex.app.events.KeyPressEvent">KeyPressEvent</a></code></b>
           –
           <div class="doc-md-description">
             <p>Keyboard key press.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;KeyReleaseEvent&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            KeyReleaseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.KeyReleaseEvent">KeyReleaseEvent</a></code></b>
+  
+      dataclass
+   (scenex.app.events.KeyReleaseEvent)" href="./#scenex.app.events.KeyReleaseEvent">KeyReleaseEvent</a></code></b>
           –
           <div class="doc-md-description">
             <p>Keyboard key release.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseButton&lt;/span&gt;" href="./#scenex.app.events.MouseButton">MouseButton</a></code></b>
+          <b><code><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events.MouseButton)" href="./#scenex.app.events.MouseButton">MouseButton</a></code></b>
           –
           <div class="doc-md-description">
             <p>Enumeration of mouse button states as bit flags.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseDoublePressEvent&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            MouseDoublePressEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseDoublePressEvent">MouseDoublePressEvent</a></code></b>
+  
+      dataclass
+   (scenex.app.events.MouseDoublePressEvent)" href="./#scenex.app.events.MouseDoublePressEvent">MouseDoublePressEvent</a></code></b>
           –
           <div class="doc-md-description">
             <p>Mouse button double-click.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEnterEvent&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            MouseEnterEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEnterEvent">MouseEnterEvent</a></code></b>
+  
+      dataclass
+   (scenex.app.events.MouseEnterEvent)" href="./#scenex.app.events.MouseEnterEvent">MouseEnterEvent</a></code></b>
           –
           <div class="doc-md-description">
             <p>Mouse cursor entering the view area.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></b>
+  
+      dataclass
+   (scenex.app.events.MouseEvent)" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></b>
           –
           <div class="doc-md-description">
             <p>Base class for all mouse-related interaction events.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseLeaveEvent&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            MouseLeaveEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseLeaveEvent">MouseLeaveEvent</a></code></b>
+  
+      dataclass
+   (scenex.app.events.MouseLeaveEvent)" href="./#scenex.app.events.MouseLeaveEvent">MouseLeaveEvent</a></code></b>
           –
           <div class="doc-md-description">
             <p>Mouse cursor leaving the view area.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseMoveEvent&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            MouseMoveEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseMoveEvent">MouseMoveEvent</a></code></b>
+  
+      dataclass
+   (scenex.app.events.MouseMoveEvent)" href="./#scenex.app.events.MouseMoveEvent">MouseMoveEvent</a></code></b>
           –
           <div class="doc-md-description">
             <p>Mouse cursor movement within the view.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MousePressEvent&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            MousePressEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MousePressEvent">MousePressEvent</a></code></b>
+  
+      dataclass
+   (scenex.app.events.MousePressEvent)" href="./#scenex.app.events.MousePressEvent">MousePressEvent</a></code></b>
           –
           <div class="doc-md-description">
             <p>Mouse button press.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseReleaseEvent&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            MouseReleaseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseReleaseEvent">MouseReleaseEvent</a></code></b>
+  
+      dataclass
+   (scenex.app.events.MouseReleaseEvent)" href="./#scenex.app.events.MouseReleaseEvent">MouseReleaseEvent</a></code></b>
           –
           <div class="doc-md-description">
             <p>Mouse button release.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Ray&lt;/span&gt;" href="./#scenex.app.events.Ray">Ray</a></code></b>
+          <b><code><a class="autorefs autorefs-internal" title="            Ray (scenex.app.events.Ray)" href="./#scenex.app.events.Ray">Ray</a></code></b>
           –
           <div class="doc-md-description">
             <p>A 3D ray in world space representing a mouse position.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;ResizeEvent&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            ResizeEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.ResizeEvent">ResizeEvent</a></code></b>
+  
+      dataclass
+   (scenex.app.events.ResizeEvent)" href="./#scenex.app.events.ResizeEvent">ResizeEvent</a></code></b>
           –
           <div class="doc-md-description">
             <p>Window resize event.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;WheelEvent&lt;/span&gt;
+          <b><code><a class="autorefs autorefs-internal" title="            WheelEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.WheelEvent">WheelEvent</a></code></b>
+  
+      dataclass
+   (scenex.app.events.WheelEvent)" href="./#scenex.app.events.WheelEvent">WheelEvent</a></code></b>
           –
           <div class="doc-md-description">
             <p>Mouse wheel scroll event.</p>
@@ -1703,7 +1705,7 @@ ResizeEvent : Window resize event</p>
               Bases: <code><a class="autorefs autorefs-external" title="abc.ABC" href="https://docs.python.org/3/library/abc.html#abc.ABC">ABC</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;EventFilter&lt;/span&gt;" href="./#scenex.app.events.EventFilter" id="mermaid-link-scenex.app.events.EventFilter"></a>
+              <a class="autorefs autorefs-internal" title="            EventFilter (scenex.app.events.EventFilter)" href="./#scenex.app.events.EventFilter" id="mermaid-link-scenex.app.events.EventFilter"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.EventFilter">
               flowchart TD
@@ -1745,12 +1747,12 @@ needed, ensuring proper cleanup and preventing memory leaks.</p>
 <p><span class="doc-section-title">Methods:</span></p>
     <ul>
           <li class="doc-section-item field-body">
-            <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-method&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;uninstall&lt;/span&gt;
+            <b><code><a class="autorefs autorefs-internal" title="            uninstall
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-abstractmethod&quot;&gt;&lt;code&gt;abstractmethod&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.EventFilter.uninstall">uninstall</a></code></b>
+  
+      abstractmethod
+   (scenex.app.events.EventFilter.uninstall)" href="./#scenex.app.events.EventFilter.uninstall">uninstall</a></code></b>
             –
             <div class="doc-md-description">
               <p>Remove this event filter.</p>
@@ -1807,15 +1809,15 @@ EventFilter instance should not be used further.</p>
 <span class="normal">407</span>
 <span class="normal">408</span>
 <span class="normal">409</span>
-<span class="normal">410</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-402"><span class="nd">@abstractmethod</span>
-</span><span id="__span-0-403"><span class="k">def</span><span class="w"> </span><span class="nf">uninstall</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-404"><span class="w">    </span><span class="sd">"""Remove this event filter.</span>
-</span><span id="__span-0-405">
-</span><span id="__span-0-406"><span class="sd">    Uninstalls the event filter, ensuring that the filter function will no</span>
-</span><span id="__span-0-407"><span class="sd">    longer be called for future events. After calling uninstall(), this</span>
-</span><span id="__span-0-408"><span class="sd">    EventFilter instance should not be used further.</span>
-</span><span id="__span-0-409"><span class="sd">    """</span>
-</span><span id="__span-0-410">    <span class="o">...</span>
+<span class="normal">410</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.app.events.EventFilter.uninstall--source--__span-0-402"><span class="nd">@abstractmethod</span>
+</span><span id="scenex.app.events.EventFilter.uninstall--source--__span-0-403"><span class="k">def</span><span class="w"> </span><span class="nf">uninstall</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="scenex.app.events.EventFilter.uninstall--source--__span-0-404"><span class="w">    </span><span class="sd">"""Remove this event filter.</span>
+</span><span id="scenex.app.events.EventFilter.uninstall--source--__span-0-405">
+</span><span id="scenex.app.events.EventFilter.uninstall--source--__span-0-406"><span class="sd">    Uninstalls the event filter, ensuring that the filter function will no</span>
+</span><span id="scenex.app.events.EventFilter.uninstall--source--__span-0-407"><span class="sd">    longer be called for future events. After calling uninstall(), this</span>
+</span><span id="scenex.app.events.EventFilter.uninstall--source--__span-0-408"><span class="sd">    EventFilter instance should not be used further.</span>
+</span><span id="scenex.app.events.EventFilter.uninstall--source--__span-0-409"><span class="sd">    """</span>
+</span><span id="scenex.app.events.EventFilter.uninstall--source--__span-0-410">    <span class="o">...</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1848,26 +1850,26 @@ EventFilter instance should not be used further.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+              Bases: <code><a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event">Event</a></code></p>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event">Event</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;KeyEvent&lt;/span&gt;
+              <a class="autorefs autorefs-internal" title="            KeyEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.KeyEvent" id="mermaid-link-scenex.app.events.KeyEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events.KeyEvent)" href="./#scenex.app.events.KeyEvent" id="mermaid-link-scenex.app.events.KeyEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.KeyEvent">
               flowchart TD
@@ -1970,32 +1972,32 @@ KeyReleaseEvent : Key release</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;KeyEvent&lt;/span&gt;
+              Bases: <code><a class="autorefs autorefs-internal" title="            KeyEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.KeyEvent">KeyEvent</a></code></p>
+  
+      dataclass
+   (scenex.app.events._events.KeyEvent)" href="./#scenex.app.events.KeyEvent">KeyEvent</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;KeyPressEvent&lt;/span&gt;
+              <a class="autorefs autorefs-internal" title="            KeyPressEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.KeyPressEvent" id="mermaid-link-scenex.app.events.KeyPressEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;KeyEvent&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events.KeyPressEvent)" href="./#scenex.app.events.KeyPressEvent" id="mermaid-link-scenex.app.events.KeyPressEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            KeyEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.KeyEvent" id="mermaid-link-scenex.app.events._events.KeyEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events._events.KeyEvent)" href="./#scenex.app.events.KeyEvent" id="mermaid-link-scenex.app.events._events.KeyEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.KeyPressEvent">
               flowchart TD
@@ -2085,32 +2087,32 @@ KeyReleaseEvent : Key release</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;KeyEvent&lt;/span&gt;
+              Bases: <code><a class="autorefs autorefs-internal" title="            KeyEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.KeyEvent">KeyEvent</a></code></p>
+  
+      dataclass
+   (scenex.app.events._events.KeyEvent)" href="./#scenex.app.events.KeyEvent">KeyEvent</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;KeyReleaseEvent&lt;/span&gt;
+              <a class="autorefs autorefs-internal" title="            KeyReleaseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.KeyReleaseEvent" id="mermaid-link-scenex.app.events.KeyReleaseEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;KeyEvent&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events.KeyReleaseEvent)" href="./#scenex.app.events.KeyReleaseEvent" id="mermaid-link-scenex.app.events.KeyReleaseEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            KeyEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.KeyEvent" id="mermaid-link-scenex.app.events._events.KeyEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events._events.KeyEvent)" href="./#scenex.app.events.KeyEvent" id="mermaid-link-scenex.app.events._events.KeyEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.KeyReleaseEvent">
               flowchart TD
@@ -2198,7 +2200,7 @@ KeyReleaseEvent : Key release</p>
               Bases: <code><a class="autorefs autorefs-external" title="enum.IntFlag" href="https://docs.python.org/3/library/enum.html#enum.IntFlag">IntFlag</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseButton&lt;/span&gt;" href="./#scenex.app.events.MouseButton" id="mermaid-link-scenex.app.events.MouseButton"></a>
+              <a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events.MouseButton)" href="./#scenex.app.events.MouseButton" id="mermaid-link-scenex.app.events.MouseButton"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.MouseButton">
               flowchart TD
@@ -2294,37 +2296,37 @@ of multiple simultaneous button presses.</p>
   </span>
 
 <a href="#scenex.app.events.MouseDoublePressEvent" class="headerlink" title="Permanent link">#</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">MouseDoublePressEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.MouseDoublePressEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.MouseDoublePressEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseButton&lt;/span&gt;" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">MouseDoublePressEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.MouseDoublePressEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.MouseDoublePressEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+              Bases: <code><a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></p>
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseDoublePressEvent&lt;/span&gt;
+              <a class="autorefs autorefs-internal" title="            MouseDoublePressEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseDoublePressEvent" id="mermaid-link-scenex.app.events.MouseDoublePressEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events.MouseDoublePressEvent)" href="./#scenex.app.events.MouseDoublePressEvent" id="mermaid-link-scenex.app.events.MouseDoublePressEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events._events.MouseEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events._events.MouseEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.MouseDoublePressEvent">
               flowchart TD
@@ -2411,37 +2413,37 @@ The timing threshold for double-click detection is system-dependent.</p>
   </span>
 
 <a href="#scenex.app.events.MouseEnterEvent" class="headerlink" title="Permanent link">#</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">MouseEnterEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.MouseEnterEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.MouseEnterEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseButton&lt;/span&gt;" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">MouseEnterEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.MouseEnterEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.MouseEnterEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+              Bases: <code><a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></p>
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEnterEvent&lt;/span&gt;
+              <a class="autorefs autorefs-internal" title="            MouseEnterEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEnterEvent" id="mermaid-link-scenex.app.events.MouseEnterEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events.MouseEnterEvent)" href="./#scenex.app.events.MouseEnterEvent" id="mermaid-link-scenex.app.events.MouseEnterEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events._events.MouseEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events._events.MouseEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.MouseEnterEvent">
               flowchart TD
@@ -2528,31 +2530,31 @@ the entry position and button states.</p>
   </span>
 
 <a href="#scenex.app.events.MouseEvent" class="headerlink" title="Permanent link">#</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">MouseEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.MouseEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.MouseEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseButton&lt;/span&gt;" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">MouseEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.MouseEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.MouseEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+              Bases: <code><a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event">Event</a></code></p>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event">Event</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+              <a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events.MouseEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events.MouseEvent)" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events.MouseEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.MouseEvent">
               flowchart TD
@@ -2599,7 +2601,7 @@ origin at the top-left corner.</p>
         </li>
         <li class="doc-section-item field-body">
           <b><code><span title="scenex.app.events.MouseEvent.buttons">buttons</span></code></b>
-              (<code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseButton&lt;/span&gt;" href="./#scenex.app.events.MouseButton">MouseButton</a></code>)
+              (<code><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href="./#scenex.app.events.MouseButton">MouseButton</a></code>)
           –
           <div class="doc-md-description">
             <p>Bit flags indicating which mouse buttons are currently pressed. Use bitwise
@@ -2668,26 +2670,26 @@ WheelEvent : Mouse wheel scroll</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+              Bases: <code><a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event">Event</a></code></p>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event">Event</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseLeaveEvent&lt;/span&gt;
+              <a class="autorefs autorefs-internal" title="            MouseLeaveEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseLeaveEvent" id="mermaid-link-scenex.app.events.MouseLeaveEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events.MouseLeaveEvent)" href="./#scenex.app.events.MouseLeaveEvent" id="mermaid-link-scenex.app.events.MouseLeaveEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.MouseLeaveEvent">
               flowchart TD
@@ -2773,37 +2775,37 @@ available when the cursor has left the view.</p>
   </span>
 
 <a href="#scenex.app.events.MouseMoveEvent" class="headerlink" title="Permanent link">#</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">MouseMoveEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.MouseMoveEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.MouseMoveEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseButton&lt;/span&gt;" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">MouseMoveEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.MouseMoveEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.MouseMoveEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+              Bases: <code><a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></p>
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseMoveEvent&lt;/span&gt;
+              <a class="autorefs autorefs-internal" title="            MouseMoveEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseMoveEvent" id="mermaid-link-scenex.app.events.MouseMoveEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events.MouseMoveEvent)" href="./#scenex.app.events.MouseMoveEvent" id="mermaid-link-scenex.app.events.MouseMoveEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events._events.MouseEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events._events.MouseEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.MouseMoveEvent">
               flowchart TD
@@ -2886,37 +2888,37 @@ cursor movement.</p>
   </span>
 
 <a href="#scenex.app.events.MousePressEvent" class="headerlink" title="Permanent link">#</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">MousePressEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.MousePressEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.MousePressEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseButton&lt;/span&gt;" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">MousePressEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.MousePressEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.MousePressEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+              Bases: <code><a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></p>
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MousePressEvent&lt;/span&gt;
+              <a class="autorefs autorefs-internal" title="            MousePressEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MousePressEvent" id="mermaid-link-scenex.app.events.MousePressEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events.MousePressEvent)" href="./#scenex.app.events.MousePressEvent" id="mermaid-link-scenex.app.events.MousePressEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events._events.MouseEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events._events.MouseEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.MousePressEvent">
               flowchart TD
@@ -3005,37 +3007,37 @@ MouseDoublePressEvent : Double-click detection</p>
   </span>
 
 <a href="#scenex.app.events.MouseReleaseEvent" class="headerlink" title="Permanent link">#</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">MouseReleaseEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.MouseReleaseEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.MouseReleaseEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseButton&lt;/span&gt;" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">MouseReleaseEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.MouseReleaseEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.MouseReleaseEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+              Bases: <code><a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></p>
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseReleaseEvent&lt;/span&gt;
+              <a class="autorefs autorefs-internal" title="            MouseReleaseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseReleaseEvent" id="mermaid-link-scenex.app.events.MouseReleaseEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events.MouseReleaseEvent)" href="./#scenex.app.events.MouseReleaseEvent" id="mermaid-link-scenex.app.events.MouseReleaseEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events._events.MouseEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events._events.MouseEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.MouseReleaseEvent">
               flowchart TD
@@ -3125,7 +3127,7 @@ after the release (i.e., the released button is no longer set in the flags).</p>
               Bases: <code><a class="autorefs autorefs-external" title="typing.NamedTuple" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple">NamedTuple</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Ray&lt;/span&gt;" href="./#scenex.app.events.Ray" id="mermaid-link-scenex.app.events.Ray"></a>
+              <a class="autorefs autorefs-internal" title="            Ray (scenex.app.events.Ray)" href="./#scenex.app.events.Ray" id="mermaid-link-scenex.app.events.Ray"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.Ray">
               flowchart TD
@@ -3182,7 +3184,7 @@ orthographic views, this is parallel to the camera's view direction.</p>
         </li>
         <li class="doc-section-item field-body">
           <b><code><span title="scenex.app.events.Ray.source">source</span></code></b>
-              (<code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;View&lt;/span&gt;" href="../../#scenex.View">View</a></code>)
+              (<code><a class="autorefs autorefs-internal" title="            View (scenex.View)" href="../../#scenex.View">View</a></code>)
           –
           <div class="doc-md-description">
             <p>The view that generated this ray, providing context for which camera
@@ -3233,14 +3235,14 @@ Node.passes_through : Node method for computing ray intersections</p>
 <p><span class="doc-section-title">Methods:</span></p>
     <ul>
           <li class="doc-section-item field-body">
-            <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-method&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;intersections&lt;/span&gt;" href="./#scenex.app.events.Ray.intersections">intersections</a></code></b>
+            <b><code><a class="autorefs autorefs-internal" title="            intersections (scenex.app.events.Ray.intersections)" href="./#scenex.app.events.Ray.intersections">intersections</a></code></b>
             –
             <div class="doc-md-description">
               <p>Find all nodes intersected by this ray in the scene graph.</p>
             </div>
           </li>
           <li class="doc-section-item field-body">
-            <b><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-method&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;point_at_distance&lt;/span&gt;" href="./#scenex.app.events.Ray.point_at_distance">point_at_distance</a></code></b>
+            <b><code><a class="autorefs autorefs-internal" title="            point_at_distance (scenex.app.events.Ray.point_at_distance)" href="./#scenex.app.events.Ray.point_at_distance">point_at_distance</a></code></b>
             –
             <div class="doc-md-description">
               <p>Compute the 3D point at a given distance along the ray.</p>
@@ -3272,7 +3274,7 @@ Node.passes_through : Node method for computing ray intersections</p>
 
 
 <a href="#scenex.app.events.Ray.intersections" class="headerlink" title="Permanent link">#</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">intersections</span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="&lt;b&gt;&lt;code&gt;graph&lt;/code&gt;&lt;/b&gt;" href="./#scenex.app.events.Ray.intersections(graph)">graph</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Node&lt;/span&gt;" href="../../#scenex.Node">Node</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><span title="scenex.app.events._events.Intersection">Intersection</span></span><span class="p">]</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">intersections</span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="graph (scenex.app.events.Ray.intersections(graph))" href="./#scenex.app.events.Ray.intersections(graph)">graph</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            Node (scenex.Node)" href="../../#scenex.Node">Node</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><span title="scenex.app.events._events.Intersection">Intersection</span></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3287,7 +3289,7 @@ visible nodes are tested.</p>
     <ul>
         <li class="doc-section-item field-body">
 <h4 id="scenex.app.events.Ray.intersections(graph)" class="doc doc-heading doc-heading-parameter">              <b><code>graph</code></b>
-<a href="#scenex.app.events.Ray.intersections(graph)" class="headerlink" title="Permanent link">#</a></h4>              (<code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Node&lt;/span&gt;" href="../../#scenex.Node">Node</a></code>)
+<a href="#scenex.app.events.Ray.intersections(graph)" class="headerlink" title="Permanent link">#</a></h4>              (<code><a class="autorefs autorefs-internal" title="            Node (scenex.Node)" href="../../#scenex.Node">Node</a></code>)
           –
           <div class="doc-md-description">
             <p>The root node to test. Typically a Scene, but can be any node with
@@ -3341,35 +3343,35 @@ t where intersection occurs at origin + t * direction.</p>
 <span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span>
-<span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-155"><span class="k">def</span><span class="w"> </span><span class="nf">intersections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Intersection</span><span class="p">]:</span>
-</span><span id="__span-0-156"><span class="w">    </span><span class="sd">"""Find all nodes intersected by this ray in the scene graph.</span>
-</span><span id="__span-0-157">
-</span><span id="__span-0-158"><span class="sd">    Recursively tests the ray against the given node and all its descendants,</span>
-</span><span id="__span-0-159"><span class="sd">    returning all intersections sorted by distance from the ray origin. Only</span>
-</span><span id="__span-0-160"><span class="sd">    visible nodes are tested.</span>
-</span><span id="__span-0-161">
-</span><span id="__span-0-162"><span class="sd">    Parameters</span>
-</span><span id="__span-0-163"><span class="sd">    ----------</span>
-</span><span id="__span-0-164"><span class="sd">    graph : Node</span>
-</span><span id="__span-0-165"><span class="sd">        The root node to test. Typically a Scene, but can be any node with</span>
-</span><span id="__span-0-166"><span class="sd">        children.</span>
-</span><span id="__span-0-167">
-</span><span id="__span-0-168"><span class="sd">    Returns</span>
-</span><span id="__span-0-169"><span class="sd">    -------</span>
-</span><span id="__span-0-170"><span class="sd">    list[Intersection]</span>
-</span><span id="__span-0-171"><span class="sd">        List of (node, distance) tuples for all intersections, sorted by</span>
-</span><span id="__span-0-172"><span class="sd">        increasing distance from the ray origin. The distance is the parameter</span>
-</span><span id="__span-0-173"><span class="sd">        t where intersection occurs at origin + t * direction.</span>
-</span><span id="__span-0-174"><span class="sd">    """</span>
-</span><span id="__span-0-175">    <span class="n">through</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Intersection</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="__span-0-176">    <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">visible</span><span class="p">:</span>
-</span><span id="__span-0-177">        <span class="c1"># ...check the node itself...</span>
-</span><span id="__span-0-178">        <span class="k">if</span> <span class="p">(</span><span class="n">d</span> <span class="o">:=</span> <span class="n">graph</span><span class="o">.</span><span class="n">passes_through</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-179">            <span class="n">through</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">graph</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
-</span><span id="__span-0-180">        <span class="c1"># ...then check its children...</span>
-</span><span id="__span-0-181">        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-</span><span id="__span-0-182">            <span class="n">through</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intersections</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
-</span><span id="__span-0-183">    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">through</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">inter</span><span class="p">:</span> <span class="n">inter</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.app.events.Ray.intersections--source--__span-0-155"><span class="k">def</span><span class="w"> </span><span class="nf">intersections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Intersection</span><span class="p">]:</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-156"><span class="w">    </span><span class="sd">"""Find all nodes intersected by this ray in the scene graph.</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-157">
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-158"><span class="sd">    Recursively tests the ray against the given node and all its descendants,</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-159"><span class="sd">    returning all intersections sorted by distance from the ray origin. Only</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-160"><span class="sd">    visible nodes are tested.</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-161">
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-162"><span class="sd">    Parameters</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-163"><span class="sd">    ----------</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-164"><span class="sd">    graph : Node</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-165"><span class="sd">        The root node to test. Typically a Scene, but can be any node with</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-166"><span class="sd">        children.</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-167">
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-168"><span class="sd">    Returns</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-169"><span class="sd">    -------</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-170"><span class="sd">    list[Intersection]</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-171"><span class="sd">        List of (node, distance) tuples for all intersections, sorted by</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-172"><span class="sd">        increasing distance from the ray origin. The distance is the parameter</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-173"><span class="sd">        t where intersection occurs at origin + t * direction.</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-174"><span class="sd">    """</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-175">    <span class="n">through</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Intersection</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-176">    <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">visible</span><span class="p">:</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-177">        <span class="c1"># ...check the node itself...</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-178">        <span class="k">if</span> <span class="p">(</span><span class="n">d</span> <span class="o">:=</span> <span class="n">graph</span><span class="o">.</span><span class="n">passes_through</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-179">            <span class="n">through</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">graph</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-180">        <span class="c1"># ...then check its children...</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-181">        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-182">            <span class="n">through</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intersections</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
+</span><span id="scenex.app.events.Ray.intersections--source--__span-0-183">    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">through</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">inter</span><span class="p">:</span> <span class="n">inter</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3384,7 +3386,7 @@ t where intersection occurs at origin + t * direction.</p>
 
 
 <a href="#scenex.app.events.Ray.point_at_distance" class="headerlink" title="Permanent link">#</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">point_at_distance</span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="&lt;b&gt;&lt;code&gt;distance&lt;/code&gt;&lt;/b&gt;" href="./#scenex.app.events.Ray.point_at_distance(distance)">distance</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">]</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">point_at_distance</span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="distance (scenex.app.events.Ray.point_at_distance(distance))" href="./#scenex.app.events.Ray.point_at_distance(distance)">distance</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3441,26 +3443,26 @@ along the ray.</p>
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-134"><span class="k">def</span><span class="w"> </span><span class="nf">point_at_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-</span><span id="__span-0-135"><span class="w">    </span><span class="sd">"""Compute the 3D point at a given distance along the ray.</span>
-</span><span id="__span-0-136">
-</span><span id="__span-0-137"><span class="sd">    Parameters</span>
-</span><span id="__span-0-138"><span class="sd">    ----------</span>
-</span><span id="__span-0-139"><span class="sd">    distance : float</span>
-</span><span id="__span-0-140"><span class="sd">        The distance along the ray from the origin. Positive values extend</span>
-</span><span id="__span-0-141"><span class="sd">        in the direction of the ray, negative values extend backward from</span>
-</span><span id="__span-0-142"><span class="sd">        the origin.</span>
-</span><span id="__span-0-143">
-</span><span id="__span-0-144"><span class="sd">    Returns</span>
-</span><span id="__span-0-145"><span class="sd">    -------</span>
-</span><span id="__span-0-146"><span class="sd">    tuple[float, float, float]</span>
-</span><span id="__span-0-147"><span class="sd">        The (x, y, z) coordinates of the point at the specified distance</span>
-</span><span id="__span-0-148"><span class="sd">        along the ray.</span>
-</span><span id="__span-0-149"><span class="sd">    """</span>
-</span><span id="__span-0-150">    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">distance</span>
-</span><span id="__span-0-151">    <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">distance</span>
-</span><span id="__span-0-152">    <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">distance</span>
-</span><span id="__span-0-153">    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-134"><span class="k">def</span><span class="w"> </span><span class="nf">point_at_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-135"><span class="w">    </span><span class="sd">"""Compute the 3D point at a given distance along the ray.</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-136">
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-137"><span class="sd">    Parameters</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-138"><span class="sd">    ----------</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-139"><span class="sd">    distance : float</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-140"><span class="sd">        The distance along the ray from the origin. Positive values extend</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-141"><span class="sd">        in the direction of the ray, negative values extend backward from</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-142"><span class="sd">        the origin.</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-143">
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-144"><span class="sd">    Returns</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-145"><span class="sd">    -------</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-146"><span class="sd">    tuple[float, float, float]</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-147"><span class="sd">        The (x, y, z) coordinates of the point at the specified distance</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-148"><span class="sd">        along the ray.</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-149"><span class="sd">    """</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-150">    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">distance</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-151">    <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">distance</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-152">    <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">distance</span>
+</span><span id="scenex.app.events.Ray.point_at_distance--source--__span-0-153">    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3493,26 +3495,26 @@ along the ray.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+              Bases: <code><a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event">Event</a></code></p>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event">Event</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;ResizeEvent&lt;/span&gt;
+              <a class="autorefs autorefs-internal" title="            ResizeEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.ResizeEvent" id="mermaid-link-scenex.app.events.ResizeEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events.ResizeEvent)" href="./#scenex.app.events.ResizeEvent" id="mermaid-link-scenex.app.events.ResizeEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.ResizeEvent">
               flowchart TD
@@ -3612,37 +3614,37 @@ event allows views and other components to adapt to new window dimensions.</p>
   </span>
 
 <a href="#scenex.app.events.WheelEvent" class="headerlink" title="Permanent link">#</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">WheelEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.WheelEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.WheelEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseButton&lt;/span&gt;" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">,</span> <span class="n"><span title="scenex.app.events.WheelEvent(angle_delta)">angle_delta</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">])</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">WheelEvent</span><span class="p">(</span><span class="n"><span title="scenex.app.events.WheelEvent(pos)">pos</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">],</span> <span class="n"><span title="scenex.app.events.WheelEvent(buttons)">buttons</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            MouseButton (scenex.app.events._events.MouseButton)" href="./#scenex.app.events.MouseButton">MouseButton</a></span><span class="p">,</span> <span class="n"><span title="scenex.app.events.WheelEvent(angle_delta)">angle_delta</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">])</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+              Bases: <code><a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></p>
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href="./#scenex.app.events.MouseEvent">MouseEvent</a></code></p>
 
             <div style="display: none">
-              <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;WheelEvent&lt;/span&gt;
+              <a class="autorefs autorefs-internal" title="            WheelEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.WheelEvent" id="mermaid-link-scenex.app.events.WheelEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MouseEvent&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events.WheelEvent)" href="./#scenex.app.events.WheelEvent" id="mermaid-link-scenex.app.events.WheelEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            MouseEvent
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events._events.MouseEvent"></a>
-                  <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Event&lt;/span&gt;
+  
+      dataclass
+   (scenex.app.events._events.MouseEvent)" href="./#scenex.app.events.MouseEvent" id="mermaid-link-scenex.app.events._events.MouseEvent"></a>
+                  <a class="autorefs autorefs-internal" title="            Event
 
 
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
+  
+      dataclass
+   (scenex.app.events._events.Event)" href="./#scenex.app.events.Event" id="mermaid-link-scenex.app.events._events.Event"></a>
             </div>
             <pre class="mermaid"><code id="mermaid-diagram-scenex.app.events.WheelEvent">
               flowchart TD
@@ -3848,7 +3850,7 @@ user. Horizontal scrolling (if supported) uses the first component.</p>
 </footer>
       
     </div>
-    <div class="md-dialog" data-md-component="dialog">
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
@@ -3860,10 +3862,10 @@ user. Horizontal scrolling (if supported) uses the first component.</p>
       
         
         
-      <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":["search.highlight","search.suggest","content.code.copy","content.code.annotate","navigation.indexes","navigation.footer","toc.follow"],"redirect":null,"search":"../../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":["search.highlight","search.suggest","content.code.copy","content.code.annotate","navigation.indexes","navigation.footer","toc.follow"],"redirect":null,"search":"../../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.8dcc8e9c.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.3cb411a8.min.js"></script>
       
         <script src="../../../js/install-table.js"></script>
       

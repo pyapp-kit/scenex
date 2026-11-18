@@ -4,10 +4,7 @@
         <loc>https://pyapp-kit.github.io/scenex/dev/</loc>
       </url>
       <url>
-        <loc>https://pyapp-kit.github.io/scenex/dev/install/</loc>
-      </url>
-      <url>
-        <loc>https://pyapp-kit.github.io/scenex/dev/theory/</loc>
+        <loc>https://pyapp-kit.github.io/scenex/dev/contributing/</loc>
       </url>
       <url>
         <loc>https://pyapp-kit.github.io/scenex/dev/examples/</loc>
@@ -61,10 +58,13 @@
         <loc>https://pyapp-kit.github.io/scenex/dev/examples/rgb/</loc>
       </url>
       <url>
+        <loc>https://pyapp-kit.github.io/scenex/dev/install/</loc>
+      </url>
+      <url>
         <loc>https://pyapp-kit.github.io/scenex/dev/references/</loc>
       </url>
       <url>
-        <loc>https://pyapp-kit.github.io/scenex/dev/references/model/</loc>
+        <loc>https://pyapp-kit.github.io/scenex/dev/references/adaptors/</loc>
       </url>
       <url>
         <loc>https://pyapp-kit.github.io/scenex/dev/references/app/</loc>
@@ -73,10 +73,10 @@
         <loc>https://pyapp-kit.github.io/scenex/dev/references/app/events/</loc>
       </url>
       <url>
-        <loc>https://pyapp-kit.github.io/scenex/dev/references/adaptors/</loc>
+        <loc>https://pyapp-kit.github.io/scenex/dev/references/imgui/</loc>
       </url>
       <url>
-        <loc>https://pyapp-kit.github.io/scenex/dev/references/imgui/</loc>
+        <loc>https://pyapp-kit.github.io/scenex/dev/references/model/</loc>
       </url>
       <url>
         <loc>https://pyapp-kit.github.io/scenex/dev/references/utils/</loc>
@@ -85,6 +85,6 @@
         <loc>https://pyapp-kit.github.io/scenex/dev/references/utils/projections/</loc>
       </url>
       <url>
-        <loc>https://pyapp-kit.github.io/scenex/dev/contributing/</loc>
+        <loc>https://pyapp-kit.github.io/scenex/dev/theory/</loc>
       </url>
 </urlset>
