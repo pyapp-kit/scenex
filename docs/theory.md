@@ -39,7 +39,7 @@ graph TD
     
     By default, views cover the entire canvas - the common case of a single full-canvas view requires no layout configuration at all.
 
-For a detailed list of the different `Node` types in `scenex`, check out the [API reference](references.md).
+For a detailed list of the different `Node` types in `scenex`, check out the [API reference](references/index.md).
 
 ## `scenex.adaptors`
 
