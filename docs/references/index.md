@@ -7,5 +7,3 @@ icon: lucide/code
 :::scenex
       options:
         summary: true
-        filters:
-          - "!^conftest$"
