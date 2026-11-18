@@ -17,7 +17,7 @@ def test_close() -> None:
     ) as uninstall:
         # Closing the model closes the native canvas and releases its adaptor.
         canvas.close()
-        assert py_canvas._wgpu_canvas.is_closed()
+        assert py_canvas._wgpu_canvas.get_closed()
         assert py_canvas._filter is None
         assert canvas._model_id.hex not in adaptors.adaptors._objects
 
