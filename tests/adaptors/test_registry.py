@@ -36,9 +36,6 @@ def test_clear_disconnects_adaptors(clear_all: bool) -> None:
             other_update.assert_called_once()
             assert tuple(registry.all()) == (other_adaptor,)
 
-    with pytest.raises(KeyError):
-        registry.get_adaptor(camera, create=False)
-
 
 def test_clear_registry_releases_adaptors() -> None:
     registry = get_adaptor_registry()
@@ -47,6 +44,9 @@ def test_clear_registry_releases_adaptors() -> None:
     canvas.close()
     registry.clear()
     assert not tuple(registry.all())
+
+    with pytest.raises(KeyError):
+        registry.get_adaptor(canvas, create=False)
 
 
 def test_clear_disconnects_child_events() -> None:
