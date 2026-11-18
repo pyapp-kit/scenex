@@ -1410,13 +1410,6 @@ snx.run()
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code><span title="scenex.util">util</span></code></b>
-          –
-          <div class="doc-md-description">
-            <p>Utility functions for displaying and debugging scenex visualizations.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
           <b><code><a class="autorefs autorefs-internal" title="            scenex.utils" href="utils/#scenex.utils">utils</a></code></b>
           –
           <div class="doc-md-description">
@@ -2602,7 +2595,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.Camera.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.Camera.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.Camera.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.Camera.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.Camera.tree_repr--source--__span-0-386">
 </span><span id="scenex.Camera.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -4557,7 +4550,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.Image.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.Image.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.Image.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.Image.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.Image.tree_repr--source--__span-0-386">
 </span><span id="scenex.Image.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -5987,7 +5980,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.Line.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.Line.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.Line.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.Line.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.Line.tree_repr--source--__span-0-386">
 </span><span id="scenex.Line.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -7009,7 +7002,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.Mesh.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.Mesh.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.Mesh.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.Mesh.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.Mesh.tree_repr--source--__span-0-386">
 </span><span id="scenex.Mesh.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -7782,7 +7775,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.Node.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.Node.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.Node.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.Node.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.Node.tree_repr--source--__span-0-386">
 </span><span id="scenex.Node.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -9230,7 +9223,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.Points.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.Points.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.Points.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.Points.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.Points.tree_repr--source--__span-0-386">
 </span><span id="scenex.Points.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -10245,7 +10238,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.Scene.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.Scene.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.Scene.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.Scene.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.Scene.tree_repr--source--__span-0-386">
 </span><span id="scenex.Scene.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -11022,7 +11015,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.Text.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.Text.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.Text.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.Text.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.Text.tree_repr--source--__span-0-386">
 </span><span id="scenex.Text.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -13503,7 +13496,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.Volume.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.Volume.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.Volume.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.Volume.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.Volume.tree_repr--source--__span-0-386">
 </span><span id="scenex.Volume.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -13592,62 +13585,62 @@ native widget from the first one found.</p>
 </details>
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/scenex/util.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.native--source--__span-0-193"><span class="k">def</span><span class="w"> </span><span class="nf">native</span><span class="p">(</span><span class="n">canvas</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">,</span> <span class="n">create</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span id="scenex.native--source--__span-0-194"><span class="w">    </span><span class="sd">"""Get the native widget for the given canvas.</span>
-</span><span id="scenex.native--source--__span-0-195">
-</span><span id="scenex.native--source--__span-0-196"><span class="sd">    Parameters</span>
-</span><span id="scenex.native--source--__span-0-197"><span class="sd">    ----------</span>
-</span><span id="scenex.native--source--__span-0-198"><span class="sd">    canvas : model.Canvas</span>
-</span><span id="scenex.native--source--__span-0-199"><span class="sd">        The canvas for which to get the native widget.</span>
-</span><span id="scenex.native--source--__span-0-200"><span class="sd">    create : bool, optional</span>
-</span><span id="scenex.native--source--__span-0-201"><span class="sd">        Whether to create adaptors if they do not already exist. Defaults to `True`.</span>
-</span><span id="scenex.native--source--__span-0-202">
-</span><span id="scenex.native--source--__span-0-203"><span class="sd">    Returns</span>
-</span><span id="scenex.native--source--__span-0-204"><span class="sd">    -------</span>
-</span><span id="scenex.native--source--__span-0-205"><span class="sd">    Any</span>
-</span><span id="scenex.native--source--__span-0-206"><span class="sd">        The native widget associated with the canvas.</span>
-</span><span id="scenex.native--source--__span-0-207">
-</span><span id="scenex.native--source--__span-0-208"><span class="sd">    Raises</span>
-</span><span id="scenex.native--source--__span-0-209"><span class="sd">    ------</span>
-</span><span id="scenex.native--source--__span-0-210"><span class="sd">    KeyError</span>
-</span><span id="scenex.native--source--__span-0-211"><span class="sd">        If no adaptor yet exists for `canvas` and `create=False`.</span>
-</span><span id="scenex.native--source--__span-0-212">
-</span><span id="scenex.native--source--__span-0-213"><span class="sd">    Notes</span>
-</span><span id="scenex.native--source--__span-0-214"><span class="sd">    -----</span>
-</span><span id="scenex.native--source--__span-0-215"><span class="sd">    This function is a convenience that retrieves the native widget from the first</span>
-</span><span id="scenex.native--source--__span-0-216"><span class="sd">    adaptor associated with the canvas. If multiple adaptors are present, it returns the</span>
-</span><span id="scenex.native--source--__span-0-217"><span class="sd">    native widget from the first one found.</span>
-</span><span id="scenex.native--source--__span-0-218"><span class="sd">    """</span>
-</span><span id="scenex.native--source--__span-0-219">    <span class="k">for</span> <span class="n">adaptor</span> <span class="ow">in</span> <span class="n">canvas</span><span class="o">.</span><span class="n">_get_adaptors</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="n">create</span><span class="p">):</span>
-</span><span id="scenex.native--source--__span-0-220">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"CanvasAdaptor"</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span><span class="o">.</span><span class="n">_snx_get_native</span><span class="p">()</span>
+              <summary>Source code in <code>src/scenex/utils/_app.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.native--source--__span-0-107"><span class="k">def</span><span class="w"> </span><span class="nf">native</span><span class="p">(</span><span class="n">canvas</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">,</span> <span class="n">create</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span id="scenex.native--source--__span-0-108"><span class="w">    </span><span class="sd">"""Get the native widget for the given canvas.</span>
+</span><span id="scenex.native--source--__span-0-109">
+</span><span id="scenex.native--source--__span-0-110"><span class="sd">    Parameters</span>
+</span><span id="scenex.native--source--__span-0-111"><span class="sd">    ----------</span>
+</span><span id="scenex.native--source--__span-0-112"><span class="sd">    canvas : model.Canvas</span>
+</span><span id="scenex.native--source--__span-0-113"><span class="sd">        The canvas for which to get the native widget.</span>
+</span><span id="scenex.native--source--__span-0-114"><span class="sd">    create : bool, optional</span>
+</span><span id="scenex.native--source--__span-0-115"><span class="sd">        Whether to create adaptors if they do not already exist. Defaults to `True`.</span>
+</span><span id="scenex.native--source--__span-0-116">
+</span><span id="scenex.native--source--__span-0-117"><span class="sd">    Returns</span>
+</span><span id="scenex.native--source--__span-0-118"><span class="sd">    -------</span>
+</span><span id="scenex.native--source--__span-0-119"><span class="sd">    Any</span>
+</span><span id="scenex.native--source--__span-0-120"><span class="sd">        The native widget associated with the canvas.</span>
+</span><span id="scenex.native--source--__span-0-121">
+</span><span id="scenex.native--source--__span-0-122"><span class="sd">    Raises</span>
+</span><span id="scenex.native--source--__span-0-123"><span class="sd">    ------</span>
+</span><span id="scenex.native--source--__span-0-124"><span class="sd">    KeyError</span>
+</span><span id="scenex.native--source--__span-0-125"><span class="sd">        If no adaptor yet exists for `canvas` and `create=False`.</span>
+</span><span id="scenex.native--source--__span-0-126">
+</span><span id="scenex.native--source--__span-0-127"><span class="sd">    Notes</span>
+</span><span id="scenex.native--source--__span-0-128"><span class="sd">    -----</span>
+</span><span id="scenex.native--source--__span-0-129"><span class="sd">    This function is a convenience that retrieves the native widget from the first</span>
+</span><span id="scenex.native--source--__span-0-130"><span class="sd">    adaptor associated with the canvas. If multiple adaptors are present, it returns the</span>
+</span><span id="scenex.native--source--__span-0-131"><span class="sd">    native widget from the first one found.</span>
+</span><span id="scenex.native--source--__span-0-132"><span class="sd">    """</span>
+</span><span id="scenex.native--source--__span-0-133">    <span class="k">for</span> <span class="n">adaptor</span> <span class="ow">in</span> <span class="n">canvas</span><span class="o">.</span><span class="n">_get_adaptors</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="n">create</span><span class="p">):</span>
+</span><span id="scenex.native--source--__span-0-134">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"CanvasAdaptor"</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span><span class="o">.</span><span class="n">_snx_get_native</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -13703,78 +13696,78 @@ are displayed automatically without calling <code>run()</code>.</p>
 </details>
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/scenex/util.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.run--source--__span-0-223"><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="scenex.run--source--__span-0-224"><span class="w">    </span><span class="sd">"""Start the GUI event loop to display interactive visualizations.</span>
-</span><span id="scenex.run--source--__span-0-225">
-</span><span id="scenex.run--source--__span-0-226"><span class="sd">    This function enters the native event loop of the graphics backend, allowing</span>
-</span><span id="scenex.run--source--__span-0-227"><span class="sd">    interactive visualizations to respond to user input (mouse, keyboard) and remain</span>
-</span><span id="scenex.run--source--__span-0-228"><span class="sd">    visible. The function blocks until the visualization window is closed.</span>
-</span><span id="scenex.run--source--__span-0-229">
-</span><span id="scenex.run--source--__span-0-230"><span class="sd">    Call this function after creating and showing your visualizations with `show()`.</span>
-</span><span id="scenex.run--source--__span-0-231"><span class="sd">    It is only needed for desktop applications; in Jupyter notebooks, visualizations</span>
-</span><span id="scenex.run--source--__span-0-232"><span class="sd">    are displayed automatically without calling `run()`.</span>
-</span><span id="scenex.run--source--__span-0-233">
-</span><span id="scenex.run--source--__span-0-234"><span class="sd">    Examples</span>
-</span><span id="scenex.run--source--__span-0-235"><span class="sd">    --------</span>
-</span><span id="scenex.run--source--__span-0-236"><span class="sd">    Basic usage with a scene:</span>
-</span><span id="scenex.run--source--__span-0-237"><span class="sd">        &gt;&gt;&gt; import numpy as np</span>
-</span><span id="scenex.run--source--__span-0-238"><span class="sd">        &gt;&gt;&gt; import scenex as snx</span>
-</span><span id="scenex.run--source--__span-0-239"><span class="sd">        &gt;&gt;&gt; scene = snx.Scene(</span>
-</span><span id="scenex.run--source--__span-0-240"><span class="sd">        ...     children=[snx.Image(data=np.random.rand(100, 100).astype(np.float32))]</span>
-</span><span id="scenex.run--source--__span-0-241"><span class="sd">        ... )</span>
-</span><span id="scenex.run--source--__span-0-242"><span class="sd">        &gt;&gt;&gt; snx.show(scene)</span>
-</span><span id="scenex.run--source--__span-0-243"><span class="sd">        Canvas(...)</span>
-</span><span id="scenex.run--source--__span-0-244"><span class="sd">        &gt;&gt;&gt; snx.run()  # Blocks until window is closed</span>
-</span><span id="scenex.run--source--__span-0-245">
-</span><span id="scenex.run--source--__span-0-246"><span class="sd">    Create multiple views and run:</span>
-</span><span id="scenex.run--source--__span-0-247"><span class="sd">        &gt;&gt;&gt; canvas = snx.Canvas(views=[snx.View(), snx.View()])</span>
-</span><span id="scenex.run--source--__span-0-248"><span class="sd">        &gt;&gt;&gt; canvas.visible = True</span>
-</span><span id="scenex.run--source--__span-0-249"><span class="sd">        &gt;&gt;&gt; snx.run()</span>
-</span><span id="scenex.run--source--__span-0-250">
-</span><span id="scenex.run--source--__span-0-251"><span class="sd">    Notes</span>
-</span><span id="scenex.run--source--__span-0-252"><span class="sd">    -----</span>
-</span><span id="scenex.run--source--__span-0-253"><span class="sd">    - This function blocks execution until all visualization windows are closed</span>
-</span><span id="scenex.run--source--__span-0-254"><span class="sd">    - Not needed in Jupyter notebooks or other interactive environments</span>
-</span><span id="scenex.run--source--__span-0-255"><span class="sd">    - Must be called after `show()` has been used to create visualizations</span>
-</span><span id="scenex.run--source--__span-0-256"><span class="sd">    - The event loop handles user interactions like pan, zoom, and picking</span>
-</span><span id="scenex.run--source--__span-0-257"><span class="sd">    """</span>
-</span><span id="scenex.run--source--__span-0-258">    <span class="n">app</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+              <summary>Source code in <code>src/scenex/utils/_app.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.run--source--__span-0-137"><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="scenex.run--source--__span-0-138"><span class="w">    </span><span class="sd">"""Start the GUI event loop to display interactive visualizations.</span>
+</span><span id="scenex.run--source--__span-0-139">
+</span><span id="scenex.run--source--__span-0-140"><span class="sd">    This function enters the native event loop of the graphics backend, allowing</span>
+</span><span id="scenex.run--source--__span-0-141"><span class="sd">    interactive visualizations to respond to user input (mouse, keyboard) and remain</span>
+</span><span id="scenex.run--source--__span-0-142"><span class="sd">    visible. The function blocks until the visualization window is closed.</span>
+</span><span id="scenex.run--source--__span-0-143">
+</span><span id="scenex.run--source--__span-0-144"><span class="sd">    Call this function after creating and showing your visualizations with `show()`.</span>
+</span><span id="scenex.run--source--__span-0-145"><span class="sd">    It is only needed for desktop applications; in Jupyter notebooks, visualizations</span>
+</span><span id="scenex.run--source--__span-0-146"><span class="sd">    are displayed automatically without calling `run()`.</span>
+</span><span id="scenex.run--source--__span-0-147">
+</span><span id="scenex.run--source--__span-0-148"><span class="sd">    Examples</span>
+</span><span id="scenex.run--source--__span-0-149"><span class="sd">    --------</span>
+</span><span id="scenex.run--source--__span-0-150"><span class="sd">    Basic usage with a scene:</span>
+</span><span id="scenex.run--source--__span-0-151"><span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+</span><span id="scenex.run--source--__span-0-152"><span class="sd">        &gt;&gt;&gt; import scenex as snx</span>
+</span><span id="scenex.run--source--__span-0-153"><span class="sd">        &gt;&gt;&gt; scene = snx.Scene(</span>
+</span><span id="scenex.run--source--__span-0-154"><span class="sd">        ...     children=[snx.Image(data=np.random.rand(100, 100).astype(np.float32))]</span>
+</span><span id="scenex.run--source--__span-0-155"><span class="sd">        ... )</span>
+</span><span id="scenex.run--source--__span-0-156"><span class="sd">        &gt;&gt;&gt; snx.show(scene)</span>
+</span><span id="scenex.run--source--__span-0-157"><span class="sd">        Canvas(...)</span>
+</span><span id="scenex.run--source--__span-0-158"><span class="sd">        &gt;&gt;&gt; snx.run()  # Blocks until window is closed</span>
+</span><span id="scenex.run--source--__span-0-159">
+</span><span id="scenex.run--source--__span-0-160"><span class="sd">    Create multiple views and run:</span>
+</span><span id="scenex.run--source--__span-0-161"><span class="sd">        &gt;&gt;&gt; canvas = snx.Canvas(views=[snx.View(), snx.View()])</span>
+</span><span id="scenex.run--source--__span-0-162"><span class="sd">        &gt;&gt;&gt; canvas.visible = True</span>
+</span><span id="scenex.run--source--__span-0-163"><span class="sd">        &gt;&gt;&gt; snx.run()</span>
+</span><span id="scenex.run--source--__span-0-164">
+</span><span id="scenex.run--source--__span-0-165"><span class="sd">    Notes</span>
+</span><span id="scenex.run--source--__span-0-166"><span class="sd">    -----</span>
+</span><span id="scenex.run--source--__span-0-167"><span class="sd">    - This function blocks execution until all visualization windows are closed</span>
+</span><span id="scenex.run--source--__span-0-168"><span class="sd">    - Not needed in Jupyter notebooks or other interactive environments</span>
+</span><span id="scenex.run--source--__span-0-169"><span class="sd">    - Must be called after `show()` has been used to create visualizations</span>
+</span><span id="scenex.run--source--__span-0-170"><span class="sd">    - The event loop handles user interactions like pan, zoom, and picking</span>
+</span><span id="scenex.run--source--__span-0-171"><span class="sd">    """</span>
+</span><span id="scenex.run--source--__span-0-172">    <span class="n">app</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -13829,50 +13822,50 @@ the intermediate steps to get the native widget from a canvas model.</p>
 </details>
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/scenex/util.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.set_cursor--source--__span-0-306"><span class="k">def</span><span class="w"> </span><span class="nf">set_cursor</span><span class="p">(</span><span class="n">canvas</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">CursorType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="scenex.set_cursor--source--__span-0-307"><span class="w">    </span><span class="sd">"""Set the cursor for the given canvas.</span>
-</span><span id="scenex.set_cursor--source--__span-0-308">
-</span><span id="scenex.set_cursor--source--__span-0-309"><span class="sd">    Parameters</span>
-</span><span id="scenex.set_cursor--source--__span-0-310"><span class="sd">    ----------</span>
-</span><span id="scenex.set_cursor--source--__span-0-311"><span class="sd">    canvas : model.Canvas</span>
-</span><span id="scenex.set_cursor--source--__span-0-312"><span class="sd">        The canvas on which to set the cursor.</span>
-</span><span id="scenex.set_cursor--source--__span-0-313"><span class="sd">    cursor : CursorType</span>
-</span><span id="scenex.set_cursor--source--__span-0-314"><span class="sd">        The type of cursor to set.</span>
-</span><span id="scenex.set_cursor--source--__span-0-315">
-</span><span id="scenex.set_cursor--source--__span-0-316"><span class="sd">    Notes</span>
-</span><span id="scenex.set_cursor--source--__span-0-317"><span class="sd">    -----</span>
-</span><span id="scenex.set_cursor--source--__span-0-318"><span class="sd">    Practically and generally speaking, setting the cursor is an app-level concern.</span>
-</span><span id="scenex.set_cursor--source--__span-0-319"><span class="sd">    Unfortunately, setting the cursor often requires access to a native widget, meaning</span>
-</span><span id="scenex.set_cursor--source--__span-0-320"><span class="sd">    any scenex abstractions for setting the cursor will need as input the canvas model</span>
-</span><span id="scenex.set_cursor--source--__span-0-321"><span class="sd">    or a derivative adaptor. Proper separation of concerns suggests that the app-level</span>
-</span><span id="scenex.set_cursor--source--__span-0-322"><span class="sd">    API should just take the native widget. This function is a convenience that performs</span>
-</span><span id="scenex.set_cursor--source--__span-0-323"><span class="sd">    the intermediate steps to get the native widget from a canvas model.</span>
-</span><span id="scenex.set_cursor--source--__span-0-324"><span class="sd">    """</span>
-</span><span id="scenex.set_cursor--source--__span-0-325">    <span class="k">for</span> <span class="n">adaptor</span> <span class="ow">in</span> <span class="n">canvas</span><span class="o">.</span><span class="n">_get_adaptors</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-</span><span id="scenex.set_cursor--source--__span-0-326">        <span class="n">widget</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"CanvasAdaptor"</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span><span class="o">.</span><span class="n">_snx_get_native</span><span class="p">()</span>
-</span><span id="scenex.set_cursor--source--__span-0-327">        <span class="n">app</span><span class="p">()</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
+              <summary>Source code in <code>src/scenex/utils/_app.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.set_cursor--source--__span-0-175"><span class="k">def</span><span class="w"> </span><span class="nf">set_cursor</span><span class="p">(</span><span class="n">canvas</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">CursorType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="scenex.set_cursor--source--__span-0-176"><span class="w">    </span><span class="sd">"""Set the cursor for the given canvas.</span>
+</span><span id="scenex.set_cursor--source--__span-0-177">
+</span><span id="scenex.set_cursor--source--__span-0-178"><span class="sd">    Parameters</span>
+</span><span id="scenex.set_cursor--source--__span-0-179"><span class="sd">    ----------</span>
+</span><span id="scenex.set_cursor--source--__span-0-180"><span class="sd">    canvas : model.Canvas</span>
+</span><span id="scenex.set_cursor--source--__span-0-181"><span class="sd">        The canvas on which to set the cursor.</span>
+</span><span id="scenex.set_cursor--source--__span-0-182"><span class="sd">    cursor : CursorType</span>
+</span><span id="scenex.set_cursor--source--__span-0-183"><span class="sd">        The type of cursor to set.</span>
+</span><span id="scenex.set_cursor--source--__span-0-184">
+</span><span id="scenex.set_cursor--source--__span-0-185"><span class="sd">    Notes</span>
+</span><span id="scenex.set_cursor--source--__span-0-186"><span class="sd">    -----</span>
+</span><span id="scenex.set_cursor--source--__span-0-187"><span class="sd">    Practically and generally speaking, setting the cursor is an app-level concern.</span>
+</span><span id="scenex.set_cursor--source--__span-0-188"><span class="sd">    Unfortunately, setting the cursor often requires access to a native widget, meaning</span>
+</span><span id="scenex.set_cursor--source--__span-0-189"><span class="sd">    any scenex abstractions for setting the cursor will need as input the canvas model</span>
+</span><span id="scenex.set_cursor--source--__span-0-190"><span class="sd">    or a derivative adaptor. Proper separation of concerns suggests that the app-level</span>
+</span><span id="scenex.set_cursor--source--__span-0-191"><span class="sd">    API should just take the native widget. This function is a convenience that performs</span>
+</span><span id="scenex.set_cursor--source--__span-0-192"><span class="sd">    the intermediate steps to get the native widget from a canvas model.</span>
+</span><span id="scenex.set_cursor--source--__span-0-193"><span class="sd">    """</span>
+</span><span id="scenex.set_cursor--source--__span-0-194">    <span class="k">for</span> <span class="n">adaptor</span> <span class="ow">in</span> <span class="n">canvas</span><span class="o">.</span><span class="n">_get_adaptors</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+</span><span id="scenex.set_cursor--source--__span-0-195">        <span class="n">widget</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"CanvasAdaptor"</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span><span class="o">.</span><span class="n">_snx_get_native</span><span class="p">()</span>
+</span><span id="scenex.set_cursor--source--__span-0-196">        <span class="n">app</span><span class="p">()</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -13969,174 +13962,166 @@ the display or access the created views.</p>
 </details>
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/scenex/util.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.show--source--__span-0-107"><span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span>
-</span><span id="scenex.show--source--__span-0-108">    <span class="n">obj</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">Node</span> <span class="o">|</span> <span class="n">model</span><span class="o">.</span><span class="n">View</span> <span class="o">|</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="scenex.show--source--__span-0-109"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">:</span>
-</span><span id="scenex.show--source--__span-0-110"><span class="w">    </span><span class="sd">"""Display a visualization by creating a canvas and making it visible.</span>
-</span><span id="scenex.show--source--__span-0-111">
-</span><span id="scenex.show--source--__span-0-112"><span class="sd">    This is the primary function for creating and displaying scenex visualizations.</span>
-</span><span id="scenex.show--source--__span-0-113"><span class="sd">    It accepts nodes, views, or canvases, automatically wrapping them in the necessary</span>
-</span><span id="scenex.show--source--__span-0-114"><span class="sd">    container objects and creating the appropriate backend adaptors.</span>
-</span><span id="scenex.show--source--__span-0-115">
-</span><span id="scenex.show--source--__span-0-116"><span class="sd">    The function automatically fits the camera view to show all visible content and</span>
-</span><span id="scenex.show--source--__span-0-117"><span class="sd">    makes the canvas window visible. After calling `show()`, use `run()` to enter</span>
-</span><span id="scenex.show--source--__span-0-118"><span class="sd">    the event loop (in desktop applications) or continue working (in notebooks).</span>
-</span><span id="scenex.show--source--__span-0-119">
-</span><span id="scenex.show--source--__span-0-120"><span class="sd">    Parameters</span>
-</span><span id="scenex.show--source--__span-0-121"><span class="sd">    ----------</span>
-</span><span id="scenex.show--source--__span-0-122"><span class="sd">    obj : Node | View | Canvas</span>
-</span><span id="scenex.show--source--__span-0-123"><span class="sd">        The object to visualize:</span>
-</span><span id="scenex.show--source--__span-0-124"><span class="sd">        - Node (Image, Points, Line, etc.): Wrapped in Scene and View automatically</span>
-</span><span id="scenex.show--source--__span-0-125"><span class="sd">        - Scene: Wrapped in a View with a default Camera</span>
-</span><span id="scenex.show--source--__span-0-126"><span class="sd">        - View: Placed on a new Canvas</span>
-</span><span id="scenex.show--source--__span-0-127"><span class="sd">        - Canvas: Displayed directly (already contains Views)</span>
-</span><span id="scenex.show--source--__span-0-128"><span class="sd">    backend : str | None, optional</span>
-</span><span id="scenex.show--source--__span-0-129"><span class="sd">        Graphics backend to use ("pygfx" or "vispy"). If None, uses the backend</span>
-</span><span id="scenex.show--source--__span-0-130"><span class="sd">        specified by `use()`, `SCENEX_CANVAS_BACKEND` environment variable, or</span>
-</span><span id="scenex.show--source--__span-0-131"><span class="sd">        auto-detection. Default is `None`.</span>
-</span><span id="scenex.show--source--__span-0-132">
-</span><span id="scenex.show--source--__span-0-133"><span class="sd">    Returns</span>
-</span><span id="scenex.show--source--__span-0-134"><span class="sd">    -------</span>
-</span><span id="scenex.show--source--__span-0-135"><span class="sd">    Canvas</span>
-</span><span id="scenex.show--source--__span-0-136"><span class="sd">        The canvas containing the visualization. Can be used to further manipulate</span>
-</span><span id="scenex.show--source--__span-0-137"><span class="sd">        the display or access the created views.</span>
-</span><span id="scenex.show--source--__span-0-138">
-</span><span id="scenex.show--source--__span-0-139"><span class="sd">    Examples</span>
-</span><span id="scenex.show--source--__span-0-140"><span class="sd">    --------</span>
-</span><span id="scenex.show--source--__span-0-141"><span class="sd">    Show a simple image:</span>
-</span><span id="scenex.show--source--__span-0-142"><span class="sd">        &gt;&gt;&gt; import numpy as np</span>
-</span><span id="scenex.show--source--__span-0-143"><span class="sd">        &gt;&gt;&gt; import scenex as snx</span>
-</span><span id="scenex.show--source--__span-0-144"><span class="sd">        &gt;&gt;&gt; data = np.random.rand(100, 100).astype(np.float32)</span>
-</span><span id="scenex.show--source--__span-0-145"><span class="sd">        &gt;&gt;&gt; img = snx.Image(data=data)</span>
-</span><span id="scenex.show--source--__span-0-146"><span class="sd">        &gt;&gt;&gt; canvas = snx.show(img)</span>
-</span><span id="scenex.show--source--__span-0-147"><span class="sd">        &gt;&gt;&gt; snx.run()</span>
-</span><span id="scenex.show--source--__span-0-148">
-</span><span id="scenex.show--source--__span-0-149"><span class="sd">    Edit the returned canvas:</span>
-</span><span id="scenex.show--source--__span-0-150"><span class="sd">        &gt;&gt;&gt; from cmap import Color</span>
-</span><span id="scenex.show--source--__span-0-151"><span class="sd">        &gt;&gt;&gt; canvas.background_color = Color("white")</span>
-</span><span id="scenex.show--source--__span-0-152"><span class="sd">        &gt;&gt;&gt; canvas.width = 800</span>
-</span><span id="scenex.show--source--__span-0-153"><span class="sd">        &gt;&gt;&gt; snx.run()</span>
-</span><span id="scenex.show--source--__span-0-154">
-</span><span id="scenex.show--source--__span-0-155"><span class="sd">    Notes</span>
-</span><span id="scenex.show--source--__span-0-156"><span class="sd">    -----</span>
-</span><span id="scenex.show--source--__span-0-157"><span class="sd">    - The camera is automatically zoomed to fit all visible content with 90% coverage</span>
-</span><span id="scenex.show--source--__span-0-158"><span class="sd">    - Canvas size defaults to the view's layout dimensions</span>
-</span><span id="scenex.show--source--__span-0-159"><span class="sd">    - Call `run()` after `show()` to enter the event loop in desktop applications</span>
-</span><span id="scenex.show--source--__span-0-160"><span class="sd">    - In Jupyter notebooks, visualizations appear automatically without `run()`</span>
-</span><span id="scenex.show--source--__span-0-161"><span class="sd">    """</span>
-</span><span id="scenex.show--source--__span-0-162">    <span class="kn">from</span><span class="w"> </span><span class="nn">.adaptors</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_adaptor_registry</span>
-</span><span id="scenex.show--source--__span-0-163">
-</span><span id="scenex.show--source--__span-0-164">    <span class="n">view</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="scenex.show--source--__span-0-165">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">):</span>
-</span><span id="scenex.show--source--__span-0-166">        <span class="n">canvas</span> <span class="o">=</span> <span class="n">obj</span>
-</span><span id="scenex.show--source--__span-0-167">    <span class="k">else</span><span class="p">:</span>
-</span><span id="scenex.show--source--__span-0-168">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">View</span><span class="p">):</span>
-</span><span id="scenex.show--source--__span-0-169">            <span class="n">view</span> <span class="o">=</span> <span class="n">obj</span>
-</span><span id="scenex.show--source--__span-0-170">        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Scene</span><span class="p">):</span>
-</span><span id="scenex.show--source--__span-0-171">            <span class="n">view</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">View</span><span class="p">(</span><span class="n">scene</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
-</span><span id="scenex.show--source--__span-0-172">        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
-</span><span id="scenex.show--source--__span-0-173">            <span class="n">scene</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Scene</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="p">])</span>
-</span><span id="scenex.show--source--__span-0-174">            <span class="n">view</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">View</span><span class="p">(</span><span class="n">scene</span><span class="o">=</span><span class="n">scene</span><span class="p">)</span>
-</span><span id="scenex.show--source--__span-0-175">
-</span><span id="scenex.show--source--__span-0-176">        <span class="n">canvas</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">()</span>
-</span><span id="scenex.show--source--__span-0-177">        <span class="k">if</span> <span class="n">view</span><span class="p">:</span>
-</span><span id="scenex.show--source--__span-0-178">            <span class="n">canvas</span><span class="o">.</span><span class="n">views</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
-</span><span id="scenex.show--source--__span-0-179">
-</span><span id="scenex.show--source--__span-0-180">    <span class="n">canvas</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="scenex.show--source--__span-0-181">    <span class="n">reg</span> <span class="o">=</span> <span class="n">get_adaptor_registry</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
-</span><span id="scenex.show--source--__span-0-182">    <span class="n">reg</span><span class="o">.</span><span class="n">get_adaptor</span><span class="p">(</span><span class="n">canvas</span><span class="p">,</span> <span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="scenex.show--source--__span-0-183">    <span class="n">app</span><span class="p">()</span><span class="o">.</span><span class="n">create_app</span><span class="p">()</span>
-</span><span id="scenex.show--source--__span-0-184">    <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">canvas</span><span class="o">.</span><span class="n">views</span><span class="p">:</span>
-</span><span id="scenex.show--source--__span-0-185">        <span class="n">projections</span><span class="o">.</span><span class="n">zoom_to_fit</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">zoom_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">letterbox</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="scenex.show--source--__span-0-186">
-</span><span id="scenex.show--source--__span-0-187">        <span class="c1"># logger.debug("SHOW MODEL  %s", tree_repr(view.scene))</span>
-</span><span id="scenex.show--source--__span-0-188">        <span class="c1"># native_scene = view.scene._get_native()</span>
-</span><span id="scenex.show--source--__span-0-189">        <span class="c1"># logger.debug("SHOW NATIVE %s", tree_repr(native_scene))</span>
-</span><span id="scenex.show--source--__span-0-190">    <span class="k">return</span> <span class="n">canvas</span>
+              <summary>Source code in <code>src/scenex/utils/_app.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.show--source--__span-0-25"><span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span>
+</span><span id="scenex.show--source--__span-0-26">    <span class="n">obj</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">Node</span> <span class="o">|</span> <span class="n">model</span><span class="o">.</span><span class="n">View</span> <span class="o">|</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="scenex.show--source--__span-0-27"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">:</span>
+</span><span id="scenex.show--source--__span-0-28"><span class="w">    </span><span class="sd">"""Display a visualization by creating a canvas and making it visible.</span>
+</span><span id="scenex.show--source--__span-0-29">
+</span><span id="scenex.show--source--__span-0-30"><span class="sd">    This is the primary function for creating and displaying scenex visualizations.</span>
+</span><span id="scenex.show--source--__span-0-31"><span class="sd">    It accepts nodes, views, or canvases, automatically wrapping them in the necessary</span>
+</span><span id="scenex.show--source--__span-0-32"><span class="sd">    container objects and creating the appropriate backend adaptors.</span>
+</span><span id="scenex.show--source--__span-0-33">
+</span><span id="scenex.show--source--__span-0-34"><span class="sd">    The function automatically fits the camera view to show all visible content and</span>
+</span><span id="scenex.show--source--__span-0-35"><span class="sd">    makes the canvas window visible. After calling `show()`, use `run()` to enter</span>
+</span><span id="scenex.show--source--__span-0-36"><span class="sd">    the event loop (in desktop applications) or continue working (in notebooks).</span>
+</span><span id="scenex.show--source--__span-0-37">
+</span><span id="scenex.show--source--__span-0-38"><span class="sd">    Parameters</span>
+</span><span id="scenex.show--source--__span-0-39"><span class="sd">    ----------</span>
+</span><span id="scenex.show--source--__span-0-40"><span class="sd">    obj : Node | View | Canvas</span>
+</span><span id="scenex.show--source--__span-0-41"><span class="sd">        The object to visualize:</span>
+</span><span id="scenex.show--source--__span-0-42"><span class="sd">        - Node (Image, Points, Line, etc.): Wrapped in Scene and View automatically</span>
+</span><span id="scenex.show--source--__span-0-43"><span class="sd">        - Scene: Wrapped in a View with a default Camera</span>
+</span><span id="scenex.show--source--__span-0-44"><span class="sd">        - View: Placed on a new Canvas</span>
+</span><span id="scenex.show--source--__span-0-45"><span class="sd">        - Canvas: Displayed directly (already contains Views)</span>
+</span><span id="scenex.show--source--__span-0-46"><span class="sd">    backend : str | None, optional</span>
+</span><span id="scenex.show--source--__span-0-47"><span class="sd">        Graphics backend to use ("pygfx" or "vispy"). If None, uses the backend</span>
+</span><span id="scenex.show--source--__span-0-48"><span class="sd">        specified by `use()`, `SCENEX_CANVAS_BACKEND` environment variable, or</span>
+</span><span id="scenex.show--source--__span-0-49"><span class="sd">        auto-detection. Default is `None`.</span>
+</span><span id="scenex.show--source--__span-0-50">
+</span><span id="scenex.show--source--__span-0-51"><span class="sd">    Returns</span>
+</span><span id="scenex.show--source--__span-0-52"><span class="sd">    -------</span>
+</span><span id="scenex.show--source--__span-0-53"><span class="sd">    Canvas</span>
+</span><span id="scenex.show--source--__span-0-54"><span class="sd">        The canvas containing the visualization. Can be used to further manipulate</span>
+</span><span id="scenex.show--source--__span-0-55"><span class="sd">        the display or access the created views.</span>
+</span><span id="scenex.show--source--__span-0-56">
+</span><span id="scenex.show--source--__span-0-57"><span class="sd">    Examples</span>
+</span><span id="scenex.show--source--__span-0-58"><span class="sd">    --------</span>
+</span><span id="scenex.show--source--__span-0-59"><span class="sd">    Show a simple image:</span>
+</span><span id="scenex.show--source--__span-0-60"><span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+</span><span id="scenex.show--source--__span-0-61"><span class="sd">        &gt;&gt;&gt; import scenex as snx</span>
+</span><span id="scenex.show--source--__span-0-62"><span class="sd">        &gt;&gt;&gt; data = np.random.rand(100, 100).astype(np.float32)</span>
+</span><span id="scenex.show--source--__span-0-63"><span class="sd">        &gt;&gt;&gt; img = snx.Image(data=data)</span>
+</span><span id="scenex.show--source--__span-0-64"><span class="sd">        &gt;&gt;&gt; canvas = snx.show(img)</span>
+</span><span id="scenex.show--source--__span-0-65"><span class="sd">        &gt;&gt;&gt; snx.run()</span>
+</span><span id="scenex.show--source--__span-0-66">
+</span><span id="scenex.show--source--__span-0-67"><span class="sd">    Edit the returned canvas:</span>
+</span><span id="scenex.show--source--__span-0-68"><span class="sd">        &gt;&gt;&gt; from cmap import Color</span>
+</span><span id="scenex.show--source--__span-0-69"><span class="sd">        &gt;&gt;&gt; canvas.background_color = Color("white")</span>
+</span><span id="scenex.show--source--__span-0-70"><span class="sd">        &gt;&gt;&gt; canvas.width = 800</span>
+</span><span id="scenex.show--source--__span-0-71"><span class="sd">        &gt;&gt;&gt; snx.run()</span>
+</span><span id="scenex.show--source--__span-0-72">
+</span><span id="scenex.show--source--__span-0-73"><span class="sd">    Notes</span>
+</span><span id="scenex.show--source--__span-0-74"><span class="sd">    -----</span>
+</span><span id="scenex.show--source--__span-0-75"><span class="sd">    - The camera is automatically zoomed to fit all visible content with 90% coverage</span>
+</span><span id="scenex.show--source--__span-0-76"><span class="sd">    - Canvas size defaults to the view's layout dimensions</span>
+</span><span id="scenex.show--source--__span-0-77"><span class="sd">    - Call `run()` after `show()` to enter the event loop in desktop applications</span>
+</span><span id="scenex.show--source--__span-0-78"><span class="sd">    - In Jupyter notebooks, visualizations appear automatically without `run()`</span>
+</span><span id="scenex.show--source--__span-0-79"><span class="sd">    """</span>
+</span><span id="scenex.show--source--__span-0-80">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.adaptors</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_adaptor_registry</span>
+</span><span id="scenex.show--source--__span-0-81">
+</span><span id="scenex.show--source--__span-0-82">    <span class="n">view</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="scenex.show--source--__span-0-83">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">):</span>
+</span><span id="scenex.show--source--__span-0-84">        <span class="n">canvas</span> <span class="o">=</span> <span class="n">obj</span>
+</span><span id="scenex.show--source--__span-0-85">    <span class="k">else</span><span class="p">:</span>
+</span><span id="scenex.show--source--__span-0-86">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">View</span><span class="p">):</span>
+</span><span id="scenex.show--source--__span-0-87">            <span class="n">view</span> <span class="o">=</span> <span class="n">obj</span>
+</span><span id="scenex.show--source--__span-0-88">        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Scene</span><span class="p">):</span>
+</span><span id="scenex.show--source--__span-0-89">            <span class="n">view</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">View</span><span class="p">(</span><span class="n">scene</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+</span><span id="scenex.show--source--__span-0-90">        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+</span><span id="scenex.show--source--__span-0-91">            <span class="n">scene</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Scene</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="p">])</span>
+</span><span id="scenex.show--source--__span-0-92">            <span class="n">view</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">View</span><span class="p">(</span><span class="n">scene</span><span class="o">=</span><span class="n">scene</span><span class="p">)</span>
+</span><span id="scenex.show--source--__span-0-93">
+</span><span id="scenex.show--source--__span-0-94">        <span class="n">canvas</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Canvas</span><span class="p">()</span>
+</span><span id="scenex.show--source--__span-0-95">        <span class="k">if</span> <span class="n">view</span><span class="p">:</span>
+</span><span id="scenex.show--source--__span-0-96">            <span class="n">canvas</span><span class="o">.</span><span class="n">views</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+</span><span id="scenex.show--source--__span-0-97">
+</span><span id="scenex.show--source--__span-0-98">    <span class="n">canvas</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="scenex.show--source--__span-0-99">    <span class="n">reg</span> <span class="o">=</span> <span class="n">get_adaptor_registry</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
+</span><span id="scenex.show--source--__span-0-100">    <span class="n">reg</span><span class="o">.</span><span class="n">get_adaptor</span><span class="p">(</span><span class="n">canvas</span><span class="p">,</span> <span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="scenex.show--source--__span-0-101">    <span class="n">app</span><span class="p">()</span><span class="o">.</span><span class="n">create_app</span><span class="p">()</span>
+</span><span id="scenex.show--source--__span-0-102">    <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">canvas</span><span class="o">.</span><span class="n">views</span><span class="p">:</span>
+</span><span id="scenex.show--source--__span-0-103">        <span class="n">projections</span><span class="o">.</span><span class="n">zoom_to_fit</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">zoom_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">letterbox</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="scenex.show--source--__span-0-104">    <span class="k">return</span> <span class="n">canvas</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>

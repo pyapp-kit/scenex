@@ -2780,7 +2780,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.model.Camera.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.model.Camera.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.model.Camera.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.model.Camera.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.model.Camera.tree_repr--source--__span-0-386">
 </span><span id="scenex.model.Camera.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -4857,7 +4857,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.model.Image.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.model.Image.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.model.Image.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.model.Image.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.model.Image.tree_repr--source--__span-0-386">
 </span><span id="scenex.model.Image.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -6287,7 +6287,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.model.Line.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.model.Line.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.model.Line.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.model.Line.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.model.Line.tree_repr--source--__span-0-386">
 </span><span id="scenex.model.Line.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -7309,7 +7309,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.model.Mesh.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.model.Mesh.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.model.Mesh.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.model.Mesh.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.model.Mesh.tree_repr--source--__span-0-386">
 </span><span id="scenex.model.Mesh.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -8082,7 +8082,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.model.Node.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.model.Node.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.model.Node.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.model.Node.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.model.Node.tree_repr--source--__span-0-386">
 </span><span id="scenex.model.Node.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -9530,7 +9530,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.model.Points.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.model.Points.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.model.Points.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.model.Points.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.model.Points.tree_repr--source--__span-0-386">
 </span><span id="scenex.model.Points.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -10545,7 +10545,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.model.Scene.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.model.Scene.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.model.Scene.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.model.Scene.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.model.Scene.tree_repr--source--__span-0-386">
 </span><span id="scenex.model.Scene.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -11322,7 +11322,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.model.Text.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.model.Text.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.model.Text.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.model.Text.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.model.Text.tree_repr--source--__span-0-386">
 </span><span id="scenex.model.Text.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -13803,7 +13803,7 @@ the two entities; otherwise an exception will be raised.</p>
 <span class="normal">386</span>
 <span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="scenex.model.Volume.tree_repr--source--__span-0-383"><span class="k">def</span><span class="w"> </span><span class="nf">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="scenex.model.Volume.tree_repr--source--__span-0-384"><span class="w">    </span><span class="sd">"""Return an ASCII/Unicode tree representation of self and its descendants."""</span>
-</span><span id="scenex.model.Volume.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
+</span><span id="scenex.model.Volume.tree_repr--source--__span-0-385">    <span class="kn">from</span><span class="w"> </span><span class="nn">scenex.utils._tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_repr</span>
 </span><span id="scenex.model.Volume.tree_repr--source--__span-0-386">
 </span><span id="scenex.model.Volume.tree_repr--source--__span-0-387">    <span class="k">return</span> <span class="n">tree_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repr</span><span class="o">=</span><span class="nb">object</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
