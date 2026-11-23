@@ -101,23 +101,31 @@ docs = [
     # FIXME: Temp solution: https://zensical.org/docs/setup/versioning/
     "mike @ git+https://github.com/squidfunk/mike.git",
 ]
-dev = [
-    { include-group = "test" },
-    { include-group = "docs" },
-    "scenex[pygfx,vispy,imgui,jupyter,pyqt6, wx]",
+lint = [
+    { include-group = "dev" },
+    "mypy>=1.14.1",
+    "pyright>=1.1.392",
+    "ruff>=0.9.4",
+    "pre-commit-uv>=0.4",
+
+    # mypy/pyright check every adaptor, so every backend must be importable
+    "scenex[pygfx,vispy,imgui,jupyter,pyqt6,wx]",
+
     # Type stubs in these releases break mypy (invalid syntax in PyQt6 6.12.0,
     # new wx 4.3.2 stubs). Remove once fixed upstream or code is updated.
     "pyqt6 <6.12",
     "wxpython <4.3.2",
-    "imageio[tifffile] >=2.20",
-    "ipython>=8.18.1",
-    "mypy>=1.14.1",
-    "pydevd>=3.4.1",
-    "pdbpp>=0.12.1; sys_platform != 'win32'",
-    "pre-commit-uv>=0.4",
+
+    # Optional imports in src/scenex/app/_auto.py
     "rich>=13.9.4",
-    "ruff>=0.9.4",
-    "pyright>=1.1.392",
+    "pydevd>=3.4.1",
+]
+dev = [
+    { include-group = "test" },
+    # Nicer post-mortem debugger for SCENEX_DEBUG_EXCEPTIONS (replaces stdlib pdb)
+    "pdbpp>=0.12.1; sys_platform != 'win32'",
+    # Used in many examples
+    "imageio[tifffile] >=2.20",
 ]
 
 [project.urls]
