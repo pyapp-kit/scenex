@@ -40,8 +40,8 @@ dependencies = [
     "cmap>=0.5.1",
     "numpy >=2.1.0; python_version >= '3.13'",
     "numpy >=1.26.0; python_version < '3.13'",
-    # Gives us SignalGroupDescriptor.connect_child_events
-    "psygnal >=0.14",
+    # Gives us proper child event forwarding (https://github.com/pyapp-kit/psygnal/pull/428)
+    "psygnal >=0.16",
     # Gives us ModelWrapValidatorHandler
     "pydantic >=2.11",
     # Gives us la.mat_decompose
