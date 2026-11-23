@@ -1,11 +1,46 @@
 """Pytest setup for notebook tests."""
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from nbval.plugin import IPyNbCell  # type: ignore
 
 if TYPE_CHECKING:
     import pytest
+
+# ---------------------------------------------------------------------------
+# Patch compare_outputs to collapse duplicate RFBOutputContext() outputs.
+# Newer versions of vispy may emit more than one RFBOutputContext per display
+# call; normalise both sides to at most one.
+# ---------------------------------------------------------------------------
+_orig_compare_outputs = IPyNbCell.compare_outputs
+
+
+def _drop_extra_rfb(outputs: list[Any]) -> list[Any]:
+    seen = False
+    result = []
+    for out in outputs:
+        if out.get("data", {}).get("text/plain", "") == "RFBOutputContext()":
+            if not seen:
+                seen = True
+                result.append(out)
+        else:
+            result.append(out)
+    return result
+
+
+def _compare_outputs_filtered(
+    self: IPyNbCell,
+    test: list[Any],
+    ref: list[Any],
+    skip_compare: Any = None,
+) -> bool:
+    # Call the original compare_outputs, with filtered outputs
+    return _orig_compare_outputs(  # type: ignore[return-value]
+        self, _drop_extra_rfb(test), _drop_extra_rfb(ref), skip_compare=skip_compare
+    )
+
+
+IPyNbCell.compare_outputs = _compare_outputs_filtered  # type: ignore[method-assign]
 
 
 def pytest_collection_modifyitems(
@@ -40,5 +75,7 @@ def pytest_collection_modifyitems(
                 r"snapshot-[a-f0-9]+": "snapshot-XXXXX",
                 # -- Normalize canvas data (within the img tag) -- #
                 r"data:image/png;base64,[A-Za-z0-9+/=]+": "data:image/png;base64,XXXXX",
+                # -- Collapse multiple RFBOutputContext() lines into one -- #
+                r"(RFBOutputContext\(\)\n)+": "RFBOutputContext()\n",
             }
         )

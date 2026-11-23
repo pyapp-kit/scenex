@@ -90,19 +90,19 @@ def add_imgui_controls(view: View) -> None:
 
     Examples
     --------
-    Basic usage with an image::
+    Basic usage with an image:
 
-        >>> import scenex as snx
-        >>> import numpy as np
-        >>> from scenex.imgui import add_imgui_controls
+    >>> import scenex as snx
+    >>> import numpy as np
+    >>> from scenex.imgui import add_imgui_controls
 
-        >>> my_array = np.random.rand(100, 100).astype(np.float32)
-        >>> image = snx.Image(data=my_array)
-        >>> view = snx.View(scene=snx.Scene(children=[image]))
-        >>> snx.show(view)
-        Canvas(...)
-        >>> add_imgui_controls(view)
-        >>> snx.run()
+    >>> my_array = np.random.rand(100, 100).astype(np.float32)
+    >>> image = snx.Image(data=my_array)
+    >>> view = snx.View(scene=snx.Scene(children=[image]))
+    >>> snx.show(view)
+    Canvas(...)
+    >>> add_imgui_controls(view)
+    >>> snx.run()
 
     The control panel will show sections for:
     - View properties (camera, layout, etc.)
@@ -151,7 +151,7 @@ def add_imgui_controls(view: View) -> None:
 
     @render_canv.request_draw
     def _update() -> None:
-        snx_canvas_adaptor._draw()
+        snx_canvas_adaptor._draw_loop()
         imgui_renderer.render()
 
     class ImguiEventFilter:

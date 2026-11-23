@@ -3,16 +3,22 @@ from __future__ import annotations
 import importlib
 import os
 import sys
+import threading
+import traceback
+from abc import ABC, abstractmethod
 from collections import OrderedDict
 from concurrent.futures import Executor, Future, ThreadPoolExecutor
+from contextlib import suppress
 from enum import Enum, auto
 from functools import cache, wraps
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
+    from types import TracebackType
     from typing import Any
 
+    import pydevd  # type: ignore[import-untyped]
     from typing_extensions import ParamSpec, TypeVar
 
     from scenex.app.events._events import Event, EventFilter
@@ -87,12 +93,14 @@ class CursorType(Enum):
     Examples
     --------
     Set a crosshair cursor during drawing mode:
-        >>> import scenex as snx
-        >>> canvas = snx.Canvas()
-        >>> snx.set_cursor(canvas, CursorType.CROSS)  # doctest: +SKIP
+
+    >>> import scenex as snx
+    >>> canvas = snx.Canvas()
+    >>> snx.set_cursor(canvas, CursorType.CROSS)  # doctest: +SKIP
 
     Restore default cursor after operation:
-        >>> snx.set_cursor(canvas, CursorType.DEFAULT)  # doctest: +SKIP
+
+    >>> snx.set_cursor(canvas, CursorType.DEFAULT)  # doctest: +SKIP
 
     See Also
     --------
@@ -108,7 +116,81 @@ class CursorType(Enum):
     FDIAG_ARROW = auto()
 
 
-class App:
+# -------------------- Exception handling --------------------
+DEBUG_EXCEPTIONS = "SCENEX_DEBUG_EXCEPTIONS"
+"""Whether to drop into a debugger when an exception is raised. Default False."""
+
+EXIT_ON_EXCEPTION = "SCENEX_EXIT_ON_EXCEPTION"
+"""Whether to exit the application when an exception is raised. Default False."""
+
+
+def _print_exception(
+    exc_type: type[BaseException],
+    exc_value: BaseException,
+    exc_traceback: TracebackType | None,
+) -> None:
+    try:
+        # Use rich if we have it...
+        import psygnal
+        from rich.console import Console
+        from rich.traceback import Traceback
+
+        tb = Traceback.from_exception(
+            exc_type, exc_value, exc_traceback, suppress=[psygnal], max_frames=10
+        )
+        Console(stderr=True).print(tb)
+    except ImportError:
+        # ...or traceback if we don't
+        traceback.print_exception(exc_type, value=exc_value, tb=exc_traceback)
+
+
+def _scenex_excepthook(
+    exc_type: type[BaseException], exc_value: BaseException, tb: TracebackType | None
+) -> None:
+    # Render the exception to stderr
+    _print_exception(exc_type, exc_value, tb)
+    if not tb:
+        return
+
+    # If we're running with debugpy and pydevd...
+    if (
+        (debugpy := sys.modules.get("debugpy"))
+        and debugpy.is_client_connected()
+        and ("pydevd" in sys.modules)
+        and (py_db := _pydevd_debugger())
+    ):
+        # pause at the spot of the error
+        with suppress(Exception):
+            thread = threading.current_thread()
+            additional_info = py_db.set_additional_thread_info(thread)
+            additional_info.is_tracing += 1
+
+            try:
+                arg = (exc_type, exc_value, tb)
+                py_db.stop_on_unhandled_exception(py_db, thread, additional_info, arg)
+            finally:
+                additional_info.is_tracing -= 1
+    # Otherwise, if we're running with SCENEX_DEBUG_EXCEPTIONS, drop into pdb
+    elif os.getenv(DEBUG_EXCEPTIONS) in ("1", "true", "True"):
+        import pdb
+
+        pdb.post_mortem(tb)
+
+    # Finally, exit if the environment variable suggests we should
+    if os.getenv(EXIT_ON_EXCEPTION) in ("1", "true", "True"):
+        print(f"\n{EXIT_ON_EXCEPTION} is set, exiting.")
+        sys.exit(1)
+
+
+def _pydevd_debugger() -> pydevd.PyDB | None:
+    with suppress(Exception):
+        import pydevd
+
+        return pydevd.get_global_debugger()
+    return None
+
+
+class App(ABC):
     """Base class for GUI application wrappers.
 
     App provides an abstract interface for integrating scenex with different GUI
@@ -132,6 +214,7 @@ class App:
     determine_app : Function to determine which GUI backend to use
     """
 
+    @abstractmethod
     def create_app(self) -> Any:
         """Create the application instance, if not already created.
 
@@ -148,8 +231,9 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
+    @abstractmethod
     def run(self) -> None:
         """Start the application event loop.
 
@@ -161,8 +245,9 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
+    @abstractmethod
     def show(self, native_widget: Any, visible: bool) -> None:
         """Show or hide a native canvas widget.
 
@@ -177,8 +262,9 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
+    @abstractmethod
     def install_event_filter(
         self, widget: Any, handler: Callable[[Event], bool]
     ) -> EventFilter:
@@ -205,8 +291,9 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
+    @abstractmethod
     def process_events(self) -> None:
         """Yields the current thread to process all pending GUI events.
 
@@ -214,7 +301,7 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
     def call_in_main_thread(
         self, func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
@@ -250,6 +337,7 @@ class App:
         future.set_result(func(*args, **kwargs))
         return future
 
+    @abstractmethod
     def call_later(self, msec: int, func: Callable[[], None]) -> None:
         """Schedule a function to be called after a delay.
 
@@ -264,7 +352,7 @@ class App:
         -----
         Must be implemented by subclasses.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
     def get_executor(self) -> Executor:
         """Return an executor for running tasks in background threads.
@@ -283,7 +371,22 @@ class App:
         """
         return _thread_pool_executor()
 
+    @staticmethod
+    def _install_excepthook() -> None:
+        """Install a custom excepthook.
+
+        This is necessary to prevent the application from closing when an exception
+        is raised.
+        """
+        if sys.excepthook == _scenex_excepthook:
+            # don't install the excepthook more than once
+            return
+        sys._original_excepthook_ = sys.excepthook  # type: ignore[attr-defined]
+        sys.excepthook = _scenex_excepthook
+
     # ------------------------------ cursor API -------------------------------
+
+    @abstractmethod
     def set_cursor(self, native_widget: Any, cursor: CursorType) -> None:
         """Set the cursor on a native canvas widget.
 
@@ -296,7 +399,7 @@ class App:
         cursor : CursorType
             The type of cursor to set.
         """
-        raise NotImplementedError("Must be implemented by subclasses.")
+        ...
 
 
 @cache
@@ -350,12 +453,13 @@ def ensure_main_thread(func: Callable[P, T]) -> Callable[P, Future[T]]:
     Examples
     --------
     Ensure a GUI operation runs on the main thread:
-        >>> @ensure_main_thread
-        ... def update_widget(value: int) -> None:
-        ...     # Update some GUI widget with the given value
-        ...     pass
-        >>> future = update_widget(42)  # Returns immediately with Future
-        >>> result = future.result()  # Block until completion if needed
+
+    >>> @ensure_main_thread
+    ... def update_widget(value: int) -> None:
+    ...     # Update some GUI widget with the given value
+    ...     pass
+    >>> future = update_widget(42)  # Returns immediately with Future
+    >>> result = future.result()  # Block until completion if needed
 
     See Also
     --------
@@ -398,12 +502,14 @@ def determine_app() -> GuiFrontend:
     Examples
     --------
     Let the function auto-detect the backend:
-        >>> backend = determine_app()
+
+    >>> backend = determine_app()
 
     Force a specific backend via environment variable:
-        >>> import os
-        >>> os.environ["SCENEX_APP_BACKEND"] = "qt"  # doctest: +SKIP
-        >>> backend = determine_app()  # Will use Qt
+
+    >>> import os
+    >>> os.environ["SCENEX_APP_BACKEND"] = "qt"  # doctest: +SKIP
+    >>> backend = determine_app()  # Will use Qt
 
     See Also
     --------
@@ -461,7 +567,8 @@ def app() -> App:
     Examples
     --------
     Get the app and run the event loop:
-        >>> app().run()
+
+    >>> app().run()
 
     See Also
     --------

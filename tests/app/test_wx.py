@@ -14,6 +14,7 @@ from scenex.app.events import (
     KeyPressEvent,
     KeyReleaseEvent,
     MouseButton,
+    MouseDoublePressEvent,
     MouseEnterEvent,
     MouseLeaveEvent,
     MouseMoveEvent,
@@ -25,8 +26,6 @@ from scenex.app.events import (
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from typing import Any
-
-    from scenex.adaptors._base import CanvasAdaptor
 
 if determine_app() == GuiFrontend.WX:
     import wx
@@ -44,11 +43,24 @@ def evented_canvas(basic_view: snx.Scene) -> Iterator[snx.Canvas]:
     # FIXME: Probably good to destroy the canvas here - we may need a method for that
 
 
-def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None:
+def _processEvent(
+    evt: wx.PyEventBinder,
+    wdg: wx.Control,
+    *,
+    left_down: bool | None = None,
+    right_down: bool | None = None,
+    middle_down: bool | None = None,
+    **kwargs: Any,
+) -> None:
     """Simulates a wx event.
 
     Note that wx.UIActionSimulator is an alternative to this approach.
     It seems to actually move the cursor around though, which is really annoying :)
+
+    For mouse events, pass left_down/right_down/middle_down to explicitly set which
+    buttons are held. When omitted, each flag is inferred from the event type alone
+    (True only for the corresponding DOWN event), so callers must pass explicit values
+    when multiple buttons are involved.
     """
     if evt == wx.EVT_SIZE:
         ev = wx.SizeEvent(kwargs["sz"], evt.typeId)
@@ -60,7 +72,21 @@ def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None
         ev.SetPosition(kwargs["pos"])
         if rot := kwargs.get("rot"):
             ev.SetWheelRotation(rot[1])
-        ev.SetLeftDown(True)
+        ev.leftIsDown = (
+            left_down
+            if left_down is not None
+            else evt in (wx.EVT_LEFT_DOWN, wx.EVT_LEFT_DCLICK)
+        )
+        ev.rightIsDown = (
+            right_down
+            if right_down is not None
+            else evt in (wx.EVT_RIGHT_DOWN, wx.EVT_RIGHT_DCLICK)
+        )
+        ev.middleIsDown = (
+            middle_down
+            if middle_down is not None
+            else evt in (wx.EVT_MIDDLE_DOWN, wx.EVT_MIDDLE_DCLICK)
+        )
 
     wx.PostEvent(wdg.GetEventHandler(), ev)
     # Borrowed from:
@@ -72,30 +98,73 @@ def _processEvent(evt: wx.PyEventBinder, wdg: wx.Control, **kwargs: Any) -> None
     evtLoop.YieldFor(wx.EVT_CATEGORY_ALL)  # pyright: ignore[reportAttributeAccessIssue]
 
 
-def test_mouse_press(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+@pytest.mark.parametrize(
+    ("evt", "button"),
+    [
+        (wx.EVT_LEFT_DCLICK, MouseButton.LEFT),
+        (wx.EVT_RIGHT_DCLICK, MouseButton.RIGHT),
+        (wx.EVT_MIDDLE_DCLICK, MouseButton.MIDDLE),
+    ],
+)
+def test_mouse_double_click(
+    evented_canvas: snx.Canvas, evt: wx.PyEventBinder, button: MouseButton
+) -> None:
+    native = snx.native(evented_canvas)
+    mock_filter = MagicMock(return_value=False)
+    evented_canvas.set_event_filter(mock_filter)
+
+    press_point = (5, 10)
+    _processEvent(evt, native, pos=wx.Point(*press_point))
+    mock_filter.assert_called_once_with(
+        MouseDoublePressEvent(pos=press_point, buttons=button)
+    )
+
+
+def test_mouse_double_click_after_press(evented_canvas: snx.Canvas) -> None:
+    """Double clicks use <button>IsDown to determine active buttons, which means that we
+    need to be careful when handling these events to ensure that the correct button is
+    reported when multiple are pressed."""
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (5, 10)
     # Press the left button
     _processEvent(wx.EVT_LEFT_DOWN, native, pos=wx.Point(*press_point))
+    mock_filter.reset_mock()
+    # Now double click - we should still only have the left button active
+    _processEvent(
+        wx.EVT_RIGHT_DCLICK, native, pos=wx.Point(*press_point), left_down=True
+    )
     mock_filter.assert_called_once_with(
-        MousePressEvent(pos=press_point, buttons=MouseButton.LEFT)
+        MouseDoublePressEvent(pos=press_point, buttons=MouseButton.RIGHT)
     )
 
-    mock_filter.reset_mock()
-    # Now press the right button
-    _processEvent(wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point))
+
+@pytest.mark.parametrize(
+    ("evt", "button"),
+    [
+        (wx.EVT_LEFT_DOWN, MouseButton.LEFT),
+        (wx.EVT_RIGHT_DOWN, MouseButton.RIGHT),
+        (wx.EVT_MIDDLE_DOWN, MouseButton.MIDDLE),
+    ],
+)
+def test_mouse_press(
+    evented_canvas: snx.Canvas, evt: wx.PyEventBinder, button: MouseButton
+) -> None:
+    native = snx.native(evented_canvas)
+    mock_filter = MagicMock(return_value=False)
+    evented_canvas.set_event_filter(mock_filter)
+
+    press_point = (5, 10)
+    _processEvent(evt, native, pos=wx.Point(*press_point))
     mock_filter.assert_called_once_with(
-        MousePressEvent(pos=press_point, buttons=MouseButton.RIGHT)
+        MousePressEvent(pos=press_point, buttons=button)
     )
 
 
 def test_mouse_release(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -106,26 +175,52 @@ def test_mouse_release(evented_canvas: snx.Canvas) -> None:
     )
 
 
+def test_multiple_mouse_release(evented_canvas: snx.Canvas) -> None:
+    native = snx.native(evented_canvas)
+    mock_filter = MagicMock(return_value=False)
+    evented_canvas.set_event_filter(mock_filter)
+
+    press_point = (5, 10)
+    # Press the left button
+    _processEvent(wx.EVT_LEFT_DOWN, native, pos=wx.Point(*press_point))
+    # Press the right button
+    _processEvent(wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point), left_down=True)
+    # Now release just the left button; right remains held
+    _processEvent(wx.EVT_LEFT_UP, native, pos=wx.Point(*press_point), right_down=True)
+
+    mock_filter.reset_mock()
+    # Now move the mouse - we should only have the right button active
+    move_point = (6, 11)
+    _processEvent(wx.EVT_MOTION, native, pos=wx.Point(*move_point), right_down=True)
+    mock_filter.assert_called_once_with(
+        MouseMoveEvent(pos=move_point, buttons=MouseButton.RIGHT)
+    )
+
+
 def test_mouse_move(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (5, 10)
     # FIXME: For some reason the mouse press is necessary for processing events?
     _processEvent(wx.EVT_LEFT_DOWN, native, pos=wx.Point(*press_point))
-    _processEvent(wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point))
+    _processEvent(wx.EVT_RIGHT_DOWN, native, pos=wx.Point(*press_point), left_down=True)
     mock_filter.reset_mock()
-    _processEvent(wx.EVT_MOTION, native, pos=wx.Point(*press_point))
+    _processEvent(
+        wx.EVT_MOTION,
+        native,
+        pos=wx.Point(*press_point),
+        left_down=True,
+        right_down=True,
+    )
     mock_filter.assert_called_once_with(
         MouseMoveEvent(pos=press_point, buttons=MouseButton.LEFT | MouseButton.RIGHT)
     )
 
 
 def test_mouse_wheel(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -137,9 +232,7 @@ def test_mouse_wheel(evented_canvas: snx.Canvas) -> None:
 
 
 def test_resize(evented_canvas: snx.Canvas) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
+    native = snx.native(evented_canvas)
 
     new_size = (400, 300)
     # Note that the widget must be visible for a resize event to fire
@@ -149,8 +242,7 @@ def test_resize(evented_canvas: snx.Canvas) -> None:
 
 
 def test_mouse_enter(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -164,8 +256,7 @@ def test_mouse_enter(evented_canvas: snx.Canvas) -> None:
 
 
 def test_mouse_leave(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -182,8 +273,7 @@ def test_mouse_leave(evented_canvas: snx.Canvas) -> None:
 
 
 def test_set_cursor(evented_canvas: snx.Canvas) -> None:
-    adaptor = cast("CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0])
-    native = cast("wx.Window", adaptor._snx_get_native())
+    native = cast("wx.Window", snx.native(evented_canvas))
     # Wx doesn't really give us a way to assert the right thing happened...
     # ...the best we can do is assert a change.
     old = native.GetCursor()
@@ -192,8 +282,7 @@ def test_set_cursor(evented_canvas: snx.Canvas) -> None:
 
 
 def test_key_event(evented_canvas: snx.Canvas) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 

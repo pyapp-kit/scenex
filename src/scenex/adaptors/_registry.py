@@ -23,19 +23,39 @@ logger = logging.getLogger("scenex.adaptors")
 
 
 class AdaptorRegistry:
-    """Weak registry for Adaptor objects.
+    """Strong registry for Adaptor objects, released explicitly with `clear`.
 
     Each backend should subclass this and implement the `get_adaptor_class` method.
     And expose an instance of the subclass as `adaptors` in the top level of the backend
     module.
     """
 
+    # TODO: Investigate weak references without losing model event connections.
     def __init__(self) -> None:
         self._objects: dict[str, _base.Adaptor] = {}
 
     def all(self) -> Iterator[_base.Adaptor]:
         """Return an iterator over all adaptors in the registry."""
         yield from self._objects.values()
+
+    def clear(self, obj: model.EventedBase | None = None) -> None:
+        """Disconnect and release adaptors without closing their native resources.
+
+        Parameters
+        ----------
+        obj : model.EventedBase | None
+            The model whose adaptor to release, or None to release all adaptors.
+        """
+        if obj is None:
+            for obj in tuple(models.objects.all()):
+                self.clear(obj)
+            self._objects.clear()
+        elif (adaptor := self._objects.pop(obj._model_id.hex, None)) is not None:
+            obj.events.disconnect(adaptor.handle_event)
+            if isinstance(obj, models.Node):
+                node_adaptor = cast("_base.NodeAdaptor", adaptor)
+                obj.child_added.disconnect(node_adaptor._snx_add_child)
+                obj.child_removed.disconnect(node_adaptor._snx_remove_child)
 
     # TODO: see if this can be done better with typevars.
     # (it doesn't appear to be trivial)

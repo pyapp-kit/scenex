@@ -2,19 +2,22 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
+import numpy as np
 import pygfx
 
+from scenex.adaptors import get_adaptor_registry
 from scenex.adaptors._base import CanvasAdaptor
 from scenex.app import GuiFrontend, app, determine_app
 
 from ._adaptor_registry import get_adaptor
 
 if TYPE_CHECKING:
-    import numpy as np
     from cmap import Color
     from rendercanvas.base import BaseRenderCanvas
+    from rendercanvas.offscreen import OffscreenRenderCanvas
 
     from scenex import model
+    from scenex.app.events import EventFilter
 
     from ._view import View
 
@@ -80,6 +83,7 @@ class Canvas(CanvasAdaptor):
     """Canvas interface for pygfx Backend."""
 
     def __init__(self, canvas: model.Canvas, **backend_kwargs: Any) -> None:
+        self._closed = False
         self._canvas = canvas
         self._wgpu_canvas = _rendercanvas_class()
 
@@ -90,9 +94,18 @@ class Canvas(CanvasAdaptor):
         self._views: list[model.View] = []
         for view in canvas.views:
             self._snx_add_view(view)
-        self._filter = app().install_event_filter(self._snx_get_native(), canvas.handle)
+        self._filter: EventFilter | None = app().install_event_filter(
+            self._snx_get_native(), canvas.handle
+        )
         self._renderer = pygfx.renderers.WgpuRenderer(self._wgpu_canvas)
-        self._renderer.request_draw(self._draw)
+        # Schedule the first draw, to kick off the render loop.
+        # Future calls to self._renderer.request_draw() will reuse this function
+        self._renderer.request_draw(self._draw_loop)
+
+        # To support offscreen rendering, we require a separate canvas and renderer
+        # which we create lazily.
+        self._offscreen_canvas: OffscreenRenderCanvas | None = None
+        self._offscreen_renderer: pygfx.renderers.WgpuRenderer | None = None
 
     def _snx_get_native(self) -> Any:
         if subwdg := getattr(self._wgpu_canvas, "_subwidget", None):
@@ -104,11 +117,18 @@ class Canvas(CanvasAdaptor):
         app().show(self._snx_get_native(), arg)
         self._wgpu_canvas.request_draw()
 
-    def _draw(self) -> None:
-        for view in self._views:
-            cast("View", get_adaptor(view))._draw(self._renderer)
-        self._renderer.flush()
+    def _draw_loop(self) -> None:
+        # Draw on the canvas
+        self._draw(self._renderer)
+        # Schedule the next draw
         self._renderer.request_draw()
+
+    def _draw(self, renderer: pygfx.renderers.WgpuRenderer) -> None:
+        # Render all views
+        for view in self._views:
+            cast("View", get_adaptor(view))._draw(renderer)
+        # Then flush to the canvas
+        renderer.flush()
 
     def _snx_add_view(self, view: model.View) -> None:
         # This logic should go in the canvas node, I think
@@ -134,15 +154,33 @@ class Canvas(CanvasAdaptor):
 
     def _snx_close(self) -> None:
         """Close canvas."""
+        if self._closed:
+            return
+        self._closed = True
+        if self._filter is not None:
+            self._filter.uninstall()
+            self._filter = None
+        self._views.clear()
         self._wgpu_canvas.close()
+        if self._offscreen_canvas is not None:
+            self._offscreen_canvas.close()
+        get_adaptor_registry("pygfx").clear(self._canvas)
 
     def _snx_render(self) -> np.ndarray:
         """Render to offscreen buffer."""
-        from rendercanvas.offscreen import OffscreenRenderCanvas
+        if self._offscreen_canvas is None:
+            from rendercanvas.offscreen import OffscreenRenderCanvas
 
-        # not sure about this...
-        # w, h = self._wgpu_canvas.get_logical_size()
-        canvas = OffscreenRenderCanvas(size=(640, 480), pixel_ratio=2)
-        canvas.request_draw(self._draw)
-        canvas.force_draw()
-        return cast("np.ndarray", canvas.draw())
+            self._offscreen_canvas = OffscreenRenderCanvas(
+                size=(400, 400), pixel_ratio=1
+            )
+        if self._offscreen_renderer is None:
+            self._offscreen_renderer = pygfx.renderers.WgpuRenderer(
+                self._offscreen_canvas
+            )
+
+        self._offscreen_canvas.set_logical_size(self._canvas.width, self._canvas.height)
+        self._draw(self._offscreen_renderer)
+        # NOTE: np.asarray is necessary for older versions of rendercanvas, which return
+        # the image as a memoryview. Newer versions return a numpy array directly.
+        return np.asarray(self._offscreen_canvas.draw())

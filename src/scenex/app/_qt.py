@@ -59,7 +59,14 @@ if TYPE_CHECKING:
     from scenex.app.events import Event
 
 
-class QtEventFilter(QObject, EventFilter):
+# QObject and EventFilter(ABC) use incompatible metaclasses. This combined metaclass
+# inherits from both so that QtEventFilter can subclass QObject and EventFilter,
+# avoiding MRO conflict.
+class _QtEventFilterMeta(type(EventFilter), type(QObject)):  # type: ignore
+    pass
+
+
+class QtEventFilter(QObject, EventFilter, metaclass=_QtEventFilterMeta):
     def __init__(self, widget: QWidget, handler: Callable[[Event], bool]) -> None:
         super().__init__()
         self._widget = widget
@@ -67,9 +74,20 @@ class QtEventFilter(QObject, EventFilter):
         self._active_buttons: MouseButton = MouseButton.NONE
 
     def eventFilter(self, a0: QObject | None = None, a1: QEvent | None = None) -> bool:
-        if isinstance(a0, QWidget) and not a0.signalsBlocked():
-            if isinstance(a1, QEvent) and (evt := self._convert_event(a1)):
-                return self._handler(evt)
+        # Ensure a real event on a real widget
+        if a0 is None or a1 is None:
+            return False
+        # If the widget is being closed, uninstall the event filter
+        if a1.type() == QEvent.Type.Close:
+            self.uninstall()
+            return False
+        # Ignore events if they are being blocked
+        if a0.signalsBlocked():
+            return False
+        # If we can convert the event...
+        if evt := self._convert_event(a1):
+            # ...handle it!
+            return self._handler(evt)
         return False
 
     def uninstall(self) -> None:
@@ -80,6 +98,8 @@ class QtEventFilter(QObject, EventFilter):
             return MouseButton.LEFT
         if btn == Qt.MouseButton.RightButton:
             return MouseButton.RIGHT
+        if btn == Qt.MouseButton.MiddleButton:
+            return MouseButton.MIDDLE
         if btn == Qt.MouseButton.NoButton:
             return MouseButton.NONE
 
@@ -92,25 +112,27 @@ class QtEventFilter(QObject, EventFilter):
             canvas_pos = (pos.x(), pos.y())
 
             etype = qevent.type()
-            btn = self.mouse_btn(qevent.button())
             if etype == QEvent.Type.MouseMove:
                 return MouseMoveEvent(
                     pos=canvas_pos,
                     buttons=self._active_buttons,
                 )
             elif etype == QEvent.Type.MouseButtonDblClick:
+                btn = self.mouse_btn(qevent.button())
                 self._active_buttons |= btn
                 return MouseDoublePressEvent(
                     pos=canvas_pos,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonPress:
+                btn = self.mouse_btn(qevent.button())
                 self._active_buttons |= btn
                 return MousePressEvent(
                     pos=canvas_pos,
                     buttons=btn,
                 )
             elif etype == QEvent.Type.MouseButtonRelease:
+                btn = self.mouse_btn(qevent.button())
                 self._active_buttons &= ~btn
                 return MouseReleaseEvent(
                     pos=canvas_pos,
@@ -166,6 +188,7 @@ class QtAppWrap(App):
             # must be stored in a class variable to prevent garbage collection
             QtAppWrap._APP_INSTANCE = qapp = QApplication(sys.argv)
 
+        self._install_excepthook()
         return qapp
 
     def run(self) -> None:
@@ -252,7 +275,7 @@ class MainThreadInvoker(QObject):
             _INVOKERS.discard(self)
 
 
-_INVOKERS = set()
+_INVOKERS: set[MainThreadInvoker] = set()
 
 
 def _call_in_main_thread(

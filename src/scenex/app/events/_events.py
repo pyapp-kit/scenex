@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import IntFlag, auto
 from typing import TYPE_CHECKING, NamedTuple, TypeAlias
@@ -41,23 +42,26 @@ class MouseButton(IntFlag):
     Examples
     --------
     Check if left button is pressed:
-        >>> event = MousePressEvent(
-        ...     pos=(100, 150),
-        ...     buttons=MouseButton.LEFT | MouseButton.RIGHT,
-        ... )
-        >>> if event.buttons & MouseButton.LEFT:
-        ...     print("Left button is down")
-        Left button is down
+
+    >>> event = MousePressEvent(
+    ...     pos=(100, 150),
+    ...     buttons=MouseButton.LEFT | MouseButton.RIGHT,
+    ... )
+    >>> if event.buttons & MouseButton.LEFT:
+    ...     print("Left button is down")
+    Left button is down
 
     Check for specific button combination:
-        >>> if event.buttons == (MouseButton.LEFT | MouseButton.RIGHT):
-        ...     print("Both left and right buttons pressed")
-        Both left and right buttons pressed
+
+    >>> if event.buttons == (MouseButton.LEFT | MouseButton.RIGHT):
+    ...     print("Both left and right buttons pressed")
+    Both left and right buttons pressed
 
     Check if any button is pressed:
-        >>> if event.buttons != MouseButton.NONE:
-        ...     print("Some button is pressed")
-        Some button is pressed
+
+    >>> if event.buttons != MouseButton.NONE:
+    ...     print("Some button is pressed")
+    Some button is pressed
     """
 
     NONE = 0
@@ -98,23 +102,24 @@ class Ray(NamedTuple):
     Examples
     --------
     Find all intersections with a scene:
-        >>> import numpy as np
-        >>> import scenex as snx
-        >>> view = snx.View(
-        ...     scene=snx.Scene(
-        ...         children=[
-        ...             snx.Image(data=np.random.rand(100, 100)),
-        ...             snx.Points(
-        ...                 vertices=np.asarray([[0, 0, 0], [1, 1, 0]]),
-        ...                 size=5,
-        ...                 edge_width=0,
-        ...             ),
-        ...         ]
-        ...     )
-        ... )
-        >>> ray = Ray(origin=(1, 1, 10), direction=(0, 0, -1), source=view)
-        >>> ray.intersections(view.scene)
-        [(Points(...), 7.5), (Image(...), 10.0)]
+
+    >>> import numpy as np
+    >>> import scenex as snx
+    >>> view = snx.View(
+    ...     scene=snx.Scene(
+    ...         children=[
+    ...             snx.Image(data=np.random.rand(100, 100)),
+    ...             snx.Points(
+    ...                 vertices=np.asarray([[0, 0, 0], [1, 1, 0]]),
+    ...                 size=5,
+    ...                 edge_width=0,
+    ...             ),
+    ...         ]
+    ...     )
+    ... )
+    >>> ray = Ray(origin=(1, 1, 10), direction=(0, 0, -1), source=view)
+    >>> ray.intersections(view.scene)
+    [(Points(...), 7.5), (Image(...), 10.0)]
 
     See Also
     --------
@@ -386,7 +391,7 @@ class KeyReleaseEvent(KeyEvent):
     pass
 
 
-class EventFilter:
+class EventFilter(ABC):
     """Base class for event filter handles.
 
     EventFilter instances are returned when installing event filters on views or
@@ -394,6 +399,7 @@ class EventFilter:
     needed, ensuring proper cleanup and preventing memory leaks.
     """
 
+    @abstractmethod
     def uninstall(self) -> None:
         """Remove this event filter.
 
@@ -401,4 +407,4 @@ class EventFilter:
         longer be called for future events. After calling uninstall(), this
         EventFilter instance should not be used further.
         """
-        raise NotImplementedError("This method should be implemented by subclasses.")
+        ...

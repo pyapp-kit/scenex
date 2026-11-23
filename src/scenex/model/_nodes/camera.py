@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import math
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Annotated, Any, Literal, Union
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, Literal, Union
 
 import numpy as np
 import pylinalg as la
-from pydantic import Field, PrivateAttr
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
 from scenex.app.events import (
     MouseButton,
@@ -15,24 +15,24 @@ from scenex.app.events import (
     MousePressEvent,
     WheelEvent,
 )
-from scenex.model._base import EventedBase
 from scenex.utils import projections
 
 from .node import Node
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
+
     from scenex import View
     from scenex.app.events import Event
     from scenex.model._transform import Transform
 
-Position2D = tuple[float, float]
-Position3D = tuple[float, float, float]
-Vector3D = tuple[float, float, float]
-Position = Position2D | Position3D
+    Position2D = tuple[float, float]
+    Position3D = tuple[float, float, float]
+    Vector3D = tuple[float, float, float]
+    Position = Position2D | Position3D
+    Vec3Like = npt.ArrayLike
 
-AnyController = Annotated[
-    Union["PanZoom", "Orbit", "None"], Field(discriminator="type")
-]
+AnyController = Annotated[Union["PanZoom", "Orbit", None], Field(discriminator="type")]
 
 
 class Camera(Node):
@@ -56,19 +56,23 @@ class Camera(Node):
     Examples
     --------
     Create a camera with pan-zoom controller:
-        >>> camera = Camera(controller=PanZoom(), interactive=True)
+
+    >>> camera = Camera(controller=PanZoom(), interactive=True)
 
     Create a camera with orbit controller:
-        >>> camera = Camera(controller=Orbit(center=(0, 0, 0)), interactive=True)
+
+    >>> camera = Camera(controller=Orbit(center=(0, 0, 0)), interactive=True)
 
     Position a camera and point it at a target:
-        >>> camera = Camera()
-        >>> camera.transform = Transform().translated((10, 0, 0))
-        >>> camera.look_at((0, 0, 0), up=(0, 0, 1))
+
+    >>> camera = Camera()
+    >>> camera.transform = Transform().translated((10, 0, 0))
+    >>> camera.look_at((0, 0, 0), up=(0, 0, 1))
 
     Create a perspective camera:
-        >>> from scenex.utils.projections import perspective
-        >>> camera = Camera(projection=perspective(fov=70, near=0.1, far=100))
+
+    >>> from scenex.utils.projections import perspective
+    >>> camera = Camera(projection=perspective(fov=70, near=0.1, far=100))
     """
 
     node_type: Literal["camera"] = "camera"
@@ -100,7 +104,7 @@ class Camera(Node):
         return tuple(vector / np.linalg.norm(vector))
 
     @forward.setter
-    def forward(self, arg: Vector3D) -> None:
+    def forward(self, arg: Vec3Like) -> None:
         """Sets the forward direction of the camera."""
         # Check for no change - avoid divide-by-zeroes
         mag_old = np.linalg.norm(self.forward)
@@ -126,7 +130,7 @@ class Camera(Node):
         return tuple(self.transform.map((0, 1, 0)) - self.transform.map((0, 0, 0)))[:3]
 
     @up.setter
-    def up(self, arg: Vector3D) -> None:
+    def up(self, arg: Vec3Like) -> None:
         """Sets the up direction of the camera.
 
         Does not affect the forward direction of the camera so long as the new up
@@ -150,16 +154,18 @@ class Camera(Node):
             .translated(position)
         )
 
-    def look_at(self, target: Position3D, /, *, up: Vector3D | None = None) -> None:
+    def look_at(self, target: Vec3Like, /, *, up: Vec3Like | None = None) -> None:
         """Adjusts the camera to look at a target point in the world.
 
         Parameters
         ----------
-        target: Position3D
-            The position in 3D space that the camera should look at.
-        up: Vector3D, optional
-            The up direction for the camera. If provided, this vector must be
-            perpendicular to the forward vector that results from looking at target.
+        target: array-like
+            3 element sequence defining the position in 3D space that the camera
+            should look at.
+        up: array-like, optional
+            3 element sequence defining the up direction for the camera. If
+            provided, this vector must be perpendicular to the forward vector that
+            results from looking at target.
         """
         position = self.transform.map((0, 0, 0))[:3]
         self.forward = tuple(target - position)
@@ -176,7 +182,7 @@ class Camera(Node):
 # ====================================================================================
 
 
-class CameraController(EventedBase):
+class CameraController(BaseModel):
     """Base class defining how a camera responds to user interaction events.
 
     A CameraController handles user input (mouse, keyboard, wheel) to manipulate
@@ -191,10 +197,12 @@ class CameraController(EventedBase):
     Examples
     --------
     Create a camera with pan/zoom controller:
-        >>> camera = Camera(controller=PanZoom(), interactive=True)
+
+    >>> camera = Camera(controller=PanZoom(), interactive=True)
 
     Create a camera with orbit controller:
-        >>> camera = Camera(controller=Orbit(center=(0, 0, 0)), interactive=True)
+
+    >>> camera = Camera(controller=Orbit(center=(0, 0, 0)), interactive=True)
 
     See Also
     --------
@@ -202,6 +210,11 @@ class CameraController(EventedBase):
     Orbit : 3D orbit controller
     Camera : Camera class that uses controllers
     """
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(
+        validate_default=True,
+        validate_assignment=True,
+    )
 
     @abstractmethod
     def handle_event(self, event: Event, view: View) -> bool:
@@ -231,7 +244,7 @@ class CameraController(EventedBase):
         need ``view.to_ray()`` to unproject screen-space event positions into world
         space, which requires both the camera matrices and the viewport dimensions.
         """
-        raise NotImplementedError
+        ...
 
 
 class PanZoom(CameraController):
@@ -261,23 +274,27 @@ class PanZoom(CameraController):
     Examples
     --------
     Standard 2D pan and zoom:
-        >>> camera = Camera(controller=PanZoom(), interactive=True)
+
+    >>> camera = Camera(controller=PanZoom(), interactive=True)
 
     Lock horizontal movement for vertical scrolling only:
-        >>> camera = Camera(controller=PanZoom(lock_x=True), interactive=True)
+
+    >>> camera = Camera(controller=PanZoom(lock_x=True), interactive=True)
 
     Create an image viewer with pan/zoom:
-        >>> import numpy as np
-        >>> from scenex.utils import projections
-        >>> my_data = np.random.rand(512, 512).astype(np.float32)
-        >>> view = View(
-        ...     scene=Scene(children=[Image(data=my_data)]),
-        ...     camera=Camera(
-        ...         controller=PanZoom(),
-        ...         interactive=True,
-        ...     ),
-        ... )
-        >>> projections.zoom_to_fit(view=view, type="orthographic")
+
+    >>> import numpy as np
+    >>> import scenex as snx
+    >>> from scenex.utils import projections
+    >>> my_data = np.random.rand(512, 512).astype(np.float32)
+    >>> view = snx.View(
+    ...     scene=snx.Scene(children=[snx.Image(data=my_data)]),
+    ...     camera=snx.Camera(
+    ...         controller=snx.PanZoom(),
+    ...         interactive=True,
+    ...     ),
+    ... )
+    >>> projections.zoom_to_fit(view=view, type="orthographic")
 
     See Also
     --------
@@ -403,41 +420,45 @@ class Orbit(CameraController):
     Examples
     --------
     Orbit around the origin:
-        >>> from scenex.utils import projections
-        >>> # Create a perspective camera...
-        >>> camera = Camera(
-        ...     interactive=True,
-        ...     projection=projections.perspective(fov=70, near=1, far=1000),
-        ... )
-        >>> # ...positioned along the X axis...
-        >>> camera.transform = Transform().translated((100, 0, 0))
-        >>> # ...looking at the origin...
-        >>> camera.look_at((0, 0, 0), up=(0, 0, 1))
-        >>> # ...that orbits around the origin
-        >>> camera.controller = Orbit(center=(0, 0, 0))
+
+    >>> import scenex as snx
+    >>> from scenex.utils import projections
+    >>> # Create a perspective camera...
+    >>> camera = snx.Camera(
+    ...     interactive=True,
+    ...     projection=projections.perspective(fov=70, near=1, far=1000),
+    ... )
+    >>> # ...positioned along the X axis...
+    >>> camera.transform = snx.Transform().translated((100, 0, 0))
+    >>> # ...looking at the origin...
+    >>> camera.look_at((0, 0, 0), up=(0, 0, 1))
+    >>> # ...that orbits around the origin
+    >>> camera.controller = snx.Orbit(center=(0, 0, 0))
 
     Orbit around a data volume's center:
-        >>> import numpy as np
-        >>> my_data = np.random.rand(100, 100, 100).astype(np.float32)
-        >>> volume = Volume(data=my_data)
-        >>> center = np.mean(volume.bounding_box, axis=0)
-        >>> # Create a perspective camera...
-        >>> camera = Camera(
-        ...     interactive=True,
-        ...     projection=projections.perspective(fov=70, near=1, far=1000),
-        ... )
-        >>> # ...positioned along the X axis from the volume center...
-        >>> camera.transform = Transform().translated(center).translated((100, 0, 0))
-        >>> # ...looking at the center...
-        >>> camera.look_at(center, up=(0, 0, 1))
-        >>> # ...that orbits around the center
-        >>> camera.controller = Orbit(center=center)
+
+    >>> import numpy as np
+    >>> my_data = np.random.rand(100, 100, 100).astype(np.float32)
+    >>> volume = snx.Volume(data=my_data)
+    >>> center = np.mean(volume.bounding_box, axis=0)
+    >>> # Create a perspective camera...
+    >>> camera = snx.Camera(
+    ...     interactive=True,
+    ...     projection=projections.perspective(fov=70, near=1, far=1000),
+    ... )
+    >>> # ...positioned along the X axis from the volume center...
+    >>> camera.transform = snx.Transform().translated(center).translated((100, 0, 0))
+    >>> # ...looking at the center...
+    >>> camera.look_at(center, up=(0, 0, 1))
+    >>> # ...that orbits around the center
+    >>> camera.controller = snx.Orbit(center=center)
 
     Custom polar axis for Y-up scenes:
-        >>> camera = Camera(
-        ...     controller=Orbit(center=(0, 0, 0), polar_axis=(0, 1, 0)),
-        ...     interactive=True,
-        ... )
+
+    >>> camera = snx.Camera(
+    ...     controller=snx.Orbit(center=(0, 0, 0), polar_axis=(0, 1, 0)),
+    ...     interactive=True,
+    ... )
 
     Interactions
     ------------

@@ -100,16 +100,19 @@ def use(backend: KnownBackend | None = None) -> None:
     Examples
     --------
     Use pygfx backend explicitly:
-        >>> import scenex as snx
-        >>> snx.use("pygfx")  # doctest: +SKIP
-        >>> canvas = snx.show(snx.View())
+
+    >>> import scenex as snx
+    >>> snx.use("pygfx")  # doctest: +SKIP
+    >>> canvas = snx.show(snx.View())
 
     Use vispy backend:
-        >>> snx.use("vispy")  # doctest: +SKIP
-        >>> canvas = snx.show(snx.Scene())
+
+    >>> snx.use("vispy")  # doctest: +SKIP
+    >>> canvas = snx.show(snx.Scene())
 
     Reset to auto-detection:
-        >>> snx.use(None)
+
+    >>> snx.use(None)
 
     Notes
     -----

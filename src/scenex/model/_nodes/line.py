@@ -29,25 +29,28 @@ class Line(Node):
     Examples
     --------
     Create a simple line connecting several points:
-        >>> import numpy as np
-        >>> vertices = np.array([[0, 0], [10, 5], [20, 0]])
-        >>> line = Line(
-        ...     vertices=vertices,
-        ...     color=UniformColor(color=Color("red")),
-        ... )
+
+    >>> import numpy as np
+    >>> vertices = np.array([[0, 0], [10, 5], [20, 0]])
+    >>> line = Line(
+    ...     vertices=vertices,
+    ...     color=UniformColor(color=Color("red")),
+    ... )
 
     Create a line with per-vertex colors:
-        >>> vertices = np.array([[0, 0], [10, 10], [20, 0]])
-        >>> colors = [Color("red"), Color("green"), Color("blue")]
-        >>> line = Line(
-        ...     vertices=vertices,
-        ...     color=VertexColors(color=colors),
-        ...     width=2.0,
-        ... )
+
+    >>> vertices = np.array([[0, 0], [10, 10], [20, 0]])
+    >>> colors = [Color("red"), Color("green"), Color("blue")]
+    >>> line = Line(
+    ...     vertices=vertices,
+    ...     color=VertexColors(color=colors),
+    ...     width=2.0,
+    ... )
 
     Create a 3D line:
-        >>> vertices = np.array([[0, 0, 0], [10, 5, 3], [20, 0, 6]])
-        >>> line = Line(vertices=vertices, width=3.0)
+
+    >>> vertices = np.array([[0, 0, 0], [10, 5, 3], [20, 0, 6]])
+    >>> line = Line(vertices=vertices, width=3.0)
     """
 
     node_type: Literal["line"] = "line"

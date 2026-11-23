@@ -35,29 +35,6 @@ Supported Backends
 **vispy** (OpenGL-based):
     - Mature, widely-supported OpenGL renderer
 
-Usage
------
-Adaptors are NOT intended for manual instantiation; they are instead created
-automatically by `scenex.show()`::
-
-    >>> import scenex as snx
-    >>> import numpy as np
-
-    >>> # Create model
-    >>> my_array = np.random.rand(100, 100).astype(np.float32)
-    >>> scene = snx.Scene(children=[snx.Image(data=my_array)])
-
-    >>> # This creates adaptors automatically
-    >>> snx.show(scene)
-    Canvas(...)
-    >>> snx.run()
-
-To select a particular backend, use `scenex.use()`::
-
-    >>> snx.use("pygfx")  # doctest: +SKIP
-    >>> snx.show(scene)
-    Canvas(...)
-
 See Also
 --------
 scenex.model : Declarative model classes

@@ -1,5 +1,8 @@
 from unittest.mock import Mock, call
 
+import cmap
+import numpy as np
+
 import scenex as snx
 from scenex.app.events import (
     MouseButton,
@@ -7,6 +10,7 @@ from scenex.app.events import (
     MouseLeaveEvent,
     MouseMoveEvent,
 )
+from scenex.utils.projections import orthographic
 
 
 def test_multiple_views() -> None:
@@ -112,3 +116,52 @@ def test_handle_view_events() -> None:
         MouseEnterEvent(pos=evt.pos, buttons=MouseButton.NONE)
     )
     assert mock_filter2.call_args_list[1] == call(evt)
+
+
+def test_render() -> None:
+    """Smoke test for canvas.render()."""
+
+    # Scene: a red quad at world (±0.5, ±0.5, 0), viewed through an orthographic
+    # camera mapping world ±1 → NDC ±1 via orthographic(2, 2, 2).  The mesh
+    # therefore occupies NDC ±0.5, which is the centre 50 % of the viewport.
+    vertices = np.array(
+        [[-0.5, -0.5, 0], [0.5, -0.5, 0], [0.5, 0.5, 0], [-0.5, 0.5, 0]],
+        dtype=np.float32,
+    )
+    faces = np.array([[0, 1, 2], [0, 2, 3]])
+    mesh = snx.Mesh(
+        vertices=vertices,
+        faces=faces,
+        color=snx.UniformColor(color=cmap.Color("red")),
+    )
+
+    camera = snx.Camera(
+        transform=snx.Transform(),
+        projection=orthographic(2, 2, 2),
+    )
+    scene = snx.Scene(children=[mesh])
+    view = snx.View(scene=scene, camera=camera)
+    canvas = snx.Canvas(
+        views=[view], width=400, height=400, background_color=cmap.Color("black")
+    )
+
+    # Render the image
+    img = canvas.render()
+    assert isinstance(img, np.ndarray)
+    assert img.shape == (canvas.height, canvas.width, 4)
+
+    # Test the center of the rendered view, which should be very red.
+    center = (canvas.height // 2, canvas.width // 2)
+    center_rgb = img[center[0], center[1], :3]
+    np.testing.assert_array_equal(center_rgb, [255, 0, 0])
+
+    # Test the corners of the rendered view, which should be the background color.
+    background_rgb = np.array(cmap.Color("black").rgba[:3])
+    for pixel in [
+        img[0, 0],
+        img[canvas.height - 1, canvas.width - 1],
+    ]:
+        corner_rgb = pixel[:3]
+        np.testing.assert_array_equal(corner_rgb, background_rgb)
+
+    canvas.close()

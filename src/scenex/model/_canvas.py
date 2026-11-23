@@ -52,13 +52,16 @@ class Canvas(EventedBase):
     Examples
     --------
     Create a simple canvas with default settings:
-        >>> canvas = Canvas()
+
+    >>> canvas = Canvas()
 
     Create a canvas with custom size and title:
-        >>> canvas = Canvas(width=800, height=600, title="My Visualization")
+
+    >>> canvas = Canvas(width=800, height=600, title="My Visualization")
 
     Create a canvas with multiple views side-by-side:
-        >>> canvas = Canvas(width=800, height=400, views=[View(), View()])
+
+    >>> canvas = Canvas(width=800, height=400, views=[View(), View()])
     """
 
     width: int = Field(default=600, description="The width of the canvas in pixels")
@@ -107,7 +110,11 @@ class Canvas(EventedBase):
 
     def close(self) -> None:
         """Close the canvas and release resources."""
-        for adaptor in self._get_adaptors():
+        try:
+            adaptors = self._get_adaptors()
+        except KeyError:
+            return
+        for adaptor in adaptors:
             cast("CanvasAdaptor", adaptor)._snx_close()
 
     def rect_for(self, view: View) -> tuple[int, int, int, int]:
@@ -168,8 +175,16 @@ class Canvas(EventedBase):
         self.width, self.height = value
 
     def render(self) -> np.ndarray:
-        """Show the canvas."""
-        if adaptors := self._get_adaptors():
+        """Render the canvas to an image array.
+
+        Returns
+        -------
+        np.ndarray
+            The rendered canvas as an RGBA image array. The array is expected
+            to follow standard image conventions, with shape
+            ``(height, width, 4)``.
+        """
+        if adaptors := self._get_adaptors(create=True):
             return cast("CanvasAdaptor", adaptors[0])._snx_render()
         raise RuntimeError("No adaptor found for Canvas.")
 

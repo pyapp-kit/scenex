@@ -24,9 +24,6 @@ from scenex.app.events import (
 )
 from scenex.model._transform import Transform
 
-if TYPE_CHECKING:
-    from scenex.adaptors._base import CanvasAdaptor
-
 if determine_app() == GuiFrontend.QT:
     from qtpy.QtCore import QEvent, QPoint, QPointF, Qt
     from qtpy.QtGui import QEnterEvent
@@ -48,37 +45,38 @@ def evented_canvas(qtbot: QtBot) -> snx.Canvas:
     scene = snx.Scene(children=[])
     view = snx.View(scene=scene, camera=camera)
     canvas = snx.Canvas(views=[view])
-    native = cast(
-        "CanvasAdaptor", canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
-    qtbot.addWidget(native)
+    qtbot.addWidget(snx.native(canvas))
     return canvas
 
 
-def test_mouse_press(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+@pytest.mark.parametrize(
+    "qt_button, expected_buttons",
+    [
+        (Qt.MouseButton.LeftButton, MouseButton.LEFT),
+        (Qt.MouseButton.RightButton, MouseButton.RIGHT),
+        (Qt.MouseButton.MiddleButton, MouseButton.MIDDLE),
+    ],
+)
+def test_mouse_press(
+    evented_canvas: snx.Canvas,
+    qtbot: QtBot,
+    qt_button: Qt.MouseButton,
+    expected_buttons: MouseButton,
+) -> None:
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
     press_point = (5, 10)
-    # Press the left button
-    qtbot.mousePress(native, Qt.MouseButton.LeftButton, pos=QPoint(*press_point))
+    # Press the button
+    qtbot.mousePress(native, qt_button, pos=QPoint(*press_point))
     mock_filter.assert_called_once_with(
-        MousePressEvent(pos=press_point, buttons=MouseButton.LEFT)
-    )
-
-    mock_filter.reset_mock()
-    # Now press the right button
-    qtbot.mousePress(native, Qt.MouseButton.RightButton, pos=QPoint(*press_point))
-    mock_filter.assert_called_once_with(
-        MousePressEvent(pos=press_point, buttons=MouseButton.RIGHT)
+        MousePressEvent(pos=press_point, buttons=expected_buttons)
     )
 
 
 def test_mouse_release(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -90,8 +88,7 @@ def test_mouse_release(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_mouse_move(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -107,8 +104,7 @@ def test_mouse_move(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_mouse_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -124,8 +120,7 @@ def test_mouse_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_mouse_double_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
 
@@ -138,10 +133,7 @@ def test_mouse_double_click(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_resize(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
-    qtbot.add_widget(native)
+    native = snx.native(evented_canvas)
     new_size = (400, 300)
     assert evented_canvas.width != new_size[0]
     assert evented_canvas.height != new_size[1]
@@ -154,8 +146,7 @@ def test_resize(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_mouse_enter(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     qtbot.add_widget(native)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
@@ -180,8 +171,7 @@ def test_mouse_enter(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_mouse_leave(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     qtbot.add_widget(native)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
@@ -211,8 +201,7 @@ def test_mouse_leave(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 # (somehow a partially deleted QMouseEvent is being processed during qtbot.keyPress)
 @pytest.mark.skipif(os.getenv("CI") == "true", reason="Skipped on CI")
 def test_key_event(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    adaptor = evented_canvas._get_adaptors(create=True)[0]
-    native = cast("CanvasAdaptor", adaptor)._snx_get_native()
+    native = snx.native(evented_canvas)
     qtbot.add_widget(native)
     mock_filter = MagicMock(return_value=False)
     evented_canvas.set_event_filter(mock_filter)
@@ -229,9 +218,7 @@ def test_key_event(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
 
 
 def test_set_cursor(evented_canvas: snx.Canvas, qtbot: QtBot) -> None:
-    native = cast(
-        "CanvasAdaptor", evented_canvas._get_adaptors(create=True)[0]
-    )._snx_get_native()
+    native = snx.native(evented_canvas)
     qtbot.addWidget(native)
     snx.set_cursor(evented_canvas, CursorType.CROSS)
 

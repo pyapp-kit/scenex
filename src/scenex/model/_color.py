@@ -36,9 +36,10 @@ class UniformColor(ColorModel):
     Examples
     --------
     Uniform coloring:
-        >>> from cmap import Color
-        >>> from scenex import UniformColor
-        >>> model = UniformColor(color=Color("red"))
+
+    >>> from cmap import Color
+    >>> from scenex import UniformColor
+    >>> model = UniformColor(color=Color("red"))
     """
 
     color: Color = Field(default_factory=lambda: Color("white"))
@@ -54,9 +55,10 @@ class FaceColors(ColorModel):
     Examples
     --------
     Per-face coloring:
-        >>> from cmap import Color
-        >>> from scenex import FaceColors
-        >>> model = FaceColors(color=[Color("red"), Color("blue"), Color("green")])
+
+    >>> from cmap import Color
+    >>> from scenex import FaceColors
+    >>> model = FaceColors(color=[Color("red"), Color("blue"), Color("green")])
     """
 
     color: Sequence[Color]
@@ -72,11 +74,10 @@ class VertexColors(ColorModel):
     Examples
     --------
     Per-vertex coloring:
-        >>> from cmap import Color
-        >>> from scenex import VertexColors
-        >>> model = VertexColors(
-        ...     color=[Color("yellow"), Color("purple"), Color("cyan")]
-        ... )
+
+    >>> from cmap import Color
+    >>> from scenex import VertexColors
+    >>> model = VertexColors(color=[Color("yellow"), Color("purple"), Color("cyan")])
     """
 
     color: Sequence[Color]
