@@ -14,18 +14,26 @@ Development happens on [GitHub](https://github.com/pyapp-kit/scenex). To contrib
 git clone https://github.com/<your-username>/scenex
 cd scenex
 uv sync
-pre-commit install
+uv run --group lint pre-commit install
+```
+
+A plain `uv sync` installs `scenex` with its test and debugging tools, but without any rendering backend or GUI framework. Add the backend and GUI you want to work with as extras (see the table below), for example:
+
+```bash
+uv sync --extra pygfx --extra pyqt6 --group testqt
 ```
 
 ### Running tests
 
-Once you've made a change, please write a test showing that your change works! This repository uses [pytest](https://docs.pytest.org/en/stable/) to run the `scenex` unit tests 
+Once you've made a change, please write a test showing that your change works! This repository uses [pytest](https://docs.pytest.org/en/stable/) to run the `scenex` unit tests.
+
+*The test suite needs at least one graphics backend (pygfx or VisPy) and one GUI frontend (Qt, Jupyter, or wx).* For example:
 
 ```bash
-uv run --exact --no-dev --group test pytest
+uv run --exact --extra pygfx --extra pyqt6 --group testqt pytest
 ```
 
-There are a few optional test groups depending on which backends you want to exercise:
+Choose the extras and groups for the components you want to exercise:
 
 
 | Component | Extra parameters |
@@ -39,17 +47,18 @@ There are a few optional test groups depending on which backends you want to exe
 For example, the following will run scenex tests pertaining to the `vispy` backend, the `qt` app, and the scenex model code:
 
 ```bash
-
-uv run --exact --no-dev --group test --extra vispy --extra pyqt6 --group testqt pytest
+uv run --exact --extra vispy --extra pyqt6 --group testqt pytest
 ```
 
 ### Code style
 
-Pre-commit hooks handle formatting and linting automatically on each commit. To run them manually:
+Pre-commit hooks handle formatting, linting, and type checking automatically on each commit. To run them manually:
 
 ```bash
-uv run pre-commit run --all-files
+uv run --group lint pre-commit run --all-files
 ```
+
+The hooks run inside the `lint` dependency group. Because mypy and pyright check every adaptor, that group installs **all** backends (pygfx, VisPy, Qt, wx, Jupyter, imgui), and they're added to your `.venv` the first time the hooks run. If you then want to go back to a minimal environment, re-run your `uv sync --exact ...` command.
 
 ## Contributing Documentation
 
