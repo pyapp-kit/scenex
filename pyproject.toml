@@ -68,8 +68,8 @@ wx= [
     "wxpython >=4.2.2",
 ]
 pygfx = [
-    # Needed for per-material blending modes
-    "pygfx>=0.13.0",
+    # Needed for correct volume rendering
+    "pygfx>=0.17.0",
     # Needed to correctly resizes wx widgets
     "rendercanvas>=2.5.1"
 ]
